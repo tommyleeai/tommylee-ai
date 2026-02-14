@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Prompt Generator v3.8</title>
+    <link rel="stylesheet" href="styles.css?v=3.8">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+
+<body>
+    <div class="background-globes">
+        <div class="globe globe-1"></div>
+        <div class="globe globe-2"></div>
+        <div class="globe globe-3"></div>
+    </div>
+
+    <div class="container glass-panel">
+        <header class="header">
+            <h1><i class="fa-solid fa-wand-magic-sparkles"></i> AI Prompt Generator <span class="version">v3.8</span>
+            </h1>
+            <p>為您的下一個傑作打造完美提示詞 (Craft the perfect prompt for your next masterpiece.)</p>
+        </header>
+
+        <main class="main-content">
+            <!-- Left Column: Controls -->
+            <section class="controls-section">
+                <!-- 1. Subject -->
+                <div class="input-group">
+                    <label for="input-subject">主體 (Subject)</label>
+                    <input type="text" id="input-subject" value="請畫一張圖" placeholder="例如: 1girl, cat, cyberpunk city...">
+                </div>
+
+                <!-- 2. Description -->
+                <div class="input-group">
+                    <label for="input-description">描述 (Description)</label>
+                    <textarea id="input-description" placeholder="年紀 21 歲的 漂亮 女性">21 歲日本女孩</textarea>
+                </div>
+
+                <!-- 3. Custom Fields -->
+                <div class="section-title">自訂欄位 (Custom Fields)</div>
+                <div id="custom-fields-container">
+                    <!-- Dynamic fields will be added here -->
+                </div>
+                <button id="btn-add-custom" class="btn btn-secondary btn-sm"><i class="fa-solid fa-plus"></i>
+                    新增自訂欄位</button>
+
+                <hr class="divider">
+
+                <!-- 4. Dynamic Categories -->
+                <div id="categories-container">
+                    <!-- Categories will be injected here by JS -->
+                </div>
+
+                <hr class="divider">
+
+                <div class="input-group">
+                    <label for="negative-prompt">負面提示詞 (Negative Prompt)</label>
+                    <textarea id="negative-prompt" class="small-textarea"
+                        placeholder="ugly, blurry, low quality, deformed..."></textarea>
+                </div>
+
+                <div class="actions">
+                    <button id="btn-reset" class="btn btn-secondary"><i class="fa-solid fa-rotate-left"></i> 重置
+                        (Reset)</button>
+                </div>
+            </section>
+
+            <!-- Right Column: Output -->
+            <section class="output-section">
+                <div class="sticky-output">
+                    <!-- Preview Container -->
+                    <div class="preview-container">
+                        <h3><i class="fa-solid fa-image"></i> 預覽 (Preview)</h3>
+                        <div id="preview-wrapper">
+                            <div id="preview-placeholder" class="active">
+                                <i class="fa-solid fa-mouse-pointer"></i>
+                                <p>將滑鼠移到選項上查看預覽</p>
+                                <p class="preview-hint">Hover over options to see preview</p>
+                            </div>
+                            <div id="preview-content">
+                                <div id="preview-image-box"></div>
+                                <p id="preview-label"></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="language-toggle">
+                        <label>輸出語言 (Output Language):</label>
+                        <div class="toggle-options">
+                            <label><input type="radio" name="lang" value="en"> 英文 (English)</label>
+                            <label><input type="radio" name="lang" value="zh" checked> 中文 (Chinese)</label>
+                        </div>
+                    </div>
+
+                    <div class="language-toggle">
+                        <label>輸出格式 (Output Format):</label>
+                        <div class="toggle-options">
+                            <label><input type="radio" name="format" value="plain"> 純文字 (Plain)</label>
+                            <label><input type="radio" name="format" value="yaml" checked> YAML</label>
+                        </div>
+                    </div>
+
+                    <h2><i class="fa-solid fa-code"></i> 生成結果 (Generated Prompt)</h2>
+                    <div class="output-container">
+                        <div id="final-prompt" class="output-display" contenteditable="false"
+                            data-placeholder="您的提示詞將顯示於此..."></div>
+                        <button id="btn-copy" class="btn btn-primary btn-block"><i class="fa-regular fa-copy"></i> 複製
+                            (Copy)</button>
+                    </div>
+
+                    <div class="output-container negative-output-container">
+                        <h3>負面提示詞 (Negative Prompt)</h3>
+                        <textarea id="final-negative" readonly placeholder="負面提示詞..."></textarea>
+                        <button id="btn-copy-negative" class="btn btn-secondary btn-sm"><i
+                                class="fa-regular fa-copy"></i> 複製 (Copy Negative)</button>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Mascot -->
+    <div id="mascot-wrapper">
+        <img src="assets/mascot.png" alt="AI Mascot" id="mascot-image">
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
