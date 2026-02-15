@@ -141,22 +141,21 @@
     <div id="settings-modal" class="modal-overlay">
         <div class="settings-panel">
             <div class="settings-header">
-                <h2><i class="fa-solid fa-gear"></i> AI Website Settings</h2>
+                <h2><i class="fa-solid fa-gear"></i> <span data-i18n="settings-title">AI 網站設定</span></h2>
                 <button class="btn-close" id="btn-close-settings">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
             <div class="settings-body">
-                <p class="settings-hint">Configure up to 5 AI image generation websites. After copying, you can quickly
-                    open them.</p>
+                <p class="settings-hint" data-i18n="settings-hint">設定最多 5 個 AI 繪圖網站。複製後可以快速開啟。</p>
                 <div id="ai-sites-list"></div>
                 <button id="btn-add-site" class="btn-add-site">
-                    <i class="fa-solid fa-plus"></i> Add Website
+                    <i class="fa-solid fa-plus"></i> <span data-i18n="add-website">新增網站</span>
                 </button>
             </div>
             <div class="settings-footer">
                 <button id="btn-save-settings" class="btn-save">
-                    <i class="fa-solid fa-floppy-disk"></i> Save
+                    <i class="fa-solid fa-floppy-disk"></i> <span data-i18n="save">儲存</span>
                 </button>
             </div>
         </div>
@@ -164,7 +163,7 @@
 
     <!-- Site Picker Popup -->
     <div id="site-picker" class="site-picker-popup">
-        <div class="site-picker-header">Choose AI Website</div>
+        <div class="site-picker-header" data-i18n="choose-website">選擇 AI 網站</div>
         <div id="site-picker-list"></div>
     </div>
 
