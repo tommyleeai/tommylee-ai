@@ -103,6 +103,14 @@ html {
     /* Hide main scroll, scroll inside sections */
 }
 
+#app-logo {
+    height: 60px;
+    vertical-align: middle;
+    margin-right: 10px;
+    filter: drop-shadow(0 0 5px rgba(187, 134, 252, 0.5));
+    /* Add subtle glow to match theme */
+}
+
 .header {
     text-align: left;
     /* Align left */
