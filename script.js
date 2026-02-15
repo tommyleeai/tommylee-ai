@@ -261,6 +261,7 @@ document.addEventListener('DOMContentLoaded', () => {
         customFields: [],
         customTags: {},
         collapsedCategories: {}, // Added for v4.2 persistence
+        categoryOrder: ['hair', 'clothing', 'view', 'shotSize', 'focalLength', 'aperture', 'animeStyle', 'artStyle', 'artist', 'lighting', 'quality'], // Default order
         lang: 'zh',
         format: 'yaml',
         isPreviewLocked: false
@@ -292,6 +293,7 @@ document.addEventListener('DOMContentLoaded', () => {
             ...state,
             selectedTags: Array.from(state.selectedTags),
             collapsedCategories: state.collapsedCategories, // Save collapsed state
+            categoryOrder: state.categoryOrder, // Save order
             inputSubject: inputSubject.value,
             inputDescription: inputDescription.value,
             inputNegative: inputNegative.value
@@ -307,7 +309,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 state.selectedTags = new Set(parsed.selectedTags || []);
                 state.customFields = parsed.customFields || [];
                 state.customTags = parsed.customTags || {};
-                state.collapsedCategories = parsed.collapsedCategories || {}; // Load collapsed state
+                state.collapsedCategories = parsed.collapsedCategories || {};
+                state.categoryOrder = parsed.categoryOrder || ['hair', 'clothing', 'view', 'shotSize', 'focalLength', 'aperture', 'animeStyle', 'artStyle', 'artist', 'lighting', 'quality']; // Load or default
                 state.lang = parsed.lang || 'zh';
                 state.format = parsed.format || 'yaml';
 
@@ -330,12 +333,23 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderCategories() {
         categoriesContainer.innerHTML = '';
 
-        for (const [key, categoryData] of Object.entries(promptData)) {
+        // Iterate using the saved order
+        state.categoryOrder.forEach(key => {
+            const categoryData = promptData[key];
+            if (!categoryData) return;
+
             const categoryBlock = document.createElement('div');
             categoryBlock.className = 'category-block glass-panel collapsible';
+            categoryBlock.setAttribute('draggable', 'true');
+            categoryBlock.dataset.categoryKey = key;
 
             const categoryTitle = document.createElement('h3');
             categoryTitle.className = 'collapsible-header';
+
+            // Drag Handle
+            const dragHandle = document.createElement('i');
+            dragHandle.className = 'fa-solid fa-grip-vertical drag-handle';
+            categoryTitle.appendChild(dragHandle);
 
             // Title Text
             const titleText = document.createElement('span');
@@ -357,7 +371,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const contentWrapper = document.createElement('div');
             contentWrapper.className = 'collapsible-content';
 
-            // Determine initial state: use saved state if available, otherwise use default
+            // Determine initial state
             const isCollapsed = state.collapsedCategories[key] !== undefined ? state.collapsedCategories[key] : categoryData.collapsed;
 
             if (isCollapsed) {
@@ -365,15 +379,82 @@ document.addEventListener('DOMContentLoaded', () => {
                 categoryTitle.querySelector('.toggle-icon').classList.add('rotated');
             }
 
-            categoryTitle.addEventListener('click', () => {
+            // Click listener
+            categoryTitle.addEventListener('click', (e) => {
+                if (e.target.closest('.drag-handle')) return;
+
                 const wasCollapsed = contentWrapper.classList.contains('collapsed');
-                // Toggle UI
                 contentWrapper.classList.toggle('collapsed');
                 categoryTitle.querySelector('.toggle-icon').classList.toggle('rotated');
 
-                // Update State
                 state.collapsedCategories[key] = !wasCollapsed;
                 saveState();
+            });
+
+            // --- Drag and Drop Events ---
+            // Default to not draggable
+            categoryBlock.setAttribute('draggable', 'false');
+
+            // Only make draggable when hovering the handle
+            dragHandle.addEventListener('mouseenter', () => {
+                categoryBlock.setAttribute('draggable', 'true');
+            });
+
+            dragHandle.addEventListener('mouseleave', () => {
+                categoryBlock.setAttribute('draggable', 'false');
+            });
+
+            // Mobile touch support (tap to enable)
+            dragHandle.addEventListener('touchstart', () => {
+                categoryBlock.setAttribute('draggable', 'true');
+            });
+
+            categoryBlock.addEventListener('dragstart', (e) => {
+                categoryBlock.classList.add('dragging');
+                e.dataTransfer.effectAllowed = 'move';
+                e.dataTransfer.setData('text/plain', key);
+            });
+
+            // Reset draggable to false after drag ends
+            categoryBlock.addEventListener('dragend', () => {
+                categoryBlock.classList.remove('dragging');
+                document.querySelectorAll('.category-block').forEach(block => block.classList.remove('drag-over'));
+            });
+
+
+
+            categoryBlock.addEventListener('dragover', (e) => {
+                e.preventDefault(); // Allow drop
+                e.dataTransfer.dropEffect = 'move';
+                categoryBlock.classList.add('drag-over');
+            });
+
+            categoryBlock.addEventListener('dragleave', (e) => {
+                // Only remove class if we are strictly leaving the block, not entering a child
+                if (!categoryBlock.contains(e.relatedTarget)) {
+                    categoryBlock.classList.remove('drag-over');
+                }
+            });
+
+            categoryBlock.addEventListener('drop', (e) => {
+                e.preventDefault();
+                categoryBlock.classList.remove('drag-over');
+                const draggedKey = e.dataTransfer.getData('text/plain');
+                const targetKey = key;
+
+                if (draggedKey && draggedKey !== targetKey) {
+                    const oldIndex = state.categoryOrder.indexOf(draggedKey);
+                    const newIndex = state.categoryOrder.indexOf(targetKey);
+
+                    if (oldIndex > -1 && newIndex > -1) {
+                        // Move element in array
+                        state.categoryOrder.splice(oldIndex, 1);
+                        state.categoryOrder.splice(newIndex, 0, draggedKey);
+
+                        saveState();
+                        renderCategories(); // Re-render to reflect new order
+                    }
+                }
             });
 
             categoryBlock.appendChild(categoryTitle);
@@ -438,13 +519,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
             targetContainer.appendChild(tagsContainer);
             targetContainer.appendChild(customInput);
-            targetContainer.appendChild(tagsContainer);
-            targetContainer.appendChild(customInput);
             categoriesContainer.appendChild(categoryBlock);
 
             // Initial Summary Update
             updateCategorySummary(key, summarySpan);
-        }
+        });
     }
 
     function updateCategorySummary(category, spanElement) {
@@ -575,8 +654,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (inputDescription.value.trim()) parts.push(inputDescription.value.trim());
 
         // Category Order - Updated to match new UI order
-        // Category Order - Updated for v4.0
-        const categoryOrder = ['hair', 'clothing', 'view', 'shotSize', 'focalLength', 'aperture', 'animeStyle', 'artStyle', 'artist', 'lighting', 'quality'];
+        // Use user-defined order
+        const categoryOrder = state.categoryOrder || ['hair', 'clothing', 'view', 'shotSize', 'focalLength', 'aperture', 'animeStyle', 'artStyle', 'artist', 'lighting', 'quality'];
 
         categoryOrder.forEach(catKey => {
             // Predefined tags
@@ -626,7 +705,12 @@ document.addEventListener('DOMContentLoaded', () => {
             'quality': { key: 'quality', label: 'Quality' }
         };
 
-        for (const [catKey, config] of Object.entries(categoryMapping)) {
+        const categoryOrder = state.categoryOrder || ['hair', 'clothing', 'view', 'shotSize', 'focalLength', 'aperture', 'animeStyle', 'artStyle', 'artist', 'lighting', 'quality'];
+
+        categoryOrder.forEach(catKey => {
+            const config = categoryMapping[catKey];
+            if (!config) return;
+
             const selectedResults = [];
 
             // selected tags
@@ -638,7 +722,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (selectedResults.length > 0) {
                 yaml += `${config.key}: ${selectedResults.join(', ')}\n`;
             }
-        }
+        });
 
         // Custom Fields
         state.customFields.forEach(field => {
@@ -721,19 +805,219 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Init ---
 
+    // --- Sound Manager (Synthesized Sci-Fi FX) ---
+    class SoundManager {
+        constructor() {
+            this.ctx = null;
+            this.masterGain = null;
+            this.isMuted = false;
+            this.initialized = false;
+        }
+
+        init() {
+            if (this.initialized) return;
+            try {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                this.ctx = new AudioContext();
+                this.masterGain = this.ctx.createGain();
+                this.masterGain.gain.value = 0.15; // Global volume
+                this.masterGain.connect(this.ctx.destination);
+                this.initialized = true;
+            } catch (e) {
+                console.warn("Web Audio API not supported", e);
+            }
+        }
+
+        toggleMute() {
+            this.isMuted = !this.isMuted;
+            if (this.initialized) {
+                if (this.isMuted) {
+                    this.masterGain.gain.setValueAtTime(0, this.ctx.currentTime);
+                } else {
+                    this.masterGain.gain.setValueAtTime(0.15, this.ctx.currentTime);
+                }
+            }
+            return this.isMuted;
+        }
+
+        // 1. Click/Select: High-tech blip
+        playClick() {
+            if (this.isMuted || !this.initialized) this.init();
+            if (this.isMuted) return;
+
+            const t = this.ctx.currentTime;
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(800, t);
+            osc.frequency.exponentialRampToValueAtTime(1200, t + 0.05);
+
+            gain.gain.setValueAtTime(0.5, t);
+            gain.gain.exponentialRampToValueAtTime(0.01, t + 0.05);
+
+            osc.connect(gain);
+            gain.connect(this.masterGain);
+
+            osc.start(t);
+            osc.stop(t + 0.05);
+        }
+
+        // 2. Hover: Very subtle tick
+        playHover() {
+            if (this.isMuted || !this.initialized) return; // Don't auto-init on hover to avoid aggressive audio context start
+
+            const t = this.ctx.currentTime;
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(2000, t);
+
+            gain.gain.setValueAtTime(0.05, t); // Very quiet
+            gain.gain.exponentialRampToValueAtTime(0.001, t + 0.02);
+
+            osc.connect(gain);
+            gain.connect(this.masterGain);
+
+            osc.start(t);
+            osc.stop(t + 0.02);
+        }
+
+        // 3. Success (Copy): Ascending chime
+        playSuccess() {
+            if (this.isMuted || !this.initialized) this.init();
+            if (this.isMuted) return;
+
+            const t = this.ctx.currentTime;
+
+            // Tone 1
+            const osc1 = this.ctx.createOscillator();
+            const gain1 = this.ctx.createGain();
+            osc1.type = 'sine';
+            osc1.frequency.setValueAtTime(523.25, t); // C5
+            gain1.gain.setValueAtTime(0.3, t);
+            gain1.gain.exponentialRampToValueAtTime(0.01, t + 0.4);
+            osc1.connect(gain1);
+            gain1.connect(this.masterGain);
+            osc1.start(t);
+            osc1.stop(t + 0.4);
+
+            // Tone 2
+            const osc2 = this.ctx.createOscillator();
+            const gain2 = this.ctx.createGain();
+            osc2.type = 'sine';
+            osc2.frequency.setValueAtTime(783.99, t + 0.1); // G5
+            gain2.gain.setValueAtTime(0.3, t + 0.1);
+            gain2.gain.exponentialRampToValueAtTime(0.01, t + 0.5);
+            osc2.connect(gain2);
+            gain2.connect(this.masterGain);
+            osc2.start(t + 0.1);
+            osc2.stop(t + 0.5);
+        }
+
+        // 4. Toggle/Expand: Whoosh filter sweep
+        playToggle() {
+            if (this.isMuted || !this.initialized) this.init();
+            if (this.isMuted) return;
+
+            const t = this.ctx.currentTime;
+
+            // White noise buffer
+            const bufferSize = this.ctx.sampleRate * 0.2; // 0.2 seconds
+            const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+            const data = buffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) {
+                data[i] = Math.random() * 2 - 1;
+            }
+
+            const noise = this.ctx.createBufferSource();
+            noise.buffer = buffer;
+
+            const filter = this.ctx.createBiquadFilter();
+            filter.type = 'lowpass';
+            filter.frequency.setValueAtTime(200, t);
+            filter.frequency.exponentialRampToValueAtTime(2000, t + 0.15); // Sweep up
+
+            const gain = this.ctx.createGain();
+            gain.gain.setValueAtTime(0.2, t);
+            gain.gain.exponentialRampToValueAtTime(0.01, t + 0.15);
+
+            noise.connect(filter);
+            filter.connect(gain);
+            gain.connect(this.masterGain);
+
+            noise.start(t);
+        }
+
+        // 5. Delete/Reset: Descending tone
+        playDelete() {
+            if (this.isMuted || !this.initialized) this.init();
+            if (this.isMuted) return;
+
+            const t = this.ctx.currentTime;
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(300, t);
+            osc.frequency.exponentialRampToValueAtTime(50, t + 0.3);
+
+            gain.gain.setValueAtTime(0.3, t);
+            gain.gain.exponentialRampToValueAtTime(0.01, t + 0.3);
+
+            osc.connect(gain);
+            gain.connect(this.masterGain);
+
+            osc.start(t);
+            osc.stop(t + 0.3);
+        }
+    }
+
+    const sfx = new SoundManager();
+
+    // --- Init ---
+
+    // Sound Toggle Button
+    const btnSoundToggle = document.getElementById('btn-sound-toggle');
+    const iconSound = btnSoundToggle.querySelector('i');
+
+    btnSoundToggle.addEventListener('click', () => {
+        sfx.init(); // Ensure context is started
+        const isMuted = sfx.toggleMute();
+        if (isMuted) {
+            iconSound.className = 'fa-solid fa-volume-xmark';
+            btnSoundToggle.classList.add('muted');
+        } else {
+            iconSound.className = 'fa-solid fa-volume-high';
+            btnSoundToggle.classList.remove('muted');
+            sfx.playClick();
+        }
+    });
+
     // Event Listeners
     btnAddCustom.addEventListener('click', () => {
+        sfx.playClick();
         state.customFields.push({ key: '', value: '', enabled: true });
         renderCustomFields();
         generatePrompt();
     });
 
+    // Attach Hover Sounds globally to interactive elements
+    document.addEventListener('mouseenter', (e) => {
+        if (e.target.matches('.tag-chip, button, .collapsible-header, .custom-field-checkbox')) {
+            sfx.playHover();
+        }
+    }, true); // Use capture to ensure we catch it
+
     btnReset.addEventListener('click', () => {
+        sfx.playClick();
         const confirmMessage = state.lang === 'zh'
             ? "確定要重置所有設定嗎？\n\n這將會：\n1. 清空所有已選標籤\n2. 清空主詞與描述\n3. 清空自訂欄位\n\n(折疊狀態將會保留)"
             : "Are you sure you want to reset all settings?\n\nThis will:\n1. Clear all selected tags\n2. Clear subject and description\n3. Clear custom fields\n\n(Collapsed states will be preserved)";
 
         if (confirm(confirmMessage)) {
+            sfx.playDelete(); // Play delete sound on confirm
             state.selectedTags.clear();
             state.customFields = [];
             state.customTags = {};
@@ -747,10 +1031,6 @@ document.addEventListener('DOMContentLoaded', () => {
             state.isPreviewLocked = false;
             hidePreview();
             renderCustomFields();
-            // renderCategories(); // Re-render to clear summaries and reset UI states if needed
-            // Actually, simply clearing summaries is enough if we don't prefer full re-render
-            // But re-render is robust. Let's do a quick update loop instead to avoid DOM thrashing if not needed
-            // OR just call renderCategories which is already safe and fast enough
             renderCategories();
 
             generatePrompt();
@@ -761,7 +1041,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // Copy Button
     btnCopy.addEventListener('click', () => {
         const textToCopy = outputFinal.dataset.plainText || outputFinal.textContent;
-        if (!textToCopy) return;
+        if (!textToCopy) {
+            sfx.playDelete(); // Error/Empty sound (reused delete)
+            return;
+        }
+        sfx.playSuccess(); // Success sound
         navigator.clipboard.writeText(textToCopy);
         const originalText = btnCopy.innerHTML;
         btnCopy.innerHTML = '<i class="fa-solid fa-check"></i>';
@@ -784,6 +1068,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     langRadios.forEach(radio => {
         radio.addEventListener('change', (e) => {
+            sfx.playClick();
             state.lang = e.target.value;
             renderCategories();
             renderCustomFields();
@@ -793,6 +1078,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     formatRadios.forEach(radio => {
         radio.addEventListener('change', (e) => {
+            sfx.playClick();
             state.format = e.target.value;
             generatePrompt();
         });
@@ -800,9 +1086,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initialize
     loadState();
-    renderCategories();
+    renderCategories(); // This will attach the click listeners for chips and toggles (we need to modify renderCategories to play sounds)
     renderCustomFields();
     generatePrompt();
-    updateLockedPreview();
+
+    // Global Click Listener for UI Sounds (Delegation)
+    document.addEventListener('click', (e) => {
+        // Tag Chip Selection
+        if (e.target.closest('.tag-chip')) {
+            sfx.playClick();
+        }
+        // Collapsible Header (Toggle)
+        if (e.target.closest('.collapsible-header')) {
+            sfx.playToggle();
+        }
+        // Custom field delete
+        if (e.target.closest('.btn-delete')) {
+            sfx.playDelete();
+        }
+    });
 
 });
