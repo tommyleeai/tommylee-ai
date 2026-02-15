@@ -106,6 +106,7 @@ body {
     font-size: 2.5rem;
     margin: 0;
     background: linear-gradient(90deg, #bb86fc, #03dac6);
+    background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
@@ -252,13 +253,67 @@ textarea {
 
 /* Tag Grid System */
 .category-block {
-    margin-bottom: 2rem;
+    margin-bottom: 0.5rem;
 }
 
 .category-block h3 {
     font-size: 1.1rem;
-    color: #fff;
     margin-bottom: 1rem;
+    background: linear-gradient(90deg, #bb86fc, #03dac6);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    width: fit-content;
+}
+
+/* Collapsible Styles */
+.collapsible-header {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    user-select: none;
+}
+
+.selected-summary {
+    color: var(--accent-color);
+    font-size: 0.9rem;
+    font-weight: normal;
+    font-style: italic;
+    margin-left: 10px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 200px;
+    /* Prevent it from pushing layout too much */
+}
+
+.toggle-icon {
+    font-size: 0.8rem;
+    color: var(--secondary-color);
+    transition: transform 0.3s ease;
+    -webkit-text-fill-color: var(--secondary-color);
+    /* Override gradient for icon */
+}
+
+.toggle-icon.rotated {
+    transform: rotate(-90deg);
+    /* Rotate to point right (collapsed) */
+}
+
+.collapsible-content {
+    transition: max-height 0.3s ease, opacity 0.3s ease;
+    max-height: 1000px;
+    /* Arbitrary large height */
+    opacity: 1;
+    overflow: hidden;
+}
+
+.collapsible-content.collapsed {
+    max-height: 0;
+    opacity: 0;
+    margin: 0;
+    padding: 0;
 }
 
 .tags-grid {
@@ -284,8 +339,10 @@ textarea {
 }
 
 .tag-chip:hover {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.15);
     transform: translateY(-2px);
+    box-shadow: 0 0 15px rgba(187, 134, 252, 0.6);
+    border-color: var(--accent-color);
 }
 
 .tag-chip.active {
@@ -444,6 +501,19 @@ textarea {
     background: rgba(255, 255, 255, 0.2);
 }
 
+#btn-reset {
+    background: rgba(207, 102, 121, 0.2);
+    color: var(--danger-color);
+    border: 1px solid rgba(207, 102, 121, 0.5);
+    transition: all 0.3s ease;
+}
+
+#btn-reset:hover {
+    background: var(--danger-color);
+    color: #121212;
+    box-shadow: 0 0 15px rgba(207, 102, 121, 0.4);
+}
+
 .btn-block {
     width: 100%;
 }
@@ -457,7 +527,7 @@ textarea {
     border: 0;
     height: 1px;
     background: var(--glass-border);
-    margin: 2rem 0;
+    margin: 1rem 0;
 }
 
 /* Responsive */
@@ -483,7 +553,7 @@ textarea {
     border: 1px solid var(--glass-border);
     border-radius: 12px;
     padding: 1.2rem;
-    margin-bottom: 1.5rem;
+    margin-bottom: 0.5rem;
     backdrop-filter: blur(10px);
 }
 

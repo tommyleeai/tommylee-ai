@@ -14,11 +14,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 { label: "High Twintails", zh: "高雙馬尾", value: "high twintails", image: "assets/previews/hair_high_twintails.png" },
                 { label: "Bangs", zh: "瀏海", value: "bangs", image: "assets/previews/hair_bangs.png" },
                 { label: "Blunt Bangs", zh: "齊瀏海", value: "blunt bangs", image: "assets/previews/hair_blunt_bangs.png" },
-                { label: "Airy Bob", zh: "空氣感短鮑伯頭", value: "airy bob cut", image: "assets/previews/hair_bob_cut.png" },
-                { label: "Wavy Long Hair", zh: "柔亮大波浪長髮", value: "wavy long hair", image: "assets/previews/hair_wavy_long_hair.png" },
                 { label: "Black Long Straight", zh: "黑長直", value: "black long straight hair", image: "assets/previews/hair_black_long_straight_hair.png" },
                 { label: "Low Bun", zh: "低髮髻", value: "low hair bun", image: "assets/previews/hair_low_bun.png" },
-                { label: "Bob with Bangs", zh: "齊劉海短髮妹妹頭", value: "bob cut with blunt bangs", image: "assets/previews/hair_bob_cut_blunt_bangs.png" },
                 { label: "Hime Cut", zh: "姬髮式", value: "hime cut", image: "assets/previews/hair_hime_cut.png" },
                 { label: "Double Buns", zh: "立體雙丸子頭", value: "double buns", image: "assets/previews/hair_double_buns.png" },
                 { label: "Side Part", zh: "側分", value: "side part", image: "assets/previews/hair_side_part.png" },
@@ -31,7 +28,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 { label: "Single Braid", zh: "單麻花辮", value: "single braid", image: "assets/previews/hair_single_braid.png" },
                 { label: "Braids", zh: "辮子", value: "braids", image: "assets/previews/hair_braids.png" },
                 { label: "Buzz Cut", zh: "極短寸頭", value: "buzz cut", image: "assets/previews/hair_buzz_cut.png" },
-                { label: "Blonde Hair", zh: "金髮", value: "blonde hair", image: "assets/previews/hair_blonde_hair.png" }
+                { label: "Blonde Hair", zh: "金髮", value: "blonde hair", image: "assets/previews/hair_blonde_hair.png" },
+                { label: "Airy Bob", zh: "空氣感短鮑伯頭", value: "airy bob cut", image: "assets/previews/hair_bob_cut.png" },
+                { label: "Wavy Long Hair", zh: "柔亮大波浪長髮", value: "wavy long hair", image: "assets/previews/hair_wavy_long_hair.png" },
+                { label: "Bob with Bangs", zh: "齊劉海短髮妹妹頭", value: "bob cut with blunt bangs", image: "assets/previews/hair_bob_cut_blunt_bangs.png" }
             ]
         },
         clothing: {
@@ -180,31 +180,67 @@ document.addEventListener('DOMContentLoaded', () => {
                 { label: "Bioluminescence", zh: "生物發光", value: "bioluminescence" }
             ]
         },
-        camera: {
-            title: { en: "Camera & Angle", zh: "攝影視角 (Camera & Angle)" },
+        view: {
+            title: { en: "View", zh: "視角 (View)" },
             options: [
                 { label: "Eye-level Shot", zh: "平視鏡頭", value: "eye-level shot" },
-                { label: "Low Angle", zh: "低角度", value: "low angle" },
-                { label: "High Angle", zh: "高角度", value: "high angle" },
-                { label: "Worm's Eye View", zh: "蟲視角", value: "worm's eye view" },
-                { label: "Bird's Eye View", zh: "鳥瞰視角", value: "bird's eye view" },
-                { label: "Top-down View", zh: "正上方俯視", value: "top-down view" },
-                { label: "Dutch Angle", zh: "荷蘭式傾斜", value: "dutch angle" },
-                { label: "Profile", zh: "側面角度", value: "profile" },
+                { label: "High Angle", zh: "高角度/俯拍鏡頭", value: "high angle shot, from above" },
+                { label: "Low Angle", zh: "低角度/仰拍鏡頭", value: "low angle shot, from below" },
+                { label: "Worm's Eye View", zh: "蟲視角/極低角度鏡頭", value: "worm's eye view" },
+                { label: "Bird's Eye View", zh: "鳥瞰視角/俯視鏡頭", value: "bird's eye view" },
+                { label: "Top-down View", zh: "正上方俯視鏡頭", value: "top-down view" },
+                { label: "Hip Level Shot", zh: "腰部高度鏡頭", value: "hip level shot" },
+                { label: "Knee Level Shot", zh: "膝蓋高度鏡頭", value: "knee level shot" },
+                { label: "Ground Level Shot", zh: "地面高度鏡頭", value: "ground level shot" },
+                { label: "Shoulder Level Shot", zh: "肩部高度鏡頭", value: "shoulder level shot" },
+                { label: "Back View", zh: "背面視角", value: "back view" },
+                { label: "Three-quarter View", zh: "三分之四視角", value: "three-quarter view" },
+                { label: "Dutch Angle", zh: "傾斜鏡頭", value: "dutch angle" },
+                { label: "Oblique Angle", zh: "斜角視角", value: "oblique angle" },
+                { label: "Overhead Angle", zh: "俯視角度", value: "overhead angle" },
+                { label: "Profile Angle", zh: "側面角度", value: "profile angle" },
+                { label: "Side Angle", zh: "側角視角", value: "side angle" }
+            ]
+        },
+        shotSize: {
+            title: { en: "Shot Size", zh: "鏡頭 (Shot Size)" },
+            collapsed: true,
+            options: [
+                { label: "Extreme Long Shot", zh: "極遠景", value: "extreme long shot" },
+                { label: "Long Shot", zh: "遠景", value: "long shot" },
                 { label: "Full Shot", zh: "全身鏡頭", value: "full shot" },
-                { label: "Medium Shot", zh: "中景", value: "medium shot" },
-                { label: "Close-up", zh: "特寫", value: "close-up" },
-                { label: "Macro", zh: "微距", value: "macro shot" },
-                { label: "Fisheye Lens", zh: "魚眼鏡頭", value: "fisheye lens" },
+                { label: "Medium Wide Shot", zh: "中遠景", value: "medium wide shot" },
+                { label: "Cowboy Shot", zh: "牛仔鏡頭", value: "cowboy shot" },
+                { label: "Medium Close-up Shot", zh: "中近景", value: "medium close-up shot" },
+                { label: "Close-up", zh: "特寫鏡頭", value: "close-up" },
+                { label: "Extreme Close-up", zh: "極特寫鏡頭", value: "extreme close-up" }
+            ]
+        },
+        focalLength: {
+            title: { en: "Focal Length", zh: "焦段 (Focal Length)" },
+            collapsed: true,
+            options: [
+                { label: "Ultra Wide Angle", zh: "超廣角", value: "ultra wide angle" },
                 { label: "Wide Angle", zh: "廣角", value: "wide angle" },
+                { label: "Semi-wide / Moderate Wide", zh: "半廣角", value: "semi-wide angle" },
+                { label: "Standard Lens", zh: "標準鏡", value: "standard lens" },
+                { label: "Medium Telephoto", zh: "中望遠", value: "medium telephoto" },
                 { label: "Telephoto", zh: "望遠", value: "telephoto" },
-                { label: "Bokeh", zh: "景深/模糊", value: "bokeh" },
-                { label: "Depth of Field", zh: "景深", value: "depth of field" },
-                { label: "Motion Blur", zh: "動態模糊", value: "motion blur" }
+                { label: "Super Telephoto", zh: "超望遠", value: "super telephoto" }
+            ]
+        },
+        aperture: {
+            title: { en: "Aperture", zh: "光圈 (Aperture)" },
+            collapsed: true,
+            options: [
+                { label: "Small Aperture", zh: "小光圈", value: "small aperture, f/16, deep depth of field" },
+                { label: "Medium Aperture", zh: "中光圈", value: "medium aperture, f/8" },
+                { label: "Large Aperture", zh: "大光圈", value: "large aperture, f/1.8, shallow depth of field, bokeh" }
             ]
         },
         quality: {
             title: { en: "Quality", zh: "畫質 (Quality)" },
+            collapsed: true,
             options: [
                 { label: "Masterpiece", zh: "傑作", value: "masterpiece" },
                 { label: "Best Quality", zh: "最佳畫質", value: "best quality" },
@@ -224,6 +260,7 @@ document.addEventListener('DOMContentLoaded', () => {
         selectedTags: new Set(),
         customFields: [],
         customTags: {},
+        collapsedCategories: {}, // Added for v4.2 persistence
         lang: 'zh',
         format: 'yaml',
         isPreviewLocked: false
@@ -254,6 +291,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const stateToSave = {
             ...state,
             selectedTags: Array.from(state.selectedTags),
+            collapsedCategories: state.collapsedCategories, // Save collapsed state
             inputSubject: inputSubject.value,
             inputDescription: inputDescription.value,
             inputNegative: inputNegative.value
@@ -269,6 +307,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 state.selectedTags = new Set(parsed.selectedTags || []);
                 state.customFields = parsed.customFields || [];
                 state.customTags = parsed.customTags || {};
+                state.collapsedCategories = parsed.collapsedCategories || {}; // Load collapsed state
                 state.lang = parsed.lang || 'zh';
                 state.format = parsed.format || 'yaml';
 
@@ -293,11 +332,55 @@ document.addEventListener('DOMContentLoaded', () => {
 
         for (const [key, categoryData] of Object.entries(promptData)) {
             const categoryBlock = document.createElement('div');
-            categoryBlock.className = 'category-block glass-panel';
+            categoryBlock.className = 'category-block glass-panel collapsible';
 
             const categoryTitle = document.createElement('h3');
-            categoryTitle.textContent = state.lang === 'zh' ? categoryData.title.zh : categoryData.title.en;
+            categoryTitle.className = 'collapsible-header';
+
+            // Title Text
+            const titleText = document.createElement('span');
+            titleText.innerHTML = state.lang === 'zh' ? categoryData.title.zh : categoryData.title.en;
+            categoryTitle.appendChild(titleText);
+
+            // Icon
+            const icon = document.createElement('i');
+            icon.className = 'fa-solid fa-chevron-down toggle-icon';
+            categoryTitle.appendChild(document.createTextNode(' ')); // Space
+            categoryTitle.appendChild(icon);
+
+            // Summary Span
+            const summarySpan = document.createElement('span');
+            summarySpan.className = 'selected-summary';
+            categoryTitle.appendChild(summarySpan);
+
+            // Content wrapper for collapsing
+            const contentWrapper = document.createElement('div');
+            contentWrapper.className = 'collapsible-content';
+
+            // Determine initial state: use saved state if available, otherwise use default
+            const isCollapsed = state.collapsedCategories[key] !== undefined ? state.collapsedCategories[key] : categoryData.collapsed;
+
+            if (isCollapsed) {
+                contentWrapper.classList.add('collapsed');
+                categoryTitle.querySelector('.toggle-icon').classList.add('rotated');
+            }
+
+            categoryTitle.addEventListener('click', () => {
+                const wasCollapsed = contentWrapper.classList.contains('collapsed');
+                // Toggle UI
+                contentWrapper.classList.toggle('collapsed');
+                categoryTitle.querySelector('.toggle-icon').classList.toggle('rotated');
+
+                // Update State
+                state.collapsedCategories[key] = !wasCollapsed;
+                saveState();
+            });
+
             categoryBlock.appendChild(categoryTitle);
+            categoryBlock.appendChild(contentWrapper);
+
+            // Container for tags and input
+            var targetContainer = contentWrapper;
 
             const tagsContainer = document.createElement('div');
             tagsContainer.className = 'tags-container';
@@ -349,17 +432,76 @@ document.addEventListener('DOMContentLoaded', () => {
 
             customInput.addEventListener('input', (e) => {
                 state.customTags[key] = e.target.value.trim();
+                updateCategorySummary(key); // Update summary on custom input
                 generatePrompt();
             });
 
-            categoryBlock.appendChild(tagsContainer);
-            categoryBlock.appendChild(customInput);
+            targetContainer.appendChild(tagsContainer);
+            targetContainer.appendChild(customInput);
+            targetContainer.appendChild(tagsContainer);
+            targetContainer.appendChild(customInput);
             categoriesContainer.appendChild(categoryBlock);
+
+            // Initial Summary Update
+            updateCategorySummary(key, summarySpan);
+        }
+    }
+
+    function updateCategorySummary(category, spanElement) {
+        if (!spanElement) {
+            // If span not provided, find it
+            const block = document.querySelector(`.tag-chip[data-category="${category}"]`)?.closest('.category-block');
+            if (block) {
+                spanElement = block.querySelector('.selected-summary');
+            }
+        }
+
+        if (!spanElement) return;
+
+        const selectedLabels = [];
+
+        // Find selected tags for this category
+        state.selectedTags.forEach(tagId => {
+            if (tagId.startsWith(category + ':')) {
+                const value = tagId.split(':')[1];
+                // Find label
+                const option = promptData[category].options.find(opt => opt.value === value);
+                if (option) {
+                    const label = state.lang === 'zh' ? (option.zh || option.label) : option.label;
+                    // Simplify label (remove extra desc if needed, but per user request "Button Name" is fine)
+                    // For "Black Long Straight", label is "黑長直"
+                    selectedLabels.push(label);
+                }
+            }
+        });
+
+        // Add custom tag if present
+        if (state.customTags[category]) {
+            selectedLabels.push(state.customTags[category]);
+        }
+
+        if (selectedLabels.length > 0) {
+            spanElement.textContent = selectedLabels.join(', ');
+        } else {
+            spanElement.textContent = '';
         }
     }
 
     function toggleTag(category, value, chipElement) {
         const uniqueId = `${category}:${value}`;
+
+        // Single Select Logic (except for quality)
+        if (category !== 'quality' && !state.selectedTags.has(uniqueId)) {
+            // Remove existing selection from state
+            for (const tag of state.selectedTags) {
+                if (tag.startsWith(category + ':')) {
+                    state.selectedTags.delete(tag);
+                }
+            }
+            // Update UI: remove active class from all chips in this category
+            const activeChips = document.querySelectorAll(`.tag-chip.active[data-category="${category}"]`);
+            activeChips.forEach(chip => chip.classList.remove('active'));
+        }
 
         if (state.selectedTags.has(uniqueId)) {
             state.selectedTags.delete(uniqueId);
@@ -370,6 +512,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         updateLockedPreview();
+        updateCategorySummary(category); // Update summary on toggle
         generatePrompt();
     }
 
@@ -432,7 +575,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (inputDescription.value.trim()) parts.push(inputDescription.value.trim());
 
         // Category Order - Updated to match new UI order
-        const categoryOrder = ['hair', 'clothing', 'animeStyle', 'artStyle', 'artist', 'lighting', 'camera', 'quality'];
+        // Category Order - Updated for v4.0
+        const categoryOrder = ['hair', 'clothing', 'view', 'shotSize', 'focalLength', 'aperture', 'animeStyle', 'artStyle', 'artist', 'lighting', 'quality'];
 
         categoryOrder.forEach(catKey => {
             // Predefined tags
@@ -471,11 +615,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const categoryMapping = {
             'hair': { key: 'hair', label: 'Hair Style' },
             'clothing': { key: 'clothing', label: 'Clothing' },
+            'view': { key: 'view', label: 'View' },
+            'shotSize': { key: 'shot_size', label: 'Shot Size' },
+            'focalLength': { key: 'focal_length', label: 'Focal Length' },
+            'aperture': { key: 'aperture', label: 'Aperture' },
             'animeStyle': { key: 'anime_style', label: 'Anime Style' },
             'artStyle': { key: 'art_style', label: 'Art Style' },
             'artist': { key: 'artist', label: 'Artist' },
             'lighting': { key: 'lighting', label: 'Lighting' },
-            'camera': { key: 'camera', label: 'Camera & Angle' },
             'quality': { key: 'quality', label: 'Quality' }
         };
 
@@ -582,20 +729,33 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     btnReset.addEventListener('click', () => {
-        state.selectedTags.clear();
-        state.customFields = [];
-        state.customTags = {};
-        inputSubject.value = '請畫一張圖';
-        inputDescription.value = '';
-        inputNegative.value = '';
+        const confirmMessage = state.lang === 'zh'
+            ? "確定要重置所有設定嗎？\n\n這將會：\n1. 清空所有已選標籤\n2. 清空主詞與描述\n3. 清空自訂欄位\n\n(折疊狀態將會保留)"
+            : "Are you sure you want to reset all settings?\n\nThis will:\n1. Clear all selected tags\n2. Clear subject and description\n3. Clear custom fields\n\n(Collapsed states will be preserved)";
 
-        document.querySelectorAll('.tag-chip').forEach(chip => chip.classList.remove('active'));
-        document.querySelectorAll('.custom-tag-input').forEach(input => input.value = '');
+        if (confirm(confirmMessage)) {
+            state.selectedTags.clear();
+            state.customFields = [];
+            state.customTags = {};
+            inputSubject.value = '請畫一張圖';
+            inputDescription.value = '';
+            inputNegative.value = '';
 
-        state.isPreviewLocked = false;
-        hidePreview();
-        renderCustomFields();
-        generatePrompt();
+            document.querySelectorAll('.tag-chip').forEach(chip => chip.classList.remove('active'));
+            document.querySelectorAll('.custom-tag-input').forEach(input => input.value = '');
+
+            state.isPreviewLocked = false;
+            hidePreview();
+            renderCustomFields();
+            // renderCategories(); // Re-render to clear summaries and reset UI states if needed
+            // Actually, simply clearing summaries is enough if we don't prefer full re-render
+            // But re-render is robust. Let's do a quick update loop instead to avoid DOM thrashing if not needed
+            // OR just call renderCategories which is already safe and fast enough
+            renderCategories();
+
+            generatePrompt();
+            saveState(); // Ensure reset state is saved
+        }
     });
 
     // Copy Button
