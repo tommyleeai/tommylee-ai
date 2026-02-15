@@ -24,10 +24,15 @@
                 <h1>
                     <img id="app-logo" src="assets/logo.png" alt="AI Studio Logo">
                     <i class="fa-solid fa-wand-magic-sparkles"></i> AI Prompt Generator <span
-                        class="version">v4.6.2</span>
-                    <button id="btn-sound-toggle" class="btn-sound" title="Toggle Sound">
-                        <i class="fa-solid fa-volume-high"></i>
-                    </button>
+                        class="version">v4.7</span>
+                    <div class="header-buttons">
+                        <button id="btn-settings" class="btn-icon" title="Settings">
+                            <i class="fa-solid fa-gear"></i>
+                        </button>
+                        <button id="btn-sound-toggle" class="btn-icon" title="Toggle Sound">
+                            <i class="fa-solid fa-volume-high"></i>
+                        </button>
+                    </div>
                 </h1>
             </header>
 
@@ -132,7 +137,38 @@
         <img src="assets/mascot.png" alt="AI Mascot" id="mascot-image">
     </div>
 
-    <script src="script.js?v=4.6.2"></script>
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="modal-overlay">
+        <div class="settings-panel">
+            <div class="settings-header">
+                <h2><i class="fa-solid fa-gear"></i> AI Website Settings</h2>
+                <button class="btn-close" id="btn-close-settings">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="settings-body">
+                <p class="settings-hint">Configure up to 5 AI image generation websites. After copying, you can quickly
+                    open them.</p>
+                <div id="ai-sites-list"></div>
+                <button id="btn-add-site" class="btn-add-site">
+                    <i class="fa-solid fa-plus"></i> Add Website
+                </button>
+            </div>
+            <div class="settings-footer">
+                <button id="btn-save-settings" class="btn-save">
+                    <i class="fa-solid fa-floppy-disk"></i> Save
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Site Picker Popup -->
+    <div id="site-picker" class="site-picker-popup">
+        <div class="site-picker-header">Choose AI Website</div>
+        <div id="site-picker-list"></div>
+    </div>
+
+    <script src="script.js?v=4.7"></script>
 </body>
 
 </html>

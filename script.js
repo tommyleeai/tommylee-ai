@@ -1047,18 +1047,36 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Copy Button
+    // Copy Button with Auto-Open (v4.7)
     btnCopy.addEventListener('click', () => {
         const textToCopy = outputFinal.dataset.plainText || outputFinal.textContent;
         if (!textToCopy) {
             sfx.playDelete(); // Error/Empty sound (reused delete)
             return;
         }
-        sfx.playSuccess(); // Success sound
+
+        // Copy to clipboard
         navigator.clipboard.writeText(textToCopy);
         const originalText = btnCopy.innerHTML;
         btnCopy.innerHTML = '<i class="fa-solid fa-check"></i>';
         setTimeout(() => btnCopy.innerHTML = originalText, 2000);
+
+        // Load AI sites
+        const saved = localStorage.getItem('aiSites');
+        const aiSites = saved ? JSON.parse(saved) : [];
+        const validSites = aiSites.filter(site => site.name && site.url);
+
+        if (validSites.length === 0) {
+            // No sites configured, just play success sound
+            sfx.playSuccess();
+        } else if (validSites.length === 1) {
+            // One site: open directly
+            window.open(validSites[0].url, '_blank');
+            sfx.playSuccess();
+        } else {
+            // Multiple sites: show picker
+            showSitePicker(validSites);
+        }
     });
 
     inputSubject.addEventListener('input', () => {
@@ -1114,5 +1132,137 @@ document.addEventListener('DOMContentLoaded', () => {
             sfx.playDelete();
         }
     });
+
+    // ========================================
+    // Settings Panel & Copy-to-Open (v4.7)
+    // ========================================
+
+    const settingsModal = document.getElementById('settings-modal');
+    const btnSettings = document.getElementById('btn-settings');
+    const btnCloseSettings = document.getElementById('btn-close-settings');
+    const btnSaveSettings = document.getElementById('btn-save-settings');
+    const btnAddSite = document.getElementById('btn-add-site');
+    const aiSitesList = document.getElementById('ai-sites-list');
+    const sitePicker = document.getElementById('site-picker');
+    const sitePickerList = document.getElementById('site-picker-list');
+
+    let aiSitesConfig = [];
+
+    // Load AI sites from localStorage
+    function loadAISites() {
+        const saved = localStorage.getItem('aiSites');
+        aiSitesConfig = saved ? JSON.parse(saved) : [];
+        renderAISites();
+    }
+
+    // Save AI sites to localStorage
+    function saveAISites() {
+        localStorage.setItem('aiSites', JSON.stringify(aiSitesConfig));
+    }
+
+    // Render AI sites in settings panel
+    function renderAISites() {
+        aiSitesList.innerHTML = '';
+        aiSitesConfig.forEach((site, index) => {
+            const row = document.createElement('div');
+            row.className = 'site-row';
+            row.innerHTML = `
+                <input type="text" placeholder="Name" value="${site.name || ''}" data-index="${index}" data-field="name">
+                <input type="text" placeholder="URL" value="${site.url || ''}" data-index="${index}" data-field="url">
+                <button class="btn-delete-site" data-index="${index}"><i class="fa-solid fa-trash"></i></button>
+            `;
+            aiSitesList.appendChild(row);
+        });
+    }
+
+    // Open settings modal
+    function openSettings() {
+        settingsModal.classList.add('active');
+        sfx.playClick();
+    }
+
+    // Close settings modal
+    function closeSettings() {
+        settingsModal.classList.remove('active');
+        sfx.playClick();
+    }
+
+    // Show site picker popup
+    function showSitePicker(sites) {
+        sitePickerList.innerHTML = '';
+        sites.forEach(site => {
+            const btn = document.createElement('button');
+            btn.className = 'site-picker-btn';
+            btn.textContent = site.name;
+            btn.addEventListener('click', () => {
+                window.open(site.url, '_blank');
+                sitePicker.classList.remove('active');
+                sfx.playSuccess();
+            });
+            sitePickerList.appendChild(btn);
+        });
+
+        // Position near copy button
+        const copyBtn = document.getElementById('btn-copy');
+        const rect = copyBtn.getBoundingClientRect();
+        sitePicker.style.top = `${rect.bottom + 10}px`;
+        sitePicker.style.left = `${rect.left}px`;
+        sitePicker.classList.add('active');
+
+        // Close on outside click
+        setTimeout(() => {
+            document.addEventListener('click', function closePicker(e) {
+                if (!sitePicker.contains(e.target) && e.target !== copyBtn) {
+                    sitePicker.classList.remove('active');
+                    document.removeEventListener('click', closePicker);
+                }
+            });
+        }, 100);
+    }
+
+    // Event Listeners for Settings
+    btnSettings.addEventListener('click', openSettings);
+    btnCloseSettings.addEventListener('click', closeSettings);
+    settingsModal.addEventListener('click', (e) => {
+        if (e.target === settingsModal) closeSettings();
+    });
+
+    btnAddSite.addEventListener('click', () => {
+        if (aiSitesConfig.length >= 5) {
+            alert('Maximum 5 AI websites allowed');
+            return;
+        }
+        aiSitesConfig.push({ name: '', url: '' });
+        renderAISites();
+        sfx.playClick();
+    });
+
+    aiSitesList.addEventListener('input', (e) => {
+        if (e.target.tagName === 'INPUT') {
+            const index = parseInt(e.target.dataset.index);
+            const field = e.target.dataset.field;
+            aiSitesConfig[index][field] = e.target.value;
+        }
+    });
+
+    aiSitesList.addEventListener('click', (e) => {
+        if (e.target.closest('.btn-delete-site')) {
+            const index = parseInt(e.target.closest('.btn-delete-site').dataset.index);
+            aiSitesConfig.splice(index, 1);
+            renderAISites();
+            sfx.playDelete();
+        }
+    });
+
+    btnSaveSettings.addEventListener('click', () => {
+        // Filter out empty entries
+        aiSitesConfig = aiSitesConfig.filter(site => site.name.trim() && site.url.trim());
+        saveAISites();
+        closeSettings();
+        sfx.playSuccess();
+    });
+
+    // Initialize
+    loadAISites();
 
 });

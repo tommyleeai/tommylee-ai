@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sound Demo V2 - 20 Cinematic Options</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0a0a1a 0%, #1a1a3e 50%, #0d0d2b 100%);
+            color: #e0e0ff;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+            text-align: center;
+        }
+
+        p.sub {
+            color: #8888bb;
+            margin-bottom: 30px;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+            color: #aaddff;
+            margin: 30px 0 15px;
+            padding-left: 8px;
+            border-left: 3px solid #6688ff;
+        }
+
+        .sound-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 14px;
+        }
+
+        .sound-card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            text-align: center;
+        }
+
+        .sound-card:hover {
+            background: rgba(100, 150, 255, 0.1);
+            border-color: rgba(100, 150, 255, 0.35);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(100, 150, 255, 0.12);
+        }
+
+        .sound-card:active {
+            transform: scale(0.97);
+        }
+
+        .sound-card .num {
+            font-size: 0.7rem;
+            color: #556;
+            margin-bottom: 4px;
+        }
+
+        .sound-card h3 {
+            font-size: 0.95rem;
+            margin-bottom: 4px;
+            color: #aabbff;
+        }
+
+        .sound-card p {
+            font-size: 0.75rem;
+            color: #7778aa;
+            line-height: 1.4;
+        }
+
+        .hint {
+            color: #556688;
+            font-size: 0.75rem;
+            margin-top: 30px;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>🔊 進階音效選擇器 — 20 種激勵人心的合成音效</h1>
+        <p class="sub">點擊卡片試聽 · 選好後告訴我編號</p>
+
+        <div class="section-title">🏆 史詩 / 勝利感</div>
+        <div class="sound-grid">
+            <div class="sound-card" onclick="play(6)">
+                <div class="num">#6</div>
+                <h3>史詩號角</h3>
+                <p>銅管和弦上升 + 定音鼓</p>
+            </div>
+            <div class="sound-card" onclick="play(7)">
+                <div class="num">#7</div>
+                <h3>英雄凱旋</h3>
+                <p>四音階漸強 + 大和弦爆發</p>
+            </div>
+            <div class="sound-card" onclick="play(8)">
+                <div class="num">#8</div>
+                <h3>王者登場</h3>
+                <p>低音鼓點 + 五度和弦 + 閃光</p>
+            </div>
+            <div class="sound-card" onclick="play(9)">
+                <div class="num">#9</div>
+                <h3>榮耀時刻</h3>
+                <p>弦樂風琶音 + 持續和弦尾音</p>
+            </div>
+            <div class="sound-card" onclick="play(10)">
+                <div class="num">#10</div>
+                <h3>勝利衝刺</h3>
+                <p>快速上行音階 + 爆裂和弦</p>
+            </div>
+        </div>
+
+        <div class="section-title">✨ 魔法 / 奇幻感</div>
+        <div class="sound-grid">
+            <div class="sound-card" onclick="play(11)">
+                <div class="num">#11</div>
+                <h3>仙境之光</h3>
+                <p>高頻琶音瀑布 + 回音</p>
+            </div>
+            <div class="sound-card" onclick="play(12)">
+                <div class="num">#12</div>
+                <h3>咒語完成</h3>
+                <p>低→高掃頻 + 和弦綻放</p>
+            </div>
+            <div class="sound-card" onclick="play(13)">
+                <div class="num">#13</div>
+                <h3>星光爆發</h3>
+                <p>多層閃爍音 + 上升尾音</p>
+            </div>
+            <div class="sound-card" onclick="play(14)">
+                <div class="num">#14</div>
+                <h3>神聖祝福</h3>
+                <p>教堂風管風琴和弦</p>
+            </div>
+            <div class="sound-card" onclick="play(15)">
+                <div class="num">#15</div>
+                <h3>精靈之歌</h3>
+                <p>快速高頻彈跳 + 水晶延音</p>
+            </div>
+        </div>
+
+        <div class="section-title">🚀 科幻 / 未來感</div>
+        <div class="sound-grid">
+            <div class="sound-card" onclick="play(16)">
+                <div class="num">#16</div>
+                <h3>量子躍遷</h3>
+                <p>電子掃頻 + 雙音確認 + 回聲</p>
+            </div>
+            <div class="sound-card" onclick="play(17)">
+                <div class="num">#17</div>
+                <h3>系統啟動</h3>
+                <p>電腦啟動序列音 + 確認嗶聲</p>
+            </div>
+            <div class="sound-card" onclick="play(18)">
+                <div class="num">#18</div>
+                <h3>超空間跳躍</h3>
+                <p>加速掃頻 → 爆發 → 回音</p>
+            </div>
+            <div class="sound-card" onclick="play(19)">
+                <div class="num">#19</div>
+                <h3>AI 確認</h3>
+                <p>機械和弦 + 數據處理音</p>
+            </div>
+            <div class="sound-card" onclick="play(20)">
+                <div class="num">#20</div>
+                <h3>能量充滿</h3>
+                <p>充能上升 + 飽和爆發</p>
+            </div>
+        </div>
+
+        <div class="section-title">🎬 電影 / 情感類</div>
+        <div class="sound-grid">
+            <div class="sound-card" onclick="play(21)">
+                <div class="num">#21</div>
+                <h3>日出黎明</h3>
+                <p>溫暖弦樂漸強 + 光芒閃爍</p>
+            </div>
+            <div class="sound-card" onclick="play(22)">
+                <div class="num">#22</div>
+                <h3>完美一刻</h3>
+                <p>鋼琴和弦 + 柔和弦樂</p>
+            </div>
+            <div class="sound-card" onclick="play(23)">
+                <div class="num">#23</div>
+                <h3>任務完成</h3>
+                <p>軍事風三短一長確認音</p>
+            </div>
+            <div class="sound-card" onclick="play(24)">
+                <div class="num">#24</div>
+                <h3>超級英雄</h3>
+                <p>低音衝擊 + 英雄主題和弦</p>
+            </div>
+            <div class="sound-card" onclick="play(25)">
+                <div class="num">#25</div>
+                <h3>銀河交響</h3>
+                <p>寬廣的太空弦樂 + 閃爍星光</p>
+            </div>
+        </div>
+
+        <p class="hint">💡 共 25 種方案 (含前 5 種)，點擊試聽後告訴我「方案 X」</p>
+    </div>
+
+    <script>
+        let ctx = null;
+        function C() {
+            if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
+            if (ctx.state === 'suspended') ctx.resume();
+            return ctx;
+        }
+        function osc(c, type, freq, t, dur, vol, master) {
+            const o = c.createOscillator();
+            const g = c.createGain();
+            o.type = type;
+            o.frequency.setValueAtTime(freq, t);
+            g.gain.setValueAtTime(vol, t);
+            g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+            o.connect(g); g.connect(master);
+            o.start(t); o.stop(t + dur + 0.01);
+            return o;
+        }
+        function ramp(o, freq2, t, dur) {
+            o.frequency.exponentialRampToValueAtTime(freq2, t + dur);
+        }
+
+        const sounds = {};
+
+        // #6 史詩號角 - Epic Brass Fanfare
+        sounds[6] = () => {
+            const c = C(), t = c.currentTime, m = c.createGain();
+            m.gain.value = 0.25; m.connect(c.destination);
+            // Timpani hit
+            const kick = c.createOscillator(); const kg = c.createGain();
+            kick.type = 'sine'; kick.frequency.setValueAtTime(80, t);
+            kick.frequency.exponentialRampToValueAtTime(40, t + 0.3);
+            kg.gain.setValueAtTime(0.5, t); kg.gain.exponentialRampToValueAtTime(0.001, t + 0.3);
+            kick.connect(kg); kg.connect(m); kick.start(t); kick.stop(t + 0.3);
+            // Brass chord stagger
+            [261.6, 329.6, 392, 523.25].forEach((f, i) => {
+                osc(c, 'sawtooth', f, t + 0.05 + i * 0.08, 0.8 - i * 0.1, 0.15, m);
+            });
+            // High octave shimmer
+            osc(c, 'sine', 1046.5, t + 0.4, 0.6, 0.1, m);
+        };
+
+        // #7 英雄凱旋 - Hero's Triumph
+        sounds[7] = () => {
+            const c = C(), t = c.currentTime, m = c.createGain();
+            m.gain.value = 0.22; m.connect(c.destination);
+            const melody = [392, 440, 523.25, 659.25]; // G4 A4 C5 E5
+            melody.forEach((f, i) => {
+                const o = c.createOscillator(); const g = c.createGain();
+                o.type = 'square';
+                o.frequency.setValueAtTime(f, t + i * 0.1);
+                g.gain.setValueAtTime(0.05 + i * 0.1, t + i * 0.1);
+                g.gain.exponentialRampToValueAtTime(0.001, t + i * 0.1 + 0.4);
+                o.connect(g); g.connect(m); o.start(t + i * 0.1); o.stop(t + i * 0.1 + 0.45);
+            });
+            // Final power chord
+            [523.25, 659.25, 783.99, 1046.5].forEach(f => {
+                osc(c, 'sine', f, t + 0.45, 0.7, 0.2, m);
+            });
+        };
+
+        // #8 王者登場 - King's Entrance
+        sounds[8] = () => {
+            const c = C(), t = c.currentTime, m = c.createGain();
+            m.gain.value = 0.25; m.connect(c.destination);
+            // Low boom
+            const boom = c.createOscillator(); const bg = c.createGain();
+            boom.type = 'sine'; boom.frequency.setValueAtTime(60, t);
+            boom.frequency.exponentialRampToValueAtTime(30, t + 0.5);
+            bg.gain.setValueAtTime(0.6, t); bg.gain.exponentialRampToValueAtTime(0.001, t + 0.5);
+            boom.connect(bg); bg.connect(m); boom.start(t); boom.stop(t + 0.5);
+            // Perfect 5th power chord
+            [220, 330, 440, 660].forEach(f => {
+                osc(c, 'sawtooth', f, t + 0.15, 0.8, 0.12, m);
+            });
+            // Sparkle
+            [1320, 1760, 2200].forEach((f, i) => osc(c, 'sine', f, t + 0.4 + i * 0.07, 0.3, 0.06, m));
+        };
+
+        // #9 榮耀時刻 - Moment of Glory
+        sounds[9] = () => {
+            const c = C(), t = c.currentTime, m = c.createGain();
+            m.gain.value = 0.2; m.connect(c.destination);
+            // String-like arpeggio
+            [523.25, 659.25, 783.99, 1046.5, 1318.5, 1568].forEach((f, i) => {
+                osc(c, 'triangle', f, t + i * 0.07, 0.6 - i * 0.05, 0.2, m);
+            });
+            // Sustained chord tail
+            [523.25, 783.99, 1046.5].forEach(f => {
+                const o = c.createOscillator(); const g = c.createGain();
+                o.type = 'sine'; o.frequency.setValueAtTime(f, t + 0.45);
+                g.gain.setValueAtTime(0.15, t + 0.45);
+                g.gain.linearRampToValueAtTime(0.12, t + 0.7);
+                g.gain.exponentialRampToValueAtTime(0.001, t + 1.3);
+                o.connect(g); g.connect(m); o.start(t + 0.45); o.stop(t + 1.3);
+            });
+        };
+
+        // #10 勝利衝刺 - Victory Rush
+        sounds[10] = () => {
+            const c = C(), t = c.currentTime, m = c.createGain();
+            m.gain.value = 0.22; m.connect(c.destination);
+            // Rapid ascending scale
+            [523.25, 587.33, 659.25, 698.46, 783.99, 880, 987.77, 1046.5].forEach((f, i) => {
+                osc(c, 'square', f, t + i * 0.04, 0.15, 0.15, m);
+            });
+            // Explosive chord
+            [1046.5, 1318.5, 1568, 2093].forEach(f => {
+                osc(c, 'sine', f, t + 0.35, 0.6, 0.2, m);
+            });
+            // Impact sub
+            const sub = c.createOscillator(); const sg = c.createGain();
+            sub.type = 'sine'; sub.frequency.setValueAtTime(80, t + 0.33);
+            sub.frequency.exponentialRampToValueAtTime(30, t + 0.6);
+            sg.gain.setValueAtTime(0.4, t + 0.33); sg.gain.exponentialRampToValueAtTime(0.001, t + 0.6);
+            sub.connect(sg); sg.connect(m); sub.start(t + 0.33); sub.stop(t + 0.6);
+        };
+
+        // #11 仙境之光 - Fairy Light
+        sounds[11] = () => {
+            const c = C(), t = c.currentTime, m = c.createGain();
+            m.gain.value = 0.18; m.connect(c.destination);
+            // High cascading notes
+            [2637, 2349, 2093, 1760, 1568, 1396.9, 1318.5, 1174.7].forEach((f, i) => {
+                osc(c, 'sine', f, t + i * 0.05, 0.35, 0.12, m);
+            });
+            // Reverb-like tail
+            [1046.5, 1568, 2093].forEach(f => {
+                osc(c, 'sine', f, t + 0.45, 0.8, 0.08, m);
+            });
+        };
+
+        // #12 咒語完成 - Spell Complete
+        sounds[12] = () => {
+            const c = C(), t = c.currentTime, m = c.createGain();
+            m.gain.value = 0.2; m.connect(c.destination);
+            // Sweep up
+            const sw = c.createOscillator(); const swg = c.createGain();
+            sw.type = 'sawtooth';
+            sw.frequency.setValueAtTime(100, t);
+            sw.frequency.exponentialRampToValueAtTime(1200, t + 0.25);
+            swg.gain.setValueAtTime(0.15, t); swg.gain.exponentialRampToValueAtTime(0.001, t + 0.3);
+            sw.connect(swg); swg.connect(m); sw.start(t); sw.stop(t + 0.3);
+            // Bloom chord
+            [659.25, 783.99, 987.77, 1318.5].forEach(f => {
+                osc(c, 'sine', f, t + 0.2, 0.7, 0.18, m);
+            });
+            // Twinkle
+            [2093, 2637, 3136].forEach((f, i) => osc(c, 'sine', f, t + 0.5 + i * 0.1, 0.2, 0.05, m));
+        };
+
+        // #13 星光爆發 - Starburst
+        sounds[13] = () => {
+            const c = C(), t = c.currentTime, m = c.createGain();
+            m.gain.value = 0.18; m.connect(c.destination);
+            // Multi-layer sparkle
+            for (let i = 0; i < 8; i++) {
+                const f = 1500 + Math.random() * 2500;
+                const delay = Math.random() * 0.3;
+                osc(c, 'sine', f, t + delay, 0.2 + Math.random() * 0.15, 0.1, m);
+            }
+            // Rising tail
+            const r = c.createOscillator(); const rg = c.createGain();
+            r.type = 'sine'; r.frequency.setValueAtTime(800, t + 0.15);
+            r.frequency.exponentialRampToValueAtTime(3000, t + 0.6);
+            rg.gain.setValueAtTime(0.08, t + 0.15); rg.gain.exponentialRampToValueAtTime(0.001, t + 0.6);
+            r.connect(rg); rg.connect(m); r.start(t + 0.15); r.stop(t + 0.6);
+        };
+
+        // #14 神聖祝福 - Divine Blessing
+        sounds[14] = () => {
+            const c = C(), t = c.currentTime, m = c.createGain();
+            m.gain.value = 0.2; m.connect(c.destination);
+            // Organ-like sustained chord
+            [261.6, 329.6, 392, 523.25].forEach(f => {
+                // Fundamental
+                const o = c.createOscillator(); const g = c.createGain();
+                o.type = 'sine'; o.frequency.setValueAtTime(f, t);
+                g.gain.setValueAtTime(0, t);
+                g.gain.linearRampToValueAtTime(0.15, t + 0.3);
+                g.gain.linearRampToValueAtTime(0.12, t + 0.8);
+                g.gain.exponentialRampToValueAtTime(0.001, t + 1.5);
+                o.connect(g); g.connect(m); o.start(t); o.stop(t + 1.5);
+                // 2nd harmonic
+                osc(c, 'sine', f * 2, t + 0.1, 1.2, 0.04, m);
+            });
+        };
+
+        // #15 精靈之歌 - Pixie Song
+        sounds[15] = () => {
+            const c = C(), t = c.currentTime, m = c.createGain();
+            m.gain.value = 0.18; m.connect(c.destination);
+            // Bouncy high notes
+            [2093, 1568, 2093, 2637, 2093, 2637, 3136].forEach((f, i) => {
+                osc(c, 'sine', f, t + i * 0.06, 0.12, 0.15, m);
+            });
+            // Crystal sustain
+            [2093, 2637].forEach(f => {
+                const o = c.createOscillator(); const g = c.createGain();
+                o.type = 'sine'; o.frequency.setValueAtTime(f, t + 0.45);
+                g.gain.setValueAtTime(0.1, t + 0.45);
+                g.gain.exponentialRampToValueAtTime(0.001, t + 1.0);
+                o.connect(g); g.connect(m); o.start(t + 0.45); o.stop(t + 1.0);
+            });
+        };
+
+        // #16 量子躍遷 - Quantum Leap
+        sounds[16] = () => {
+            const c = C(), t = c.currentTime, m = c.createGain();
+            m.gain.value = 0.2; m.connect(c.destination);
+            // Electronic sweep
+            const sw = c.createOscillator(); const swg = c.createGain();
+            sw.type = 'sawtooth';
+            sw.frequency.setValueAtTime(150, t);
+            sw.frequency.exponentialRampToValueAtTime(2000, t + 0.2);
+            swg.gain.setValueAtTime(0.12, t); swg.gain.exponentialRampToValueAtTime(0.001, t + 0.25);
+            sw.connect(swg); swg.connect(m); sw.start(t); sw.stop(t + 0.25);
+            // Dual confirm tones
+            [880, 1174.7].forEach(f => osc(c, 'sine', f, t + 0.18, 0.4, 0.2, m));
+            // Echo
+            [880, 1174.7].forEach(f => osc(c, 'sine', f, t + 0.45, 0.35, 0.08, m));
+        };
+
+        // #17 系統啟動 - System Boot
+        sounds[17] = () => {
+            const c = C(), t = c.currentTime, m = c.createGain();
+            m.gain.value = 0.2; m.connect(c.destination);
+            // Boot sequence beeps
+            [440, 554.37, 659.25, 880].forEach((f, i) => {
+                osc(c, 'square', f, t + i * 0.1, 0.08, 0.1, m);
+            });
+            // Power-up sweep
+            const pw = c.createOscillator(); const pg = c.createGain();
+            pw.type = 'sine'; pw.frequency.setValueAtTime(300, t + 0.4);
+            pw.frequency.exponentialRampToValueAtTime(1200, t + 0.65);
+            pg.gain.setValueAtTime(0.15, t + 0.4); pg.gain.exponentialRampToValueAtTime(0.001, t + 0.7);
+            pw.connect(pg); pg.connect(m); pw.start(t + 0.4); pw.stop(t + 0.7);
+            // Confirmation
+            osc(c, 'sine', 1046.5, t + 0.65, 0.3, 0.2, m);
+        };
+
+        // #18 超空間跳躍 - Hyperspace Jump
+        sounds[18] = () => {
+            const c = C(), t = c.currentTime, m = c.createGain();
+            m.gain.value = 0.22; m.connect(c.destination);
+            // Acceleration
+            const acc = c.createOscillator(); const ag = c.createGain();
+            acc.type = 'sawtooth';
+            acc.frequency.setValueAtTime(80, t);
+            acc.frequency.exponentialRampToValueAtTime(4000, t + 0.3);
+            ag.gain.setValueAtTime(0.2, t);
+            ag.gain.exponentialRampToValueAtTime(0.001, t + 0.35);
+            acc.connect(ag); ag.connect(m); acc.start(t); acc.stop(t + 0.35);
+            // Burst
+            const bs = c.sampleRate * 0.15;
+            const buf = c.createBuffer(1, bs, c.sampleRate);
+            const d = buf.getChannelData(0);
+            for (let i = 0; i < bs; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / bs, 2);
+            const n = c.createBufferSource(); n.buffer = buf;
+            const ng = c.createGain(); ng.gain.value = 0.3;
+            n.connect(ng); ng.connect(m); n.start(t + 0.28);
+            // Echo chord
+            [659.25, 987.77, 1318.5].forEach(f => osc(c, 'sine', f, t + 0.35, 0.6, 0.12, m));
+        };
+
+        // #19 AI 確認 - AI Confirm
+        sounds[19] = () => {
+            const c = C(), t = c.currentTime, m = c.createGain();
+            m.gain.value = 0.2; m.connect(c.destination);
+            // Digital processing
+            for (let i = 0; i < 4; i++) {
+                osc(c, 'square', 800 + i * 200, t + i * 0.03, 0.05, 0.08, m);
+            }
+            // Mechanical chord
+            [440, 554.37, 659.25].forEach(f => {
+                const o = c.createOscillator(); const g = c.createGain();
+                o.type = 'triangle'; o.frequency.setValueAtTime(f, t + 0.12);
+                g.gain.setValueAtTime(0.15, t + 0.12);
+                g.gain.exponentialRampToValueAtTime(0.001, t + 0.5);
+                o.connect(g); g.connect(m); o.start(t + 0.12); o.stop(t + 0.5);
+            });
+            // Confirm ping
+            osc(c, 'sine', 1318.5, t + 0.35, 0.25, 0.15, m);
+        };
+
+        // #20 能量充滿 - Energy Full
+        sounds[20] = () => {
+            const c = C(), t = c.currentTime, m = c.createGain();
+            m.gain.value = 0.22; m.connect(c.destination);
+            // Charging up
+            const ch = c.createOscillator(); const cg = c.createGain();
+            ch.type = 'sine';
+            ch.frequency.setValueAtTime(200, t);
+            ch.frequency.exponentialRampToValueAtTime(1500, t + 0.4);
+            cg.gain.setValueAtTime(0.05, t);
+            cg.gain.linearRampToValueAtTime(0.25, t + 0.35);
+            cg.gain.exponentialRampToValueAtTime(0.001, t + 0.45);
+            ch.connect(cg); cg.connect(m); ch.start(t); ch.stop(t + 0.45);
+            // Saturation burst
+            [523.25, 659.25, 783.99, 1046.5, 1318.5].forEach(f => {
+                osc(c, 'sine', f, t + 0.38, 0.5, 0.15, m);
+            });
+            // Sub impact
+            const sub = c.createOscillator(); const sg = c.createGain();
+            sub.type = 'sine'; sub.frequency.setValueAtTime(60, t + 0.37);
+            sub.frequency.exponentialRampToValueAtTime(25, t + 0.6);
+            sg.gain.setValueAtTime(0.4, t + 0.37); sg.gain.exponentialRampToValueAtTime(0.001, t + 0.6);
+            sub.connect(sg); sg.connect(m); sub.start(t + 0.37); sub.stop(t + 0.6);
+        };
+
+        // #21 日出黎明 - Sunrise Dawn
+        sounds[21] = () => {
+            const c = C(), t = c.currentTime, m = c.createGain();
+            m.gain.value = 0.18; m.connect(c.destination);
+            // Warm string swell
+            [261.6, 329.6, 392, 523.25].forEach(f => {
+                const o = c.createOscillator(); const g = c.createGain();
+                o.type = 'triangle'; o.frequency.setValueAtTime(f, t);
+                g.gain.setValueAtTime(0, t);
+                g.gain.linearRampToValueAtTime(0.12, t + 0.5);
+                g.gain.exponentialRampToValueAtTime(0.001, t + 1.2);
+                o.connect(g); g.connect(m); o.start(t); o.stop(t + 1.2);
+            });
+            // Light twinkle
+            [1568, 2093, 2637].forEach((f, i) => osc(c, 'sine', f, t + 0.6 + i * 0.12, 0.25, 0.06, m));
+        };
+
+        // #22 完美一刻 - Perfect Moment
+        sounds[22] = () => {
+            const c = C(), t = c.currentTime, m = c.createGain();
+            m.gain.value = 0.2; m.connect(c.destination);
+            // Piano-like notes (sine + quick decay)
+            [523.25, 659.25, 783.99].forEach((f, i) => {
+                const o = c.createOscillator(); const g = c.createGain();
+                o.type = 'sine'; o.frequency.setValueAtTime(f, t + i * 0.15);
+                g.gain.setValueAtTime(0.3, t + i * 0.15);
+                g.gain.exponentialRampToValueAtTime(0.01, t + i * 0.15 + 0.5);
+                o.connect(g); g.connect(m); o.start(t + i * 0.15); o.stop(t + i * 0.15 + 0.55);
+                // Harmonic
+                osc(c, 'sine', f * 2, t + i * 0.15, 0.3, 0.05, m);
+            });
+            // Warm pad
+            [523.25, 783.99].forEach(f => {
+                const o = c.createOscillator(); const g = c.createGain();
+                o.type = 'triangle'; o.frequency.setValueAtTime(f, t + 0.4);
+                g.gain.setValueAtTime(0.08, t + 0.4);
+                g.gain.exponentialRampToValueAtTime(0.001, t + 1.1);
+                o.connect(g); g.connect(m); o.start(t + 0.4); o.stop(t + 1.1);
+            });
+        };
+
+        // #23 任務完成 - Mission Complete
+        sounds[23] = () => {
+            const c = C(), t = c.currentTime, m = c.createGain();
+            m.gain.value = 0.22; m.connect(c.destination);
+            // Military-style: 3 short + 1 long
+            [587.33, 587.33, 587.33].forEach((f, i) => {
+                osc(c, 'square', f, t + i * 0.1, 0.06, 0.15, m);
+            });
+            // Long final note (5th up)
+            const fin = c.createOscillator(); const fg = c.createGain();
+            fin.type = 'square'; fin.frequency.setValueAtTime(880, t + 0.35);
+            fg.gain.setValueAtTime(0.2, t + 0.35);
+            fg.gain.linearRampToValueAtTime(0.15, t + 0.5);
+            fg.gain.exponentialRampToValueAtTime(0.001, t + 0.9);
+            fin.connect(fg); fg.connect(m); fin.start(t + 0.35); fin.stop(t + 0.9);
+            // Sub reinforcement
+            osc(c, 'sine', 220, t + 0.35, 0.4, 0.15, m);
+        };
+
+        // #24 超級英雄 - Superhero
+        sounds[24] = () => {
+            const c = C(), t = c.currentTime, m = c.createGain();
+            m.gain.value = 0.25; m.connect(c.destination);
+            // Low impact
+            const imp = c.createOscillator(); const ig = c.createGain();
+            imp.type = 'sine'; imp.frequency.setValueAtTime(50, t);
+            imp.frequency.exponentialRampToValueAtTime(20, t + 0.4);
+            ig.gain.setValueAtTime(0.5, t); ig.gain.exponentialRampToValueAtTime(0.001, t + 0.4);
+            imp.connect(ig); ig.connect(m); imp.start(t); imp.stop(t + 0.4);
+            // Hero theme: C-E-G ascending power
+            const hero = [261.6, 329.6, 392];
+            hero.forEach((f, i) => {
+                const o = c.createOscillator(); const g = c.createGain();
+                o.type = 'sawtooth'; o.frequency.setValueAtTime(f, t + 0.1 + i * 0.12);
+                g.gain.setValueAtTime(0.12, t + 0.1 + i * 0.12);
+                g.gain.exponentialRampToValueAtTime(0.001, t + 0.1 + i * 0.12 + 0.5);
+                o.connect(g); g.connect(m); o.start(t + 0.1 + i * 0.12); o.stop(t + 0.1 + i * 0.12 + 0.55);
+            });
+            // Octave up finale
+            [523.25, 659.25, 783.99, 1046.5].forEach(f => osc(c, 'sine', f, t + 0.5, 0.6, 0.15, m));
+        };
+
+        // #25 銀河交響 - Galactic Symphony
+        sounds[25] = () => {
+            const c = C(), t = c.currentTime, m = c.createGain();
+            m.gain.value = 0.18; m.connect(c.destination);
+            // Wide string pad (slow attack)
+            [220, 277.18, 329.6, 440].forEach(f => {
+                const o = c.createOscillator(); const g = c.createGain();
+                o.type = 'triangle'; o.frequency.setValueAtTime(f, t);
+                g.gain.setValueAtTime(0, t);
+                g.gain.linearRampToValueAtTime(0.1, t + 0.4);
+                g.gain.exponentialRampToValueAtTime(0.001, t + 1.5);
+                o.connect(g); g.connect(m); o.start(t); o.stop(t + 1.5);
+            });
+            // Starlight sparkles
+            for (let i = 0; i < 6; i++) {
+                const f = 2000 + Math.random() * 2000;
+                osc(c, 'sine', f, t + 0.3 + i * 0.15, 0.2, 0.04, m);
+            }
+            // High sustained note
+            osc(c, 'sine', 1760, t + 0.5, 0.9, 0.06, m);
+        };
+
+        function play(n) { if (sounds[n]) sounds[n](); }
+    </script>
+</body>
+
+</html>

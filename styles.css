@@ -133,6 +133,43 @@ html {
     margin-left: 5px;
 }
 
+/* Header Buttons Container */
+.header-buttons {
+    display: inline-flex;
+    gap: 8px;
+    margin-left: 12px;
+    vertical-align: middle;
+}
+
+.btn-icon {
+    background: rgba(187, 134, 252, 0.15);
+    border: 1px solid rgba(187, 134, 252, 0.3);
+    color: var(--accent-color);
+    padding: 6px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+}
+
+.btn-icon:hover {
+    background: rgba(187, 134, 252, 0.25);
+    border-color: var(--accent-color);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(187, 134, 252, 0.3);
+}
+
+.btn-icon.muted {
+    background: rgba(255, 100, 100, 0.15);
+    border-color: rgba(255, 100, 100, 0.3);
+    color: #ff6464;
+}
+
+.btn-icon.muted:hover {
+    background: rgba(255, 100, 100, 0.25);
+    border-color: #ff6464;
+}
+
 /* Main Layout */
 .main-content {
     display: grid;
@@ -962,4 +999,300 @@ textarea {
 /* v4.4.6 Reduce Spacing */
 .collapsible-header {
     padding: 0.25rem 0.5rem !important;
+}
+/* ========================================
+   Settings Modal & Site Picker (v4.7)
+   ======================================== */
+
+/* Modal Overlay */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(8px);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-overlay.active {
+    display: flex;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Settings Panel - Game Style */
+.settings-panel {
+    background: linear-gradient(135deg, rgba(20, 20, 40, 0.95), rgba(40, 20, 60, 0.95));
+    backdrop-filter: blur(20px);
+    border: 2px solid transparent;
+    border-radius: 20px;
+    width: 90%;
+    max-width: 600px;
+    max-height: 80vh;
+    overflow: hidden;
+    position: relative;
+    animation: slideIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    box-shadow: 
+        0 0 40px rgba(187, 134, 252, 0.3),
+        0 0 80px rgba(3, 218, 198, 0.2),
+        inset 0 0 60px rgba(187, 134, 252, 0.1);
+    clip-path: polygon(
+        0% 8%, 8% 0%, 92% 0%, 100% 8%,
+        100% 92%, 92% 100%, 8% 100%, 0% 92%
+    );
+}
+
+.settings-panel::before {
+    content: '''';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(45deg, #bb86fc, #03dac6, #bb86fc);
+    border-radius: 20px;
+    z-index: -1;
+    animation: borderGlow 3s linear infinite;
+    clip-path: polygon(
+        0% 8%, 8% 0%, 92% 0%, 100% 8%,
+        100% 92%, 92% 100%, 8% 100%, 0% 92%
+    );
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: scale(0.8) translateY(-50px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+@keyframes borderGlow {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
+}
+
+.settings-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid rgba(187, 134, 252, 0.3);
+    background: rgba(187, 134, 252, 0.05);
+}
+
+.settings-header h2 {
+    margin: 0;
+    font-size: 1.4rem;
+    color: var(--accent-color);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.btn-close {
+    background: rgba(255, 100, 100, 0.2);
+    border: 1px solid rgba(255, 100, 100, 0.4);
+    color: #ff6464;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 1.2rem;
+}
+
+.btn-close:hover {
+    background: rgba(255, 100, 100, 0.4);
+    transform: rotate(90deg);
+}
+
+.settings-body {
+    padding: 2rem;
+    max-height: 50vh;
+    overflow-y: auto;
+}
+
+.settings-hint {
+    color: #aabbcc;
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+    padding: 12px;
+    background: rgba(3, 218, 198, 0.1);
+    border-left: 3px solid var(--secondary-color);
+    border-radius: 6px;
+}
+
+#ai-sites-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 1rem;
+}
+
+.site-row {
+    display: grid;
+    grid-template-columns: 1fr 2fr auto;
+    gap: 10px;
+    align-items: center;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(187, 134, 252, 0.2);
+    border-radius: 10px;
+    transition: all 0.3s ease;
+}
+
+.site-row:hover {
+    background: rgba(187, 134, 252, 0.08);
+    border-color: var(--accent-color);
+}
+
+.site-row input {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(187, 134, 252, 0.3);
+    color: #e0e0ff;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+}
+
+.site-row input:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    box-shadow: 0 0 10px rgba(187, 134, 252, 0.3);
+}
+
+.site-row input::placeholder {
+    color: #666688;
+}
+
+.btn-delete-site {
+    background: rgba(255, 100, 100, 0.15);
+    border: 1px solid rgba(255, 100, 100, 0.3);
+    color: #ff6464;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-delete-site:hover {
+    background: rgba(255, 100, 100, 0.3);
+    transform: scale(1.05);
+}
+
+.btn-add-site {
+    width: 100%;
+    background: rgba(3, 218, 198, 0.15);
+    border: 1px dashed rgba(3, 218, 198, 0.4);
+    color: var(--secondary-color);
+    padding: 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.95rem;
+}
+
+.btn-add-site:hover {
+    background: rgba(3, 218, 198, 0.25);
+    border-style: solid;
+}
+
+.settings-footer {
+    padding: 1.5rem 2rem;
+    border-top: 1px solid rgba(187, 134, 252, 0.3);
+    display: flex;
+    justify-content: flex-end;
+}
+
+.btn-save {
+    background: linear-gradient(135deg, #bb86fc, #9966cc);
+    border: none;
+    color: white;
+    padding: 12px 32px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(187, 134, 252, 0.4);
+}
+
+.btn-save:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(187, 134, 252, 0.6);
+}
+
+/* Site Picker Popup */
+.site-picker-popup {
+    display: none;
+    position: fixed;
+    background: linear-gradient(135deg, rgba(20, 20, 40, 0.98), rgba(40, 20, 60, 0.98));
+    backdrop-filter: blur(16px);
+    border: 2px solid rgba(187, 134, 252, 0.5);
+    border-radius: 16px;
+    padding: 16px;
+    z-index: 10000;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    min-width: 250px;
+    animation: popIn 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.site-picker-popup.active {
+    display: block;
+}
+
+@keyframes popIn {
+    from {
+        opacity: 0;
+        transform: scale(0.5);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.site-picker-header {
+    font-size: 0.85rem;
+    color: #aabbcc;
+    margin-bottom: 12px;
+    text-align: center;
+    font-weight: 600;
+}
+
+#site-picker-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.site-picker-btn {
+    background: rgba(187, 134, 252, 0.15);
+    border: 1px solid rgba(187, 134, 252, 0.3);
+    color: var(--accent-color);
+    padding: 10px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: left;
+    font-size: 0.9rem;
+}
+
+.site-picker-btn:hover {
+    background: rgba(187, 134, 252, 0.3);
+    border-color: var(--accent-color);
+    transform: translateX(4px);
 }
