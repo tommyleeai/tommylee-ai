@@ -836,6 +836,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 } else {
                     this.masterGain.gain.setValueAtTime(0.15, this.ctx.currentTime);
                 }
+                if (this.ctx.state === 'suspended') {
+                    this.ctx.resume();
+                }
             }
             return this.isMuted;
         }
