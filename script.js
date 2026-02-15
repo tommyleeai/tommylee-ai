@@ -887,36 +887,42 @@ document.addEventListener('DOMContentLoaded', () => {
             osc.stop(t + 0.02);
         }
 
-        // 3. Success (Copy): Ascending chime
+        // 3. Success (Copy): Divine Blessing — Organ-like sustained chord
         playSuccess() {
             if (this.isMuted || !this.initialized) this.init();
             if (this.isMuted) return;
 
             const t = this.ctx.currentTime;
+            const mg = this.masterGain;
 
-            // Tone 1
-            const osc1 = this.ctx.createOscillator();
-            const gain1 = this.ctx.createGain();
-            osc1.type = 'sine';
-            osc1.frequency.setValueAtTime(523.25, t); // C5
-            gain1.gain.setValueAtTime(0.3, t);
-            gain1.gain.exponentialRampToValueAtTime(0.01, t + 0.4);
-            osc1.connect(gain1);
-            gain1.connect(this.masterGain);
-            osc1.start(t);
-            osc1.stop(t + 0.4);
+            // Organ-like sustained chord (C major: C4, E4, G4, C5)
+            [261.6, 329.6, 392, 523.25].forEach(f => {
+                // Fundamental tone with slow attack
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(f, t);
+                gain.gain.setValueAtTime(0, t);
+                gain.gain.linearRampToValueAtTime(0.15, t + 0.3);
+                gain.gain.linearRampToValueAtTime(0.12, t + 0.8);
+                gain.gain.exponentialRampToValueAtTime(0.001, t + 1.5);
+                osc.connect(gain);
+                gain.connect(mg);
+                osc.start(t);
+                osc.stop(t + 1.5);
 
-            // Tone 2
-            const osc2 = this.ctx.createOscillator();
-            const gain2 = this.ctx.createGain();
-            osc2.type = 'sine';
-            osc2.frequency.setValueAtTime(783.99, t + 0.1); // G5
-            gain2.gain.setValueAtTime(0.3, t + 0.1);
-            gain2.gain.exponentialRampToValueAtTime(0.01, t + 0.5);
-            osc2.connect(gain2);
-            gain2.connect(this.masterGain);
-            osc2.start(t + 0.1);
-            osc2.stop(t + 0.5);
+                // 2nd harmonic (octave up, subtle)
+                const osc2 = this.ctx.createOscillator();
+                const gain2 = this.ctx.createGain();
+                osc2.type = 'sine';
+                osc2.frequency.setValueAtTime(f * 2, t + 0.1);
+                gain2.gain.setValueAtTime(0.04, t + 0.1);
+                gain2.gain.exponentialRampToValueAtTime(0.001, t + 1.3);
+                osc2.connect(gain2);
+                gain2.connect(mg);
+                osc2.start(t + 0.1);
+                osc2.stop(t + 1.3);
+            });
         }
 
         // 4. Toggle/Expand: Whoosh filter sweep
