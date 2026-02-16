@@ -255,6 +255,15 @@ html {
     /* Independent scrolling */
     display: flex;
     flex-direction: column;
+    scrollbar-width: none;
+    /* Firefox */
+    -ms-overflow-style: none;
+    /* IE/Edge */
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.output-section::-webkit-scrollbar {
+    display: none;
 }
 
 /* Output Section Internal Wrapper */
