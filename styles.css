@@ -603,6 +603,49 @@ textarea {
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
 }
 
+input[type=range]::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+    box-shadow: 0 0 8px rgba(93, 64, 55, 0.4);
+}
+
+/* Fix: Ensure Settings Modal Supports Scrolling (Volume Control Visibility) */
+.settings-panel {
+    display: flex;
+    flex-direction: column;
+    max-height: 85vh;
+    /* Limit height to 85% of viewport */
+}
+
+.settings-body {
+    flex: 1;
+    /* Allow body to grow/shrink */
+    overflow-y: auto;
+    /* Enable vertical scroll */
+    padding-right: 8px;
+    /* Space for scrollbar */
+    min-height: 0;
+    /* Important for flex child scrolling */
+}
+
+/* Custom Scrollbar for Settings */
+.settings-body::-webkit-scrollbar {
+    width: 8px;
+}
+
+.settings-body::-webkit-scrollbar-track {
+    background: rgba(141, 110, 99, 0.1);
+    border-radius: 4px;
+}
+
+.settings-body::-webkit-scrollbar-thumb {
+    background: #8d6e63;
+    border-radius: 4px;
+}
+
+.settings-body::-webkit-scrollbar-thumb:hover {
+    background: #6d4c41;
+}
+
 .btn-primary {
     background: linear-gradient(135deg, var(--accent-color), #7c4dff);
     color: white;
