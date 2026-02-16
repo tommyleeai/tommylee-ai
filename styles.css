@@ -213,7 +213,7 @@ html {
 /* Main Layout */
 .main-content {
     display: grid;
-    grid-template-columns: 2fr 1fr;
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
     grid-template-rows: minmax(0, 1fr);
     /* CRITICAL: Constrain row height */
     /* More space for controls */
