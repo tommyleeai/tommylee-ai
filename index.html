@@ -4,10 +4,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Prompt Generator v4.92</title>
-    <link rel="stylesheet" href="styles.css?v=4.92">
+    <title>AI Prompt Generator v5.0</title>
+    <link rel="stylesheet" href="styles.css?v=5.06">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 
 <body>
@@ -25,7 +25,7 @@
                 <h1>
                     <img id="app-logo" src="assets/logo.png" alt="AI Studio Logo">
                     <i class="fa-solid fa-wand-magic-sparkles"></i> AI Prompt Generator <span
-                        class="version">v4.92</span>
+                        class="version">v5.0</span>
                     <div class="header-buttons">
                         <button id="btn-settings" class="btn-icon" title="Settings">
                             <i class="fa-solid fa-gear"></i>
@@ -63,23 +63,29 @@
 
             <hr class="divider">
 
-            <!-- 4. Dynamic Categories -->
-            <div id="categories-container">
-                <!-- Categories will be injected here by JS -->
-            </div>
-
-            <hr class="divider">
-
+            <!-- 4. Negative Prompt (moved above tabs) -->
             <div class="input-group">
                 <label for="negative-prompt">負面提示詞 (Negative Prompt)</label>
                 <textarea id="negative-prompt" class="small-textarea"
                     placeholder="ugly, blurry, low quality, deformed..."></textarea>
             </div>
 
-            <div class="actions">
-                <button id="btn-reset" class="btn btn-secondary"><i class="fa-solid fa-rotate-left"></i> 重置
-                    (Reset)</button>
+            <!-- 5. Tab Navigation + Reset -->
+            <div class="tab-toolbar">
+                <div id="tab-bar" class="tab-bar">
+                    <!-- Tabs injected by JS -->
+                </div>
+                <button id="btn-reset" class="btn btn-secondary btn-sm btn-reset-inline"><i
+                        class="fa-solid fa-rotate-left"></i> 重置</button>
             </div>
+
+            <!-- 6. Tab Content (scrollable) -->
+            <div id="tab-content" class="tab-content">
+                <!-- Sections injected by JS -->
+            </div>
+
+            <!-- Legacy (hidden) -->
+            <div id="categories-container" style="display:none;"></div>
         </section>
 
         <!-- Right Column: Output -->
@@ -227,7 +233,7 @@
         <div id="site-picker-list"></div>
     </div>
 
-    <script src="script.js?v=4.92"></script>
+    <script src="script.js?v=5.01"></script>
 </body>
 
 </html>
