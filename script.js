@@ -34,28 +34,29 @@
     ];
 
     const JOBS = [
-        { label: '學生', en: 'Student', value: 'student, school uniform' },
-        { label: '騎士', en: 'Knight', value: 'knight, armor, sword' },
-        { label: '魔法師', en: 'Mage', value: 'mage, wizard, robe, staff' },
-        { label: '戰士', en: 'Warrior', value: 'warrior, fighting stance' },
-        { label: '弓箭手', en: 'Archer', value: 'archer, holding bow' },
-        { label: '牧師', en: 'Cleric', value: 'cleric, priest, healer' },
-        { label: '盜賊', en: 'Rogue', value: 'thief, rogue, dagger' },
+        // Top otaku favorites
         { label: '女僕', en: 'Maid', value: 'maid, maid headdress' },
-        { label: '執事', en: 'Butler', value: 'butler, suit' },
+        { label: '學生', en: 'Student', value: 'student, school uniform' },
         { label: '偶像', en: 'Idol', value: 'idol, stage outfit, microphone' },
+        { label: '巫女', en: 'Shrine Maiden', value: 'shrine maiden, miko' },
         { label: '護士', en: 'Nurse', value: 'nurse, hospital' },
-        { label: '警察', en: 'Police', value: 'police officer, uniform' },
-        { label: '軍人', en: 'Soldier', value: 'soldier, military' },
+        { label: '魔法師', en: 'Mage', value: 'mage, wizard, robe, staff' },
         { label: 'OL', en: 'Office Lady', value: 'office lady, business suit' },
         { label: '公主', en: 'Princess', value: 'princess, tiara, dress' },
+        { label: '騎士', en: 'Knight', value: 'knight, armor, sword' },
+        { label: '修女', en: 'Nun', value: 'nun, habit' },
         { label: '女王', en: 'Queen', value: 'queen, crown, royalty' },
+        { label: '忍者', en: 'Ninja', value: 'ninja, shinobi' },
+        { label: '戰士', en: 'Warrior', value: 'warrior, fighting stance' },
+        { label: '執事', en: 'Butler', value: 'butler, suit' },
+        { label: '弓箭手', en: 'Archer', value: 'archer, holding bow' },
         { label: '魔王', en: 'Demon Lord', value: 'demon lord, dark power' },
         { label: '勇者', en: 'Hero', value: 'hero, legendary sword' },
-        { label: '巫女', en: 'Shrine Maiden', value: 'shrine maiden, miko' },
-        { label: '忍者', en: 'Ninja', value: 'ninja, shinobi' },
-        { label: '修女', en: 'Nun', value: 'nun, habit' },
+        { label: '盜賊', en: 'Rogue', value: 'thief, rogue, dagger' },
         { label: '殺手', en: 'Assassin', value: 'assassin, dark clothes' },
+        { label: '牧師', en: 'Cleric', value: 'cleric, priest, healer' },
+        { label: '警察', en: 'Police', value: 'police officer, uniform' },
+        { label: '軍人', en: 'Soldier', value: 'soldier, military' },
         { label: '海盜', en: 'Pirate', value: 'pirate, eyepatch' },
         { label: '廚師', en: 'Chef', value: 'chef, apron' },
         { label: '運動員', en: 'Athlete', value: 'athlete, sportswear' },
@@ -63,7 +64,28 @@
         { label: '太空人', en: 'Astronaut', value: 'astronaut, spacesuit' },
         { label: '賽車手', en: 'Racer', value: 'racer, racing suit' },
         { label: '音樂家', en: 'Musician', value: 'musician, instrument' },
-        { label: '畫家', en: 'Painter', value: 'painter, beret, palette' }
+        { label: '畫家', en: 'Painter', value: 'painter, beret, palette' },
+        // New 20 otaku-favorite additions
+        { label: '魔女', en: 'Witch', value: 'witch, hat, broom, magic' },
+        { label: 'Coser', en: 'Cosplayer', value: 'cosplayer, costume' },
+        { label: '啦啦隊', en: 'Cheerleader', value: 'cheerleader, pom poms, uniform' },
+        { label: '賞金獵人', en: 'Bounty Hunter', value: 'bounty hunter, weapons' },
+        { label: '吟遊詩人', en: 'Bard', value: 'bard, lute, traveling clothes' },
+        { label: '鍊金術師', en: 'Alchemist', value: 'alchemist, potions, flask' },
+        { label: '舞者', en: 'Dancer', value: 'dancer, elegant pose' },
+        { label: '馴獸師', en: 'Beast Tamer', value: 'beast tamer, whip' },
+        { label: '機械師', en: 'Mechanic', value: 'mechanic, wrench, goggles' },
+        { label: '空姐', en: 'Flight Attendant', value: 'flight attendant, uniform' },
+        { label: '模特兒', en: 'Model', value: 'model, fashion, runway' },
+        { label: '花魁', en: 'Oiran', value: 'oiran, ornate kimono, hair ornaments' },
+        { label: '劍士', en: 'Swordsman', value: 'swordsman, katana, samurai' },
+        { label: '歌姬', en: 'Songstress', value: 'songstress, singing, elegant dress' },
+        { label: '傭兵', en: 'Mercenary', value: 'mercenary, battle-worn armor' },
+        { label: '調酒師', en: 'Bartender', value: 'bartender, cocktail shaker, vest' },
+        { label: '教師', en: 'Teacher', value: 'teacher, glasses, classroom' },
+        { label: '圖書館員', en: 'Librarian', value: 'librarian, glasses, books' },
+        { label: '占卜師', en: 'Fortune Teller', value: 'fortune teller, crystal ball, mysterious' },
+        { label: '獵人', en: 'Hunter', value: 'hunter, crossbow, camouflage' }
     ];
 
     const HAIRSTYLES_FEMALE = [
@@ -481,12 +503,88 @@
         { label: '拍立得', en: 'Polaroid', value: 'polaroid' }
     ];
 
+    // Body types — Female
+    const BODY_TYPES_FEMALE = [
+        { label: '巨乳', en: 'Large Breasts', value: 'large breasts' },
+        { label: '貧乳', en: 'Flat Chest', value: 'flat chest' },
+        { label: '沙漏型', en: 'Hourglass', value: 'hourglass figure' },
+        { label: '曲線', en: 'Curvy', value: 'curvy body' },
+        { label: '豐滿', en: 'Voluptuous', value: 'voluptuous body' },
+        { label: '嬌小', en: 'Petite', value: 'petite body' },
+        { label: '苗條', en: 'Slim', value: 'slim body' },
+        { label: '纖細', en: 'Slender', value: 'slender body' },
+        { label: '蘿莉體型', en: 'Loli', value: 'loli body, small body' },
+        { label: '少女體型', en: 'Young Girl', value: 'young girl body' },
+        { label: '成熟體型', en: 'Mature', value: 'mature body' },
+        { label: '窄腰', en: 'Narrow Waist', value: 'narrow waist' },
+        { label: '長腿', en: 'Long Legs', value: 'long legs' },
+        { label: '梨形', en: 'Pear-shaped', value: 'pear-shaped body' },
+        { label: '翹臀', en: 'Wide Hips', value: 'wide hips' },
+        { label: '細腰', en: 'Thin Waist', value: 'thin waist, waist' },
+        { label: '美腿', en: 'Beautiful Legs', value: 'beautiful legs, thighs' },
+        { label: '鎖骨線', en: 'Collarbone', value: 'visible collarbone' },
+        { label: '小蠻腰', en: 'Tiny Waist', value: 'tiny waist' },
+        { label: '柔軟', en: 'Soft Body', value: 'soft body' },
+        { label: '豐胸細腰', en: 'Busty Slim', value: 'large breasts, slim waist' },
+        { label: '標準', en: 'Average', value: 'average body' },
+        { label: '高挑', en: 'Tall', value: 'tall body' },
+        { label: '運動型', en: 'Athletic', value: 'athletic body' },
+        { label: '健美', en: 'Fit', value: 'fit body' },
+        { label: '結實', en: 'Toned', value: 'toned body' },
+        { label: '修長', en: 'Lean', value: 'lean body' },
+        { label: '纖腰', en: 'Willowy', value: 'willowy body, slender waist' },
+        { label: '勻稱', en: 'Proportioned', value: 'well-proportioned body' },
+        { label: '性感', en: 'Sexy', value: 'sexy body' },
+        { label: '優雅', en: 'Elegant', value: 'elegant body, graceful' },
+        { label: '嬰兒肥', en: 'Baby Fat', value: 'baby fat, youthful' },
+        { label: '厚實', en: 'Thick', value: 'thick body, thick thighs' },
+        { label: '纖瘦', en: 'Skinny', value: 'skinny body' },
+        { label: '小巧', en: 'Tiny', value: 'tiny body, small frame' },
+        { label: '微胖', en: 'Chubby', value: 'chubby body' },
+        { label: '圓潤', en: 'Round', value: 'round body' },
+        { label: '矮小', en: 'Short', value: 'short body' },
+        { label: '圓臉', en: 'Round Face', value: 'round face, chubby cheeks' }
+    ];
+
+    // Body types — Male
+    const BODY_TYPES_MALE = [
+        { label: '肌肉', en: 'Muscular', value: 'muscular body' },
+        { label: '精壯', en: 'Ripped', value: 'ripped body' },
+        { label: '壯碩', en: 'Buff', value: 'buff body' },
+        { label: '倒三角', en: 'V-shaped', value: 'v-shaped body' },
+        { label: '寬肩', en: 'Broad Shoulders', value: 'broad shoulders' },
+        { label: '正太體型', en: 'Shota', value: 'shota body, small boy body' },
+        { label: '魁梧', en: 'Brawny', value: 'brawny body, powerful build' },
+        { label: '健壯', en: 'Sturdy', value: 'sturdy body' },
+        { label: '高大', en: 'Large', value: 'large body' },
+        { label: '標準', en: 'Average', value: 'average body' },
+        { label: '高挑', en: 'Tall', value: 'tall body' },
+        { label: '運動型', en: 'Athletic', value: 'athletic body' },
+        { label: '健美', en: 'Fit', value: 'fit body' },
+        { label: '結實', en: 'Toned', value: 'toned body' },
+        { label: '修長', en: 'Lean', value: 'lean body' },
+        { label: '苗條', en: 'Slim', value: 'slim body' },
+        { label: '纖細', en: 'Slender', value: 'slender body' },
+        { label: '勻稱', en: 'Proportioned', value: 'well-proportioned body' },
+        { label: '嬌小', en: 'Petite', value: 'petite body' },
+        { label: '微胖', en: 'Chubby', value: 'chubby body' },
+        { label: '豐腴', en: 'Plump', value: 'plump body' },
+        { label: '圓潤', en: 'Round', value: 'round body' },
+        { label: '纖瘦', en: 'Skinny', value: 'skinny body' },
+        { label: '瘦高', en: 'Lanky', value: 'lanky body, tall and thin' },
+        { label: '矮小', en: 'Short', value: 'short body' },
+        { label: '嬰兒肥', en: 'Baby Fat', value: 'baby fat, youthful' }
+    ];
+
     // Section definitions per tab
     const TAB_SECTIONS = {
         base: [
+            { id: 'gender', title: { zh: '性別', en: 'Gender' }, type: 'gender' },
             { id: 'race', title: { zh: '種族', en: 'Race' }, data: RACES, count: 20 },
+            { id: 'age', title: { zh: '年齡', en: 'Age' }, type: 'ageSlider' },
             { id: 'job', title: { zh: '職業', en: 'Job / Class' }, data: JOBS, count: 30 },
-            { id: 'hairstyle', title: { zh: '髮型', en: 'Hairstyle' }, data: null, count: 30, genderDependent: true }
+            { id: 'hairstyle', title: { zh: '髮型', en: 'Hairstyle' }, data: null, count: 30, genderDependent: true },
+            { id: 'bodyType', title: { zh: '身材', en: 'Body Type' }, data: null, count: 40, genderDependent: true }
         ],
         appearance: [
             { id: 'hairColor', title: { zh: '髮色', en: 'Hair Color' }, data: HAIR_COLORS, type: 'color' },
@@ -525,6 +623,7 @@
     const state = {
         activeTab: 'base',
         gender: 'female',
+        age: 21,
         selections: {},  // { sectionId: value }
         customInputs: {},  // { sectionId: customText }
         customInputVisible: {},  // { sectionId: bool }
@@ -579,6 +678,7 @@
                 const parsed = JSON.parse(saved);
                 state.activeTab = parsed.activeTab || 'base';
                 state.gender = parsed.gender || 'female';
+                state.age = parsed.age || 21;
                 state.selections = parsed.selections || {};
                 state.customInputs = parsed.customInputs || {};
                 state.customInputVisible = parsed.customInputVisible || {};
@@ -647,43 +747,122 @@
             titleEl.textContent = state.lang === 'zh' ? section.title.zh : section.title.en;
             header.appendChild(titleEl);
 
-            // Custom button
-            const customBtn = document.createElement('button');
-            customBtn.className = `btn-custom-toggle${state.customInputVisible[section.id] ? ' active' : ''}`;
-            customBtn.innerHTML = '<i class="fa-solid fa-pen"></i> ' + (state.lang === 'zh' ? '自訂' : 'Custom');
-            customBtn.addEventListener('click', () => {
-                state.customInputVisible[section.id] = !state.customInputVisible[section.id];
-                renderTabContent();
-                saveState();
-            });
-            header.appendChild(customBtn);
+            // Custom button (skip for gender and age sections)
+            if (section.type !== 'gender' && section.type !== 'ageSlider') {
+                const customBtn = document.createElement('button');
+                customBtn.className = `btn-custom-toggle${state.customInputVisible[section.id] ? ' active' : ''}`;
+                customBtn.innerHTML = '<i class="fa-solid fa-pen"></i> ' + (state.lang === 'zh' ? '自訂' : 'Custom');
+                customBtn.addEventListener('click', () => {
+                    state.customInputVisible[section.id] = !state.customInputVisible[section.id];
+                    renderTabContent();
+                    saveState();
+                });
+                header.appendChild(customBtn);
+            }
 
             sectionEl.appendChild(header);
 
-            // Gender toggle for hairstyle
-            if (section.genderDependent) {
+            // === Gender Section ===
+            if (section.type === 'gender') {
                 const genderToggle = document.createElement('div');
-                genderToggle.className = 'gender-toggle';
+                genderToggle.className = 'gender-toggle gender-toggle-main';
                 ['female', 'male'].forEach(g => {
                     const btn = document.createElement('button');
                     btn.className = `gender-btn${state.gender === g ? ' active' : ''}`;
-                    btn.textContent = g === 'female' ? (state.lang === 'zh' ? '♀ 女性' : '♀ Female') : (state.lang === 'zh' ? '♂ 男性' : '♂ Male');
+                    btn.textContent = g === 'female'
+                        ? (state.lang === 'zh' ? '♀ 女性' : '♀ Female')
+                        : (state.lang === 'zh' ? '♂ 男性' : '♂ Male');
                     btn.addEventListener('click', () => {
                         state.gender = g;
-                        // Clear hairstyle selection when switching gender
-                        delete state.selections[section.id];
+                        delete state.selections['hairstyle'];
+                        delete state.selections['bodyType'];
                         renderTabContent();
                         generatePrompt();
+                        saveState();
                     });
                     genderToggle.appendChild(btn);
                 });
                 sectionEl.appendChild(genderToggle);
+                tabContent.appendChild(sectionEl);
+                return; // Skip custom input for gender
             }
+
+            // === Age Slider Section ===
+            if (section.type === 'ageSlider') {
+                const sliderWrap = document.createElement('div');
+                sliderWrap.className = 'age-slider-wrap';
+
+                const ageDisplay = document.createElement('div');
+                ageDisplay.className = 'age-display';
+                ageDisplay.innerHTML = `<span class="age-number">${state.age}</span><span class="age-unit">${state.lang === 'zh' ? '歲' : 'yrs'}</span>`;
+
+                const sliderContainer = document.createElement('div');
+                sliderContainer.className = 'slider-container';
+
+                const slider = document.createElement('input');
+                slider.type = 'range';
+                slider.className = 'age-slider';
+                slider.min = '1';
+                slider.max = '100';
+                slider.value = state.age;
+                slider.style.setProperty('--val', ((state.age - 1) / 99 * 100) + '%');
+
+                const minLabel = document.createElement('span');
+                minLabel.className = 'slider-label';
+                minLabel.textContent = '1';
+                const maxLabel = document.createElement('span');
+                maxLabel.className = 'slider-label';
+                maxLabel.textContent = '100';
+
+                // Audio context for age slider sound
+                let sliderAudioCtx = null;
+
+                slider.addEventListener('input', (e) => {
+                    state.age = parseInt(e.target.value);
+                    ageDisplay.innerHTML = `<span class="age-number">${state.age}</span><span class="age-unit">${state.lang === 'zh' ? '歲' : 'yrs'}</span>`;
+                    slider.style.setProperty('--val', ((state.age - 1) / 99 * 100) + '%');
+
+                    // Play pitch-varying tone
+                    try {
+                        if (!sliderAudioCtx) sliderAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                        const osc = sliderAudioCtx.createOscillator();
+                        const gain = sliderAudioCtx.createGain();
+                        osc.connect(gain);
+                        gain.connect(sliderAudioCtx.destination);
+                        // Map age 1-100 to freq 200Hz-1200Hz
+                        const freq = 200 + ((state.age - 1) / 99) * 1000;
+                        osc.frequency.value = freq;
+                        osc.type = 'sine';
+                        gain.gain.value = 0.08; // Subtle volume
+                        osc.start();
+                        gain.gain.exponentialRampToValueAtTime(0.001, sliderAudioCtx.currentTime + 0.08);
+                        osc.stop(sliderAudioCtx.currentTime + 0.1);
+                    } catch (err) { /* Audio not supported */ }
+
+                    generatePrompt();
+                    saveState();
+                });
+
+                sliderContainer.appendChild(minLabel);
+                sliderContainer.appendChild(slider);
+                sliderContainer.appendChild(maxLabel);
+                sliderWrap.appendChild(ageDisplay);
+                sliderWrap.appendChild(sliderContainer);
+                sectionEl.appendChild(sliderWrap);
+                tabContent.appendChild(sectionEl);
+                return; // Skip custom input for age
+            }
+
+            // genderDependent sections: no toggle needed here, follows top-level gender
 
             // Determine data source
             let data = section.data;
             if (section.genderDependent) {
-                data = state.gender === 'female' ? HAIRSTYLES_FEMALE : HAIRSTYLES_MALE;
+                if (section.id === 'hairstyle') {
+                    data = state.gender === 'female' ? HAIRSTYLES_FEMALE : HAIRSTYLES_MALE;
+                } else if (section.id === 'bodyType') {
+                    data = state.gender === 'female' ? BODY_TYPES_FEMALE : BODY_TYPES_MALE;
+                }
             }
 
             // Render options based on type
@@ -898,10 +1077,16 @@
         const parts = [];
 
         if (inputSubject.value.trim()) parts.push(inputSubject.value.trim());
+        // Gender
+        parts.push(state.gender === 'female' ? 'female' : 'male');
+
         if (inputDescription.value.trim()) parts.push(inputDescription.value.trim());
 
+        // Age
+        if (state.age) parts.push(`${state.age} years old`);
+
         // Generate order based on tabs
-        const sectionOrder = ['race', 'job', 'hairstyle', 'hairColor', 'eyeColorLeft', 'eyeColorRight',
+        const sectionOrder = ['race', 'job', 'hairstyle', 'bodyType', 'hairColor', 'eyeColorLeft', 'eyeColorRight',
             'outfit', 'expression', 'mood', 'animeStyle', 'artStyle', 'artist', 'quality',
             'scene', 'weather', 'lighting', 'cameraAngle', 'shotSize', 'focalLength', 'aperture', 'lensEffect'];
 
@@ -957,11 +1142,15 @@
     function generatePromptYAML() {
         let yaml = '';
 
+        yaml += `gender: ${state.gender === 'female' ? 'female' : 'male'}\n`;
+
         if (inputSubject.value.trim()) yaml += `subject: ${inputSubject.value.trim()}\n`;
         if (inputDescription.value.trim()) yaml += `description: ${inputDescription.value.trim()}\n`;
+        if (state.age) yaml += `age: ${state.age} years old\n`;
 
         const yamlMap = {
-            'race': 'race', 'job': 'job', 'hairstyle': 'hairstyle', 'hairColor': 'hair_color',
+            'race': 'race', 'job': 'job', 'hairstyle': 'hairstyle', 'bodyType': 'body_type',
+            'hairColor': 'hair_color',
             'eyeColorLeft': 'left_eye', 'eyeColorRight': 'right_eye', 'outfit': 'outfit',
             'expression': 'expression', 'mood': 'mood', 'animeStyle': 'anime_style',
             'artStyle': 'art_style', 'artist': 'artist', 'quality': 'quality',

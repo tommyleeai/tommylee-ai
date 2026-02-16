@@ -222,6 +222,10 @@ html {
     min-height: 0;
     /* CRITICAL: Prevent flex item from expanding */
     overflow: hidden;
+    max-width: 1600px;
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
 }
 
 /* Left Column: Controls */
@@ -327,8 +331,7 @@ textarea {
     font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
     font-size: 1rem;
     min-height: 80px;
-    max-height: 400px;
-    overflow-y: auto;
+    overflow: visible;
     white-space: pre-wrap;
     word-wrap: break-word;
     user-select: text;
@@ -1885,6 +1888,103 @@ input[type=range]::-webkit-slider-runnable-track {
     border-color: var(--accent-color);
     color: var(--accent-color);
     font-weight: 600;
+}
+
+/* Main Gender Toggle (standalone section) */
+.gender-toggle-main .gender-btn {
+    padding: 10px 16px;
+    font-size: 0.95rem;
+}
+
+/* Age Slider */
+.age-slider-wrap {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.age-display {
+    display: flex;
+    align-items: baseline;
+    gap: 3px;
+    min-width: 60px;
+    justify-content: center;
+}
+
+.age-number {
+    font-size: 2rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--accent-color), #03dac6);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    line-height: 1;
+}
+
+.age-unit {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.slider-container {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.slider-label {
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.35);
+    min-width: 22px;
+    text-align: center;
+}
+
+/* Custom Range Slider */
+.age-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 6px;
+    border-radius: 3px;
+    background: linear-gradient(90deg, var(--accent-color) var(--val, 20%), rgba(255, 255, 255, 0.1) var(--val, 20%));
+    outline: none;
+    cursor: pointer;
+    transition: background 0.1s;
+}
+
+.age-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent-color), #9965f4);
+    border: 2px solid #fff;
+    box-shadow: 0 0 10px rgba(187, 134, 252, 0.5);
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.age-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+    box-shadow: 0 0 16px rgba(187, 134, 252, 0.7);
+}
+
+.age-slider::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent-color), #9965f4);
+    border: 2px solid #fff;
+    box-shadow: 0 0 10px rgba(187, 134, 252, 0.5);
+    cursor: pointer;
+}
+
+.age-slider::-moz-range-track {
+    height: 6px;
+    border-radius: 3px;
+    background: rgba(255, 255, 255, 0.1);
 }
 
 /* Tag Grid */
