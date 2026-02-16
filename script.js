@@ -287,6 +287,49 @@ document.addEventListener('DOMContentLoaded', () => {
     const previewImageBox = document.getElementById('preview-image-box');
     const previewLabel = document.getElementById('preview-label');
 
+    // --- Preview Functions ---
+    function showPreview(imageSrc, label) {
+        if (!previewImageBox || !previewContent || !previewPlaceholder) return;
+
+        previewPlaceholder.classList.remove('active');
+        previewContent.classList.add('active');
+
+        // Use background-image for smooth transitions
+        previewImageBox.style.backgroundImage = `url('${imageSrc}')`;
+        previewLabel.textContent = label || '';
+    }
+
+    function updateLockedPreview() {
+        if (!previewImageBox || !previewContent || !previewPlaceholder) return;
+
+        // Find the last selected tag that has an image
+        let lockedImage = null;
+        let lockedLabel = null;
+
+        for (const tagId of state.selectedTags) {
+            const [catKey, value] = tagId.split(':');
+            const catData = promptData[catKey];
+            if (!catData) continue;
+
+            const option = catData.options.find(opt => opt.value === value);
+            if (option && option.image) {
+                lockedImage = option.image;
+                lockedLabel = state.lang === 'zh' ? (option.zh || option.label) : option.label;
+                // Don't break; keep iterating to get the "last" one (most recently added)
+            }
+        }
+
+        if (lockedImage) {
+            showPreview(lockedImage, lockedLabel);
+        } else {
+            // No selected item has an image, show placeholder
+            previewContent.classList.remove('active');
+            previewPlaceholder.classList.add('active');
+            previewImageBox.style.backgroundImage = '';
+            previewLabel.textContent = '';
+        }
+    }
+
     // --- Persistence ---
     function saveState() {
         const stateToSave = {
@@ -1017,6 +1060,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Changelog Data
     const changelog = [
+        {
+            version: "v4.91",
+            date: "2026-02-15 22:10",
+            changes: [
+                "實作互動式懸停預覽系統 (Hover Previews)",
+                "新增預覽容器樣式與動畫效果",
+                "滑鼠移開後自動恢復已選取項目之預覽"
+            ]
+        },
         {
             version: "v4.90",
             date: "2026-02-15 21:08",
