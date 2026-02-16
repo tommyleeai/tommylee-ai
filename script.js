@@ -1253,7 +1253,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Attach Hover Sounds globally to interactive elements
     document.addEventListener('mouseenter', (e) => {
-        if (e.target.matches('.tag-chip, button, .collapsible-header, .custom-field-checkbox')) {
+        if (e.target.matches && e.target.matches('.tag-chip, button, .collapsible-header, .custom-field-checkbox')) {
             sfx.playHover();
         }
     }, true); // Use capture to ensure we catch it
