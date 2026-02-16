@@ -475,6 +475,8 @@ textarea {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
     gap: 0.5rem;
+    padding: 4px 2px;
+    /* Prevent first-row hover translateY clipping + last-row box-shadow clipping */
 }
 
 .tag-chip {
