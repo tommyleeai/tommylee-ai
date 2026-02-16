@@ -190,6 +190,13 @@ html {
     box-shadow: 0 4px 12px rgba(187, 134, 252, 0.3);
 }
 
+/* Fix: Ensure icon remains colored and visible on hover */
+.btn-icon:hover i {
+    color: var(--accent-color);
+    opacity: 1;
+    visibility: visible;
+}
+
 .btn-icon.muted {
     background: rgba(255, 100, 100, 0.15);
     border-color: rgba(255, 100, 100, 0.3);
