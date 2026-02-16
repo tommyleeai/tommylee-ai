@@ -1008,9 +1008,22 @@ document.addEventListener('DOMContentLoaded', () => {
         btnSoundToggle.classList.add('muted');
     }
 
-    // Initialize audio context on first user interaction (any click)
+    // Attempt to initialize audio context immediately (Best effort)
+    // Browsers may block this until user interaction, but high-engagement sites might allow it.
+    try {
+        sfx.init();
+    } catch (e) {
+        console.log("Auto-init prevented by browser policy");
+    }
+
+    // Initialize audio context on first user interaction (Fallback)
     document.addEventListener('click', () => {
-        if (!sfx.initialized) sfx.init();
+        if (!sfx.initialized || (sfx.ctx && sfx.ctx.state === 'suspended')) sfx.init();
+    }, { once: true });
+
+    // Also listen for mouseover as a potential trigger (though strict browsers may ignore this)
+    document.addEventListener('mouseover', () => {
+        if (!sfx.initialized || (sfx.ctx && sfx.ctx.state === 'suspended')) sfx.init();
     }, { once: true });
 
     btnSoundToggle.addEventListener('click', () => {
