@@ -810,17 +810,23 @@ document.addEventListener('DOMContentLoaded', () => {
         constructor() {
             this.ctx = null;
             this.masterGain = null;
-            this.isMuted = false;
+            this.isMuted = localStorage.getItem('soundMuted') === 'true'; // Load saved state (default false)
             this.initialized = false;
         }
 
         init() {
-            if (this.initialized) return;
+            if (this.initialized) {
+                if (this.ctx && this.ctx.state === 'suspended') {
+                    this.ctx.resume();
+                }
+                return;
+            }
             try {
                 const AudioContext = window.AudioContext || window.webkitAudioContext;
                 this.ctx = new AudioContext();
                 this.masterGain = this.ctx.createGain();
-                this.masterGain.gain.value = 0.15; // Global volume
+                // Apply initial mute state
+                this.masterGain.gain.value = this.isMuted ? 0 : 0.15;
                 this.masterGain.connect(this.ctx.destination);
                 this.initialized = true;
             } catch (e) {
@@ -830,12 +836,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         toggleMute() {
             this.isMuted = !this.isMuted;
+            localStorage.setItem('soundMuted', this.isMuted); // Save state
+
             if (this.initialized) {
-                if (this.isMuted) {
-                    this.masterGain.gain.setValueAtTime(0, this.ctx.currentTime);
-                } else {
-                    this.masterGain.gain.setValueAtTime(0.15, this.ctx.currentTime);
-                }
+                const targetGain = this.isMuted ? 0 : 0.15;
+                this.masterGain.gain.setValueAtTime(targetGain, this.ctx.currentTime);
+
                 if (this.ctx.state === 'suspended') {
                     this.ctx.resume();
                 }
@@ -845,8 +851,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // 1. Click/Select: High-tech blip
         playClick() {
-            if (this.isMuted || !this.initialized) this.init();
+            if (!this.initialized) this.init();
             if (this.isMuted) return;
+            if (this.ctx.state === 'suspended') this.ctx.resume();
 
             const t = this.ctx.currentTime;
             const osc = this.ctx.createOscillator();
@@ -868,7 +875,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // 2. Hover: Very subtle tick
         playHover() {
-            if (this.isMuted || !this.initialized) return; // Don't auto-init on hover to avoid aggressive audio context start
+            // Hover sounds only play if already initialized and running to avoid console warnings
+            if (this.isMuted || !this.initialized || (this.ctx && this.ctx.state === 'suspended')) return;
 
             const t = this.ctx.currentTime;
             const osc = this.ctx.createOscillator();
@@ -889,8 +897,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // 3. Success (Copy): Divine Blessing — Organ-like sustained chord
         playSuccess() {
-            if (this.isMuted || !this.initialized) this.init();
+            if (!this.initialized) this.init();
             if (this.isMuted) return;
+            if (this.ctx.state === 'suspended') this.ctx.resume();
 
             const t = this.ctx.currentTime;
             const mg = this.masterGain;
@@ -927,8 +936,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // 4. Toggle/Expand: Whoosh filter sweep
         playToggle() {
-            if (this.isMuted || !this.initialized) this.init();
+            if (!this.initialized) this.init();
             if (this.isMuted) return;
+            if (this.ctx.state === 'suspended') this.ctx.resume();
 
             const t = this.ctx.currentTime;
 
@@ -961,8 +971,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // 5. Delete/Reset: Descending tone
         playDelete() {
-            if (this.isMuted || !this.initialized) this.init();
+            if (!this.initialized) this.init();
             if (this.isMuted) return;
+            if (this.ctx.state === 'suspended') this.ctx.resume();
 
             const t = this.ctx.currentTime;
             const osc = this.ctx.createOscillator();
@@ -990,6 +1001,17 @@ document.addEventListener('DOMContentLoaded', () => {
     // Sound Toggle Button
     const btnSoundToggle = document.getElementById('btn-sound-toggle');
     const iconSound = btnSoundToggle.querySelector('i');
+
+    // Initialize button state based on saved setting
+    if (sfx.isMuted) {
+        iconSound.className = 'fa-solid fa-volume-xmark';
+        btnSoundToggle.classList.add('muted');
+    }
+
+    // Initialize audio context on first user interaction (any click)
+    document.addEventListener('click', () => {
+        if (!sfx.initialized) sfx.init();
+    }, { once: true });
 
     btnSoundToggle.addEventListener('click', () => {
         sfx.init(); // Ensure context is started
