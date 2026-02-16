@@ -1018,6 +1018,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // Changelog Data
     const changelog = [
         {
+            version: "v4.90",
+            date: "2026-02-15 21:08",
+            changes: [
+                "應用程式圖標 (Logo) 放大兩倍",
+                "版面視覺微調"
+            ]
+        },
+        {
             version: "v4.89",
             date: "2026-02-15 21:05",
             changes: [
