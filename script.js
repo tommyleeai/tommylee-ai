@@ -1012,13 +1012,117 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // Initialize SoundManager
     const sfx = new SoundManager();
+
+    // Changelog Data
+    const changelog = [
+        {
+            version: "v4.88",
+            date: "2026-02-15",
+            changes: [
+                "新增版本歷史紀錄功能 (Version History)",
+                "新增頂部歷史紀錄按鈕"
+            ]
+        },
+        {
+            version: "v4.87",
+            date: "2026-02-15",
+            changes: [
+                "設定面板介面緊湊化 (Compact Layout)",
+                "優化輸入框與按鈕間距"
+            ]
+        },
+        {
+            version: "v4.86",
+            date: "2026-02-15",
+            changes: [
+                "修正頂部按鈕圖示繼承透明文字的問題"
+            ]
+        },
+        {
+            version: "v4.85",
+            date: "2026-02-15",
+            changes: [
+                "修正滑鼠懸停時圖示消失的問題"
+            ]
+        },
+        {
+            version: "v4.84",
+            date: "2026-02-15",
+            changes: [
+                "修正設定面板無法捲動的問題",
+                "新增設定面板卷軸"
+            ]
+        },
+        {
+            version: "v4.83",
+            date: "2026-02-15",
+            changes: [
+                "新增音效音量控制 (Volume Control)",
+                "音量設定自動儲存"
+            ]
+        },
+        {
+            version: "v4.82",
+            date: "2026-02-15",
+            changes: [
+                "新增背景圖片上傳功能 (Custom Background)",
+                "新增「貼上圖片」功能"
+            ]
+        },
+        {
+            version: "v4.80 - v4.81",
+            date: "2026-02-15",
+            changes: [
+                "設定選項預設為收合狀態",
+                "版本號與介面微調"
+            ]
+        }
+    ];
+
+    // Changelog Logic
+    const btnHistory = document.getElementById('btn-history');
+    const changelogModal = document.getElementById('changelog-modal');
+    const btnCloseChangelog = document.getElementById('btn-close-changelog');
+    const changelogBody = document.getElementById('changelog-body');
+
+    function renderChangelog() {
+        changelogBody.innerHTML = changelog.map(entry => `
+            <div class="changelog-entry">
+                <div class="changelog-header">
+                    <span class="changelog-version">${entry.version}</span>
+                    <span class="changelog-date">${entry.date}</span>
+                </div>
+                <ul class="changelog-list">
+                    ${entry.changes.map(change => `<li>${change}</li>`).join('')}
+                </ul>
+            </div>
+        `).join('');
+    }
+
+    if (btnHistory && changelogModal) {
+        btnHistory.addEventListener('click', () => {
+            sfx.playClick();
+            renderChangelog();
+            changelogModal.classList.add('active');
+        });
+
+        const closeChangelog = () => {
+            sfx.playClick();
+            changelogModal.classList.remove('active');
+        };
+
+        btnCloseChangelog.addEventListener('click', closeChangelog);
+        changelogModal.addEventListener('click', (e) => {
+            if (e.target === changelogModal) closeChangelog();
+        });
+    }
 
     // --- Init ---
 
     // Sound Toggle Button
     const btnSoundToggle = document.getElementById('btn-sound-toggle');
-    const iconSound = btnSoundToggle.querySelector('i');
 
     // Initialize button state based on saved setting
     if (sfx.isMuted) {
