@@ -1200,6 +1200,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Sound Toggle Button
     const btnSoundToggle = document.getElementById('btn-sound-toggle');
+    const iconSound = btnSoundToggle.querySelector('i');
 
     // Initialize button state based on saved setting
     if (sfx.isMuted) {
