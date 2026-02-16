@@ -431,8 +431,8 @@ textarea {
 }
 
 .selected-summary {
-    color: #D4A574;
-    -webkit-text-fill-color: #D4A574;
+    color: #D4A574 !important;
+    -webkit-text-fill-color: #D4A574 !important;
     font-size: 0.9rem;
     font-weight: normal;
     font-style: italic;
