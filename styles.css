@@ -622,7 +622,14 @@ textarea {
     flex-grow: 1;
 }
 
-#final-prompt,
+#final-prompt {
+    min-height: 250px;
+    max-height: 250px;
+    overflow-y: auto;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
 #final-negative {
     min-height: 250px;
     resize: vertical;
