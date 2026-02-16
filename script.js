@@ -371,8 +371,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const contentWrapper = document.createElement('div');
             contentWrapper.className = 'collapsible-content';
 
-            // Determine initial state
-            const isCollapsed = state.collapsedCategories[key] !== undefined ? state.collapsedCategories[key] : categoryData.collapsed;
+            // Determine initial state: Default to collapsed (true) if no saved state exists
+            const isCollapsed = state.collapsedCategories[key] !== undefined ? state.collapsedCategories[key] : true;
 
             if (isCollapsed) {
                 contentWrapper.classList.add('collapsed');
