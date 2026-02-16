@@ -810,7 +810,10 @@ document.addEventListener('DOMContentLoaded', () => {
         constructor() {
             this.ctx = null;
             this.masterGain = null;
-            this.isMuted = localStorage.getItem('soundMuted') === 'true'; // Load saved state (default false)
+            this.isMuted = localStorage.getItem('soundMuted') === 'true'; // Load saved mute state
+            // Load saved volume (default 23)
+            const savedVol = localStorage.getItem('soundVolume');
+            this.volume = savedVol !== null ? parseInt(savedVol, 10) : 23;
             this.initialized = false;
         }
 
@@ -825,13 +828,29 @@ document.addEventListener('DOMContentLoaded', () => {
                 const AudioContext = window.AudioContext || window.webkitAudioContext;
                 this.ctx = new AudioContext();
                 this.masterGain = this.ctx.createGain();
-                // Apply initial mute state
-                // Volume increased by ~50% (0.15 -> 0.23)
-                this.masterGain.gain.value = this.isMuted ? 0 : 0.23;
+
+                // Apply initial volume
+                this.updateGain();
+
                 this.masterGain.connect(this.ctx.destination);
                 this.initialized = true;
             } catch (e) {
                 console.warn("Web Audio API not supported", e);
+            }
+        }
+
+        // Helper to set master gain based on mute and volume
+        updateGain() {
+            if (!this.masterGain) return;
+            const targetGain = this.isMuted ? 0 : (this.volume / 100);
+            this.masterGain.gain.setValueAtTime(targetGain, this.ctx.currentTime);
+        }
+
+        setVolume(val) {
+            this.volume = val;
+            localStorage.setItem('soundVolume', this.volume);
+            if (this.initialized) {
+                this.updateGain();
             }
         }
 
@@ -840,10 +859,7 @@ document.addEventListener('DOMContentLoaded', () => {
             localStorage.setItem('soundMuted', this.isMuted); // Save state
 
             if (this.initialized) {
-                // UPDATE: Increased volume target
-                const targetGain = this.isMuted ? 0 : 0.23;
-                this.masterGain.gain.setValueAtTime(targetGain, this.ctx.currentTime);
-
+                this.updateGain();
                 if (this.ctx.state === 'suspended') {
                     this.ctx.resume();
                 }
@@ -1139,7 +1155,14 @@ document.addEventListener('DOMContentLoaded', () => {
         'settings-hint': { en: 'Configure up to 5 AI image generation websites. After copying, you can quickly open them.', zh: '設定最多 5 個 AI 繪圖網站。複製後可以快速開啟。' },
         'add-website': { en: 'Add Website', zh: '新增網站' },
         'save': { en: 'Save', zh: '儲存' },
-        'choose-website': { en: 'Choose AI Website', zh: '選擇 AI 網站' }
+        'choose-website': { en: 'Choose AI Website', zh: '選擇 AI 網站' },
+        'appearance-title': { en: 'Appearance', zh: '外觀設定 (Appearance)' },
+        'bg-image-label': { en: 'Background Image (Ctrl+V)', zh: '背景圖片 (Ctrl+V 貼上)' },
+        'paste-hint': { en: 'Click input and press Ctrl+V to paste image, or upload.', zh: '點擊輸入框並按下 Ctrl+V 元件可直接貼上，或點擊右側按鈕上傳圖片' },
+        'opacity-label': { en: 'Opacity', zh: '透明度' },
+        'blur-label': { en: 'Blur', zh: '模糊度' },
+        'audio-title': { en: 'Audio Settings', zh: '音效設定 (Audio)' },
+        'volume-label': { en: 'Volume', zh: '音量' }
     };
 
     function updateStaticText() {
@@ -1407,6 +1430,25 @@ document.addEventListener('DOMContentLoaded', () => {
     bgBlurSlider.addEventListener('input', (e) => {
         state.background.blur = e.target.value;
         updateBackground();
+    });
+
+    // Volume Slider Logic
+    const volumeSlider = document.getElementById('volume-slider');
+    const volumeValueDisplay = document.getElementById('volume-value');
+
+    // Set initial value from sfx instance
+    volumeSlider.value = sfx.volume;
+    volumeValueDisplay.textContent = `${sfx.volume}%`;
+
+    volumeSlider.addEventListener('input', (e) => {
+        const val = e.target.value;
+        sfx.setVolume(val);
+        volumeValueDisplay.textContent = `${val}%`;
+    });
+
+    // Play test sound when slider is released (change event)
+    volumeSlider.addEventListener('change', () => {
+        sfx.playClick();
     });
 
     // Paste to Upload (Ctrl+V)

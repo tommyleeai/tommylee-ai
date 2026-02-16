@@ -4,8 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Prompt Generator v4.82</title>
-    <link rel="stylesheet" href="styles.css?v=4.82">
+    <title>AI Prompt Generator v4.83</title>
+    <link rel="stylesheet" href="styles.css?v=4.83">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
@@ -25,7 +25,7 @@
                 <h1>
                     <img id="app-logo" src="assets/logo.png" alt="AI Studio Logo">
                     <i class="fa-solid fa-wand-magic-sparkles"></i> AI Prompt Generator <span
-                        class="version">v4.82</span>
+                        class="version">v4.83</span>
                     <div class="header-buttons">
                         <button id="btn-settings" class="btn-icon" title="Settings">
                             <i class="fa-solid fa-gear"></i>
@@ -185,6 +185,16 @@
                     <label><span data-i18n="blur-label">模糊度</span> <span id="blur-value">2px</span></label>
                     <input type="range" id="bg-blur-slider" min="0" max="20" value="2">
                 </div>
+
+                <hr class="settings-divider">
+
+                <h3 class="settings-subtitle" data-i18n="audio-title">音效設定 (Audio)</h3>
+
+                <!-- Volume Slider -->
+                <div class="setting-group">
+                    <label><span data-i18n="volume-label">音量</span> <span id="volume-value">23%</span></label>
+                    <input type="range" id="volume-slider" min="0" max="100" value="23">
+                </div>
             </div>
             <div class="settings-footer">
                 <button id="btn-save-settings" class="btn-save">
@@ -200,7 +210,7 @@
         <div id="site-picker-list"></div>
     </div>
 
-    <script src="script.js?v=4.82"></script>
+    <script src="script.js?v=4.83"></script>
 </body>
 
 </html>
