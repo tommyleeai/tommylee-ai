@@ -430,10 +430,8 @@ textarea {
     user-select: none;
 }
 
-.category-block h3 .selected-summary {
-    color: #D4A574 !important;
-    -webkit-text-fill-color: #D4A574 !important;
-    background: none !important;
+.selected-summary {
+    color: var(--accent-color);
     font-size: 0.9rem;
     font-weight: normal;
     font-style: italic;
