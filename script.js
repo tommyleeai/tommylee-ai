@@ -1018,8 +1018,16 @@ document.addEventListener('DOMContentLoaded', () => {
     // Changelog Data
     const changelog = [
         {
+            version: "v4.89",
+            date: "2026-02-15 21:05",
+            changes: [
+                "版本歷史紀錄新增時間顯示 (HH:MM)",
+                "優化歷史紀錄顯示格式"
+            ]
+        },
+        {
             version: "v4.88",
-            date: "2026-02-15",
+            date: "2026-02-15 21:00",
             changes: [
                 "新增版本歷史紀錄功能 (Version History)",
                 "新增頂部歷史紀錄按鈕"
@@ -1027,7 +1035,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         {
             version: "v4.87",
-            date: "2026-02-15",
+            date: "2026-02-15 18:45",
             changes: [
                 "設定面板介面緊湊化 (Compact Layout)",
                 "優化輸入框與按鈕間距"
@@ -1035,21 +1043,21 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         {
             version: "v4.86",
-            date: "2026-02-15",
+            date: "2026-02-15 18:40",
             changes: [
                 "修正頂部按鈕圖示繼承透明文字的問題"
             ]
         },
         {
             version: "v4.85",
-            date: "2026-02-15",
+            date: "2026-02-15 18:35",
             changes: [
                 "修正滑鼠懸停時圖示消失的問題"
             ]
         },
         {
             version: "v4.84",
-            date: "2026-02-15",
+            date: "2026-02-15 18:30",
             changes: [
                 "修正設定面板無法捲動的問題",
                 "新增設定面板卷軸"
@@ -1057,7 +1065,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         {
             version: "v4.83",
-            date: "2026-02-15",
+            date: "2026-02-15 18:20",
             changes: [
                 "新增音效音量控制 (Volume Control)",
                 "音量設定自動儲存"
@@ -1065,7 +1073,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         {
             version: "v4.82",
-            date: "2026-02-15",
+            date: "2026-02-15 18:10",
             changes: [
                 "新增背景圖片上傳功能 (Custom Background)",
                 "新增「貼上圖片」功能"
@@ -1073,7 +1081,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         {
             version: "v4.80 - v4.81",
-            date: "2026-02-15",
+            date: "2026-02-15 00:00",
             changes: [
                 "設定選項預設為收合狀態",
                 "版本號與介面微調"
