@@ -1061,6 +1061,15 @@ document.addEventListener('DOMContentLoaded', () => {
     // Changelog Data
     const changelog = [
         {
+            version: "v4.92",
+            date: "2026-02-16 00:13",
+            changes: [
+                "修正生成結果欄位寬度問題：鎖定寬度、長文字自動換行",
+                "移除生成結果捲動條，內容隨行數自然延伸",
+                "修正選取動漫風格等長字串選項時版面跳動問題"
+            ]
+        },
+        {
             version: "v4.91",
             date: "2026-02-15 22:10",
             changes: [

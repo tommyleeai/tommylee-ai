@@ -623,11 +623,12 @@ textarea {
 }
 
 #final-prompt {
+    width: 100%;
+    box-sizing: border-box;
     min-height: 250px;
-    max-height: 250px;
-    overflow-y: auto;
     word-wrap: break-word;
     overflow-wrap: break-word;
+    white-space: pre-wrap;
 }
 
 #final-negative {
