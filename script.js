@@ -1341,6 +1341,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const opacityValueDisplay = document.getElementById('opacity-value');
     const blurValueDisplay = document.getElementById('blur-value');
     const customBg = document.querySelector('.custom-bg');
+    const btnUploadBg = document.getElementById('btn-upload-bg');
+    const bgFileInput = document.getElementById('bg-file-input');
 
     function updateBackground() {
         if (!state.background) return;
@@ -1372,6 +1374,29 @@ document.addEventListener('DOMContentLoaded', () => {
     bgUrlInput.addEventListener('input', (e) => {
         state.background.url = e.target.value;
         updateBackground();
+    });
+
+    btnUploadBg.addEventListener('click', () => {
+        bgFileInput.click();
+        sfx.playClick();
+    });
+
+    bgFileInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                const base64 = event.target.result;
+                // Check size limit (approx 3MB safety net for localStorage)
+                if (base64.length > 3 * 1024 * 1024) {
+                    alert("Image is too large to save! It will work for this session but won't be saved.");
+                }
+                state.background.url = base64;
+                updateBackground();
+                sfx.playSuccess();
+            };
+            reader.readAsDataURL(file);
+        }
     });
 
     bgOpacitySlider.addEventListener('input', (e) => {

@@ -4,8 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Prompt Generator v4.81</title>
-    <link rel="stylesheet" href="styles.css?v=4.81">
+    <title>AI Prompt Generator v4.82</title>
+    <link rel="stylesheet" href="styles.css?v=4.82">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
@@ -25,7 +25,7 @@
                 <h1>
                     <img id="app-logo" src="assets/logo.png" alt="AI Studio Logo">
                     <i class="fa-solid fa-wand-magic-sparkles"></i> AI Prompt Generator <span
-                        class="version">v4.81</span>
+                        class="version">v4.82</span>
                     <div class="header-buttons">
                         <button id="btn-settings" class="btn-icon" title="Settings">
                             <i class="fa-solid fa-gear"></i>
@@ -162,8 +162,15 @@
                 <div class="setting-group">
                     <label data-i18n="bg-image-label">背景圖片 (Ctrl+V 貼上)</label>
                     <div class="input-with-action">
-                        <input type="text" id="bg-url-input" placeholder="Paste image URL or Ctrl+V">
-                        <small class="hint-text" id="paste-hint" data-i18n="paste-hint">點擊輸入框並按下 Ctrl+V 可直接貼上圖片</small>
+                        <div class="url-input-container">
+                            <input type="text" id="bg-url-input" placeholder="Paste image URL or Ctrl+V">
+                            <button id="btn-upload-bg" class="btn-upload-site" title="Upload Image">
+                                <i class="fa-solid fa-upload"></i>
+                            </button>
+                            <input type="file" id="bg-file-input" accept="image/*" style="display: none;">
+                        </div>
+                        <small class="hint-text" id="paste-hint" data-i18n="paste-hint">點擊輸入框並按下 Ctrl+V
+                            元件可直接貼上，或點擊右側按鈕上傳圖片</small>
                     </div>
                 </div>
 
@@ -193,7 +200,7 @@
         <div id="site-picker-list"></div>
     </div>
 
-    <script src="script.js?v=4.81"></script>
+    <script src="script.js?v=4.82"></script>
 </body>
 
 </html>

@@ -1425,14 +1425,35 @@ textarea {
     gap: 0.3rem;
 }
 
+.url-input-container {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
 .input-with-action input {
-    width: 100%;
+    flex: 1;
     padding: 8px;
     border: 1px solid rgba(141, 110, 99, 0.4);
     border-radius: 4px;
     background: rgba(255, 255, 255, 0.5);
     color: #3e2723;
     font-family: inherit;
+}
+
+.btn-upload-site {
+    padding: 8px 12px;
+    background: #8d6e63;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-upload-site:hover {
+    background: #6d4c41;
+    transform: translateY(-1px);
 }
 
 .hint-text {
