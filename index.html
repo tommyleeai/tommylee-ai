@@ -4,8 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Prompt Generator v4.6.2</title>
-    <link rel="stylesheet" href="styles.css?v=4.6.2">
+    <title>AI Prompt Generator v4.8</title>
+    <link rel="stylesheet" href="styles.css?v=4.8">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
@@ -25,7 +25,7 @@
                 <h1>
                     <img id="app-logo" src="assets/logo.png" alt="AI Studio Logo">
                     <i class="fa-solid fa-wand-magic-sparkles"></i> AI Prompt Generator <span
-                        class="version">v4.7</span>
+                        class="version">v4.8</span>
                     <div class="header-buttons">
                         <button id="btn-settings" class="btn-icon" title="Settings">
                             <i class="fa-solid fa-gear"></i>
@@ -153,6 +153,31 @@
                 <button id="btn-add-site" class="btn-add-site">
                     <i class="fa-solid fa-plus"></i> <span data-i18n="add-website">新增網站</span>
                 </button>
+
+                <hr class="settings-divider">
+
+                <h3 class="settings-subtitle" data-i18n="appearance-title">外觀設定 (Appearance)</h3>
+
+                <!-- Background Image Input -->
+                <div class="setting-group">
+                    <label data-i18n="bg-image-label">背景圖片 (Ctrl+V 貼上)</label>
+                    <div class="input-with-action">
+                        <input type="text" id="bg-url-input" placeholder="Paste image URL or Ctrl+V">
+                        <small class="hint-text" id="paste-hint" data-i18n="paste-hint">點擊輸入框並按下 Ctrl+V 可直接貼上圖片</small>
+                    </div>
+                </div>
+
+                <!-- Opacity Slider -->
+                <div class="setting-group">
+                    <label><span data-i18n="opacity-label">透明度</span> <span id="opacity-value">20%</span></label>
+                    <input type="range" id="bg-opacity-slider" min="0" max="100" value="20">
+                </div>
+
+                <!-- Blur Slider -->
+                <div class="setting-group">
+                    <label><span data-i18n="blur-label">模糊度</span> <span id="blur-value">2px</span></label>
+                    <input type="range" id="bg-blur-slider" min="0" max="20" value="2">
+                </div>
             </div>
             <div class="settings-footer">
                 <button id="btn-save-settings" class="btn-save">
@@ -168,7 +193,7 @@
         <div id="site-picker-list"></div>
     </div>
 
-    <script src="script.js?v=4.7"></script>
+    <script src="script.js?v=4.8"></script>
 </body>
 
 </html>

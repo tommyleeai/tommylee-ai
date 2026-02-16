@@ -1388,3 +1388,82 @@ textarea {
     transform: translateX(4px);
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
+
+/* --- Settings: Custom Background Controls --- */
+.settings-divider {
+    border: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(78, 52, 46, 0.3), transparent);
+    margin: 1.5rem 0 1rem 0;
+}
+
+.settings-subtitle {
+    font-size: 1.1rem;
+    color: #4e342e;
+    margin-bottom: 1rem;
+    border-left: 3px solid #8d6e63;
+    padding-left: 8px;
+}
+
+.setting-group {
+    margin-bottom: 1.2rem;
+}
+
+.setting-group label {
+    display: block;
+    font-size: 0.9rem;
+    color: #5d4037;
+    margin-bottom: 0.4rem;
+    font-weight: 500;
+    display: flex;
+    justify-content: space-between;
+}
+
+.input-with-action {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+.input-with-action input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid rgba(141, 110, 99, 0.4);
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.5);
+    color: #3e2723;
+    font-family: inherit;
+}
+
+.hint-text {
+    font-size: 0.75rem;
+    color: #8d6e63;
+    font-style: italic;
+}
+
+/* Range Sliders */
+input[type=range] {
+    width: 100%;
+    -webkit-appearance: none;
+    appearance: none;
+    background: transparent;
+}
+
+input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    height: 16px;
+    width: 16px;
+    border-radius: 50%;
+    background: #5d4037;
+    cursor: pointer;
+    margin-top: -6px;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
+}
+
+input[type=range]::-webkit-slider-runnable-track {
+    width: 100%;
+    height: 4px;
+    cursor: pointer;
+    background: rgba(141, 110, 99, 0.3);
+    border-radius: 2px;
+}

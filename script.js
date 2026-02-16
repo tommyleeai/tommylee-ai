@@ -1324,11 +1324,122 @@ document.addEventListener('DOMContentLoaded', () => {
         // Filter out empty entries
         aiSitesConfig = aiSitesConfig.filter(site => site.name.trim() && site.url.trim());
         saveAISites();
+
+        // Save Background Settings
+        saveState();
+
         closeSettings();
         sfx.playSuccess();
     });
 
+    // ========================================
+    // Custom Background Logic (v4.7)
+    // ========================================
+    const bgUrlInput = document.getElementById('bg-url-input');
+    const bgOpacitySlider = document.getElementById('bg-opacity-slider');
+    const bgBlurSlider = document.getElementById('bg-blur-slider');
+    const opacityValueDisplay = document.getElementById('opacity-value');
+    const blurValueDisplay = document.getElementById('blur-value');
+    const customBg = document.querySelector('.custom-bg');
+
+    function updateBackground() {
+        if (!state.background) return;
+
+        // Update CSS
+        if (state.background.url) {
+            customBg.style.backgroundImage = `url('${state.background.url}')`;
+        }
+        customBg.style.opacity = state.background.opacity / 100;
+        customBg.style.filter = `blur(${state.background.blur}px) grayscale(30%)`;
+
+        // Update Text Displays (Always update these for real-time feedback)
+        opacityValueDisplay.textContent = `${state.background.opacity}%`;
+        blurValueDisplay.textContent = `${state.background.blur}px`;
+
+        // Update Input Values (Only if NOT active to avoid cursor fighting)
+        if (document.activeElement !== bgUrlInput) {
+            bgUrlInput.value = state.background.url || '';
+        }
+        if (document.activeElement !== bgOpacitySlider) {
+            bgOpacitySlider.value = state.background.opacity;
+        }
+        if (document.activeElement !== bgBlurSlider) {
+            bgBlurSlider.value = state.background.blur;
+        }
+    }
+
+    // Event Listeners for Background Settings
+    bgUrlInput.addEventListener('input', (e) => {
+        state.background.url = e.target.value;
+        updateBackground();
+    });
+
+    bgOpacitySlider.addEventListener('input', (e) => {
+        state.background.opacity = e.target.value;
+        updateBackground();
+    });
+
+    bgBlurSlider.addEventListener('input', (e) => {
+        state.background.blur = e.target.value;
+        updateBackground();
+    });
+
+    // Paste to Upload (Ctrl+V)
+    bgUrlInput.addEventListener('paste', (e) => {
+        const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+        for (let index in items) {
+            const item = items[index];
+            if (item.kind === 'file' && item.type.includes('image/')) {
+                const blob = item.getAsFile();
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    const base64 = event.target.result;
+                    // Check size limit (approx 3MB safety net for localStorage)
+                    if (base64.length > 3 * 1024 * 1024) {
+                        alert("Image is too large to save! It will work for this session but won't be saved.");
+                    }
+                    state.background.url = base64;
+                    updateBackground();
+                    sfx.playSuccess();
+                };
+                reader.readAsDataURL(blob);
+                e.preventDefault(); // Prevent pasting the filename
+            }
+        }
+    });
+
+    // Global Paste Listener (When settings modal is open)
+    document.addEventListener('paste', (e) => {
+        if (!settingsModal.classList.contains('active')) return;
+        // If focus is already on input, let the input handler deal with it
+        if (document.activeElement === bgUrlInput) return;
+
+        const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+        for (let index in items) {
+            const item = items[index];
+            if (item.kind === 'file' && item.type.includes('image/')) {
+                const blob = item.getAsFile();
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    state.background.url = event.target.result;
+                    updateBackground();
+                    sfx.playSuccess();
+                };
+                reader.readAsDataURL(blob);
+            }
+        }
+    });
+
     // Initialize
     loadAISites();
+    // Ensure background state exists
+    if (!state.background) {
+        state.background = {
+            url: 'assets/background_v2.jpg',
+            opacity: 20,
+            blur: 2
+        };
+    }
+    updateBackground();
 
 });
