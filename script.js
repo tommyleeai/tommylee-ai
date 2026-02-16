@@ -826,7 +826,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 this.ctx = new AudioContext();
                 this.masterGain = this.ctx.createGain();
                 // Apply initial mute state
-                this.masterGain.gain.value = this.isMuted ? 0 : 0.15;
+                // Volume increased by ~50% (0.15 -> 0.23)
+                this.masterGain.gain.value = this.isMuted ? 0 : 0.23;
                 this.masterGain.connect(this.ctx.destination);
                 this.initialized = true;
             } catch (e) {
@@ -839,7 +840,8 @@ document.addEventListener('DOMContentLoaded', () => {
             localStorage.setItem('soundMuted', this.isMuted); // Save state
 
             if (this.initialized) {
-                const targetGain = this.isMuted ? 0 : 0.15;
+                // UPDATE: Increased volume target
+                const targetGain = this.isMuted ? 0 : 0.23;
                 this.masterGain.gain.setValueAtTime(targetGain, this.ctx.currentTime);
 
                 if (this.ctx.state === 'suspended') {
@@ -1017,9 +1019,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Initialize audio context on first user interaction (Fallback)
-    document.addEventListener('click', () => {
-        if (!sfx.initialized || (sfx.ctx && sfx.ctx.state === 'suspended')) sfx.init();
-    }, { once: true });
+    // Listened for multiple event types to catch any valid user gesture
+    ['click', 'mousedown', 'keydown', 'touchstart'].forEach(eventType => {
+        document.addEventListener(eventType, () => {
+            if (!sfx.initialized || (sfx.ctx && sfx.ctx.state === 'suspended')) sfx.init();
+        }, { once: true });
+    });
 
     // Also listen for mouseover as a potential trigger (though strict browsers may ignore this)
     document.addEventListener('mouseover', () => {
