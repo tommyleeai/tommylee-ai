@@ -605,6 +605,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (selectedLabels.length > 0) {
             spanElement.textContent = selectedLabels.join(', ');
             spanElement.style.color = '#D4A574';
+            spanElement.style.webkitTextFillColor = '#D4A574';
         } else {
             spanElement.textContent = '';
         }
