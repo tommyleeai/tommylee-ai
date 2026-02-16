@@ -1681,4 +1681,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     updateBackground();
 
+    // Lock layout width after initial render to prevent content-driven expansion
+    requestAnimationFrame(() => {
+        const mainContent = document.querySelector('.main-content');
+        if (mainContent) {
+            mainContent.style.maxWidth = mainContent.offsetWidth + 'px';
+        }
+    });
+
 });
