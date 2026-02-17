@@ -4,8 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Prompt Generator v5.0</title>
-    <link rel="stylesheet" href="styles.css?v=5.31">
+    <title>AI Prompt Generator v6.0</title>
+    <link rel="stylesheet" href="styles.css?v=6.0">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
@@ -25,7 +25,7 @@
                 <h1>
                     <img id="app-logo" src="assets/logo.png" alt="AI Studio Logo">
                     <i class="fa-solid fa-wand-magic-sparkles"></i> AI Prompt Generator <span
-                        class="version">v5.0</span>
+                        class="version">v6.0</span>
                     <div class="header-buttons">
                         <button id="btn-settings" class="btn-icon" title="Settings">
                             <i class="fa-solid fa-gear"></i>
@@ -41,19 +41,24 @@
             </header>
 
             <!-- 1. Subject -->
-            <!-- 1. Subject -->
             <div class="input-group">
                 <label for="input-subject">主體 (Subject)</label>
                 <input type="text" id="input-subject" value="做一張全新的圖" placeholder="例如: 1girl, cat, cyberpunk city...">
             </div>
 
-            <!-- 2. Description -->
-            <div class="input-group">
-                <label for="input-description">描述 (Description)</label>
-                <textarea id="input-description" placeholder="年紀 21 歲的 漂亮 女性">21 歲日本女孩</textarea>
+            <!-- 2. Tab Navigation -->
+            <div class="tab-toolbar">
+                <div id="tab-bar" class="tab-bar">
+                    <!-- Tabs injected by JS -->
+                </div>
             </div>
 
-            <!-- 3. Custom Fields -->
+            <!-- 3. Tab Content (scrollable) -->
+            <div id="tab-content" class="tab-content">
+                <!-- Sections injected by JS -->
+            </div>
+
+            <!-- 4. Custom Fields -->
             <div class="section-title">自訂欄位 (Custom Fields)</div>
             <div id="custom-fields-container">
                 <!-- Dynamic fields will be added here -->
@@ -63,26 +68,16 @@
 
             <hr class="divider">
 
-            <!-- 4. Negative Prompt (moved above tabs) -->
+            <!-- 5. Negative Prompt -->
             <div class="input-group">
                 <label for="negative-prompt">負面提示詞 (Negative Prompt)</label>
                 <textarea id="negative-prompt" class="small-textarea"
                     placeholder="ugly, blurry, low quality, deformed..."></textarea>
             </div>
 
-            <!-- 5. Tab Navigation + Reset -->
-            <div class="tab-toolbar">
-                <div id="tab-bar" class="tab-bar">
-                    <!-- Tabs injected by JS -->
-                </div>
-                <button id="btn-reset" class="btn btn-secondary btn-sm btn-reset-inline"><i
-                        class="fa-solid fa-rotate-left"></i> 重置</button>
-            </div>
-
-            <!-- 6. Tab Content (scrollable) -->
-            <div id="tab-content" class="tab-content">
-                <!-- Sections injected by JS -->
-            </div>
+            <!-- 6. Reset Button -->
+            <button id="btn-reset" class="btn btn-secondary btn-sm btn-reset-standalone"><i
+                    class="fa-solid fa-rotate-left"></i> 重置</button>
 
             <!-- Legacy (hidden) -->
             <div id="categories-container" style="display:none;"></div>
@@ -204,6 +199,53 @@
                     <label><span data-i18n="volume-label">音量</span> <span id="volume-value">23%</span></label>
                     <input type="range" id="volume-slider" min="0" max="100" value="23">
                 </div>
+
+                <hr class="settings-divider">
+
+                <h3 class="settings-subtitle">⚡ 衝突偵測 (Conflict Detection)</h3>
+
+                <!-- Conflict Warning Toggle -->
+                <div class="setting-group" style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <label>啟用衝突警告</label>
+                        <small class="hint-text" style="color: #a855f7;">任何分類間的衝突都會顯示警告彈窗</small>
+                    </div>
+                    <label class="toggle-switch" style="position: relative; width: 50px; height: 26px; flex-shrink: 0;">
+                        <input type="checkbox" id="setting-conflict-warnings" checked
+                            style="opacity:0;width:0;height:0;">
+                        <span class="toggle-slider"
+                            style="position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background:#334155;border-radius:26px;transition:0.3s;"></span>
+                    </label>
+                </div>
+
+                <!-- Conflict Auto Mode -->
+                <div class="setting-group" style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <label>自動處理方式</label>
+                        <small class="hint-text" id="setting-conflict-auto-label"
+                            style="color: #a855f7;">未設定（每次詢問）</small>
+                    </div>
+                    <button id="setting-conflict-reset"
+                        style="background:rgba(255,68,68,0.15);border:1px solid rgba(255,68,68,0.3);color:#ff8888;padding:6px 16px;border-radius:8px;font-size:0.8rem;cursor:pointer;font-family:inherit;flex-shrink:0;">
+                        重置
+                    </button>
+                </div>
+
+                <hr class="settings-divider">
+
+                <h3 class="settings-subtitle">🔮 身材控制 (Body Magic)</h3>
+
+                <!-- Body Magic Toggle -->
+                <div class="setting-group" style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <label>啟用身材魔法系統</label>
+                        <small class="hint-text" id="setting-bodymagic-status" style="color: #a855f7;">目前未套用</small>
+                    </div>
+                    <button id="setting-bodymagic-reset"
+                        style="background:rgba(255,68,68,0.15);border:1px solid rgba(255,68,68,0.3);color:#ff8888;padding:6px 16px;border-radius:8px;font-size:0.8rem;cursor:pointer;font-family:inherit;flex-shrink:0;">
+                        重置
+                    </button>
+                </div>
             </div>
             <div class="settings-footer">
                 <button id="btn-save-settings" class="btn-save">
@@ -233,7 +275,7 @@
         <div id="site-picker-list"></div>
     </div>
 
-    <script src="script.js?v=5.31"></script>
+    <script src="script.js?v=6.0"></script>
 </body>
 
 </html>
