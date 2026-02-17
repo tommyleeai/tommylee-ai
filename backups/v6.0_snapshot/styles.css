@@ -1,37 +1,3 @@
-/* ============================================
-   📋 CSS 模組目錄 (Module Index)
-   ============================================
-   1.  全域變數與基底樣式     (🔒 核心)
-   2.  背景與動畫
-   3.  容器與主佈局           (🔒 核心佈局)
-   4.  Header 與 Logo
-   5.  按鈕系統               (🔒 共用元件)
-   6.  主佈局：左欄/右欄      (🔒 核心佈局)
-   7.  表單元素
-   8.  自訂欄位
-   9.  Tag 標籤系統
-   10. 預覽區 (Preview)
-   11. 輸出區 (Output)
-   12. 語言切換
-   13. 通用按鈕
-   14. 設定面板 (Settings Modal)
-   15. 響應式 (Responsive)
-   16. 吉祥物 (Mascot)
-   17. 拖放排序 (Drag & Drop)
-   18. 可收合區段 (Collapsible)
-   19. Settings Modal — 古地圖風格
-   20. AI 網站設定 (Site Picker)
-   21. v5.0 Tab UI
-   22. Section Block
-   23. 性別切換 & 年齡滑桿
-   24. 色彩選擇器
-   25. Body Magic 進階體型
-   ============================================
-   🔒 = 禁止隨意修改，需使用者明確要求
-   修改前請執行 /css-safety workflow
-   ============================================ */
-
-/* === 1. 全域變數與基底樣式 START === 🔒 */
 /* Global Styles */
 :root {
     --bg-color: #121212;
@@ -88,9 +54,6 @@ html {
     /* Ensure clicks pass through */
 }
 
-/* === 1. 全域變數與基底樣式 END === */
-
-/* === 2. 背景與動畫 START === */
 /* Dynamic Background */
 .background-globes {
     position: fixed;
@@ -143,9 +106,6 @@ html {
     }
 }
 
-/* === 2. 背景與動畫 END === */
-
-/* === 3. 容器與主佈局 START === 🔒 */
 /* Glassmorphism Container */
 .container {
     background: var(--glass-bg);
@@ -174,9 +134,6 @@ html {
     /* Add subtle glow to match theme */
 }
 
-/* === 3. 容器與主佈局 END === */
-
-/* === 4. Header 與 Logo START === */
 .header {
     text-align: left;
     /* Align left */
@@ -236,9 +193,6 @@ html {
 }
 
 /* Fix: Ensure icon remains colored and visible on hover */
-/* === 4. Header 與 Logo END === */
-
-/* === 5. 按鈕系統 START === 🔒 */
 .btn-icon:hover i {
     color: var(--accent-color);
     opacity: 1;
@@ -256,9 +210,6 @@ html {
     border-color: #ff6464;
 }
 
-/* === 5. 按鈕系統 END === */
-
-/* === 6. 主佈局：左欄/右欄 START === 🔒 */
 /* Main Layout */
 .main-content {
     display: grid;
@@ -306,9 +257,6 @@ html {
     flex-shrink: 0;
 }
 
-/* === 6. 主佈局：左欄/右欄 END === */
-
-/* === 7. 表單元素 & 輸出區 START === */
 /* Right Column: Output */
 .output-section {
     height: 100%;
@@ -439,9 +387,6 @@ textarea {
 }
 
 
-/* === 8. 自訂欄位 END === */
-
-/* === 9. Tag 標籤系統 START === */
 /* Tag Grid System */
 .category-block {
     margin-bottom: 0.2rem;
@@ -582,9 +527,8 @@ textarea {
     margin-top: 0.5rem;
 }
 
-/* === 9. Tag 標籤系統 END === */
+/* Right Column: Output */
 
-/* === 10. 預覽區 & 輸出區 START === */
 /* Preview Container */
 .preview-container {
     background: rgba(0, 0, 0, 0.3);
@@ -731,9 +675,6 @@ textarea {
     color: #ff8a80;
 }
 
-/* === 10. 預覽區 & 輸出區 END === */
-
-/* === 12. 語言切換 START === */
 /* Language Toggle */
 .language-toggle {
     display: grid;
@@ -773,9 +714,6 @@ textarea {
     margin: 0;
 }
 
-/* === 12. 語言切換 END === */
-
-/* === 13. 通用按鈕 & 設定面板 START === */
 /* Buttons */
 .btn {
     border: none;
@@ -883,9 +821,7 @@ input[type=range]::-webkit-slider-thumb:hover {
     margin: 1rem 0;
 }
 
-/* === 13. 通用按鈕 & 設定面板 END === */
-
-/* === 15. 響應式 START === */
+/* Responsive */
 /* Responsive */
 @media (max-width: 768px) {
     .main-content {
@@ -1270,9 +1206,6 @@ input[type=range]::-webkit-slider-thumb:hover {
     padding: 0.25rem 0.5rem !important;
 }
 
-/* === 18. 可收合區段 END === */
-
-/* === 19. Settings Modal — 古地圖風格 START === */
 /* ========================================
    Settings Modal & Site Picker (v4.7)
    ======================================== */
@@ -1855,9 +1788,7 @@ input[type=range]::-webkit-slider-runnable-track {
     border-radius: 2px;
 }
 
-/* === 20. AI 網站設定 END === */
-
-/* === 21. v5.0 Tab UI START === */
+/* ===== v5.0 Tab UI ===== */
 
 /* Tab Toolbar (tab bar + reset button) */
 .tab-toolbar {
@@ -2266,9 +2197,7 @@ input[type=range]::-webkit-slider-runnable-track {
     background: rgba(207, 102, 121, 0.3);
 }
 
-/* === 24. 色彩選擇器 END === */
-
-/* === 25. Body Magic 進階體型 START === */
+/* ===== Body Magic — Button + Summary + Disabled Overlay ===== */
 .body-magic-btn {
     padding: 4px 12px;
     border: 1px solid rgba(251, 191, 36, 0.4);

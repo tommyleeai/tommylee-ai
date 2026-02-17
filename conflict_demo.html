@@ -1,0 +1,1311 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚔️ 種族×職業 衝突偵測 Demo v3</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0a0a1a 0%, #1a1a3e 50%, #0d0d2b 100%);
+            color: #e0e0ff;
+            min-height: 100vh;
+            padding: 30px 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 1.6rem;
+            margin-bottom: 6px;
+            text-align: center;
+        }
+
+        .sub {
+            color: #8888bb;
+            margin-bottom: 25px;
+            font-size: 0.85rem;
+            text-align: center;
+        }
+
+        .section-label {
+            font-size: 1rem;
+            color: #aaddff;
+            margin: 20px 0 10px;
+            padding-left: 8px;
+            border-left: 3px solid #6688ff;
+        }
+
+        .tag-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .tag-btn {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 8px;
+            padding: 8px 14px;
+            color: #ccc;
+            cursor: pointer;
+            font-size: 0.82rem;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+
+        .tag-btn:hover {
+            background: rgba(100, 150, 255, 0.15);
+            border-color: rgba(100, 150, 255, 0.4);
+            color: #fff;
+        }
+
+        .tag-btn.active {
+            background: linear-gradient(135deg, #bb86fc, #9965f4);
+            border-color: #bb86fc;
+            color: #fff;
+            font-weight: 600;
+            box-shadow: 0 2px 12px rgba(187, 134, 252, 0.35);
+        }
+
+        .status-bar {
+            margin-top: 25px;
+            padding: 14px 18px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            font-size: 0.88rem;
+            line-height: 1.6;
+        }
+
+        .status-bar .label {
+            color: #8888bb;
+            font-size: 0.75rem;
+            margin-bottom: 4px;
+        }
+
+        .status-bar .value {
+            color: #bb86fc;
+            font-weight: 600;
+        }
+
+        .prompt-output {
+            margin-top: 15px;
+            padding: 12px 16px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            font-family: 'Consolas', monospace;
+            font-size: 0.85rem;
+            color: #D4A574;
+            white-space: pre-wrap;
+            min-height: 40px;
+        }
+
+        /* Settings panel */
+        .settings-panel {
+            margin-top: 20px;
+            padding: 16px 18px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+        }
+
+        .settings-panel h3 {
+            font-size: 0.9rem;
+            color: #aaddff;
+            margin-bottom: 10px;
+        }
+
+        .setting-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .setting-row:last-child {
+            border-bottom: none;
+        }
+
+        .setting-label {
+            font-size: 0.82rem;
+            color: #ccc;
+        }
+
+        .setting-value {
+            font-size: 0.78rem;
+            color: #bb86fc;
+        }
+
+        /* Toggle switch */
+        .toggle-switch {
+            position: relative;
+            width: 42px;
+            height: 22px;
+            cursor: pointer;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            inset: 0;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 22px;
+            transition: 0.3s;
+        }
+
+        .toggle-slider::before {
+            content: '';
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            left: 3px;
+            top: 3px;
+            background: #fff;
+            transition: 0.3s;
+        }
+
+        .toggle-switch input:checked+.toggle-slider {
+            background: #bb86fc;
+        }
+
+        .toggle-switch input:checked+.toggle-slider::before {
+            transform: translateX(20px);
+        }
+
+        /* ================================ */
+        /* CONFLICT WARNING MODAL           */
+        /* ================================ */
+        .conflict-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s;
+        }
+
+        .conflict-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .conflict-bg {
+            position: absolute;
+            inset: 0;
+            animation: bg-pulse 0.8s ease-in-out infinite alternate;
+        }
+
+        @keyframes bg-pulse {
+            0% {
+                background: rgba(80, 0, 0, 0.6);
+            }
+
+            100% {
+                background: rgba(20, 0, 0, 0.75);
+            }
+        }
+
+        .conflict-modal {
+            position: relative;
+            width: 500px;
+            max-width: 92vw;
+            background: linear-gradient(145deg, #1a0a0a 0%, #2a1020 40%, #1a0a1a 100%);
+            border: 2px solid #ff2244;
+            border-radius: 16px;
+            padding: 0;
+            overflow: hidden;
+            transform: scale(0.3);
+            opacity: 0;
+            animation: modal-enter 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+            box-shadow: 0 0 30px rgba(255, 34, 68, 0.4), 0 0 60px rgba(255, 34, 68, 0.2),
+                0 0 100px rgba(255, 34, 68, 0.1), inset 0 0 30px rgba(255, 34, 68, 0.05);
+        }
+
+        .conflict-overlay.active .conflict-modal {
+            animation: modal-enter 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards,
+                border-glow 0.8s ease-in-out 0.4s infinite alternate;
+        }
+
+        @keyframes modal-enter {
+            0% {
+                transform: scale(0.3) rotate(-2deg);
+                opacity: 0;
+            }
+
+            60% {
+                transform: scale(1.05) rotate(0.5deg);
+                opacity: 1;
+            }
+
+            100% {
+                transform: scale(1) rotate(0deg);
+                opacity: 1;
+            }
+        }
+
+        @keyframes border-glow {
+            0% {
+                border-color: #ff2244;
+                box-shadow: 0 0 30px rgba(255, 34, 68, 0.5), 0 0 60px rgba(255, 34, 68, 0.3),
+                    0 0 100px rgba(255, 34, 68, 0.15), inset 0 0 30px rgba(255, 34, 68, 0.08);
+            }
+
+            100% {
+                border-color: #cc1133;
+                box-shadow: 0 0 15px rgba(255, 34, 68, 0.25), 0 0 30px rgba(255, 34, 68, 0.1),
+                    inset 0 0 15px rgba(255, 34, 68, 0.03);
+            }
+        }
+
+        .conflict-header {
+            background: linear-gradient(90deg, #ff1133 0%, #cc0033 50%, #ff1133 100%);
+            background-size: 200% 100%;
+            animation: header-shift 2s ease infinite;
+            padding: 16px 24px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        @keyframes header-shift {
+
+            0%,
+            100% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+        }
+
+        .conflict-header::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: repeating-linear-gradient(90deg, transparent, transparent 20px,
+                    rgba(0, 0, 0, 0.1) 20px, rgba(0, 0, 0, 0.1) 22px);
+            animation: stripe-move 1s linear infinite;
+        }
+
+        @keyframes stripe-move {
+            0% {
+                transform: translateX(0);
+            }
+
+            100% {
+                transform: translateX(22px);
+            }
+        }
+
+        .conflict-title {
+            font-size: 1.3rem;
+            font-weight: 900;
+            color: #fff;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+            position: relative;
+            animation: title-shake 0.5s ease-in-out 0.3s;
+        }
+
+        @keyframes title-shake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            15% {
+                transform: translateX(-6px) rotate(-1deg);
+            }
+
+            30% {
+                transform: translateX(5px) rotate(1deg);
+            }
+
+            45% {
+                transform: translateX(-4px);
+            }
+
+            60% {
+                transform: translateX(3px);
+            }
+
+            75% {
+                transform: translateX(-2px);
+            }
+        }
+
+        .conflict-subtitle {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-top: 4px;
+            position: relative;
+            letter-spacing: 2px;
+        }
+
+        .conflict-body {
+            padding: 20px 24px;
+        }
+
+        .conflict-desc {
+            font-size: 1.1rem;
+            font-weight: 600;
+            line-height: 1.7;
+            color: #ddd;
+            margin-bottom: 8px;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        .conflict-combo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin: 16px 0;
+            font-size: 1rem;
+        }
+
+        .combo-tag {
+            padding: 6px 16px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.95rem;
+        }
+
+        .combo-race {
+            background: rgba(255, 68, 68, 0.2);
+            border: 1px solid #ff4444;
+            color: #ff8888;
+        }
+
+        .combo-job {
+            background: rgba(68, 136, 255, 0.2);
+            border: 1px solid #4488ff;
+            color: #88bbff;
+        }
+
+        .combo-x {
+            font-size: 1.4rem;
+            color: #ff4444;
+            font-weight: 900;
+            text-shadow: 0 0 10px rgba(255, 68, 68, 0.5);
+            animation: x-pulse 0.6s ease-in-out infinite alternate;
+        }
+
+        @keyframes x-pulse {
+            0% {
+                transform: scale(1);
+                opacity: 0.7;
+            }
+
+            100% {
+                transform: scale(1.2);
+                opacity: 1;
+            }
+        }
+
+        .conflict-reason {
+            font-size: 0.8rem;
+            color: #aa8888;
+            text-align: center;
+            margin-bottom: 16px;
+            font-style: italic;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 6px;
+        }
+
+        .reason-hint {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #aa8888;
+            font-size: 0.65rem;
+            font-style: normal;
+            font-weight: 700;
+            cursor: help;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+
+        .reason-hint:hover {
+            background: rgba(255, 68, 68, 0.2);
+            border-color: #ff4444;
+            color: #ff8888;
+        }
+
+        .reason-hint .hint-tooltip {
+            position: absolute;
+            bottom: calc(100% + 8px);
+            right: -6px;
+            transform: scale(0.9);
+            background: rgba(30, 10, 10, 0.95);
+            border: 1px solid rgba(255, 68, 68, 0.4);
+            border-radius: 8px;
+            padding: 8px 14px;
+            color: #ff8888;
+            font-size: 0.78rem;
+            font-style: normal;
+            white-space: nowrap;
+            pointer-events: none;
+            opacity: 0;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 20px rgba(255, 34, 68, 0.2);
+        }
+
+        .reason-hint .hint-tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            right: 10px;
+            border: 5px solid transparent;
+            border-top-color: rgba(255, 68, 68, 0.4);
+        }
+
+        .reason-hint:hover .hint-tooltip {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .conflict-prompt-label {
+            font-size: 0.75rem;
+            color: #888;
+            margin-bottom: 8px;
+        }
+
+        .conflict-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .conflict-option {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 14px 16px;
+            cursor: pointer;
+            transition: all 0.25s;
+            text-align: left;
+            font-family: inherit;
+            color: inherit;
+        }
+
+        .conflict-option:hover {
+            border-color: rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateX(4px);
+        }
+
+        .conflict-option:active {
+            transform: scale(0.98);
+        }
+
+        .option-title {
+            font-size: 0.92rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .option-desc {
+            font-size: 0.75rem;
+            color: #999;
+            line-height: 1.4;
+        }
+
+        .option-1 .option-title {
+            color: #ff8844;
+        }
+
+        .option-1:hover {
+            border-color: rgba(255, 136, 68, 0.4);
+            box-shadow: 0 0 15px rgba(255, 136, 68, 0.1);
+        }
+
+        .option-2 .option-title {
+            color: #44aaff;
+        }
+
+        .option-2:hover {
+            border-color: rgba(68, 170, 255, 0.4);
+            box-shadow: 0 0 15px rgba(68, 170, 255, 0.1);
+        }
+
+        .option-3 .option-title {
+            color: #44ff88;
+        }
+
+        .option-3:hover {
+            border-color: rgba(68, 255, 136, 0.4);
+            box-shadow: 0 0 15px rgba(68, 255, 136, 0.1);
+        }
+
+        /* Remember choice */
+        .remember-choice {
+            margin-top: 14px;
+            padding: 12px 14px;
+            background: rgba(187, 134, 252, 0.06);
+            border: 1px solid rgba(187, 134, 252, 0.2);
+            border-radius: 8px;
+            display: none;
+        }
+
+        .remember-choice.visible {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: fadeSlideIn 0.3s ease forwards;
+        }
+
+        @keyframes fadeSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .remember-choice input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #bb86fc;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .remember-choice label {
+            font-size: 0.8rem;
+            color: #bb86fc;
+            cursor: pointer;
+            line-height: 1.4;
+        }
+
+        .remember-choice .hint {
+            font-size: 0.7rem;
+            color: #888;
+            margin-top: 2px;
+        }
+
+        .conflict-counter {
+            position: absolute;
+            top: 12px;
+            right: 16px;
+            font-size: 0.65rem;
+            color: rgba(255, 255, 255, 0.5);
+            letter-spacing: 0;
+            z-index: 1;
+        }
+
+        /* Screen effects */
+        .screen-flash {
+            position: fixed;
+            inset: 0;
+            background: rgba(255, 0, 0, 0.3);
+            z-index: 9998;
+            pointer-events: none;
+            opacity: 0;
+        }
+
+        .screen-flash.active {
+            animation: flash-hit 0.4s ease-out forwards;
+        }
+
+        @keyframes flash-hit {
+            0% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0;
+            }
+        }
+
+        body.screen-shake {
+            animation: shake-screen 0.4s ease-in-out;
+        }
+
+        @keyframes shake-screen {
+
+            0%,
+            100% {
+                transform: translate(0);
+            }
+
+            10% {
+                transform: translate(-4px, 2px);
+            }
+
+            20% {
+                transform: translate(4px, -2px);
+            }
+
+            30% {
+                transform: translate(-3px, 1px);
+            }
+
+            40% {
+                transform: translate(3px, -1px);
+            }
+
+            50% {
+                transform: translate(-2px, 1px);
+            }
+
+            60% {
+                transform: translate(2px, 0);
+            }
+
+            70% {
+                transform: translate(-1px, 0);
+            }
+        }
+
+        .resolution-toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: rgba(0, 0, 0, 0.85);
+            border: 1px solid rgba(187, 134, 252, 0.4);
+            border-radius: 12px;
+            padding: 14px 24px;
+            color: #ddd;
+            font-size: 0.85rem;
+            z-index: 10000;
+            opacity: 0;
+            transition: all 0.3s ease;
+            max-width: 500px;
+            text-align: center;
+        }
+
+        .resolution-toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>⚔️ 種族 × 職業 衝突偵測 Demo v3</h1>
+        <p class="sub">🔧 通用衝突引擎 · 支援任意分類間的衝突判斷</p>
+
+        <div class="section-label">🧬 種族 (Race)</div>
+        <div class="tag-grid" id="race-grid"></div>
+
+        <div class="section-label">⚔️ 職業 (Job)</div>
+        <div class="tag-grid" id="job-grid"></div>
+
+        <div class="status-bar">
+            <div class="label">目前選擇</div>
+            <div>種族: <span class="value" id="status-race">未選擇</span></div>
+            <div>職業: <span class="value" id="status-job">未選擇</span></div>
+            <div>衝突狀態: <span class="value" id="status-conflict">無</span></div>
+            <div>處理方式: <span class="value" id="status-resolution">—</span></div>
+            <div>警告次數: <span class="value" id="status-count">0</span></div>
+        </div>
+
+        <div class="prompt-output" id="prompt-output">（選擇種族和職業後生成）</div>
+
+        <div class="settings-panel">
+            <h3>⚙️ 設定 (Settings) — 衝突偵測</h3>
+            <div class="setting-row">
+                <div>
+                    <div class="setting-label">啟用衝突警告</div>
+                    <div class="setting-value">任何分類間的衝突都會顯示警告彈窗</div>
+                </div>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="setting-warnings-enabled" checked>
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            <div class="setting-row">
+                <div>
+                    <div class="setting-label">自動處理方式</div>
+                    <div class="setting-value" id="setting-auto-mode">未設定（每次詢問）</div>
+                </div>
+                <button id="setting-reset-auto"
+                    style="background:rgba(255,68,68,0.15);border:1px solid rgba(255,68,68,0.3);color:#ff8888;padding:4px 12px;border-radius:6px;font-size:0.75rem;cursor:pointer;font-family:inherit;">
+                    重置
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="screen-flash" id="screen-flash"></div>
+
+    <!-- Conflict Warning Modal -->
+    <div class="conflict-overlay" id="conflict-overlay">
+        <div class="conflict-bg"></div>
+        <div class="conflict-modal">
+            <div class="conflict-header">
+                <div class="conflict-title">⚠️ 危險! 魔法錯誤警告!</div>
+                <div class="conflict-subtitle">MAGIC CONFLICT DETECTED</div>
+                <div class="conflict-counter" id="conflict-counter"></div>
+            </div>
+            <div class="conflict-body">
+                <div class="conflict-combo">
+                    <span class="combo-tag combo-race" id="combo-a">—</span>
+                    <span class="combo-x">✕</span>
+                    <span class="combo-tag combo-job" id="combo-b">—</span>
+                </div>
+                <div class="conflict-desc" id="conflict-desc"></div>
+                <div class="conflict-reason">
+                    <span id="conflict-reason"></span>
+                    <span class="reason-hint">?
+                        <span class="hint-tooltip">AI 可能將此解讀為兩個不同角色</span>
+                    </span>
+                </div>
+
+                <div class="conflict-prompt-label">請選擇處理方式:</div>
+                <div class="conflict-options">
+                    <button class="conflict-option option-1" onclick="resolve('ignore')">
+                        <div class="option-title">🔥 忽略警告，繼續執行</div>
+                        <div class="option-desc">⚠ 可能產生兩個角色的圖片，但保留你的原始設定</div>
+                    </button>
+                    <button class="conflict-option option-2" onclick="resolve('dual')">
+                        <div class="option-title">👥 接受雙人構圖</div>
+                        <div class="option-desc">系統加入「2characters」提示詞，明確生成雙角色構圖</div>
+                    </button>
+                    <button class="conflict-option option-3" onclick="resolve('merge')">
+                        <div class="option-title">✨ 合併為一體</div>
+                        <div class="option-desc">系統強調「一個角色同時具有兩種特質」，避免分裂</div>
+                    </button>
+                </div>
+
+                <div class="remember-choice" id="remember-choice">
+                    <input type="checkbox" id="remember-checkbox">
+                    <div>
+                        <label for="remember-checkbox">以後都用此方式處理，不再顯示警告</label>
+                        <div class="hint">可在「設定」中隨時重新開啟警告</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="resolution-toast" id="resolution-toast"></div>
+
+    <script>
+        // ============================
+        // DATA
+        // ============================
+        const RACES = [
+            { label: '人類', en: 'Human', value: 'human' },
+            { label: '精靈', en: 'Elf', value: 'elf' },
+            { label: '天使', en: 'Angel', value: 'angel, wings, halo' },
+            { label: '惡魔', en: 'Demon', value: 'demon, horns, wings, tail' },
+            { label: '吸血鬼', en: 'Vampire', value: 'vampire, pale skin, red eyes, fangs' },
+            { label: '龍人', en: 'Dragon', value: 'dragon girl, dragon horns, tail, scales' },
+            { label: '機器人', en: 'Android', value: 'android, robot, mechanical parts' },
+            { label: '幽靈', en: 'Ghost', value: 'ghost, translucent, spirit' },
+            { label: '人魚', en: 'Mermaid', value: 'mermaid, fish tail, underwater' },
+            { label: '妖精', en: 'Fairy', value: 'fairy, small wings, tiny' },
+            { label: '殭屍', en: 'Zombie', value: 'zombie, pale, undead' },
+            { label: '史萊姆', en: 'Slime', value: 'slime girl, translucent skin' },
+            { label: '貓娘', en: 'Cat Girl', value: 'cat girl, cat ears, cat tail' },
+            { label: '狐娘', en: 'Fox Girl', value: 'fox girl, fox ears, multiple tails' }
+        ];
+
+        const JOBS = [
+            { label: '女僕', en: 'Maid', value: 'maid, maid headdress' },
+            { label: '學生', en: 'Student', value: 'student, school uniform' },
+            { label: '巫女', en: 'Shrine Maiden', value: 'shrine maiden, miko' },
+            { label: '護士', en: 'Nurse', value: 'nurse, hospital' },
+            { label: '騎士', en: 'Knight', value: 'knight, armor, sword' },
+            { label: '修女', en: 'Nun', value: 'nun, habit' },
+            { label: '忍者', en: 'Ninja', value: 'ninja, shinobi' },
+            { label: '魔法師', en: 'Mage', value: 'mage, wizard, robe, staff' },
+            { label: '牧師', en: 'Cleric', value: 'cleric, priest, healer' },
+            { label: '偶像', en: 'Idol', value: 'idol, stage outfit, microphone' },
+            { label: '魔王', en: 'Demon Lord', value: 'demon lord, dark power' },
+            { label: '殺手', en: 'Assassin', value: 'assassin, dark clothes' },
+            { label: '盜賊', en: 'Rogue', value: 'thief, rogue, dagger' },
+            { label: '運動員', en: 'Athlete', value: 'athlete, sportswear' },
+            { label: '賽車手', en: 'Racer', value: 'racer, racing suit' },
+            { label: '廚師', en: 'Chef', value: 'chef, apron' },
+            { label: '太空人', en: 'Astronaut', value: 'astronaut, spacesuit' },
+            { label: '軍人', en: 'Soldier', value: 'soldier, military' },
+            { label: '警察', en: 'Police', value: 'police officer, uniform' },
+            { label: '模特兒', en: 'Model', value: 'model, fashion, runway' },
+            { label: '空姐', en: 'Flight Att.', value: 'flight attendant, uniform' },
+            { label: '教師', en: 'Teacher', value: 'teacher, glasses, classroom' },
+            { label: '圖書館員', en: 'Librarian', value: 'librarian, glasses, books' }
+        ];
+
+        // ============================================
+        // UNIVERSAL CONFLICT RULES
+        // ============================================
+        // Each rule: { a: categoryA, b: categoryB, keyword_a, keyword_b, reason }
+        //
+        // HOW TO ADD NEW CONFLICTS:
+        //   1. Just add a new entry to this array.
+        //   2. No other code changes needed.
+        //   3. Works for ANY category: race, job, outfit, accessories, scene, pose, etc.
+        //
+        const CONFLICT_RULES = [
+            // ── 種族 ↔ 職業 ──
+            { a: 'race', b: 'job', keyword_a: 'vampire', keyword_b: 'shrine maiden', reason: '🧛 神聖力量與闇黑存在相互排斥' },
+            { a: 'race', b: 'job', keyword_a: 'vampire', keyword_b: 'nun', reason: '🧛 神聖力量與闇黑存在相互排斥' },
+            { a: 'race', b: 'job', keyword_a: 'vampire', keyword_b: 'cleric', reason: '🧛 神聖力量與闇黑存在相互排斥' },
+
+            { a: 'race', b: 'job', keyword_a: 'demon', keyword_b: 'shrine maiden', reason: '👹 聖邪對立，光明與黑暗不共戴天' },
+            { a: 'race', b: 'job', keyword_a: 'demon', keyword_b: 'nun', reason: '👹 聖邪對立，光明與黑暗不共戴天' },
+            { a: 'race', b: 'job', keyword_a: 'demon', keyword_b: 'cleric', reason: '👹 聖邪對立，光明與黑暗不共戴天' },
+            { a: 'race', b: 'job', keyword_a: 'demon', keyword_b: 'knight', reason: '👹 聖邪對立，光明與黑暗不共戴天' },
+
+            { a: 'race', b: 'job', keyword_a: 'angel', keyword_b: 'demon lord', reason: '😇 善與惡的力量互相矛盾' },
+            { a: 'race', b: 'job', keyword_a: 'angel', keyword_b: 'assassin', reason: '😇 善與惡的力量互相矛盾' },
+            { a: 'race', b: 'job', keyword_a: 'angel', keyword_b: 'thief', reason: '😇 善與惡的力量互相矛盾' },
+
+            { a: 'race', b: 'job', keyword_a: 'ghost', keyword_b: 'athlete', reason: '👻 非實體存在無法進行物理活動' },
+            { a: 'race', b: 'job', keyword_a: 'ghost', keyword_b: 'racer', reason: '👻 非實體存在無法進行物理活動' },
+            { a: 'race', b: 'job', keyword_a: 'ghost', keyword_b: 'chef', reason: '👻 非實體存在無法進行物理活動' },
+
+            { a: 'race', b: 'job', keyword_a: 'mermaid', keyword_b: 'knight', reason: '🧜 魚尾無法奔跑或穿著陸地裝備' },
+            { a: 'race', b: 'job', keyword_a: 'mermaid', keyword_b: 'ninja', reason: '🧜 魚尾無法奔跑或穿著陸地裝備' },
+            { a: 'race', b: 'job', keyword_a: 'mermaid', keyword_b: 'racer', reason: '🧜 魚尾無法奔跑或穿著陸地裝備' },
+
+            { a: 'race', b: 'job', keyword_a: 'android', keyword_b: 'mage', reason: '🤖 科技存在與魔法系統互相排斥' },
+            { a: 'race', b: 'job', keyword_a: 'android', keyword_b: 'cleric', reason: '🤖 科技存在與魔法系統互相排斥' },
+            { a: 'race', b: 'job', keyword_a: 'android', keyword_b: 'shrine maiden', reason: '🤖 科技存在與魔法系統互相排斥' },
+
+            { a: 'race', b: 'job', keyword_a: 'slime', keyword_b: 'knight', reason: '🫠 無固定形體難以穿著制服裝備' },
+            { a: 'race', b: 'job', keyword_a: 'slime', keyword_b: 'soldier', reason: '🫠 無固定形體難以穿著制服裝備' },
+            { a: 'race', b: 'job', keyword_a: 'slime', keyword_b: 'police officer', reason: '🫠 無固定形體難以穿著制服裝備' },
+
+            { a: 'race', b: 'job', keyword_a: 'fairy', keyword_b: 'soldier', reason: '🧚 迷你體型無法操作人類尺寸裝備' },
+            { a: 'race', b: 'job', keyword_a: 'fairy', keyword_b: 'police officer', reason: '🧚 迷你體型無法操作人類尺寸裝備' },
+            { a: 'race', b: 'job', keyword_a: 'fairy', keyword_b: 'astronaut', reason: '🧚 迷你體型無法操作人類尺寸裝備' },
+
+            { a: 'race', b: 'job', keyword_a: 'dragon', keyword_b: 'nun', reason: '🐉 龍族外觀與溫和職業視覺差異巨大' },
+            { a: 'race', b: 'job', keyword_a: 'dragon', keyword_b: 'teacher', reason: '🐉 龍族外觀與溫和職業視覺差異巨大' },
+            { a: 'race', b: 'job', keyword_a: 'dragon', keyword_b: 'librarian', reason: '🐉 龍族外觀與溫和職業視覺差異巨大' },
+
+            // ── 未來擴充（只需加這裡，不用改其他程式碼） ──
+            // { a: 'job',  b: 'outfit',      keyword_a: 'knight', keyword_b: 'bikini',  reason: '⚔️ 全身甲冑與泳裝無法共存' },
+            // { a: 'race', b: 'accessories', keyword_a: 'mermaid', keyword_b: 'boots',   reason: '🧜 魚尾無法穿靴子' },
+            // { a: 'race', b: 'outfit',      keyword_a: 'ghost',   keyword_b: 'armor',   reason: '👻 非實體無法穿戴重甲' },
+        ];
+
+        // Category display labels (auto-used by modal & status)
+        const CATEGORY_LABELS = {
+            race: { zh: '種族', en: 'Race' },
+            job: { zh: '職業', en: 'Job' },
+            outfit: { zh: '服飾', en: 'Outfit' },
+            accessories: { zh: '配件', en: 'Accessories' },
+            expression: { zh: '表情', en: 'Expression' },
+            scene: { zh: '場景', en: 'Scene' },
+            pose: { zh: '姿勢', en: 'Pose' },
+            bodyType: { zh: '身材', en: 'Body Type' },
+            hairstyle: { zh: '髮型', en: 'Hairstyle' },
+        };
+
+        // ============================
+        // STATE (universal)
+        // ============================
+        // selections[category] = { label, en, value }
+        const selections = {};
+        let currentResolution = null;
+        let conflictInfo = null; // { rule, labelA, labelB, catA, catB, reason }
+        let warningCount = 0;
+        let warningsEnabled = true;
+        let autoResolution = null;
+        let alarmOscillators = [];
+
+        // ============================
+        // AUDIO — Bank Vault Alarm
+        // ============================
+        let audioCtx = null;
+
+        function playVaultAlarm() {
+            try {
+                if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+                const c = audioCtx, t = c.currentTime;
+                const master = c.createGain();
+                master.gain.value = 0.28;
+                master.connect(c.destination);
+                stopAlarm();
+
+                // 1. Impact boom
+                const impact = c.createOscillator();
+                const impG = c.createGain();
+                impact.type = 'sine';
+                impact.frequency.setValueAtTime(100, t);
+                impact.frequency.exponentialRampToValueAtTime(25, t + 0.4);
+                impG.gain.setValueAtTime(0.7, t);
+                impG.gain.exponentialRampToValueAtTime(0.001, t + 0.4);
+                impact.connect(impG); impG.connect(master);
+                impact.start(t); impact.stop(t + 0.45);
+
+                // Metal clang
+                const clangSize = c.sampleRate * 0.15;
+                const clangBuf = c.createBuffer(1, clangSize, c.sampleRate);
+                const clangData = clangBuf.getChannelData(0);
+                for (let i = 0; i < clangSize; i++) {
+                    clangData[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / clangSize, 2);
+                }
+                const clang = c.createBufferSource();
+                clang.buffer = clangBuf;
+                const clangFilter = c.createBiquadFilter();
+                clangFilter.type = 'bandpass';
+                clangFilter.frequency.value = 2500;
+                clangFilter.Q.value = 5;
+                const clangG = c.createGain();
+                clangG.gain.value = 0.35;
+                clang.connect(clangFilter);
+                clangFilter.connect(clangG);
+                clangG.connect(master);
+                clang.start(t);
+
+                // 2. Repeating siren
+                const sirenDuration = 3.0, burstLen = 0.12, gap = 0.06, cycle = burstLen + gap;
+                for (let i = 0; i * cycle < sirenDuration; i++) {
+                    const st = t + 0.2 + i * cycle;
+                    const freq = i % 2 === 0 ? 880 : 660;
+                    const siren = c.createOscillator();
+                    const sirenG = c.createGain();
+                    siren.type = 'square';
+                    siren.frequency.setValueAtTime(freq, st);
+                    sirenG.gain.setValueAtTime(0.18, st);
+                    sirenG.gain.setValueAtTime(0.18, st + burstLen * 0.8);
+                    sirenG.gain.exponentialRampToValueAtTime(0.001, st + burstLen);
+                    siren.connect(sirenG); sirenG.connect(master);
+                    siren.start(st); siren.stop(st + burstLen + 0.01);
+                    alarmOscillators.push(siren);
+                }
+
+                // 3. Sub-bass pulse
+                for (let i = 0; i < 6; i++) {
+                    const ps = t + 0.2 + i * 0.5;
+                    const pulse = c.createOscillator();
+                    const pulseG = c.createGain();
+                    pulse.type = 'sine'; pulse.frequency.value = 45;
+                    pulseG.gain.setValueAtTime(0.3, ps);
+                    pulseG.gain.exponentialRampToValueAtTime(0.001, ps + 0.25);
+                    pulse.connect(pulseG); pulseG.connect(master);
+                    pulse.start(ps); pulse.stop(ps + 0.3);
+                    alarmOscillators.push(pulse);
+                }
+            } catch (e) { }
+        }
+
+        function stopAlarm() {
+            alarmOscillators.forEach(o => { try { o.stop(); } catch (e) { } });
+            alarmOscillators = [];
+        }
+
+        function playResolveSound() {
+            try {
+                stopAlarm();
+                if (!audioCtx) return;
+                const c = audioCtx, t = c.currentTime;
+                const m = c.createGain(); m.gain.value = 0.15; m.connect(c.destination);
+                [659.25, 783.99, 1046.5].forEach((f, i) => {
+                    const o = c.createOscillator(), g = c.createGain();
+                    o.type = 'sine'; o.frequency.value = f;
+                    g.gain.setValueAtTime(0.2, t + i * 0.08);
+                    g.gain.exponentialRampToValueAtTime(0.001, t + i * 0.08 + 0.3);
+                    o.connect(g); g.connect(m);
+                    o.start(t + i * 0.08); o.stop(t + i * 0.08 + 0.35);
+                });
+            } catch (e) { }
+        }
+
+        // ============================================
+        // UNIVERSAL CONFLICT DETECTION
+        // ============================================
+        // Scans ALL current selections against ALL rules.
+        // Returns first match or null.
+        function checkAllConflicts() {
+            for (const rule of CONFLICT_RULES) {
+                const selA = selections[rule.a];
+                const selB = selections[rule.b];
+                if (!selA || !selB) continue;
+
+                if (selA.value.includes(rule.keyword_a) && selB.value.includes(rule.keyword_b)) {
+                    return {
+                        rule,
+                        labelA: selA.label,
+                        labelB: selB.label,
+                        catA: rule.a,
+                        catB: rule.b,
+                        reason: rule.reason,
+                    };
+                }
+            }
+            return null;
+        }
+
+        // Called after any selection change in any category
+        function onSelectionChanged() {
+            currentResolution = null;
+            updateStatus();
+
+            const conflict = checkAllConflicts();
+            if (conflict) {
+                conflictInfo = conflict;
+
+                // Auto-resolve silently if enabled
+                if (!warningsEnabled && autoResolution) {
+                    currentResolution = autoResolution;
+                    updateStatus();
+                    generatePrompt();
+                    showToast(`⚡ 已自動套用: ${getResolutionLabel(autoResolution)}`);
+                    return;
+                }
+
+                warningCount++;
+                showConflictModal();
+            } else {
+                conflictInfo = null;
+                generatePrompt();
+            }
+        }
+
+        // ============================
+        // UI RENDERING (generic)
+        // ============================
+        function renderGrid(containerId, items, category) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+            items.forEach(item => {
+                const btn = document.createElement('button');
+                btn.className = 'tag-btn';
+                btn.textContent = `${item.label} ${item.en}`;
+                btn.dataset.value = item.value;
+
+                if (selections[category] && selections[category].value === item.value) {
+                    btn.classList.add('active');
+                }
+
+                btn.addEventListener('click', () => {
+                    selections[category] = item;
+                    renderGrid(containerId, items, category);
+                    onSelectionChanged();
+                });
+
+                container.appendChild(btn);
+            });
+        }
+
+        function getResolutionLabel(type) {
+            if (type === 'ignore') return '🔥 忽略警告';
+            if (type === 'dual') return '👥 雙人構圖';
+            if (type === 'merge') return '✨ 合併一體';
+            return '—';
+        }
+
+        function getCategoryLabel(cat) {
+            const c = CATEGORY_LABELS[cat];
+            return c ? c.zh : cat;
+        }
+
+        function updateStatus() {
+            document.getElementById('status-race').textContent =
+                selections.race ? `${selections.race.label} (${selections.race.en})` : '未選擇';
+            document.getElementById('status-job').textContent =
+                selections.job ? `${selections.job.label} (${selections.job.en})` : '未選擇';
+            document.getElementById('status-count').textContent = warningCount;
+
+            const conflictEl = document.getElementById('status-conflict');
+            if (conflictInfo) {
+                conflictEl.textContent = '⚠️ 衝突！';
+                conflictEl.style.color = '#ff4444';
+            } else {
+                conflictEl.textContent = '✅ 無';
+                conflictEl.style.color = '#44ff88';
+            }
+
+            const resEl = document.getElementById('status-resolution');
+            resEl.textContent = getResolutionLabel(currentResolution) || '—';
+            if (currentResolution === 'ignore') resEl.style.color = '#ff8844';
+            else if (currentResolution === 'dual') resEl.style.color = '#44aaff';
+            else if (currentResolution === 'merge') resEl.style.color = '#44ff88';
+            else resEl.style.color = '#bb86fc';
+
+            updateSettingsUI();
+        }
+
+        // ============================
+        // CONFLICT MODAL (generic)
+        // ============================
+        function showConflictModal() {
+            // Generic: uses conflictInfo.labelA/B and catA/B
+            document.getElementById('combo-a').textContent = conflictInfo.labelA;
+            document.getElementById('combo-b').textContent = conflictInfo.labelB;
+            document.getElementById('conflict-reason').textContent = conflictInfo.reason;
+            document.getElementById('conflict-desc').innerHTML =
+                `「<strong>${conflictInfo.labelA}</strong>」×「<strong>${conflictInfo.labelB}</strong>」組合偵測到衝突！`;
+
+            document.getElementById('conflict-counter').textContent = `第 ${warningCount} 次警告`;
+
+            const rememberEl = document.getElementById('remember-choice');
+            const rememberCb = document.getElementById('remember-checkbox');
+            if (warningCount >= 3) {
+                rememberEl.classList.add('visible');
+            } else {
+                rememberEl.classList.remove('visible');
+            }
+            rememberCb.checked = false;
+
+            // Screen flash
+            const flash = document.getElementById('screen-flash');
+            flash.classList.remove('active');
+            void flash.offsetWidth;
+            flash.classList.add('active');
+
+            // Screen shake
+            document.body.classList.remove('screen-shake');
+            void document.body.offsetWidth;
+            document.body.classList.add('screen-shake');
+
+            // Show modal
+            const overlay = document.getElementById('conflict-overlay');
+            overlay.classList.add('active');
+            const modal = overlay.querySelector('.conflict-modal');
+            modal.style.animation = 'none';
+            void modal.offsetWidth;
+            modal.style.animation = '';
+
+            playVaultAlarm();
+        }
+
+        function hideConflictModal() {
+            document.getElementById('conflict-overlay').classList.remove('active');
+        }
+
+        // ============================
+        // RESOLUTION
+        // ============================
+        function resolve(type) {
+            currentResolution = type;
+
+            const rememberCb = document.getElementById('remember-checkbox');
+            if (rememberCb.checked) {
+                autoResolution = type;
+                warningsEnabled = false;
+            }
+
+            hideConflictModal();
+            playResolveSound();
+
+            let toastMsg = '';
+            if (type === 'ignore') toastMsg = '🔥 已忽略警告 — 保留原始設定，可能生成雙角色';
+            else if (type === 'dual') toastMsg = '👥 已切換為雙人構圖 — 加入 "2characters" 提示詞';
+            else if (type === 'merge') toastMsg = '✨ 已合併為一體 — 強調單一角色擁有雙重特質';
+
+            if (rememberCb.checked) {
+                toastMsg += '\n📌 已記住此選擇，後續衝突將自動套用';
+            }
+
+            showToast(toastMsg);
+            updateStatus();
+            generatePrompt();
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('resolution-toast');
+            toast.textContent = msg;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3500);
+        }
+
+        // ============================
+        // SETTINGS
+        // ============================
+        function updateSettingsUI() {
+            const autoModeEl = document.getElementById('setting-auto-mode');
+            document.getElementById('setting-warnings-enabled').checked = warningsEnabled;
+            autoModeEl.textContent = autoResolution
+                ? getResolutionLabel(autoResolution)
+                : '未設定（每次詢問）';
+        }
+
+        document.getElementById('setting-warnings-enabled').addEventListener('change', (e) => {
+            warningsEnabled = e.target.checked;
+            if (warningsEnabled) autoResolution = null;
+            updateSettingsUI();
+            showToast(warningsEnabled ? '✅ 衝突警告已重新開啟' : '🔇 衝突警告已關閉');
+        });
+
+        document.getElementById('setting-reset-auto').addEventListener('click', () => {
+            autoResolution = null;
+            warningsEnabled = true;
+            warningCount = 0;
+            updateSettingsUI();
+            document.getElementById('setting-warnings-enabled').checked = true;
+            showToast('🔄 已重置衝突設定 — 每次衝突都會詢問');
+        });
+
+        // ============================
+        // PROMPT GENERATION (generic)
+        // ============================
+        function generatePrompt() {
+            const output = document.getElementById('prompt-output');
+            const allValues = Object.values(selections).map(s => s.value);
+
+            if (allValues.length === 0) {
+                output.textContent = '（選擇後自動生成 prompt）';
+                return;
+            }
+
+            const base = `female, ${allValues.join(', ')}`;
+
+            if (!conflictInfo || !currentResolution || currentResolution === 'ignore') {
+                output.textContent = base;
+            } else if (currentResolution === 'dual') {
+                output.textContent = `2characters, multiple characters, ${base}`;
+            } else if (currentResolution === 'merge') {
+                const coreA = selections[conflictInfo.catA]?.value.split(',')[0].trim() || '';
+                const coreB = selections[conflictInfo.catB]?.value.split(',')[0].trim() || '';
+                output.textContent = `(${coreA} ${coreB}:1.3), single character, solo, ${base}`;
+            }
+        }
+
+        // ============================
+        // INIT
+        // ============================
+        renderGrid('race-grid', RACES, 'race');
+        renderGrid('job-grid', JOBS, 'job');
+        updateSettingsUI();
+    </script>
+</body>
+
+</html>

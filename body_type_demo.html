@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>身材控制系統 Demo v2</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0a0e1a;
+            color: #e2e8f0;
+            min-height: 100vh;
+            padding: 30px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 1.6rem;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, #a78bfa, #60a5fa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            text-align: center;
+            font-size: 0.85rem;
+            color: #64748b;
+            margin-bottom: 30px;
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .panel {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(148, 163, 184, 0.15);
+            border-radius: 16px;
+            padding: 24px;
+        }
+
+        .panel h2 {
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+            color: #a78bfa;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* === Gender Toggle === */
+        .gender-toggle {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 24px;
+        }
+
+        .gender-btn {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid transparent;
+            border-radius: 10px;
+            background: rgba(51, 65, 85, 0.6);
+            color: #94a3b8;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .gender-btn.active {
+            border-color: #a78bfa;
+            color: #e2e8f0;
+            background: rgba(167, 139, 250, 0.15);
+        }
+
+        .gender-btn:hover {
+            background: rgba(167, 139, 250, 0.1);
+        }
+
+        /* === Body Feature Slider === */
+        .feature-group {
+            margin-bottom: 28px;
+        }
+
+        .feature-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .feature-label {
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+
+        .feature-value {
+            font-size: 0.8rem;
+            color: #a78bfa;
+            padding: 3px 12px;
+            background: rgba(167, 139, 250, 0.15);
+            border-radius: 20px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .feature-value.fantasy {
+            color: #fbbf24;
+            background: rgba(251, 191, 36, 0.2);
+            border: 1px solid rgba(251, 191, 36, 0.3);
+            animation: fantasy-glow 2s ease-in-out infinite;
+        }
+
+        @keyframes fantasy-glow {
+
+            0%,
+            100% {
+                box-shadow: 0 0 5px rgba(251, 191, 36, 0.2);
+            }
+
+            50% {
+                box-shadow: 0 0 15px rgba(251, 191, 36, 0.4);
+            }
+        }
+
+        /* Slider scale labels */
+        .scale-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 6px;
+            font-size: 0.65rem;
+            color: #64748b;
+            position: relative;
+        }
+
+        .scale-labels span {
+            text-align: center;
+            flex: 1;
+        }
+
+        .scale-labels .fantasy-label {
+            color: #fbbf24;
+            font-weight: 600;
+            font-size: 0.6rem;
+        }
+
+        /* Fantasy zone indicator */
+        .slider-wrapper {
+            position: relative;
+        }
+
+        .fantasy-zone {
+            position: absolute;
+            top: -2px;
+            height: 12px;
+            border-radius: 4px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .fantasy-zone-left {
+            left: 0;
+            width: 14.28%;
+            background: repeating-linear-gradient(45deg, rgba(251, 191, 36, 0.1), rgba(251, 191, 36, 0.1) 3px, transparent 3px, transparent 6px);
+            border: 1px dashed rgba(251, 191, 36, 0.3);
+            border-right: none;
+            border-radius: 4px 0 0 4px;
+        }
+
+        .fantasy-zone-right {
+            right: 0;
+            width: 14.28%;
+            background: repeating-linear-gradient(45deg, rgba(251, 191, 36, 0.1), rgba(251, 191, 36, 0.1) 3px, transparent 3px, transparent 6px);
+            border: 1px dashed rgba(251, 191, 36, 0.3);
+            border-left: none;
+            border-radius: 0 4px 4px 0;
+        }
+
+        /* Custom range slider */
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            outline: none;
+            cursor: pointer;
+            position: relative;
+            z-index: 1;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #a78bfa, #7c3aed);
+            box-shadow: 0 0 10px rgba(167, 139, 250, 0.5);
+            cursor: pointer;
+            margin-top: -7px;
+            transition: box-shadow 0.3s;
+        }
+
+        input[type="range"].in-fantasy::-webkit-slider-thumb {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            box-shadow: 0 0 15px rgba(251, 191, 36, 0.6);
+        }
+
+        input[type="range"]::-webkit-slider-runnable-track {
+            height: 8px;
+            border-radius: 4px;
+        }
+
+        /* Slider gradient colors */
+        .slider-bust {
+            background: linear-gradient(to right, #3b82f6, #60a5fa, #a78bfa, #f472b6, #ef4444);
+        }
+
+        .slider-muscle {
+            background: linear-gradient(to right, #3b82f6, #94a3b8, #60a5fa, #a78bfa, #f97316, #ef4444);
+        }
+
+        .slider-height {
+            background: linear-gradient(to right, #3b82f6, #f9a8d4, #94a3b8, #60a5fa, #a78bfa, #ef4444);
+        }
+
+        .slider-weight {
+            background: linear-gradient(to right, #3b82f6, #60a5fa, #94a3b8, #a78bfa, #f97316, #ef4444);
+        }
+
+        /* === Output Box === */
+        .output-box {
+            margin-bottom: 16px;
+        }
+
+        .output-label {
+            font-size: 0.75rem;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+        }
+
+        .output-text {
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(148, 163, 184, 0.1);
+            border-radius: 10px;
+            padding: 14px;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            color: #cbd5e1;
+            min-height: 60px;
+            word-wrap: break-word;
+            white-space: pre-wrap;
+        }
+
+        .output-text .positive {
+            color: #86efac;
+        }
+
+        .output-text .negative {
+            color: #fca5a5;
+        }
+
+        .output-text .weight {
+            color: #fcd34d;
+        }
+
+        .output-text .tag {
+            color: #93c5fd;
+        }
+
+        .output-text .fantasy-tag {
+            color: #fbbf24;
+            font-weight: 600;
+        }
+
+        /* Weight indicator */
+        .weight-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 8px;
+            font-size: 0.78rem;
+        }
+
+        .weight-bar {
+            flex: 1;
+            height: 6px;
+            background: rgba(51, 65, 85, 0.5);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .weight-fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.3s, background 0.3s;
+        }
+
+        .weight-num {
+            font-weight: 600;
+            min-width: 30px;
+            text-align: right;
+        }
+
+        /* Fantasy warning banner */
+        .fantasy-banner {
+            background: linear-gradient(135deg, rgba(251, 191, 36, 0.15), rgba(245, 158, 11, 0.1));
+            border: 1px solid rgba(251, 191, 36, 0.3);
+            border-radius: 10px;
+            padding: 10px 14px;
+            margin-bottom: 16px;
+            font-size: 0.78rem;
+            color: #fbbf24;
+            display: none;
+            align-items: center;
+            gap: 8px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .fantasy-banner.show {
+            display: flex;
+        }
+
+        .fantasy-banner .icon {
+            font-size: 1.2rem;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Explanation panel */
+        .explanation {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(148, 163, 184, 0.1);
+            border-radius: 10px;
+            padding: 14px;
+            margin-top: 16px;
+            font-size: 0.78rem;
+            line-height: 1.6;
+            color: #94a3b8;
+        }
+
+        .explanation strong {
+            color: #e2e8f0;
+        }
+
+        /* Quick presets */
+        .presets {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 12px;
+        }
+
+        .preset-btn {
+            padding: 6px 12px;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 8px;
+            background: rgba(51, 65, 85, 0.4);
+            color: #94a3b8;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .preset-btn:hover {
+            border-color: #a78bfa;
+            color: #e2e8f0;
+            background: rgba(167, 139, 250, 0.15);
+        }
+
+        .preset-btn.fantasy-preset {
+            border-color: rgba(251, 191, 36, 0.3);
+            color: #fbbf24;
+        }
+
+        .preset-btn.fantasy-preset:hover {
+            border-color: #fbbf24;
+            background: rgba(251, 191, 36, 0.15);
+        }
+
+        .preset-divider {
+            width: 100%;
+            height: 1px;
+            background: rgba(148, 163, 184, 0.1);
+            margin: 4px 0;
+        }
+
+        .preset-section-label {
+            width: 100%;
+            font-size: 0.65rem;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>🎛️ 身材控制系統 Demo v2 — 含幻想級別</h1>
+    <p class="subtitle">Body Type Weight System — 現實 ↔ 幻想級別 7 段滑桿</p>
+
+    <div class="layout">
+        <!-- Left: Controls -->
+        <div class="panel">
+            <h2>⚙️ 控制面板</h2>
+
+            <!-- Gender -->
+            <div class="gender-toggle">
+                <button class="gender-btn active" onclick="setGender('female')">♀ 女性</button>
+                <button class="gender-btn" onclick="setGender('male')">♂ 男性</button>
+            </div>
+
+            <!-- PRIMARY: BUST SIZE / MUSCULATURE -->
+            <div class="feature-group" id="group-primary">
+                <div class="feature-header">
+                    <span class="feature-label" id="label-primary">胸部大小 (Bust Size)</span>
+                    <span class="feature-value" id="value-primary">中等自然</span>
+                </div>
+                <div class="scale-labels" id="scale-primary">
+                    <span class="fantasy-label">🔮 無</span>
+                    <span>平坦</span>
+                    <span>偏小</span>
+                    <span>中等</span>
+                    <span>豐滿</span>
+                    <span>巨大</span>
+                    <span class="fantasy-label">🔮 超巨</span>
+                </div>
+                <div class="slider-wrapper">
+                    <div class="fantasy-zone fantasy-zone-left"></div>
+                    <div class="fantasy-zone fantasy-zone-right"></div>
+                    <input type="range" id="slider-primary" class="slider-bust" min="1" max="7" value="4" step="1"
+                        oninput="updateAll()">
+                </div>
+            </div>
+
+            <!-- BUILD / FRAME -->
+            <div class="feature-group">
+                <div class="feature-header">
+                    <span class="feature-label">體型 (Build)</span>
+                    <span class="feature-value" id="value-build">標準</span>
+                </div>
+                <div class="scale-labels">
+                    <span class="fantasy-label">🔮 骨感</span>
+                    <span>纖瘦</span>
+                    <span>苗條</span>
+                    <span>標準</span>
+                    <span>豐腴</span>
+                    <span>壯碩</span>
+                    <span class="fantasy-label">🔮 泰坦</span>
+                </div>
+                <div class="slider-wrapper">
+                    <div class="fantasy-zone fantasy-zone-left"></div>
+                    <div class="fantasy-zone fantasy-zone-right"></div>
+                    <input type="range" id="slider-build" class="slider-weight" min="1" max="7" value="4" step="1"
+                        oninput="updateAll()">
+                </div>
+            </div>
+
+            <!-- HEIGHT -->
+            <div class="feature-group">
+                <div class="feature-header">
+                    <span class="feature-label">身高比例 (Height)</span>
+                    <span class="feature-value" id="value-height">中等</span>
+                </div>
+                <div class="scale-labels">
+                    <span class="fantasy-label">🔮 蟻人</span>
+                    <span>嬌小</span>
+                    <span>偏矮</span>
+                    <span>中等</span>
+                    <span>偏高</span>
+                    <span>高挑</span>
+                    <span class="fantasy-label">🔮 巨人</span>
+                </div>
+                <div class="slider-wrapper">
+                    <div class="fantasy-zone fantasy-zone-left"></div>
+                    <div class="fantasy-zone fantasy-zone-right"></div>
+                    <input type="range" id="slider-height" class="slider-height" min="1" max="7" value="4" step="1"
+                        oninput="updateAll()">
+                </div>
+            </div>
+
+            <!-- PRESETS -->
+            <div style="margin-top: 20px;">
+                <div class="feature-label" style="margin-bottom: 10px;">快速預設 (Quick Presets)</div>
+                <div class="presets" id="preset-female">
+                    <span class="preset-section-label">寫實 Realistic</span>
+                    <button class="preset-btn" onclick="applyPreset('loli')">蘿莉體型</button>
+                    <button class="preset-btn" onclick="applyPreset('petite')">嬌小少女</button>
+                    <button class="preset-btn" onclick="applyPreset('slim')">苗條纖細</button>
+                    <button class="preset-btn" onclick="applyPreset('average')">標準均勻</button>
+                    <button class="preset-btn" onclick="applyPreset('curvy')">曲線性感</button>
+                    <button class="preset-btn" onclick="applyPreset('voluptuous')">豐滿誘人</button>
+                    <button class="preset-btn" onclick="applyPreset('athletic_f')">運動健美</button>
+                    <div class="preset-divider"></div>
+                    <span class="preset-section-label">🔮 幻想 Fantasy</span>
+                    <button class="preset-btn fantasy-preset" onclick="applyPreset('fairy')">🧚 精靈仙子</button>
+                    <button class="preset-btn fantasy-preset" onclick="applyPreset('oppai')">🎯 超乳幻想</button>
+                    <button class="preset-btn fantasy-preset" onclick="applyPreset('amazon')">⚔️ 亞馬遜女戰士</button>
+                    <button class="preset-btn fantasy-preset" onclick="applyPreset('giantess')">🏔️ 巨人族女性</button>
+                    <button class="preset-btn fantasy-preset" onclick="applyPreset('pixie')">✨ 小精靈</button>
+                </div>
+                <div class="presets" id="preset-male" style="display: none;">
+                    <span class="preset-section-label">寫實 Realistic</span>
+                    <button class="preset-btn" onclick="applyPreset('shota')">正太體型</button>
+                    <button class="preset-btn" onclick="applyPreset('slim_m')">纖瘦少年</button>
+                    <button class="preset-btn" onclick="applyPreset('average_m')">標準體型</button>
+                    <button class="preset-btn" onclick="applyPreset('athletic_m')">運動型</button>
+                    <button class="preset-btn" onclick="applyPreset('muscular')">肌肉壯碩</button>
+                    <div class="preset-divider"></div>
+                    <span class="preset-section-label">🔮 幻想 Fantasy</span>
+                    <button class="preset-btn fantasy-preset" onclick="applyPreset('elf_m')">🧝 精靈族</button>
+                    <button class="preset-btn fantasy-preset" onclick="applyPreset('hulk')">💪 浩克體型</button>
+                    <button class="preset-btn fantasy-preset" onclick="applyPreset('titan')">🏔️ 泰坦巨人</button>
+                    <button class="preset-btn fantasy-preset" onclick="applyPreset('antman')">🐜 蟻人縮小</button>
+                    <button class="preset-btn fantasy-preset" onclick="applyPreset('skeleton')">💀 骷髏法師</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: Output -->
+        <div class="panel">
+            <h2>📝 生成結果</h2>
+
+            <div class="fantasy-banner" id="fantasy-banner">
+                <span class="icon">🔮</span>
+                <span>已進入<strong>幻想級別</strong>！提示詞將包含超現實描述，權重大幅提高以確保 AI 生成效果。</span>
+            </div>
+
+            <div class="output-box">
+                <div class="output-label">✅ 正向提示詞 (Positive Prompt)</div>
+                <div class="output-text" id="out-positive"></div>
+                <div class="weight-indicator">
+                    <span style="color: #64748b;">控制力度:</span>
+                    <div class="weight-bar">
+                        <div class="weight-fill" id="weight-fill-pos" style="width: 30%; background: #86efac;"></div>
+                    </div>
+                    <span class="weight-num" id="weight-num-pos" style="color: #86efac;">1.1</span>
+                </div>
+            </div>
+
+            <div class="output-box">
+                <div class="output-label">❌ 負向提示詞 (Negative Prompt)</div>
+                <div class="output-text" id="out-negative"></div>
+            </div>
+
+            <div class="output-box">
+                <div class="output-label">📋 完整 YAML 輸出</div>
+                <div class="output-text" id="out-yaml" style="font-family: 'Consolas', monospace; font-size: 0.8rem;">
+                </div>
+            </div>
+
+            <div class="explanation" id="explanation"></div>
+        </div>
+    </div>
+
+    <script>
+        let gender = 'female';
+
+        // =========================================
+        // 7-LEVEL FEMALE BUST (with fantasy ends)
+        // =========================================
+        const FEMALE_BUST = {
+            1: {
+                zh: '🔮 完全無胸 / Doll-flat',
+                positive: ['completely flat chest', 'no breasts at all', 'doll-like torso', 'child-like flat body'],
+                negative: ['breasts', 'cleavage', 'bust', 'curvy', 'voluptuous', 'busty', 'chest'],
+                weight: 1.7,
+                fantasy: true,
+                explain: '🔮 <strong>幻想級 — 完全無胸</strong>：如人偶或精靈般完全平坦的胸部。需要極高權重 (1.7) + 全面壓制負向提示詞。適合精靈、仙子、人偶等非人類角色。'
+            },
+            2: {
+                zh: '非常平坦 / Flat Chest',
+                positive: ['flat chest', 'very small breasts', 'almost flat'],
+                negative: ['big breasts', 'large breasts', 'cleavage', 'voluptuous', 'curvy', 'busty'],
+                weight: 1.5,
+                fantasy: false,
+                explain: '<strong>非常平坦</strong>：逆勢設定，需要高權重 (1.5) + 大量負向提示詞壓制 AI 預設偏好。建議搭配 young girl body 或 loli proportions。'
+            },
+            3: {
+                zh: '偏小纖細 / Small',
+                positive: ['small breasts', 'petite breasts', 'subtle curves', 'slim figure'],
+                negative: ['large breasts', 'big breasts', 'voluptuous', 'curvy', 'busty', 'cleavage'],
+                weight: 1.35,
+                fantasy: false,
+                explain: '<strong>偏小纖細</strong>：較逆勢，權重 (1.35)。建議把 age descriptor 中的 mature womanly figure 改為 youthful slim figure。'
+            },
+            4: {
+                zh: '中等自然 / Medium',
+                positive: ['medium breasts', 'natural breasts', 'modest bust'],
+                negative: ['huge breasts', 'massive breasts', 'exaggerated proportions'],
+                weight: 1.1,
+                fantasy: false,
+                explain: '<strong>中等自然</strong>：最接近 AI 預設，只需微調權重 (1.1)。建議去掉 feminine curves 改用 gentle curves。'
+            },
+            5: {
+                zh: '豐滿 / Large',
+                positive: ['large breasts', 'full breasts', 'curvy', 'voluptuous figure'],
+                negative: ['small breasts', 'flat chest', 'petite breasts'],
+                weight: 1.2,
+                fantasy: false,
+                explain: '<strong>豐滿</strong>：順勢設定，AI 容易生成。權重 (1.2) 足夠。'
+            },
+            6: {
+                zh: '非常豐滿 / Huge',
+                positive: ['huge breasts', 'massive breasts', 'voluptuous', 'busty'],
+                negative: [],
+                weight: 1.4,
+                fantasy: false,
+                explain: '<strong>非常豐滿</strong>：極端豐滿。因已遠超預設，需要較高權重 (1.4) 確保穩定輸出。幾乎不需要負向提示詞。'
+            },
+            7: {
+                zh: '🔮 超乳幻想 / Fantasy Massive',
+                positive: ['impossibly huge breasts', 'gigantic breasts', 'breast bigger than head', 'absurdly large bust', 'gravity-defying breasts'],
+                negative: ['small breasts', 'flat chest', 'realistic proportions', 'normal breasts'],
+                weight: 1.8,
+                fantasy: true,
+                explain: '🔮 <strong>幻想級 — 超乳</strong>：完全脫離現實比例的幻想級巨大。需要極高權重 (1.8) + 壓制 realistic proportions。僅適合動漫/幻想風格。'
+            }
+        };
+
+        // =========================================
+        // 7-LEVEL MALE MUSCULATURE (with fantasy ends)
+        // =========================================
+        const MALE_MUSCLE = {
+            1: {
+                zh: '🔮 骷髏骨感 / Skeletal',
+                positive: ['extremely thin', 'skeletal body', 'emaciated', 'visible ribs', 'gaunt frame', 'unnaturally thin'],
+                negative: ['muscular', 'buff', 'brawny', 'broad shoulders', 'ripped', 'healthy', 'normal body'],
+                weight: 1.7,
+                fantasy: true,
+                explain: '🔮 <strong>幻想級 — 骷髏骨感</strong>：如亡靈法師、骷髏般的超自然消瘦。權重 (1.7) + 大量負向提示詞。適合不死族、法師等角色。'
+            },
+            2: {
+                zh: '纖瘦少年 / Slim',
+                positive: ['slim body', 'slender body', 'thin frame', 'delicate build'],
+                negative: ['muscular', 'buff', 'brawny', 'broad shoulders', 'ripped'],
+                weight: 1.3,
+                fantasy: false,
+                explain: '<strong>纖瘦少年</strong>：逆勢設定，AI 傾向生成較壯男性。高權重 (1.3) + 負向提示詞壓制肌肉。'
+            },
+            3: {
+                zh: '偏瘦精緻 / Lean',
+                positive: ['lean body', 'slim athletic build', 'light muscle tone'],
+                negative: ['muscular', 'buff', 'thick', 'brawny'],
+                weight: 1.2,
+                fantasy: false,
+                explain: '<strong>偏瘦精緻</strong>：中度逆勢，精壯但不過度。權重 (1.2) 搭配控制。'
+            },
+            4: {
+                zh: '標準體型 / Average',
+                positive: ['average build', 'normal body', 'moderate build'],
+                negative: ['extremely muscular', 'very thin', 'obese'],
+                weight: 1.0,
+                fantasy: false,
+                explain: '<strong>標準體型</strong>：AI 預設範圍，幾乎不需額外權重。'
+            },
+            5: {
+                zh: '運動壯碩 / Athletic',
+                positive: ['athletic body', 'muscular build', 'toned body', 'broad shoulders'],
+                negative: ['thin', 'slender', 'skinny', 'delicate'],
+                weight: 1.2,
+                fantasy: false,
+                explain: '<strong>運動壯碩</strong>：順勢設定，AI 易生成。權重 (1.2) 穩定控制。'
+            },
+            6: {
+                zh: '極度壯碩 / Massive',
+                positive: ['extremely muscular', 'huge muscles', 'bodybuilder physique', 'massive frame'],
+                negative: ['thin', 'slim', 'slender', 'skinny'],
+                weight: 1.4,
+                fantasy: false,
+                explain: '<strong>極度壯碩</strong>：極端設定，需高權重 (1.4) 確保極致肌肉表現。'
+            },
+            7: {
+                zh: '🔮 浩克巨獸 / Hulk',
+                positive: ['impossibly muscular', 'hulk-like body', 'grotesquely muscular', 'muscles bigger than head', 'superhero physique', 'inhuman muscle mass'],
+                negative: ['thin', 'slim', 'slender', 'skinny', 'normal body', 'realistic proportions'],
+                weight: 1.8,
+                fantasy: true,
+                explain: '🔮 <strong>幻想級 — 浩克巨獸</strong>：超越人類極限的肌肉量，如漫威浩克。需要極高權重 (1.8)。僅適合超級英雄/怪物角色。'
+            }
+        };
+
+        // =========================================
+        // 7-LEVEL BUILD (with fantasy ends)
+        // =========================================
+        const BUILD = {
+            1: {
+                zh: '🔮 紙片人', positive: ['paper-thin body', 'impossibly thin', '2d flat body', 'stick figure proportions'], negative: ['thick', 'chubby', 'round', 'normal body', 'realistic'], weight: 1.6, fantasy: true,
+                explain: '🔮 <strong>幻想級 — 紙片人</strong>：如動漫中極端纖細的非現實體型，或精靈族的超自然纖細。'
+            },
+            2: {
+                zh: '纖瘦', positive: ['skinny body', 'very thin'], negative: ['thick', 'chubby', 'round'], weight: 1.2, fantasy: false,
+                explain: '<strong>纖瘦</strong>：明顯偏瘦，權重 (1.2) + 壓制負向。'
+            },
+            3: {
+                zh: '苗條', positive: ['slim body', 'slender'], negative: ['thick', 'chubby'], weight: 1.1, fantasy: false,
+                explain: '<strong>苗條</strong>：健康的纖細，微調即可。'
+            },
+            4: {
+                zh: '標準', positive: ['average body'], negative: [], weight: 1.0, fantasy: false,
+                explain: '<strong>標準</strong>：AI 預設範圍。'
+            },
+            5: {
+                zh: '豐腴', positive: ['plump body', 'soft figure'], negative: ['skinny', 'thin'], weight: 1.2, fantasy: false,
+                explain: '<strong>豐腴</strong>：略帶豐滿感，權重 (1.2)。'
+            },
+            6: {
+                zh: '壯碩', positive: ['thick body', 'large frame'], negative: ['thin', 'slim', 'slender'], weight: 1.3, fantasy: false,
+                explain: '<strong>壯碩</strong>：厚實體型，需要較高控制。'
+            },
+            7: {
+                zh: '🔮 泰坦', positive: ['titan-sized body', 'colossal frame', 'impossibly massive build', 'mountain-like physique'], negative: ['thin', 'slim', 'normal', 'human-sized', 'realistic'], weight: 1.7, fantasy: true,
+                explain: '🔮 <strong>幻想級 — 泰坦</strong>：如進擊的巨人般的超自然龐大體型。完全脫離人類比例。'
+            }
+        };
+
+        // =========================================
+        // 7-LEVEL HEIGHT (with fantasy ends)
+        // =========================================
+        const HEIGHT = {
+            1: {
+                zh: '🔮 蟻人/小精靈', positive: ['miniature body', 'fairy-sized', 'tiny creature', 'palm-sized', 'chibi proportions', 'ant-sized'], negative: ['tall', 'long legs', 'normal height', 'human-sized'], weight: 1.8, fantasy: true,
+                explain: '🔮 <strong>幻想級 — 蟻人/小精靈</strong>：如手掌大小的精靈、仙子或蟻人縮小狀態。需要極高權重 (1.8)。'
+            },
+            2: {
+                zh: '嬌小', positive: ['petite body', 'small frame', 'short stature'], negative: ['tall', 'long legs'], weight: 1.3, fantasy: false,
+                explain: '<strong>嬌小</strong>：明顯矮小或像小孩的身高。'
+            },
+            3: {
+                zh: '偏矮', positive: ['short body', 'compact build'], negative: ['tall'], weight: 1.15, fantasy: false,
+                explain: '<strong>偏矮</strong>：略矮，微調。'
+            },
+            4: {
+                zh: '中等', positive: [], negative: [], weight: 1.0, fantasy: false,
+                explain: '<strong>中等</strong>：正常身高，不需要額外控制。'
+            },
+            5: {
+                zh: '偏高', positive: ['tall body', 'long legs'], negative: ['short', 'petite'], weight: 1.15, fantasy: false,
+                explain: '<strong>偏高</strong>：略高，微調。'
+            },
+            6: {
+                zh: '高挑', positive: ['very tall', 'long legs', 'elongated proportions'], negative: ['short', 'petite', 'small'], weight: 1.3, fantasy: false,
+                explain: '<strong>高挑</strong>：明顯高挑。'
+            },
+            7: {
+                zh: '🔮 巨人族', positive: ['giant', 'towering over buildings', 'colossal height', '3 meters tall', 'gigantic humanoid', 'looking down at tiny people'], negative: ['short', 'petite', 'small', 'normal height', 'human-sized'], weight: 1.8, fantasy: true,
+                explain: '🔮 <strong>幻想級 — 巨人族</strong>：如進擊的巨人般的超自然身高（3公尺以上）。需要極高權重 (1.8) + 特殊構圖提示。'
+            }
+        };
+
+        // =========================================
+        // PRESETS (including fantasy)
+        // =========================================
+        const PRESETS = {
+            // Female Realistic
+            'loli': { primary: 2, build: 2, height: 2 },
+            'petite': { primary: 3, build: 3, height: 2 },
+            'slim': { primary: 3, build: 3, height: 4 },
+            'average': { primary: 4, build: 4, height: 4 },
+            'curvy': { primary: 5, build: 4, height: 4 },
+            'voluptuous': { primary: 6, build: 5, height: 4 },
+            'athletic_f': { primary: 4, build: 4, height: 5 },
+            // Female Fantasy
+            'fairy': { primary: 1, build: 1, height: 1 },
+            'oppai': { primary: 7, build: 4, height: 4 },
+            'amazon': { primary: 5, build: 6, height: 6 },
+            'giantess': { primary: 5, build: 6, height: 7 },
+            'pixie': { primary: 1, build: 1, height: 1 },
+            // Male Realistic
+            'shota': { primary: 2, build: 2, height: 2 },
+            'slim_m': { primary: 3, build: 3, height: 4 },
+            'average_m': { primary: 4, build: 4, height: 4 },
+            'athletic_m': { primary: 5, build: 4, height: 5 },
+            'muscular': { primary: 6, build: 5, height: 5 },
+            // Male Fantasy
+            'elf_m': { primary: 2, build: 2, height: 5 },
+            'hulk': { primary: 7, build: 7, height: 6 },
+            'titan': { primary: 7, build: 7, height: 7 },
+            'antman': { primary: 4, build: 4, height: 1 },
+            'skeleton': { primary: 1, build: 1, height: 4 }
+        };
+
+        function setGender(g) {
+            gender = g;
+            document.querySelectorAll('.gender-btn').forEach((btn, i) => {
+                btn.classList.toggle('active', (i === 0 && g === 'female') || (i === 1 && g === 'male'));
+            });
+
+            const labelPrimary = document.getElementById('label-primary');
+            const scalePrimary = document.getElementById('scale-primary');
+            const slider = document.getElementById('slider-primary');
+
+            if (g === 'female') {
+                labelPrimary.textContent = '胸部大小 (Bust Size)';
+                scalePrimary.innerHTML = '<span class="fantasy-label">🔮 無</span><span>平坦</span><span>偏小</span><span>中等</span><span>豐滿</span><span>巨大</span><span class="fantasy-label">🔮 超巨</span>';
+                slider.className = 'slider-bust';
+                document.getElementById('preset-female').style.display = 'flex';
+                document.getElementById('preset-male').style.display = 'none';
+            } else {
+                labelPrimary.textContent = '肌肉量 (Musculature)';
+                scalePrimary.innerHTML = '<span class="fantasy-label">🔮 骷髏</span><span>纖瘦</span><span>偏瘦</span><span>標準</span><span>壯碩</span><span>極壯</span><span class="fantasy-label">🔮 浩克</span>';
+                slider.className = 'slider-muscle';
+                document.getElementById('preset-female').style.display = 'none';
+                document.getElementById('preset-male').style.display = 'flex';
+            }
+            updateAll();
+        }
+
+        function applyPreset(name) {
+            const p = PRESETS[name];
+            if (!p) return;
+            document.getElementById('slider-primary').value = p.primary;
+            document.getElementById('slider-build').value = p.build;
+            document.getElementById('slider-height').value = p.height;
+            updateAll();
+        }
+
+        function formatWeighted(tags, weight, isFantasy) {
+            if (tags.length === 0) return '';
+            if (weight <= 1.0) return tags.join(', ');
+            const cls = isFantasy ? 'fantasy-tag' : 'weight';
+            return tags.map(t => `<span class="${cls}">(${t}:${weight.toFixed(1)})</span>`).join(', ');
+        }
+
+        function updateAll() {
+            const pVal = parseInt(document.getElementById('slider-primary').value);
+            const bVal = parseInt(document.getElementById('slider-build').value);
+            const hVal = parseInt(document.getElementById('slider-height').value);
+
+            const primary = gender === 'female' ? FEMALE_BUST[pVal] : MALE_MUSCLE[pVal];
+            const build = BUILD[bVal];
+            const height = HEIGHT[hVal];
+
+            // Check if any slider is in fantasy zone
+            const hasFantasy = primary.fantasy || build.fantasy || height.fantasy;
+
+            // Update fantasy banner
+            document.getElementById('fantasy-banner').classList.toggle('show', hasFantasy);
+
+            // Update value labels with fantasy class
+            const valPrimary = document.getElementById('value-primary');
+            const valBuild = document.getElementById('value-build');
+            const valHeight = document.getElementById('value-height');
+            valPrimary.textContent = primary.zh;
+            valBuild.textContent = build.zh;
+            valHeight.textContent = height.zh;
+            valPrimary.classList.toggle('fantasy', primary.fantasy);
+            valBuild.classList.toggle('fantasy', build.fantasy);
+            valHeight.classList.toggle('fantasy', height.fantasy);
+
+            // Update slider fantasy class
+            document.getElementById('slider-primary').classList.toggle('in-fantasy', primary.fantasy);
+            document.getElementById('slider-build').classList.toggle('in-fantasy', build.fantasy);
+            document.getElementById('slider-height').classList.toggle('in-fantasy', height.fantasy);
+
+            // Compute combined positive
+            let allPositive = [];
+            let allNegative = [];
+
+            if (primary.positive.length) allPositive.push(formatWeighted(primary.positive, primary.weight, primary.fantasy));
+            if (build.positive.length) allPositive.push(formatWeighted(build.positive, build.weight, build.fantasy));
+            if (height.positive.length) allPositive.push(formatWeighted(height.positive, height.weight, height.fantasy));
+
+            allNegative = [...primary.negative, ...build.negative, ...height.negative];
+            allNegative = [...new Set(allNegative)]; // deduplicate
+
+            // Positive output
+            const posDiv = document.getElementById('out-positive');
+            posDiv.innerHTML = allPositive.filter(Boolean).join(', ') || '<span style="color: #64748b;">（標準設定，無額外正向提示詞）</span>';
+
+            // Negative output
+            const negDiv = document.getElementById('out-negative');
+            negDiv.innerHTML = allNegative.length
+                ? allNegative.map(t => `<span class="negative">${t}</span>`).join(', ')
+                : '<span style="color: #64748b;">（無需負向提示詞）</span>';
+
+            // YAML output
+            const yamlDiv = document.getElementById('out-yaml');
+            let yaml = '';
+            if (primary.positive.length) {
+                const pKey = gender === 'female' ? 'bust' : 'musculature';
+                const prefix = primary.fantasy ? '🔮 ' : '';
+                yaml += `<span class="tag">${pKey}:</span> ${prefix}${primary.positive.map(t => primary.weight > 1 ? `(${t}:${primary.weight.toFixed(1)})` : t).join(', ')}\n`;
+            }
+            if (build.positive.length) {
+                const prefix = build.fantasy ? '🔮 ' : '';
+                yaml += `<span class="tag">build:</span> ${prefix}${build.positive.map(t => build.weight > 1 ? `(${t}:${build.weight.toFixed(1)})` : t).join(', ')}\n`;
+            }
+            if (height.positive.length) {
+                const prefix = height.fantasy ? '🔮 ' : '';
+                yaml += `<span class="tag">height:</span> ${prefix}${height.positive.map(t => height.weight > 1 ? `(${t}:${height.weight.toFixed(1)})` : t).join(', ')}\n`;
+            }
+            if (allNegative.length) {
+                yaml += `<span class="negative">negative:</span> ${allNegative.join(', ')}`;
+            }
+            yamlDiv.innerHTML = yaml || '<span style="color: #64748b;">body: average body</span>';
+
+            // Weight indicator
+            const maxWeight = Math.max(primary.weight, build.weight, height.weight);
+            const fillPct = Math.min(((maxWeight - 1.0) / 0.8) * 100, 100);
+            const fillEl = document.getElementById('weight-fill-pos');
+            const numEl = document.getElementById('weight-num-pos');
+            fillEl.style.width = fillPct + '%';
+            numEl.textContent = maxWeight.toFixed(1);
+
+            if (maxWeight >= 1.6) {
+                fillEl.style.background = 'linear-gradient(to right, #fbbf24, #ef4444, #dc2626)';
+                numEl.style.color = '#fbbf24';
+            } else if (maxWeight >= 1.3) {
+                fillEl.style.background = 'linear-gradient(to right, #fbbf24, #ef4444)';
+                numEl.style.color = '#fca5a5';
+            } else if (maxWeight >= 1.15) {
+                fillEl.style.background = 'linear-gradient(to right, #86efac, #fbbf24)';
+                numEl.style.color = '#fcd34d';
+            } else {
+                fillEl.style.background = '#86efac';
+                numEl.style.color = '#86efac';
+            }
+
+            // Explanation: combine all slider explanations
+            let explainHTML = '';
+            explainHTML += `<strong>💡 原理說明：</strong><br>`;
+            explainHTML += `<br>▸ <strong>${gender === 'female' ? '胸部' : '肌肉'}</strong>：${primary.explain}`;
+            explainHTML += `<br><br>▸ <strong>體型</strong>：${build.explain}`;
+            explainHTML += `<br><br>▸ <strong>身高</strong>：${height.explain}`;
+            document.getElementById('explanation').innerHTML = explainHTML;
+        }
+
+        // Init
+        updateAll();
+    </script>
+
+</body>
+
+</html>
