@@ -7,6 +7,19 @@ window.PromptGen.Changelog = (function () {
     // Changelog Data
     const changelog = [
         {
+            version: "v6.5",
+            date: "2026-02-18",
+            changes: [
+                "🔮 職業高級魔法 Modal：250 個職業 × 9 大分類（日常/演藝/戰鬥/魔法/黑暗/王族/服務/技藝/冒險）",
+                "🔥 職業熱門 Tab：Top 20 人氣職業 + 火焰 badge",
+                "📋 職業最近使用記錄（localStorage 最多 10 筆）",
+                "🎲 職業隨機骰子選取 + 旋轉動畫 + 音效",
+                "✨ 每個分類專屬加分特徵（Bonus Traits），選取後自動附加 prompt",
+                "🔍 職業搜尋功能：支援中英文即時過濾",
+                "📊 職業 section 升級為分頁式 Grid + 已選 badge"
+            ]
+        },
+        {
             version: "v6.4",
             date: "2026-02-18",
             changes: [

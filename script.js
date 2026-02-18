@@ -366,6 +366,81 @@
                 return; // race section 處理完畢，跳過下方通用邏輯
             }
 
+            // === v6.5 職業分頁 — job section 特殊處理 ===
+            if (section.id === 'job') {
+                // 高級魔法專用按鈕
+                const jobMagicBtn = document.createElement('button');
+                jobMagicBtn.className = 'race-magic-btn';
+                jobMagicBtn.innerHTML = '<i class="fa-solid fa-wand-sparkles"></i> ' +
+                    (state.lang === 'zh' ? '🔮 高級魔法專用' : '🔮 Advanced Magic');
+                jobMagicBtn.addEventListener('click', () => {
+                    openJobMagicModal();
+                });
+                const jobCustomToggle = header.querySelector('.btn-custom-toggle');
+                const jobBtnGroup = document.createElement('div');
+                jobBtnGroup.className = 'section-header-buttons';
+                header.insertBefore(jobBtnGroup, jobCustomToggle);
+                jobBtnGroup.appendChild(jobMagicBtn);
+                jobBtnGroup.appendChild(jobCustomToggle);
+
+                // 已選職業 badge
+                if (state.selections.job) {
+                    const jobObj = JOBS.find(j => j.value === state.selections.job);
+                    if (jobObj) {
+                        const badge = document.createElement('span');
+                        badge.className = 'selected-race-badge';
+                        badge.innerHTML = `✓ ${getOptionLabel(jobObj)} <span class="badge-x" title="${state.lang === 'zh' ? '取消選擇' : 'Deselect'}">✕</span>`;
+                        badge.querySelector('.badge-x').addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            delete state.selections.job;
+                            renderTabContent();
+                            generatePrompt();
+                            saveState();
+                        });
+                        const titleEl = header.querySelector('.section-block-title');
+                        const titleWrapper = document.createElement('div');
+                        titleWrapper.className = 'section-title-with-badge';
+                        titleEl.parentNode.insertBefore(titleWrapper, titleEl);
+                        titleWrapper.appendChild(titleEl);
+                        titleWrapper.appendChild(badge);
+                    }
+                }
+
+                // 渲染分頁 grid（沿用 race 的分頁機制）
+                renderPaginatedRaceGrid(sectionEl, section, JOBS);
+                tabContent.appendChild(sectionEl);
+
+                // Custom input
+                if (state.customInputVisible[section.id]) {
+                    const customRow = document.createElement('div');
+                    customRow.className = 'custom-input-row';
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.className = 'custom-section-input';
+                    input.placeholder = state.lang === 'zh' ? '輸入自訂值...' : 'Enter custom value...';
+                    input.value = state.customInputs[section.id] || '';
+                    input.addEventListener('input', (e) => {
+                        state.customInputs[section.id] = e.target.value.trim();
+                        generatePrompt();
+                    });
+                    customRow.appendChild(input);
+                    const clearBtn = document.createElement('button');
+                    clearBtn.className = 'btn-clear-custom';
+                    clearBtn.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+                    clearBtn.addEventListener('click', () => {
+                        state.customInputs[section.id] = '';
+                        state.customInputVisible[section.id] = false;
+                        renderTabContent();
+                        generatePrompt();
+                    });
+                    customRow.appendChild(clearBtn);
+                    sectionEl.appendChild(customRow);
+                }
+
+                tabContent.appendChild(sectionEl);
+                return; // job section 處理完畢
+            }
+
             // Determine data source
             let data = section.data;
             if (section.genderDependent) {
@@ -490,6 +565,13 @@
     // ============================================
     function openRaceMagicModal() {
         window.PromptGen.RaceMagicModal.openRaceMagicModal();
+    }
+
+    // ============================================
+    // Job Magic Modal — 由 modules/job-magic-modal.js 提供
+    // ============================================
+    function openJobMagicModal() {
+        window.PromptGen.JobMagicModal.openJobMagicModal();
     }
 
     // ============================================
@@ -1043,6 +1125,9 @@
     });
     window.PromptGen.RaceMagicModal.setup({
         state, sfx, RACES, selectOption, generatePrompt, saveState, renderTabContent
+    });
+    window.PromptGen.JobMagicModal.setup({
+        state, sfx, JOBS, selectOption, generatePrompt, saveState, renderTabContent
     });
     window.PromptGen.ConflictSystem.setup({
         state, sfx, CONFLICT_RULES, generatePrompt, saveState, selectOption,
