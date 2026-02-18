@@ -56,7 +56,9 @@
         conflictResolution: null,
         conflictInfo: null,
         conflictWarningCount: 0,
-        racePage: 1  // v6.3 種族分頁當前頁碼
+        racePage: 1,  // v6.3 種族分頁當前頁碼
+        hairstylePage: 1,  // v6.6 髮型分頁
+        bodyTypePage: 1    // v6.6 身材分頁
     };
 
     // All section IDs for iteration
@@ -446,120 +448,243 @@
                 return; // job section 處理完畢
             }
 
+            // === v6.6 髮型分頁 — hairstyle section 特殊處理 ===
+            if (section.id === 'hairstyle') {
+                // 高級魔法專用按鈕
+                const hairMagicBtn = document.createElement('button');
+                hairMagicBtn.className = 'race-magic-btn';
+                hairMagicBtn.innerHTML = '<i class="fa-solid fa-wand-sparkles"></i> ' +
+                    (state.lang === 'zh' ? '🔮 高級魔法專用' : '🔮 Advanced Magic');
+                hairMagicBtn.addEventListener('click', () => {
+                    openHairMagicModal();
+                });
+                const hairCustomToggle = header.querySelector('.btn-custom-toggle');
+                const hairBtnGroup = document.createElement('div');
+                hairBtnGroup.className = 'section-header-buttons';
+                header.insertBefore(hairBtnGroup, hairCustomToggle);
+                hairBtnGroup.appendChild(hairMagicBtn);
+                hairBtnGroup.appendChild(hairCustomToggle);
+
+                // 已選髮型 badge
+                if (state.selections.hairstyle) {
+                    const hairData = state.gender === 'female' ? HAIRSTYLES_FEMALE : HAIRSTYLES_MALE;
+                    const hairObj = hairData.find(h => h.value === state.selections.hairstyle);
+                    if (hairObj) {
+                        const badge = document.createElement('span');
+                        badge.className = 'selected-race-badge';
+                        badge.innerHTML = `✓ ${getOptionLabel(hairObj)} <span class="badge-x" title="${state.lang === 'zh' ? '取消選擇' : 'Deselect'}">✕</span>`;
+                        badge.querySelector('.badge-x').addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            delete state.selections.hairstyle;
+                            renderTabContent();
+                            generatePrompt();
+                            saveState();
+                        });
+                        const titleEl = header.querySelector('.section-block-title');
+                        const titleWrapper = document.createElement('div');
+                        titleWrapper.className = 'section-title-with-badge';
+                        titleEl.parentNode.insertBefore(titleWrapper, titleEl);
+                        titleWrapper.appendChild(titleEl);
+                        titleWrapper.appendChild(badge);
+                    }
+                }
+
+                // If hairAdvanced modal has selections, show summary bar
+                if (state.hairAdvanced && state.hairAdvanced.selectedItems && state.hairAdvanced.selectedItems.length > 0) {
+                    const hairItems = HAIR_MAGIC_DATA.ITEMS;
+                    const selNames = state.hairAdvanced.selectedItems.map(id => {
+                        const item = hairItems.find(it => it.id === id);
+                        return item ? item.name : id;
+                    }).join('、');
+                    const lengthLabel = state.hairAdvanced.hair_length
+                        ? HAIR_MAGIC_DATA.SLIDERS.HAIR_LENGTH.levels[state.hairAdvanced.hair_length].zh
+                        : null;
+
+                    const summaryBar = document.createElement('div');
+                    summaryBar.className = 'body-advanced-summary';
+                    const summaryText = document.createElement('span');
+                    summaryText.innerHTML = `✂️ ${state.lang === 'zh' ? '髮型魔法啟用中' : 'Hair Magic Active'}：${selNames}${lengthLabel ? ' / ' + lengthLabel : ''}`;
+
+                    const editBtn = document.createElement('button');
+                    editBtn.className = 'body-summary-action';
+                    editBtn.textContent = state.lang === 'zh' ? '編輯' : 'Edit';
+                    editBtn.addEventListener('click', () => openHairMagicModal());
+
+                    const clearBtn = document.createElement('button');
+                    clearBtn.className = 'body-summary-action clear';
+                    clearBtn.textContent = state.lang === 'zh' ? '清除' : 'Clear';
+                    clearBtn.addEventListener('click', () => {
+                        state.hairAdvanced = null;
+                        state.hairMagicPrompts = null;
+                        renderTabContent();
+                        generatePrompt();
+                        saveState();
+                    });
+
+                    summaryBar.appendChild(summaryText);
+                    summaryBar.appendChild(editBtn);
+                    summaryBar.appendChild(clearBtn);
+                    sectionEl.appendChild(summaryBar);
+                }
+
+                // 渲染分頁 grid
+                const hairGridData = state.gender === 'female' ? HAIRSTYLES_FEMALE : HAIRSTYLES_MALE;
+                renderPaginatedGrid(sectionEl, section, hairGridData, 'hairstylePage');
+                tabContent.appendChild(sectionEl);
+
+                // Custom input
+                if (state.customInputVisible[section.id]) {
+                    const customRow = document.createElement('div');
+                    customRow.className = 'custom-input-row';
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.className = 'custom-section-input';
+                    input.placeholder = state.lang === 'zh' ? '輸入自訂值...' : 'Enter custom value...';
+                    input.value = state.customInputs[section.id] || '';
+                    input.addEventListener('input', (e) => {
+                        state.customInputs[section.id] = e.target.value.trim();
+                        generatePrompt();
+                    });
+                    customRow.appendChild(input);
+                    const clearBtn = document.createElement('button');
+                    clearBtn.className = 'btn-clear-custom';
+                    clearBtn.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+                    clearBtn.addEventListener('click', () => {
+                        state.customInputs[section.id] = '';
+                        state.customInputVisible[section.id] = false;
+                        renderTabContent();
+                        generatePrompt();
+                    });
+                    customRow.appendChild(clearBtn);
+                    sectionEl.appendChild(customRow);
+                }
+
+                tabContent.appendChild(sectionEl);
+                return; // hairstyle section 處理完畢
+            }
+
+            // === v6.6 身材分頁 — bodyType section 特殊處理 ===
+            if (section.id === 'bodyType') {
+                // 高級魔法專用按鈕
+                const bodyMagicBtn = document.createElement('button');
+                bodyMagicBtn.className = 'race-magic-btn';
+                bodyMagicBtn.innerHTML = '<i class="fa-solid fa-wand-sparkles"></i> ' +
+                    (state.lang === 'zh' ? '🔮 高級魔法專用' : '🔮 Advanced Magic');
+                bodyMagicBtn.addEventListener('click', () => {
+                    openBodyMagicModal();
+                });
+                const bodyCustomToggle = header.querySelector('.btn-custom-toggle');
+                const bodyBtnGroup = document.createElement('div');
+                bodyBtnGroup.className = 'section-header-buttons';
+                header.insertBefore(bodyBtnGroup, bodyCustomToggle);
+                bodyBtnGroup.appendChild(bodyMagicBtn);
+                bodyBtnGroup.appendChild(bodyCustomToggle);
+
+                // 已選身材 badge
+                if (state.selections.bodyType) {
+                    const bodyData = state.gender === 'female' ? BODY_TYPES_FEMALE : BODY_TYPES_MALE;
+                    const bodyObj = bodyData.find(b => b.value === state.selections.bodyType);
+                    if (bodyObj) {
+                        const badge = document.createElement('span');
+                        badge.className = 'selected-race-badge';
+                        badge.innerHTML = `✓ ${getOptionLabel(bodyObj)} <span class="badge-x" title="${state.lang === 'zh' ? '取消選擇' : 'Deselect'}">✕</span>`;
+                        badge.querySelector('.badge-x').addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            delete state.selections.bodyType;
+                            renderTabContent();
+                            generatePrompt();
+                            saveState();
+                        });
+                        const titleEl = header.querySelector('.section-block-title');
+                        const titleWrapper = document.createElement('div');
+                        titleWrapper.className = 'section-title-with-badge';
+                        titleEl.parentNode.insertBefore(titleWrapper, titleEl);
+                        titleWrapper.appendChild(titleEl);
+                        titleWrapper.appendChild(badge);
+                    }
+                }
+
+                // If bodyAdvanced is active, show summary bar
+                if (state.bodyAdvanced) {
+                    const primaryData = state.gender === 'female' ? BODY_MAGIC_DATA.FEMALE_BUST : BODY_MAGIC_DATA.MALE_MUSCLE;
+                    const primaryInfo = primaryData[state.bodyAdvanced.primary || 4];
+                    const buildInfo = BODY_MAGIC_DATA.BUILD[state.bodyAdvanced.build || 4];
+                    const heightInfo = BODY_MAGIC_DATA.HEIGHT[state.bodyAdvanced.height || 4];
+
+                    const summaryBar = document.createElement('div');
+                    summaryBar.className = 'body-advanced-summary';
+                    const summaryText = document.createElement('span');
+                    summaryText.innerHTML = `🔮 ${state.lang === 'zh' ? '進階控制啟用中' : 'Advanced Active'}：${primaryInfo.zh} / ${buildInfo.zh} / ${heightInfo.zh}`;
+
+                    const editBtn = document.createElement('button');
+                    editBtn.className = 'body-summary-action';
+                    editBtn.textContent = state.lang === 'zh' ? '編輯' : 'Edit';
+                    editBtn.addEventListener('click', () => openBodyMagicModal());
+
+                    const clearBtn = document.createElement('button');
+                    clearBtn.className = 'body-summary-action clear';
+                    clearBtn.textContent = state.lang === 'zh' ? '清除' : 'Clear';
+                    clearBtn.addEventListener('click', () => {
+                        state.bodyAdvanced = null;
+                        renderTabContent();
+                        generatePrompt();
+                        saveState();
+                    });
+
+                    summaryBar.appendChild(summaryText);
+                    summaryBar.appendChild(editBtn);
+                    summaryBar.appendChild(clearBtn);
+                    sectionEl.appendChild(summaryBar);
+                }
+
+                // 渲染分頁 grid
+                const bodyGridData = state.gender === 'female' ? BODY_TYPES_FEMALE : BODY_TYPES_MALE;
+                renderPaginatedGrid(sectionEl, section, bodyGridData, 'bodyTypePage');
+
+                // If bodyAdvanced active, add disabled overlay
+                if (state.bodyAdvanced) {
+                    const tagGrid = sectionEl.querySelector('.tag-grid-paginated');
+                    if (tagGrid) tagGrid.classList.add('body-section-disabled');
+                }
+
+                tabContent.appendChild(sectionEl);
+
+                // Custom input
+                if (state.customInputVisible[section.id]) {
+                    const customRow = document.createElement('div');
+                    customRow.className = 'custom-input-row';
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.className = 'custom-section-input';
+                    input.placeholder = state.lang === 'zh' ? '輸入自訂值...' : 'Enter custom value...';
+                    input.value = state.customInputs[section.id] || '';
+                    input.addEventListener('input', (e) => {
+                        state.customInputs[section.id] = e.target.value.trim();
+                        generatePrompt();
+                    });
+                    customRow.appendChild(input);
+                    const clearBtn = document.createElement('button');
+                    clearBtn.className = 'btn-clear-custom';
+                    clearBtn.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+                    clearBtn.addEventListener('click', () => {
+                        state.customInputs[section.id] = '';
+                        state.customInputVisible[section.id] = false;
+                        renderTabContent();
+                        generatePrompt();
+                    });
+                    customRow.appendChild(clearBtn);
+                    sectionEl.appendChild(customRow);
+                }
+
+                tabContent.appendChild(sectionEl);
+                return; // bodyType section 處理完畢
+            }
+
             // Determine data source
             let data = section.data;
             if (section.genderDependent) {
-                if (section.id === 'hairstyle') {
-                    // === Hair Magic Button in header ===
-                    const hairMagicBtn = document.createElement('button');
-                    hairMagicBtn.className = 'race-magic-btn';
-                    hairMagicBtn.innerHTML = '<i class="fa-solid fa-wand-sparkles"></i> ' +
-                        (state.lang === 'zh' ? '✂️ 髮型大全' : '✂️ All Hairstyles');
-                    hairMagicBtn.addEventListener('click', () => {
-                        openHairMagicModal();
-                    });
-                    const hairCustomToggle = header.querySelector('.btn-custom-toggle');
-                    const hairBtnGroup = document.createElement('div');
-                    hairBtnGroup.className = 'section-header-buttons';
-                    header.insertBefore(hairBtnGroup, hairCustomToggle);
-                    hairBtnGroup.appendChild(hairMagicBtn);
-                    hairBtnGroup.appendChild(hairCustomToggle);
-
-                    // If hairAdvanced modal has selections, show summary bar
-                    if (state.hairAdvanced && state.hairAdvanced.selectedItems && state.hairAdvanced.selectedItems.length > 0) {
-                        const hairItems = HAIR_MAGIC_DATA.ITEMS;
-                        const selNames = state.hairAdvanced.selectedItems.map(id => {
-                            const item = hairItems.find(it => it.id === id);
-                            return item ? item.name : id;
-                        }).join('、');
-                        const lengthLabel = state.hairAdvanced.hair_length
-                            ? HAIR_MAGIC_DATA.SLIDERS.HAIR_LENGTH.levels[state.hairAdvanced.hair_length].zh
-                            : null;
-
-                        const summaryBar = document.createElement('div');
-                        summaryBar.className = 'body-advanced-summary';
-                        const summaryText = document.createElement('span');
-                        summaryText.innerHTML = `✂️ ${state.lang === 'zh' ? '髮型魔法啟用中' : 'Hair Magic Active'}：${selNames}${lengthLabel ? ' / ' + lengthLabel : ''}`;
-
-                        const editBtn = document.createElement('button');
-                        editBtn.className = 'body-summary-action';
-                        editBtn.textContent = state.lang === 'zh' ? '編輯' : 'Edit';
-                        editBtn.addEventListener('click', () => openHairMagicModal());
-
-                        const clearBtn = document.createElement('button');
-                        clearBtn.className = 'body-summary-action clear';
-                        clearBtn.textContent = state.lang === 'zh' ? '清除' : 'Clear';
-                        clearBtn.addEventListener('click', () => {
-                            state.hairAdvanced = null;
-                            state.hairMagicPrompts = null;
-                            renderTabContent();
-                            generatePrompt();
-                            saveState();
-                        });
-
-                        summaryBar.appendChild(summaryText);
-                        summaryBar.appendChild(editBtn);
-                        summaryBar.appendChild(clearBtn);
-                        sectionEl.appendChild(summaryBar);
-                    }
-
-                    data = state.gender === 'female' ? HAIRSTYLES_FEMALE : HAIRSTYLES_MALE;
-                } else if (section.id === 'bodyType') {
-                    // === Body Magic Button in header ===
-                    const magicBtn = document.createElement('button');
-                    magicBtn.className = 'body-magic-btn';
-                    magicBtn.innerHTML = '<i class="fa-solid fa-wand-sparkles"></i> ' +
-                        (state.lang === 'zh' ? '🔮 高級魔法專用' : '🔮 Advanced Magic');
-                    magicBtn.addEventListener('click', () => {
-                        openBodyMagicModal();
-                    });
-                    // 把 magic btn 和 custom btn 包成一組靠右
-                    const bodyCustomToggle = header.querySelector('.btn-custom-toggle');
-                    const bodyBtnGroup = document.createElement('div');
-                    bodyBtnGroup.className = 'section-header-buttons';
-                    header.insertBefore(bodyBtnGroup, bodyCustomToggle);
-                    bodyBtnGroup.appendChild(magicBtn);
-                    bodyBtnGroup.appendChild(bodyCustomToggle);
-
-                    // If bodyAdvanced is active, show summary bar + disabled overlay
-                    if (state.bodyAdvanced) {
-                        const primaryData = state.gender === 'female' ? BODY_MAGIC_DATA.FEMALE_BUST : BODY_MAGIC_DATA.MALE_MUSCLE;
-                        const primaryInfo = primaryData[state.bodyAdvanced.primary || 4];
-                        const buildInfo = BODY_MAGIC_DATA.BUILD[state.bodyAdvanced.build || 4];
-                        const heightInfo = BODY_MAGIC_DATA.HEIGHT[state.bodyAdvanced.height || 4];
-
-                        const summaryBar = document.createElement('div');
-                        summaryBar.className = 'body-advanced-summary';
-                        const pLabel = primaryInfo.zh;
-                        const bLabel = buildInfo.zh;
-                        const hLabel = heightInfo.zh;
-
-                        const summaryText = document.createElement('span');
-                        summaryText.innerHTML = `🔮 ${state.lang === 'zh' ? '進階控制啟用中' : 'Advanced Active'}：${pLabel} / ${bLabel} / ${hLabel}`;
-
-                        const editBtn = document.createElement('button');
-                        editBtn.className = 'body-summary-action';
-                        editBtn.textContent = state.lang === 'zh' ? '編輯' : 'Edit';
-                        editBtn.addEventListener('click', () => openBodyMagicModal());
-
-                        const clearBtn = document.createElement('button');
-                        clearBtn.className = 'body-summary-action clear';
-                        clearBtn.textContent = state.lang === 'zh' ? '清除' : 'Clear';
-                        clearBtn.addEventListener('click', () => {
-                            state.bodyAdvanced = null;
-                            renderTabContent();
-                            generatePrompt();
-                            saveState();
-                        });
-
-                        summaryBar.appendChild(summaryText);
-                        summaryBar.appendChild(editBtn);
-                        summaryBar.appendChild(clearBtn);
-                        sectionEl.appendChild(summaryBar);
-                    }
-
-                    data = state.gender === 'female' ? BODY_TYPES_FEMALE : BODY_TYPES_MALE;
-                }
+                // 其他 genderDependent sections (非 hairstyle/bodyType)
+                data = state.gender === 'female' ? section.dataFemale : section.dataMale;
             }
 
             // Render options based on type
@@ -569,12 +694,6 @@
                 renderEyeColors(sectionEl, section, data);
             } else {
                 renderTagGrid(sectionEl, section, data);
-            }
-
-            // If bodyType + bodyAdvanced active, add disabled overlay
-            if (section.id === 'bodyType' && state.bodyAdvanced) {
-                const tagGrid = sectionEl.querySelector('.tag-grid');
-                if (tagGrid) tagGrid.classList.add('body-section-disabled');
             }
 
             // Custom input field (shown when toggled)
@@ -692,13 +811,13 @@
     const RACE_COLS = 10;
     const RACE_PER_PAGE = RACE_MAX_ROWS * RACE_COLS; // 30
 
-    function renderPaginatedRaceGrid(container, section, data) {
+    function renderPaginatedGrid(container, section, data, pageKey) {
         const totalPages = Math.ceil(data.length / RACE_PER_PAGE);
         // 邊界保護
-        if (state.racePage < 1) state.racePage = 1;
-        if (state.racePage > totalPages) state.racePage = totalPages;
+        if (state[pageKey] < 1) state[pageKey] = 1;
+        if (state[pageKey] > totalPages) state[pageKey] = totalPages;
 
-        const startIdx = (state.racePage - 1) * RACE_PER_PAGE;
+        const startIdx = (state[pageKey] - 1) * RACE_PER_PAGE;
         const endIdx = Math.min(startIdx + RACE_PER_PAGE, data.length);
         const pageData = data.slice(startIdx, endIdx);
 
@@ -734,33 +853,40 @@
         container.appendChild(grid);
 
         // === Pagination Nav ===
-        const nav = document.createElement('div');
-        nav.className = 'pagination-nav';
+        if (totalPages > 1) {
+            const nav = document.createElement('div');
+            nav.className = 'pagination-nav';
 
-        const prevBtn = document.createElement('button');
-        prevBtn.className = 'page-btn';
-        prevBtn.innerHTML = '<i class="fa-solid fa-chevron-left"></i>';
-        prevBtn.disabled = state.racePage === 1;
-        prevBtn.addEventListener('click', () => {
-            if (state.racePage > 1) { state.racePage--; renderTabContent(); }
-        });
+            const prevBtn = document.createElement('button');
+            prevBtn.className = 'page-btn';
+            prevBtn.innerHTML = '<i class="fa-solid fa-chevron-left"></i>';
+            prevBtn.disabled = state[pageKey] === 1;
+            prevBtn.addEventListener('click', () => {
+                if (state[pageKey] > 1) { state[pageKey]--; renderTabContent(); }
+            });
 
-        const pageText = document.createElement('span');
-        pageText.className = 'page-indicator';
-        pageText.textContent = `${state.racePage} / ${totalPages}`;
+            const pageText = document.createElement('span');
+            pageText.className = 'page-indicator';
+            pageText.textContent = `${state[pageKey]} / ${totalPages}`;
 
-        const nextBtn = document.createElement('button');
-        nextBtn.className = 'page-btn';
-        nextBtn.innerHTML = '<i class="fa-solid fa-chevron-right"></i>';
-        nextBtn.disabled = state.racePage === totalPages;
-        nextBtn.addEventListener('click', () => {
-            if (state.racePage < totalPages) { state.racePage++; renderTabContent(); }
-        });
+            const nextBtn = document.createElement('button');
+            nextBtn.className = 'page-btn';
+            nextBtn.innerHTML = '<i class="fa-solid fa-chevron-right"></i>';
+            nextBtn.disabled = state[pageKey] === totalPages;
+            nextBtn.addEventListener('click', () => {
+                if (state[pageKey] < totalPages) { state[pageKey]++; renderTabContent(); }
+            });
 
-        nav.appendChild(prevBtn);
-        nav.appendChild(pageText);
-        nav.appendChild(nextBtn);
-        container.appendChild(nav);
+            nav.appendChild(prevBtn);
+            nav.appendChild(pageText);
+            nav.appendChild(nextBtn);
+            container.appendChild(nav);
+        }
+    }
+
+    // 向後兼容别名
+    function renderPaginatedRaceGrid(container, section, data) {
+        renderPaginatedGrid(container, section, data, 'racePage');
     }
 
     function renderColorSwatches(container, section, data) {
