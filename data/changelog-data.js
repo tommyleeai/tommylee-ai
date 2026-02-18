@@ -3,9 +3,19 @@
 // 從 script.js 提取，掛載至 window.PromptGen.Changelog
 // ============================================
 window.PromptGen = window.PromptGen || {};
-window.PromptGen.Changelog = (function() {
+window.PromptGen.Changelog = (function () {
     // Changelog Data
     const changelog = [
+        {
+            version: "v6.2",
+            date: "2026-02-18",
+            changes: [
+                "😈 新增 20 條惡魔系 vs 神聖職業衝突規則（惡魔/大惡魔/魅魔/小惡魔/夢魔/魔王/墮天使/夜叉/羅剎）",
+                "📝 YAML 輸出格式補上衝突解決邏輯（dual/merge/ignore）",
+                "💡 衝突選項改為 ⓘ tooltip 提示：hover 圖示才顯示說明文字",
+                "🔊 衝突警報音效時長減半（3秒→1.5秒）"
+            ]
+        },
         {
             version: "v6.0",
             date: "2026-02-17",

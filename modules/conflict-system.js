@@ -95,7 +95,7 @@ window.PromptGen.ConflictSystem = (function () {
             const cg = c.createGain(); cg.gain.value = 0.35;
             clang.connect(cf); cf.connect(cg); cg.connect(master); clang.start(t);
             // Repeating siren
-            const dur = 3.0, bLen = 0.12, gap = 0.06, cyc = bLen + gap;
+            const dur = 1.5, bLen = 0.12, gap = 0.06, cyc = bLen + gap;
             for (let i = 0; i * cyc < dur; i++) {
                 const st = t + 0.2 + i * cyc, freq = i % 2 === 0 ? 880 : 660;
                 const s = c.createOscillator(); const sg = c.createGain();
@@ -106,7 +106,7 @@ window.PromptGen.ConflictSystem = (function () {
                 conflictAlarmOscillators.push(s);
             }
             // Sub-bass pulse
-            for (let i = 0; i < 6; i++) {
+            for (let i = 0; i < 3; i++) {
                 const ps = t + 0.2 + i * 0.5;
                 const p = c.createOscillator(); const pg = c.createGain();
                 p.type = 'sine'; p.frequency.value = 45;
@@ -168,16 +168,25 @@ window.PromptGen.ConflictSystem = (function () {
         <div class="conflict-prompt-label">⚔️ 命運的岔路已現，魔法師請下達神諭：</div>
         <div class="conflict-options">
             <button class="conflict-option option-1" id="conflict-opt-ignore">
-                <div class="option-title">🔥 無視禁忌，強行突破！<span class="option-hint-icon">❓</span></div>
-                <div class="option-desc">⚠ 代價未知，但你的原始魔法陣將完整保留</div>
+                <div class="option-title">🔥 無視禁忌，強行突破！
+                    <span class="option-info-trigger">ⓘ
+                        <span class="option-tooltip">⚠ 代價未知，但你的原始魔法陣將完整保留</span>
+                    </span>
+                </div>
             </button>
             <button class="conflict-option option-2" id="conflict-opt-dual">
-                <div class="option-title">👥 召喚分身！雙重存在！<span class="option-hint-icon">❓</span></div>
-                <div class="option-desc">系統植入「2characters」咒文，讓兩個靈魂同時現身</div>
+                <div class="option-title">👥 召喚分身！雙重存在！
+                    <span class="option-info-trigger">ⓘ
+                        <span class="option-tooltip">系統植入「2characters」咒文，讓兩個靈魂同時現身</span>
+                    </span>
+                </div>
             </button>
             <button class="conflict-option option-3" id="conflict-opt-merge">
-                <div class="option-title">✨ 禁忌融合！兩魂歸一！<span class="option-hint-icon">❓</span></div>
-                <div class="option-desc">系統將兩種矛盾特質鍛造成一個全新的生命體</div>
+                <div class="option-title">✨ 禁忌融合！兩魂歸一！
+                    <span class="option-info-trigger">ⓘ
+                        <span class="option-tooltip">系統將兩種矛盾特質鍛造成一個全新的生命體</span>
+                    </span>
+                </div>
             </button>
         </div>
         <div class="remember-choice ${state.conflictWarningCount >= 3 ? 'visible' : ''}" id="remember-choice">
