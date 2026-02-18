@@ -57,6 +57,7 @@
         conflictInfo: null,
         conflictWarningCount: 0,
         racePage: 1,  // v6.3 種族分頁當前頁碼
+        jobPage: 1,    // v6.6 職業分頁
         hairstylePage: 1,  // v6.6 髮型分頁
         bodyTypePage: 1    // v6.6 身材分頁
     };
@@ -413,8 +414,8 @@
                     }
                 }
 
-                // 渲染分頁 grid（沿用 race 的分頁機制）
-                renderPaginatedRaceGrid(sectionEl, section, JOBS);
+                // 渲染分頁 grid（獨立 jobPage）
+                renderPaginatedGrid(sectionEl, section, JOBS, 'jobPage');
                 tabContent.appendChild(sectionEl);
 
                 // Custom input
