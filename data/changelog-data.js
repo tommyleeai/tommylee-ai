@@ -7,6 +7,17 @@ window.PromptGen.Changelog = (function () {
     // Changelog Data
     const changelog = [
         {
+            version: "v6.4",
+            date: "2026-02-18",
+            changes: [
+                "🎲 骰子隨機選取功能：emoji 掉落 + 彈跳回彈動畫 + Web Audio 音效",
+                "📂 分類 Tab 視覺大幅強化：Active 3px 紫色底線 + 漸層背景 + icon 光暈",
+                "🎯 Tab Hover 效果：上浮 + 邊框高亮 + 陰影",
+                "📋 新增 /magic-modal-style workflow：種族大全設計規範可複用於職業、服飾等",
+                "🔧 骰子圖片改為 emoji 🎲，修正尺寸與動畫問題"
+            ]
+        },
+        {
             version: "v6.3.1",
             date: "2026-02-18",
             changes: [

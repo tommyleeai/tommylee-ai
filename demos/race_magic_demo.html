@@ -376,33 +376,46 @@
             border-radius: 8px 8px 0 0;
             cursor: pointer;
             border: 1px solid rgba(148, 163, 184, .1);
-            border-bottom: none;
+            border-bottom: 2px solid transparent;
             background: rgba(30, 41, 59, .4);
             color: #94a3b8;
-            transition: all .2s;
+            transition: all .25s ease;
             font-family: inherit;
             white-space: nowrap;
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 2px;
-            min-width: 64px
+            min-width: 64px;
+            position: relative
         }
 
         .rmm-tab:hover {
             color: #c084fc;
-            background: rgba(124, 58, 237, .08)
+            background: rgba(124, 58, 237, .15);
+            border-color: rgba(168, 85, 247, .25);
+            border-bottom-color: rgba(168, 85, 247, .5);
+            transform: translateY(-2px);
+            box-shadow: 0 2px 8px rgba(124, 58, 237, .15)
         }
 
         .rmm-tab.active {
-            background: rgba(30, 41, 59, .8);
-            color: #e2e8f0;
-            border-color: rgba(168, 85, 247, .3);
-            box-shadow: 0 -2px 8px rgba(124, 58, 237, .1)
+            background: linear-gradient(180deg, rgba(124, 58, 237, .2) 0%, rgba(30, 41, 59, .9) 100%);
+            color: #f3e8ff;
+            border-color: rgba(168, 85, 247, .4);
+            border-bottom: 3px solid #a855f7;
+            box-shadow: 0 -2px 12px rgba(168, 85, 247, .25), inset 0 1px 0 rgba(168, 85, 247, .2);
+            transform: translateY(-1px)
+        }
+
+        .rmm-tab.active .rmm-tab-icon {
+            transform: scale(1.15);
+            filter: drop-shadow(0 0 6px rgba(168, 85, 247, .6))
         }
 
         .rmm-tab-icon {
-            font-size: .95rem
+            font-size: .95rem;
+            transition: transform .25s ease, filter .25s ease
         }
 
         .rmm-tab-label {
@@ -412,11 +425,13 @@
         .rmm-tab-count {
             font-size: .55rem;
             color: #64748b;
-            margin-top: 1px
+            margin-top: 1px;
+            transition: color .25s ease
         }
 
         .rmm-tab.active .rmm-tab-count {
-            color: #a855f7
+            color: #c084fc;
+            font-weight: 600
         }
 
         /* === 主體（固定高度 flex-grow）=== */
@@ -700,8 +715,133 @@
             border-radius: 3px
         }
 
-        /* === 🎲 隨機選取動畫 === */
-        @keyframes rmm-dice-spin {
+        /* === 🎲 骰子動畫覆蓋層 === */
+        .rmm-dice-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, .6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity .2s ease;
+            border-radius: 16px
+        }
+
+        .rmm-dice-overlay.active {
+            opacity: 1;
+            pointer-events: auto
+        }
+
+        .rmm-dice-emoji {
+            font-size: 80px;
+            line-height: 1;
+            filter: drop-shadow(0 0 20px rgba(168, 85, 247, .7)) drop-shadow(0 0 50px rgba(124, 58, 237, .4));
+            animation: rmm-dice-drop .4s cubic-bezier(.22, .68, .31, 1.2) forwards
+        }
+
+        /* Phase 1: 從上方掉落到中央 */
+        @keyframes rmm-dice-drop {
+            0% {
+                transform: translateY(-200px) rotate(-90deg) scale(.5);
+                opacity: 0
+            }
+
+            60% {
+                transform: translateY(20px) rotate(15deg) scale(1.05);
+                opacity: 1
+            }
+
+            80% {
+                transform: translateY(-8px) rotate(-5deg) scale(1)
+            }
+
+            100% {
+                transform: translateY(0) rotate(0deg) scale(1);
+                opacity: 1
+            }
+        }
+
+        /* Phase 2: 旋轉 + 多次回彈（模擬真實骰子彈跳） */
+        .rmm-dice-emoji.rolling {
+            animation: rmm-dice-bounce 1s ease-out forwards
+        }
+
+        @keyframes rmm-dice-bounce {
+            0% {
+                transform: translateY(0) rotate(0deg) scale(1)
+            }
+
+            8% {
+                transform: translateY(60px) rotate(80deg) scale(1.1)
+            }
+
+            16% {
+                transform: translateY(-40px) rotate(180deg) scale(.95)
+            }
+
+            28% {
+                transform: translateY(40px) rotate(300deg) scale(1.08)
+            }
+
+            38% {
+                transform: translateY(-25px) rotate(420deg) scale(.97)
+            }
+
+            50% {
+                transform: translateY(25px) rotate(520deg) scale(1.04)
+            }
+
+            60% {
+                transform: translateY(-12px) rotate(610deg) scale(.99)
+            }
+
+            72% {
+                transform: translateY(10px) rotate(680deg) scale(1.02)
+            }
+
+            82% {
+                transform: translateY(-4px) rotate(710deg) scale(1)
+            }
+
+            92% {
+                transform: translateY(2px) rotate(718deg) scale(1)
+            }
+
+            100% {
+                transform: translateY(0) rotate(720deg) scale(1)
+            }
+        }
+
+        /* Phase 3: 彈出消失 */
+        .rmm-dice-emoji.exit {
+            animation: rmm-dice-exit .3s ease-in forwards
+        }
+
+        @keyframes rmm-dice-exit {
+            0% {
+                transform: translateY(0) rotate(720deg) scale(1);
+                opacity: 1
+            }
+
+            40% {
+                transform: translateY(15px) rotate(740deg) scale(1.1);
+                opacity: .8
+            }
+
+            100% {
+                transform: translateY(-120px) rotate(900deg) scale(.3);
+                opacity: 0
+            }
+        }
+
+        .rmm-dice-spinning .rmm-tool-icon {
+            animation: rmm-dice-btn-spin .6s ease-out
+        }
+
+        @keyframes rmm-dice-btn-spin {
             0% {
                 transform: rotate(0deg)
             }
@@ -711,18 +851,18 @@
             }
         }
 
-        .rmm-dice-spinning .rmm-tool-icon {
-            animation: rmm-dice-spin .6s ease-out
-        }
-
         /* === 隨機選中閃光 === */
         @keyframes rmm-chip-flash {
             0% {
                 box-shadow: 0 0 0 rgba(251, 191, 36, 0)
             }
 
-            30% {
-                box-shadow: 0 0 20px rgba(251, 191, 36, .6)
+            25% {
+                box-shadow: 0 0 25px rgba(251, 191, 36, .7), 0 0 50px rgba(168, 85, 247, .3)
+            }
+
+            50% {
+                box-shadow: 0 0 15px rgba(251, 191, 36, .5), 0 0 30px rgba(168, 85, 247, .2)
             }
 
             100% {
@@ -731,7 +871,7 @@
         }
 
         .rmm-race-chip.random-pick {
-            animation: rmm-chip-flash .8s ease
+            animation: rmm-chip-flash 1.2s ease
         }
     </style>
 </head>
@@ -1000,6 +1140,9 @@
     </div>
     <div class="rmm-particles" id="rmm-particles"></div>
     <div class="rmm-container">
+      <div class="rmm-dice-overlay" id="rmm-dice-overlay">
+        <span class="rmm-dice-emoji" id="rmm-dice-emoji">🎲</span>
+      </div>
       <div class="rmm-header">
         <div class="rmm-title-row">
           <div class="rmm-title">🔮 高級魔法・種族大全</div>
@@ -1117,27 +1260,101 @@
                 renderGrid();
             });
 
-            // === 🎲 隨機選取 ===
-            document.getElementById('rmm-dice').addEventListener('click', function () {
-                this.classList.add('rmm-dice-spinning');
-                setTimeout(() => this.classList.remove('rmm-dice-spinning'), 600);
-                // 取得目前可見的種族
-                const currentFiltered = getFilteredRaces();
-                if (!currentFiltered.length) return;
-                const randomRace = currentFiltered[Math.floor(Math.random() * currentFiltered.length)];
-                selectedRace = randomRace;
-                selectedBonuses.clear();
-                playSelectSound();
-                renderGrid();
-                renderBonus(randomRace);
-                // 滾動到選中的 chip
-                setTimeout(() => {
-                    const selectedEl = document.querySelector('.rmm-race-chip.selected');
-                    if (selectedEl) {
-                        selectedEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                        selectedEl.classList.add('random-pick');
+            // === 🎲 骰子滾動音效 ===
+            function playDiceRollSound() {
+                try {
+                    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                    const now = ctx.currentTime;
+                    // 低頻隆隆聲
+                    const rumble = ctx.createOscillator();
+                    const rumbleG = ctx.createGain();
+                    rumble.connect(rumbleG); rumbleG.connect(ctx.destination);
+                    rumble.type = 'sawtooth';
+                    rumble.frequency.setValueAtTime(80, now);
+                    rumble.frequency.linearRampToValueAtTime(40, now + 1);
+                    rumbleG.gain.setValueAtTime(0.08, now);
+                    rumbleG.gain.linearRampToValueAtTime(0.02, now + 0.8);
+                    rumbleG.gain.linearRampToValueAtTime(0, now + 1);
+                    rumble.start(now); rumble.stop(now + 1);
+                    // 碰撞聲（短促 burst x 5）
+                    for (let i = 0; i < 5; i++) {
+                        const t = now + i * 0.18 + Math.random() * 0.05;
+                        const click = ctx.createOscillator();
+                        const clickG = ctx.createGain();
+                        click.connect(clickG); clickG.connect(ctx.destination);
+                        click.type = 'square';
+                        click.frequency.setValueAtTime(800 + Math.random() * 600, t);
+                        click.frequency.exponentialRampToValueAtTime(200, t + 0.04);
+                        clickG.gain.setValueAtTime(0.06, t);
+                        clickG.gain.exponentialRampToValueAtTime(0.001, t + 0.05);
+                        click.start(t); click.stop(t + 0.06);
                     }
-                }, 50);
+                } catch (e) { }
+            }
+
+            // === 🎲 隨機選取（完整動畫流程）===
+            let diceAnimating = false;
+            document.getElementById('rmm-dice').addEventListener('click', function () {
+                if (diceAnimating) return;
+                diceAnimating = true;
+
+                const overlayDice = document.getElementById('rmm-dice-overlay');
+                const diceEl = document.getElementById('rmm-dice-emoji');
+                const btn = this;
+
+                // Phase 1: 骰子從上方掉落 + 音效
+                btn.classList.add('rmm-dice-spinning');
+                diceEl.className = 'rmm-dice-emoji';
+                void diceEl.offsetWidth; // 強制 reflow
+                overlayDice.classList.add('active');
+                playDiceRollSound();
+
+                // 掉落完成後開始彈跳滾動
+                setTimeout(() => {
+                    diceEl.classList.add('rolling');
+                }, 400);
+
+                // Phase 2: 1.4秒後（掉落0.4s + 彈跳1s）→ 選中
+                setTimeout(() => {
+                    // 骰子彈出消失
+                    diceEl.classList.remove('rolling');
+                    diceEl.classList.add('exit');
+
+                    // 從全部 210 種族中隨機選取
+                    const randomRace = RACES[Math.floor(Math.random() * RACES.length)];
+                    selectedRace = randomRace;
+                    selectedBonuses.clear();
+
+                    // 切換到該種族所屬分類 tab
+                    activeCat = randomRace.cat;
+                    filterLetter = null;
+                    const tabsEl = document.getElementById('rmm-tabs');
+                    tabsEl.querySelectorAll('.rmm-tab').forEach(t => t.classList.remove('active'));
+                    const targetTab = tabsEl.querySelector(`[data-cat="${randomRace.cat}"]`);
+                    if (targetTab) targetTab.classList.add('active');
+
+                    // 播放選中音效 + 渲染
+                    playSelectSound();
+                    renderGrid();
+                    renderBonus(randomRace);
+
+                    // 滾動到選中 chip + 高亮
+                    setTimeout(() => {
+                        const selectedEl = document.querySelector('.rmm-race-chip.selected');
+                        if (selectedEl) {
+                            selectedEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            selectedEl.classList.add('random-pick');
+                        }
+                    }, 80);
+
+                    // 遮罩消失
+                    setTimeout(() => {
+                        overlayDice.classList.remove('active');
+                        btn.classList.remove('rmm-dice-spinning');
+                        diceAnimating = false;
+                    }, 350);
+
+                }, 1400);
             });
 
             renderGrid();
