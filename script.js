@@ -760,6 +760,20 @@
             }
         });
 
+        // Apply conflict resolution to YAML output
+        if (state.conflictInfo && state.conflictResolution) {
+            if (state.conflictResolution === 'dual') {
+                yaml += `conflict_resolution: 2characters, multiple characters\n`;
+            } else if (state.conflictResolution === 'merge') {
+                const coreA = (state.selections[state.conflictInfo.catA] || '').split(',')[0].trim();
+                const coreB = (state.selections[state.conflictInfo.catB] || '').split(',')[0].trim();
+                if (coreA && coreB) {
+                    yaml += `conflict_resolution: (${coreA} ${coreB}:1.3), single character, solo\n`;
+                }
+            }
+            // 'ignore' = 不加額外欄位
+        }
+
         return yaml;
     }
 
