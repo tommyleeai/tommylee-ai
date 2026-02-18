@@ -482,7 +482,7 @@ window.PromptGen.HairMagicModal = (function () {
                     </div>
                     <div class="hmm-scale">${sl.scaleLabels.map(l => `<span${l.includes('🔮') ? ' class="fantasy-label"' : ''}>${l}</span>`).join('')}</div>
                     <div class="hmm-slider-wrap">
-                        <input type="range" id="hmm-sl-length" min="1" max="7" value="${val}" step="1"${!lengthSliderActive ? ' disabled' : ''}${data.fantasy ? ' class="in-fantasy"' : ''}>
+                        <input type="range" id="hmm-sl-length" min="1" max="7" value="${val}" step="1"${data.fantasy ? ' class="in-fantasy"' : ''}>
                     </div>
                     <div class="hmm-slider-prompt" id="hmm-prompt-length"><strong>prompt:</strong> ${lengthSliderActive ? data.positive.join(', ') : '（未啟用）'}</div>
                 </div>
@@ -496,7 +496,6 @@ window.PromptGen.HairMagicModal = (function () {
 
             if (toggle) toggle.addEventListener('change', () => {
                 lengthSliderActive = toggle.checked;
-                if (slEl) slEl.disabled = !toggle.checked;
                 if (lengthSliderActive) {
                     const d = sl.levels[sliderValues.hair_length];
                     document.getElementById('hmm-prompt-length').innerHTML = `<strong>prompt:</strong> ${d.positive.join(', ')}`;
@@ -509,6 +508,11 @@ window.PromptGen.HairMagicModal = (function () {
             });
 
             if (slEl) slEl.addEventListener('input', () => {
+                // 拖動即啟用：使用者一移動推桿就自動啟用
+                if (!lengthSliderActive) {
+                    lengthSliderActive = true;
+                    if (toggle) toggle.checked = true;
+                }
                 sliderValues.hair_length = parseInt(slEl.value);
                 const d = sl.levels[slEl.value];
                 document.getElementById('hmm-val-length').textContent = d.zh;
