@@ -531,6 +531,13 @@
                 // 渲染分頁 grid
                 const hairGridData = state.gender === 'female' ? HAIRSTYLES_FEMALE : HAIRSTYLES_MALE;
                 renderPaginatedGrid(sectionEl, section, hairGridData, 'hairstylePage');
+
+                // If hairAdvanced active, add disabled overlay（與身材區塊一致）
+                if (state.hairAdvanced && state.hairAdvanced.selectedItems && state.hairAdvanced.selectedItems.length > 0) {
+                    const tagGrid = sectionEl.querySelector('.tag-grid-paginated');
+                    if (tagGrid) tagGrid.classList.add('body-section-disabled');
+                }
+
                 tabContent.appendChild(sectionEl);
 
                 // Custom input
