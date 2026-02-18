@@ -168,15 +168,15 @@ window.PromptGen.ConflictSystem = (function () {
         <div class="conflict-prompt-label">⚔️ 命運的岔路已現，魔法師請下達神諭：</div>
         <div class="conflict-options">
             <button class="conflict-option option-1" id="conflict-opt-ignore">
-                <div class="option-title">🔥 無視禁忌，強行突破！</div>
+                <div class="option-title">🔥 無視禁忌，強行突破！<span class="option-hint-icon">❓</span></div>
                 <div class="option-desc">⚠ 代價未知，但你的原始魔法陣將完整保留</div>
             </button>
             <button class="conflict-option option-2" id="conflict-opt-dual">
-                <div class="option-title">👥 召喚分身！雙重存在！</div>
+                <div class="option-title">👥 召喚分身！雙重存在！<span class="option-hint-icon">❓</span></div>
                 <div class="option-desc">系統植入「2characters」咒文，讓兩個靈魂同時現身</div>
             </button>
             <button class="conflict-option option-3" id="conflict-opt-merge">
-                <div class="option-title">✨ 禁忌融合！兩魂歸一！</div>
+                <div class="option-title">✨ 禁忌融合！兩魂歸一！<span class="option-hint-icon">❓</span></div>
                 <div class="option-desc">系統將兩種矛盾特質鍛造成一個全新的生命體</div>
             </button>
         </div>

@@ -2562,13 +2562,41 @@ input[type=range]::-webkit-slider-runnable-track {
 .option-title {
     font-size: 0.92rem;
     font-weight: 700;
-    margin-bottom: 4px;
+    margin-bottom: 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
 }
 
+/* ❓ 提示圖示 */
+.option-hint-icon {
+    font-size: 0.75rem;
+    opacity: 0.5;
+    transition: opacity 0.2s;
+    margin-left: auto;
+    flex-shrink: 0;
+}
+
+.conflict-option:hover .option-hint-icon {
+    opacity: 0;
+}
+
+/* 說明文字：預設隱藏，hover 滑入顯示 */
 .option-desc {
     font-size: 0.75rem;
     color: #999;
     line-height: 1.4;
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    margin-top: 0;
+    transition: max-height 0.3s ease, opacity 0.3s ease, margin-top 0.3s ease;
+}
+
+.conflict-option:hover .option-desc {
+    max-height: 60px;
+    opacity: 1;
+    margin-top: 6px;
 }
 
 .option-1 .option-title {
