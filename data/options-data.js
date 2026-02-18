@@ -3,7 +3,7 @@
 // 從 script.js 提取，掛載至 window.PromptGen.Data
 // ============================================
 window.PromptGen = window.PromptGen || {};
-window.PromptGen.Data = (function() {
+window.PromptGen.Data = (function () {
     // ===== v5.0 TAB DATA =====
     const TABS = [
         { id: 'base', label: '基本', en: 'Basic', icon: 'fa-solid fa-user' },
@@ -329,6 +329,28 @@ window.PromptGen.Data = (function() {
         { a: 'race', b: 'job', keyword_a: 'grim reaper', keyword_b: 'cleric', reason: '💀 死神與治癒互斥' },
         { a: 'race', b: 'job', keyword_a: 'vampire', keyword_b: 'shrine maiden', reason: '🧛 吸血鬼怕神聖之地' },
         { a: 'race', b: 'job', keyword_a: 'vampire', keyword_b: 'cleric', reason: '🧛 吸血鬼怕治癒之光' },
+
+        // 😈 惡魔系 vs 神聖職業
+        { a: 'race', b: 'job', keyword_a: 'demon', keyword_b: 'cleric', reason: '😈 惡魔與神聖治癒互斥' },
+        { a: 'race', b: 'job', keyword_a: 'demon', keyword_b: 'shrine maiden', reason: '😈 惡魔與神社聖地衝突' },
+        { a: 'race', b: 'job', keyword_a: 'demon', keyword_b: 'nun', reason: '😈 惡魔與修女信仰對立' },
+        { a: 'race', b: 'job', keyword_a: 'arch demon', keyword_b: 'cleric', reason: '👿 大惡魔與治癒聖光互斥' },
+        { a: 'race', b: 'job', keyword_a: 'arch demon', keyword_b: 'shrine maiden', reason: '👿 大惡魔與神聖力量互斥' },
+        { a: 'race', b: 'job', keyword_a: 'arch demon', keyword_b: 'nun', reason: '👿 大惡魔與修女信仰對立' },
+        { a: 'race', b: 'job', keyword_a: 'succubus', keyword_b: 'cleric', reason: '💋 魅魔與聖職衝突' },
+        { a: 'race', b: 'job', keyword_a: 'succubus', keyword_b: 'shrine maiden', reason: '💋 魅魔與神聖服務衝突' },
+        { a: 'race', b: 'job', keyword_a: 'succubus', keyword_b: 'nun', reason: '💋 魅魔與修女信仰完全對立' },
+        { a: 'race', b: 'job', keyword_a: 'imp', keyword_b: 'cleric', reason: '😈 小惡魔與治癒魔法互斥' },
+        { a: 'race', b: 'job', keyword_a: 'imp', keyword_b: 'shrine maiden', reason: '😈 小惡魔與神聖互斥' },
+        { a: 'race', b: 'job', keyword_a: 'nightmare', keyword_b: 'cleric', reason: '🌙 夢魔與聖光治癒衝突' },
+        { a: 'race', b: 'job', keyword_a: 'nightmare', keyword_b: 'shrine maiden', reason: '🌙 夢魔與神聖力量衝突' },
+        { a: 'race', b: 'job', keyword_a: 'demon lord', keyword_b: 'cleric', reason: '👑 魔王與治癒聖光完全對立' },
+        { a: 'race', b: 'job', keyword_a: 'demon lord', keyword_b: 'shrine maiden', reason: '👑 魔王與神聖服務對立' },
+        { a: 'race', b: 'job', keyword_a: 'demon lord', keyword_b: 'nun', reason: '👑 魔王與修女信仰對立' },
+        { a: 'race', b: 'job', keyword_a: 'fallen angel', keyword_b: 'cleric', reason: '⬛ 墮天使被神聖力量排斥' },
+        { a: 'race', b: 'job', keyword_a: 'fallen angel', keyword_b: 'shrine maiden', reason: '⬛ 墮天使與神聖服務衝突' },
+        { a: 'race', b: 'job', keyword_a: 'yaksha', keyword_b: 'cleric', reason: '😈 夜叉與治癒魔法衝突' },
+        { a: 'race', b: 'job', keyword_a: 'rakshasa', keyword_b: 'cleric', reason: '😈 羅剎與神聖力量互斥' },
 
         // 👻 非實體種族 vs 物理職業
         { a: 'race', b: 'job', keyword_a: 'ghost', keyword_b: 'knight', reason: '👻 幽靈沒有物理身體，無法穿戴盔甲' },
