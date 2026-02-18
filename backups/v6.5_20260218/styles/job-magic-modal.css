@@ -1,10 +1,10 @@
-/* ===================================================================
-   Race Magic Modal — 種族大全 CSS
-   從 demos/race_magic_demo.html 提取，掛載於主頁面
+﻿/* ===================================================================
+   Job Magic Modal â€” ç¨®æ—å¤§å…¨ CSS
+   å¾ž demos/race_magic_demo.html æå–ï¼ŒæŽ›è¼‰æ–¼ä¸»é é¢
    =================================================================== */
 
-/* === Race Magic Modal Overlay === */
-#race-magic-modal {
+/* === Job Magic Modal Overlay === */
+#job-magic-modal {
     position: fixed;
     inset: 0;
     z-index: 10000;
@@ -12,10 +12,10 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    animation: rmm-fadeIn .4s ease
+    animation: jmm-fadeIn .4s ease
 }
 
-@keyframes rmm-fadeIn {
+@keyframes jmm-fadeIn {
     from {
         opacity: 0
     }
@@ -25,17 +25,17 @@
     }
 }
 
-/* === 閃光爆發 === */
-.rmm-flash {
+/* === é–ƒå…‰çˆ†ç™¼ === */
+.jmm-flash {
     position: absolute;
     inset: 0;
     pointer-events: none;
     z-index: 1;
     background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, .8) 0%, rgba(168, 85, 247, .3) 30%, transparent 70%);
-    animation: rmm-flash .6s ease-out forwards
+    animation: jmm-flash .6s ease-out forwards
 }
 
-@keyframes rmm-flash {
+@keyframes jmm-flash {
     0% {
         opacity: 1;
         transform: scale(.5)
@@ -52,8 +52,8 @@
     }
 }
 
-/* === 旋轉魔法陣 === */
-.rmm-magic-circle {
+/* === æ—‹è½‰é­”æ³•é™£ === */
+.jmm-magic-circle {
     position: absolute;
     width: 500px;
     height: 500px;
@@ -63,15 +63,15 @@
     pointer-events: none;
     z-index: 0;
     opacity: .1;
-    animation: rmm-circleIn 1s ease-out, rmm-rotate 25s linear infinite
+    animation: jmm-circleIn 1s ease-out, jmm-rotate 25s linear infinite
 }
 
-.rmm-magic-circle svg {
+.jmm-magic-circle svg {
     width: 100%;
     height: 100%
 }
 
-@keyframes rmm-rotate {
+@keyframes jmm-rotate {
     from {
         transform: translate(-50%, -50%) rotate(0deg)
     }
@@ -81,7 +81,7 @@
     }
 }
 
-@keyframes rmm-circleIn {
+@keyframes jmm-circleIn {
     from {
         opacity: 0;
         transform: translate(-50%, -50%) scale(.3) rotate(-90deg)
@@ -93,8 +93,8 @@
     }
 }
 
-/* === 粒子 === */
-.rmm-particles {
+/* === ç²’å­ === */
+.jmm-particles {
     position: absolute;
     inset: 0;
     pointer-events: none;
@@ -102,13 +102,13 @@
     overflow: hidden
 }
 
-.rmm-particle {
+.jmm-particle {
     position: absolute;
     border-radius: 50%;
-    animation: rmm-sparkle linear infinite
+    animation: jmm-sparkle linear infinite
 }
 
-@keyframes rmm-sparkle {
+@keyframes jmm-sparkle {
     0% {
         transform: translateY(100vh) scale(0);
         opacity: 0
@@ -133,8 +133,8 @@
     }
 }
 
-/* === 流星 === */
-.rmm-meteor {
+/* === æµæ˜Ÿ === */
+.jmm-meteor {
     position: absolute;
     pointer-events: none;
     z-index: 0;
@@ -142,11 +142,11 @@
     height: 80px;
     background: linear-gradient(to bottom, rgba(251, 191, 36, 0), rgba(251, 191, 36, .7), rgba(251, 191, 36, 0));
     border-radius: 2px;
-    animation: rmm-meteor linear forwards;
+    animation: jmm-meteor linear forwards;
     opacity: 0
 }
 
-@keyframes rmm-meteor {
+@keyframes jmm-meteor {
     0% {
         opacity: 0;
         transform: translate(0, 0) rotate(30deg)
@@ -166,8 +166,8 @@
     }
 }
 
-/* === Container（固定高度）=== */
-.rmm-container {
+/* === Containerï¼ˆå›ºå®šé«˜åº¦ï¼‰=== */
+.jmm-container {
     position: relative;
     z-index: 2;
     width: 92vw;
@@ -179,11 +179,11 @@
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    animation: rmm-containerIn .5s cubic-bezier(.34, 1.56, .64, 1);
+    animation: jmm-containerIn .5s cubic-bezier(.34, 1.56, .64, 1);
     box-shadow: 0 0 50px rgba(124, 58, 237, .2), 0 0 100px rgba(124, 58, 237, .08)
 }
 
-@keyframes rmm-containerIn {
+@keyframes jmm-containerIn {
     from {
         opacity: 0;
         transform: scale(.5)
@@ -196,19 +196,19 @@
 }
 
 /* === Header === */
-.rmm-header {
+.jmm-header {
     padding: 16px 24px 12px;
     border-bottom: 1px solid rgba(148, 163, 184, .1);
     flex-shrink: 0
 }
 
-.rmm-title-row {
+.jmm-title-row {
     display: flex;
     align-items: center;
     justify-content: space-between
 }
 
-.rmm-title {
+.jmm-title {
     font-size: 1.2rem;
     font-weight: 700;
     background: linear-gradient(90deg, #fbbf24, #a855f7, #7c3aed, #fbbf24);
@@ -216,10 +216,10 @@
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
-    animation: rmm-titleGlow 3s ease infinite, rmm-titleIn .8s ease .3s both
+    animation: jmm-titleGlow 3s ease infinite, jmm-titleIn .8s ease .3s both
 }
 
-@keyframes rmm-titleGlow {
+@keyframes jmm-titleGlow {
 
     0%,
     100% {
@@ -231,7 +231,7 @@
     }
 }
 
-@keyframes rmm-titleIn {
+@keyframes jmm-titleIn {
     from {
         opacity: 0;
         filter: blur(8px)
@@ -243,13 +243,13 @@
     }
 }
 
-/* === 工具列按鈕 === */
-.rmm-toolbar {
+/* === å·¥å…·åˆ—æŒ‰éˆ• === */
+.jmm-toolbar {
     display: flex;
     gap: 6px
 }
 
-.rmm-tool-btn {
+.jmm-tool-btn {
     padding: 6px 12px;
     font-size: .72rem;
     border-radius: 8px;
@@ -264,29 +264,29 @@
     gap: 4px
 }
 
-.rmm-tool-btn:hover {
+.jmm-tool-btn:hover {
     border-color: rgba(168, 85, 247, .4);
     color: #c084fc;
     transform: translateY(-1px)
 }
 
-.rmm-tool-icon {
+.jmm-tool-icon {
     font-size: 1rem
 }
 
-/* === 搜尋框 === */
-.rmm-search-row {
+/* === æœå°‹æ¡† === */
+.jmm-search-row {
     display: flex;
     gap: 8px;
     margin-top: 10px
 }
 
-.rmm-search-wrap {
+.jmm-search-wrap {
     flex: 1;
     position: relative
 }
 
-.rmm-search {
+.jmm-search {
     width: 100%;
     padding: 9px 16px 9px 36px;
     background: rgba(30, 41, 59, .8);
@@ -299,12 +299,12 @@
     transition: border-color .3s
 }
 
-.rmm-search:focus {
+.jmm-search:focus {
     border-color: rgba(168, 85, 247, .5);
     box-shadow: 0 0 10px rgba(168, 85, 247, .12)
 }
 
-.rmm-search-icon {
+.jmm-search-icon {
     position: absolute;
     left: 12px;
     top: 50%;
@@ -313,8 +313,8 @@
     font-size: .8rem
 }
 
-/* === 分類 Tabs === */
-.rmm-tabs {
+/* === åˆ†é¡ž Tabs === */
+.jmm-tabs {
     display: flex;
     gap: 4px;
     padding: 10px 24px 0;
@@ -322,12 +322,11 @@
     flex-shrink: 0
 }
 
-.rmm-tabs::-webkit-scrollbar {
+.jmm-tabs::-webkit-scrollbar {
     height: 0
 }
 
-.rmm-tab {
-    box-sizing: border-box;
+.jmm-tab {
     padding: 7px 14px;
     font-size: .76rem;
     border-radius: 8px 8px 0 0;
@@ -347,7 +346,7 @@
     position: relative
 }
 
-.rmm-tab:hover {
+.jmm-tab:hover {
     color: #c084fc;
     background: rgba(124, 58, 237, .15);
     border-color: rgba(168, 85, 247, .25);
@@ -356,7 +355,7 @@
     box-shadow: 0 2px 8px rgba(124, 58, 237, .15)
 }
 
-.rmm-tab.active {
+.jmm-tab.active {
     background: linear-gradient(180deg, rgba(124, 58, 237, .2) 0%, rgba(30, 41, 59, .9) 100%);
     color: #f3e8ff;
     border-color: rgba(168, 85, 247, .4);
@@ -365,34 +364,34 @@
     transform: translateY(-1px)
 }
 
-.rmm-tab.active .rmm-tab-icon {
+.jmm-tab.active .jmm-tab-icon {
     transform: scale(1.15);
     filter: drop-shadow(0 0 6px rgba(168, 85, 247, .6))
 }
 
-.rmm-tab-icon {
+.jmm-tab-icon {
     font-size: .95rem;
     transition: transform .25s ease, filter .25s ease
 }
 
-.rmm-tab-label {
+.jmm-tab-label {
     font-size: .65rem
 }
 
-.rmm-tab-count {
+.jmm-tab-count {
     font-size: .55rem;
     color: #64748b;
     margin-top: 1px;
     transition: color .25s ease
 }
 
-.rmm-tab.active .rmm-tab-count {
+.jmm-tab.active .jmm-tab-count {
     color: #c084fc;
     font-weight: 600
 }
 
-/* === 主體（固定高度 flex-grow）=== */
-.rmm-body {
+/* === ä¸»é«”ï¼ˆå›ºå®šé«˜åº¦ flex-growï¼‰=== */
+.jmm-body {
     display: flex;
     flex: 1;
     overflow: hidden;
@@ -400,7 +399,7 @@
     min-height: 0
 }
 
-.rmm-main {
+.jmm-main {
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -409,22 +408,22 @@
     padding-top: 14px
 }
 
-.rmm-grid-wrap {
+.jmm-grid-wrap {
     flex: 1;
     overflow-y: auto;
     padding: 0 10px 14px 20px;
     min-height: 0
 }
 
-.rmm-grid {
+.jmm-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 5px;
     align-content: start
 }
 
-/* === 種族 Chip === */
-.rmm-race-chip {
+/* === ç¨®æ— Chip === */
+.jmm-job-chip {
     padding: 7px 9px;
     font-size: .73rem;
     border-radius: 8px;
@@ -441,26 +440,26 @@
     position: relative
 }
 
-.rmm-race-chip:hover {
+.jmm-job-chip:hover {
     border-color: rgba(168, 85, 247, .4);
     color: #e2e8f0;
     background: rgba(124, 58, 237, .08);
     transform: translateY(-1px)
 }
 
-.rmm-race-chip.selected {
+.jmm-job-chip.selected {
     background: rgba(124, 58, 237, .2);
     border-color: #a855f7;
     color: #fff;
     box-shadow: 0 0 10px rgba(168, 85, 247, .15)
 }
 
-.rmm-chip-icon {
+.jmm-chip-icon {
     font-size: .85rem;
     flex-shrink: 0
 }
 
-.rmm-chip-text {
+.jmm-chip-text {
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -468,7 +467,7 @@
     flex: 1
 }
 
-.rmm-chip-zh {
+.jmm-chip-zh {
     font-size: .73rem;
     font-weight: 500;
     white-space: nowrap;
@@ -476,7 +475,7 @@
     text-overflow: ellipsis
 }
 
-.rmm-chip-en {
+.jmm-chip-en {
     font-size: .58rem;
     color: #64748b;
     white-space: nowrap;
@@ -484,12 +483,12 @@
     text-overflow: ellipsis
 }
 
-.rmm-race-chip.selected .rmm-chip-en {
+.jmm-job-chip.selected .jmm-chip-en {
     color: rgba(255, 255, 255, .5)
 }
 
-/* === 🔥 熱門標記 === */
-.rmm-hot-badge {
+/* === ðŸ”¥ ç†±é–€æ¨™è¨˜ === */
+.jmm-hot-badge {
     position: absolute;
     top: 2px;
     right: 3px;
@@ -498,12 +497,12 @@
     opacity: .7
 }
 
-.rmm-race-chip:hover .rmm-hot-badge {
+.jmm-job-chip:hover .jmm-hot-badge {
     opacity: 1
 }
 
-/* === 📋 最近使用標記 === */
-.rmm-recent-badge {
+/* === ðŸ“‹ æœ€è¿‘ä½¿ç”¨æ¨™è¨˜ === */
+.jmm-recent-badge {
     position: absolute;
     bottom: 2px;
     right: 3px;
@@ -512,8 +511,8 @@
     opacity: .6
 }
 
-/* === A-Z 索引 === */
-.rmm-az {
+/* === A-Z ç´¢å¼• === */
+.jmm-az {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -525,7 +524,7 @@
     flex-shrink: 0
 }
 
-.rmm-az-letter {
+.jmm-az-letter {
     font-size: .5rem;
     color: #475569;
     cursor: pointer;
@@ -535,18 +534,18 @@
     line-height: 1.2
 }
 
-.rmm-az-letter:hover {
+.jmm-az-letter:hover {
     color: #a855f7;
     background: rgba(168, 85, 247, .1)
 }
 
-.rmm-az-letter.active {
+.jmm-az-letter.active {
     color: #fff;
     background: rgba(124, 58, 237, .4)
 }
 
-/* === 加分特徵（卡片容器）=== */
-.rmm-bonus {
+/* === åŠ åˆ†ç‰¹å¾µï¼ˆå¡ç‰‡å®¹å™¨ï¼‰=== */
+.jmm-bonus {
     margin: 8px 16px;
     padding: 12px 16px;
     border-radius: 10px;
@@ -557,27 +556,27 @@
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, .03), 0 2px 8px rgba(0, 0, 0, .2)
 }
 
-.rmm-bonus.show {
+.jmm-bonus.show {
     display: block
 }
 
-.rmm-bonus-title {
+.jmm-bonus-title {
     font-size: .75rem;
     color: #94a3b8;
     margin-bottom: 6px
 }
 
-.rmm-bonus-title span {
+.jmm-bonus-title span {
     color: #fbbf24
 }
 
-.rmm-bonus-tags {
+.jmm-bonus-tags {
     display: flex;
     flex-wrap: wrap;
     gap: 5px
 }
 
-.rmm-bonus-tag {
+.jmm-bonus-tag {
     padding: 3px 10px;
     font-size: .7rem;
     border-radius: 16px;
@@ -589,19 +588,19 @@
     font-family: inherit
 }
 
-.rmm-bonus-tag:hover {
+.jmm-bonus-tag:hover {
     border-color: rgba(251, 191, 36, .4);
     color: #fbbf24
 }
 
-.rmm-bonus-tag.active {
+.jmm-bonus-tag.active {
     background: rgba(251, 191, 36, .15);
     border-color: #fbbf24;
     color: #fbbf24
 }
 
 /* === Footer === */
-.rmm-footer {
+.jmm-footer {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -610,21 +609,21 @@
     flex-shrink: 0
 }
 
-.rmm-status {
+.jmm-status {
     font-size: .7rem;
     color: #64748b
 }
 
-.rmm-status b {
+.jmm-status b {
     color: #a855f7
 }
 
-.rmm-actions {
+.jmm-actions {
     display: flex;
     gap: 10px
 }
 
-.rmm-btn {
+.jmm-btn {
     padding: 7px 18px;
     border-radius: 8px;
     font-size: .78rem;
@@ -634,29 +633,29 @@
     transition: all .2s
 }
 
-.rmm-btn-cancel {
+.jmm-btn-cancel {
     background: rgba(100, 116, 139, .2);
     color: #94a3b8
 }
 
-.rmm-btn-cancel:hover {
+.jmm-btn-cancel:hover {
     background: rgba(100, 116, 139, .3);
     color: #e2e8f0
 }
 
-.rmm-btn-apply {
+.jmm-btn-apply {
     background: linear-gradient(135deg, #7c3aed, #a855f7);
     color: #fff;
     box-shadow: 0 3px 12px rgba(124, 58, 237, .3)
 }
 
-.rmm-btn-apply:hover {
+.jmm-btn-apply:hover {
     transform: translateY(-1px);
     box-shadow: 0 5px 16px rgba(124, 58, 237, .4)
 }
 
-/* === 空結果 === */
-.rmm-empty {
+/* === ç©ºçµæžœ === */
+.jmm-empty {
     grid-column: 1/-1;
     padding: 40px;
     text-align: center;
@@ -664,17 +663,17 @@
     font-size: .85rem
 }
 
-.rmm-grid-wrap::-webkit-scrollbar {
+.jmm-grid-wrap::-webkit-scrollbar {
     width: 5px
 }
 
-.rmm-grid-wrap::-webkit-scrollbar-thumb {
+.jmm-grid-wrap::-webkit-scrollbar-thumb {
     background: rgba(148, 163, 184, .15);
     border-radius: 3px
 }
 
-/* === 🎲 骰子動畫覆蓋層 === */
-.rmm-dice-overlay {
+/* === ðŸŽ² éª°å­å‹•ç•«è¦†è“‹å±¤ === */
+.jmm-dice-overlay {
     position: absolute;
     inset: 0;
     background: rgba(0, 0, 0, .6);
@@ -688,20 +687,20 @@
     border-radius: 16px
 }
 
-.rmm-dice-overlay.active {
+.jmm-dice-overlay.active {
     opacity: 1;
     pointer-events: auto
 }
 
-.rmm-dice-emoji {
+.jmm-dice-emoji {
     font-size: 80px;
     line-height: 1;
     filter: drop-shadow(0 0 20px rgba(168, 85, 247, .7)) drop-shadow(0 0 50px rgba(124, 58, 237, .4));
-    animation: rmm-dice-drop .4s cubic-bezier(.22, .68, .31, 1.2) forwards
+    animation: jmm-dice-drop .4s cubic-bezier(.22, .68, .31, 1.2) forwards
 }
 
-/* Phase 1: 從上方掉落到中央 */
-@keyframes rmm-dice-drop {
+/* Phase 1: å¾žä¸Šæ–¹æŽ‰è½åˆ°ä¸­å¤® */
+@keyframes jmm-dice-drop {
     0% {
         transform: translateY(-200px) rotate(-90deg) scale(.5);
         opacity: 0
@@ -722,12 +721,12 @@
     }
 }
 
-/* Phase 2: 旋轉 + 多次回彈 */
-.rmm-dice-emoji.rolling {
-    animation: rmm-dice-bounce 1s ease-out forwards
+/* Phase 2: æ—‹è½‰ + å¤šæ¬¡å›žå½ˆ */
+.jmm-dice-emoji.rolling {
+    animation: jmm-dice-bounce 1s ease-out forwards
 }
 
-@keyframes rmm-dice-bounce {
+@keyframes jmm-dice-bounce {
     0% {
         transform: translateY(0) rotate(0deg) scale(1)
     }
@@ -773,12 +772,12 @@
     }
 }
 
-/* Phase 3: 彈出消失 */
-.rmm-dice-emoji.exit {
-    animation: rmm-dice-exit .3s ease-in forwards
+/* Phase 3: å½ˆå‡ºæ¶ˆå¤± */
+.jmm-dice-emoji.exit {
+    animation: jmm-dice-exit .3s ease-in forwards
 }
 
-@keyframes rmm-dice-exit {
+@keyframes jmm-dice-exit {
     0% {
         transform: translateY(0) rotate(720deg) scale(1);
         opacity: 1
@@ -795,11 +794,11 @@
     }
 }
 
-.rmm-dice-spinning .rmm-tool-icon {
-    animation: rmm-dice-btn-spin .6s ease-out
+.jmm-dice-spinning .jmm-tool-icon {
+    animation: jmm-dice-btn-spin .6s ease-out
 }
 
-@keyframes rmm-dice-btn-spin {
+@keyframes jmm-dice-btn-spin {
     0% {
         transform: rotate(0deg)
     }
@@ -809,8 +808,8 @@
     }
 }
 
-/* === 隨機選中閃光 === */
-@keyframes rmm-chip-flash {
+/* === éš¨æ©Ÿé¸ä¸­é–ƒå…‰ === */
+@keyframes jmm-chip-flash {
     0% {
         box-shadow: 0 0 0 rgba(251, 191, 36, 0)
     }
@@ -828,6 +827,7 @@
     }
 }
 
-.rmm-race-chip.random-pick {
-    animation: rmm-chip-flash 1.2s ease
+.jmm-job-chip.random-pick {
+    animation: jmm-chip-flash 1.2s ease
 }
+
