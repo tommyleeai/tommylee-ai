@@ -3,7 +3,7 @@
 // openBodyMagicModal() 函式
 // ============================================
 window.PromptGen = window.PromptGen || {};
-window.PromptGen.BodyMagicModal = (function () {
+window.PromptGen.BodyMagicModal = (function() {
     // Dependencies injected via setup()
     let state, sfx, BODY_MAGIC_DATA, generatePrompt, saveState, renderTabContent;
 
@@ -33,8 +33,208 @@ window.PromptGen.BodyMagicModal = (function () {
 
         // ── Full Demo v2 CSS (scoped) ──
         overlay.innerHTML = `
-
-
+        <style>
+            #body-magic-modal {
+                position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+                z-index: 10000; display: flex; align-items: center; justify-content: center;
+                background: rgba(0, 0, 0, 0.9);
+                animation: bmm-fadeIn 0.5s ease;
+                font-family: 'Inter', sans-serif;
+            }
+            @keyframes bmm-fadeIn { from { opacity: 0; } to { opacity: 1; } }
+            #body-magic-modal .bmm-particles {
+                position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+                pointer-events: none; overflow: hidden;
+            }
+            #body-magic-modal .bmm-particle {
+                position: absolute; width: 4px; height: 4px; border-radius: 50%;
+                background: #fbbf24; opacity: 0; animation: bmm-float 3s ease-in-out infinite;
+            }
+            @keyframes bmm-float {
+                0% { opacity: 0; transform: translateY(100vh) scale(0); }
+                50% { opacity: 0.8; }
+                100% { opacity: 0; transform: translateY(-20px) scale(1.5); }
+            }
+            #body-magic-modal .bmm-container {
+                position: relative; z-index: 1;
+                background: linear-gradient(135deg, #0a0e1a 0%, #1e1b4b 40%, #0f172a 100%);
+                border: 2px solid rgba(167, 139, 250, 0.4);
+                border-radius: 16px; padding: 24px;
+                max-width: 1200px; width: 95vw; max-height: 90vh;
+                overflow-y: auto; scrollbar-width: thin;
+                box-shadow: 0 0 60px rgba(167, 139, 250, 0.3), 0 0 120px rgba(251, 191, 36, 0.1);
+            }
+            #body-magic-modal .bmm-title {
+                text-align: center; font-size: 1.4rem; font-weight: 700; margin-bottom: 6px;
+                background: linear-gradient(135deg, #a78bfa, #60a5fa);
+                -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+                background-clip: text;
+            }
+            #body-magic-modal .bmm-subtitle {
+                text-align: center; font-size: 0.8rem; color: #64748b; margin-bottom: 20px;
+            }
+            #body-magic-modal .bmm-layout {
+                display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
+            }
+            @media (max-width: 768px) {
+                #body-magic-modal .bmm-layout { grid-template-columns: 1fr; }
+            }
+            #body-magic-modal .bmm-panel {
+                background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px);
+                border: 1px solid rgba(148, 163, 184, 0.15); border-radius: 14px; padding: 20px;
+            }
+            #body-magic-modal .bmm-panel h2 {
+                font-size: 1rem; margin-bottom: 16px; color: #a78bfa;
+                display: flex; align-items: center; gap: 8px;
+            }
+            #body-magic-modal .bmm-gender { display: flex; gap: 8px; margin-bottom: 20px; }
+            #body-magic-modal .bmm-gender-btn {
+                flex: 1; padding: 9px; border: 2px solid transparent;
+                border-radius: 10px; background: rgba(51, 65, 85, 0.6);
+                color: #94a3b8; font-size: 0.85rem; cursor: pointer; transition: all 0.3s;
+            }
+            #body-magic-modal .bmm-gender-btn.active {
+                border-color: #a78bfa; color: #e2e8f0; background: rgba(167, 139, 250, 0.15);
+            }
+            #body-magic-modal .bmm-gender-btn:hover { background: rgba(167, 139, 250, 0.1); }
+            #body-magic-modal .bmm-feature { margin-bottom: 22px; }
+            #body-magic-modal .bmm-feature-header {
+                display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;
+            }
+            #body-magic-modal .bmm-feature-label { font-size: 0.9rem; font-weight: 600; color: #e2e8f0; }
+            #body-magic-modal .bmm-feature-value {
+                font-size: 0.78rem; color: #a78bfa; padding: 3px 12px;
+                background: rgba(167, 139, 250, 0.15); border-radius: 20px;
+                font-weight: 500; transition: all 0.3s;
+            }
+            #body-magic-modal .bmm-feature-value.fantasy {
+                color: #fbbf24; background: rgba(251, 191, 36, 0.2);
+                border: 1px solid rgba(251, 191, 36, 0.3);
+                animation: bmm-glow 2s ease-in-out infinite;
+            }
+            @keyframes bmm-glow {
+                0%, 100% { box-shadow: 0 0 5px rgba(251, 191, 36, 0.2); }
+                50% { box-shadow: 0 0 15px rgba(251, 191, 36, 0.4); }
+            }
+            #body-magic-modal .bmm-scale {
+                display: flex; justify-content: space-between; margin-bottom: 5px;
+                font-size: 0.6rem; color: #64748b;
+            }
+            #body-magic-modal .bmm-scale span { text-align: center; flex: 1; }
+            #body-magic-modal .bmm-scale .fl { color: #fbbf24; font-weight: 600; font-size: 0.58rem; }
+            #body-magic-modal .bmm-slider-wrap { position: relative; }
+            #body-magic-modal .bmm-fz {
+                position: absolute; top: -2px; height: 12px; border-radius: 4px;
+                pointer-events: none; z-index: 0;
+            }
+            #body-magic-modal .bmm-fz-l {
+                left: 0; width: 14.28%;
+                background: repeating-linear-gradient(45deg, rgba(251,191,36,0.1), rgba(251,191,36,0.1) 3px, transparent 3px, transparent 6px);
+                border: 1px dashed rgba(251,191,36,0.3); border-right: none; border-radius: 4px 0 0 4px;
+            }
+            #body-magic-modal .bmm-fz-r {
+                right: 0; width: 14.28%;
+                background: repeating-linear-gradient(45deg, rgba(251,191,36,0.1), rgba(251,191,36,0.1) 3px, transparent 3px, transparent 6px);
+                border: 1px dashed rgba(251,191,36,0.3); border-left: none; border-radius: 0 4px 4px 0;
+            }
+            #body-magic-modal input[type="range"] {
+                -webkit-appearance: none; appearance: none; width: 100%; height: 8px;
+                border-radius: 4px; outline: none; cursor: pointer; position: relative; z-index: 1;
+            }
+            #body-magic-modal input[type="range"]::-webkit-slider-thumb {
+                -webkit-appearance: none; width: 22px; height: 22px; border-radius: 50%;
+                background: linear-gradient(135deg, #a78bfa, #7c3aed);
+                box-shadow: 0 0 10px rgba(167, 139, 250, 0.5);
+                cursor: pointer; margin-top: -7px; transition: box-shadow 0.3s;
+            }
+            #body-magic-modal input[type="range"].in-fantasy::-webkit-slider-thumb {
+                background: linear-gradient(135deg, #fbbf24, #f59e0b);
+                box-shadow: 0 0 15px rgba(251, 191, 36, 0.6);
+            }
+            #body-magic-modal input[type="range"]::-webkit-slider-runnable-track {
+                height: 8px; border-radius: 4px;
+            }
+            #body-magic-modal input[type="range"]::-moz-range-thumb {
+                width: 22px; height: 22px; border-radius: 50%; border: none;
+                background: linear-gradient(135deg, #a78bfa, #7c3aed);
+                box-shadow: 0 0 10px rgba(167, 139, 250, 0.5); cursor: pointer;
+            }
+            #body-magic-modal input[type="range"].in-fantasy::-moz-range-thumb {
+                background: linear-gradient(135deg, #fbbf24, #f59e0b);
+                box-shadow: 0 0 15px rgba(251, 191, 36, 0.6);
+            }
+            #body-magic-modal .sl-bust { background: linear-gradient(to right, #3b82f6, #60a5fa, #a78bfa, #f472b6, #ef4444); }
+            #body-magic-modal .sl-muscle { background: linear-gradient(to right, #3b82f6, #94a3b8, #60a5fa, #a78bfa, #f97316, #ef4444); }
+            #body-magic-modal .sl-height { background: linear-gradient(to right, #3b82f6, #f9a8d4, #94a3b8, #60a5fa, #a78bfa, #ef4444); }
+            #body-magic-modal .sl-weight { background: linear-gradient(to right, #3b82f6, #60a5fa, #94a3b8, #a78bfa, #f97316, #ef4444); }
+            #body-magic-modal .bmm-output-label {
+                font-size: 0.7rem; color: #64748b; text-transform: uppercase;
+                letter-spacing: 1px; margin-bottom: 5px;
+            }
+            #body-magic-modal .bmm-output-text {
+                background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(148, 163, 184, 0.1);
+                border-radius: 10px; padding: 12px; font-size: 0.8rem; line-height: 1.6;
+                color: #cbd5e1; height: 80px; overflow-y: auto; scrollbar-width: thin;
+                word-wrap: break-word; white-space: pre-wrap; margin-bottom: 12px;
+            }
+            #body-magic-modal .bmm-output-text .positive { color: #86efac; }
+            #body-magic-modal .bmm-output-text .negative { color: #fca5a5; }
+            #body-magic-modal .bmm-output-text .weight { color: #fcd34d; }
+            #body-magic-modal .bmm-output-text .tag { color: #93c5fd; }
+            #body-magic-modal .bmm-output-text .fantasy-tag { color: #fbbf24; font-weight: 600; }
+            #body-magic-modal .bmm-weight-ind { display: flex; align-items: center; gap: 8px; margin-top: 6px; font-size: 0.75rem; }
+            #body-magic-modal .bmm-weight-bar { flex: 1; height: 6px; background: rgba(51,65,85,0.5); border-radius: 3px; overflow: hidden; }
+            #body-magic-modal .bmm-weight-fill { height: 100%; border-radius: 3px; transition: width 0.3s, background 0.3s; }
+            #body-magic-modal .bmm-weight-num { font-weight: 600; min-width: 28px; text-align: right; }
+            #body-magic-modal .bmm-fbanner {
+                background: linear-gradient(135deg, rgba(251,191,36,0.15), rgba(245,158,11,0.1));
+                border: 1px solid rgba(251,191,36,0.3); border-radius: 10px;
+                padding: 9px 12px; margin-bottom: 12px; font-size: 0.75rem;
+                color: #fbbf24; display: flex; align-items: center; gap: 8px;
+                visibility: hidden; transition: opacity 0.3s;
+                opacity: 0;
+            }
+            #body-magic-modal .bmm-fbanner.show { visibility: visible; opacity: 1; }
+            #body-magic-modal .bmm-fbanner .icon { font-size: 1.1rem; }
+            #body-magic-modal .bmm-explain {
+                background: rgba(15,23,42,0.6); border: 1px solid rgba(148,163,184,0.1);
+                border-radius: 10px; padding: 12px; margin-top: 12px;
+                font-size: 0.72rem; line-height: 1.6; color: #94a3b8;
+                height: 100px; overflow-y: auto; scrollbar-width: thin;
+            }
+            #body-magic-modal .bmm-explain strong { color: #e2e8f0; }
+            #body-magic-modal .bmm-presets { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 10px; }
+            #body-magic-modal .bmm-preset-btn {
+                padding: 5px 10px; border: 1px solid rgba(148,163,184,0.2);
+                border-radius: 7px; background: rgba(51,65,85,0.4);
+                color: #94a3b8; font-size: 0.7rem; cursor: pointer; transition: all 0.2s;
+            }
+            #body-magic-modal .bmm-preset-btn:hover {
+                border-color: #a78bfa; color: #e2e8f0; background: rgba(167,139,250,0.15);
+            }
+            #body-magic-modal .bmm-preset-btn.fp {
+                border-color: rgba(251,191,36,0.3); color: #fbbf24;
+            }
+            #body-magic-modal .bmm-preset-btn.fp:hover {
+                border-color: #fbbf24; background: rgba(251,191,36,0.15);
+            }
+            #body-magic-modal .bmm-preset-divider { width: 100%; height: 1px; background: rgba(148,163,184,0.1); margin: 3px 0; }
+            #body-magic-modal .bmm-preset-label { width: 100%; font-size: 0.6rem; color: #64748b; text-transform: uppercase; letter-spacing: 1px; }
+            #body-magic-modal .bmm-actions { display: flex; gap: 12px; margin-top: 18px; }
+            #body-magic-modal .bmm-btn-apply {
+                flex: 1; padding: 12px; border: none; border-radius: 10px;
+                background: linear-gradient(135deg, #a78bfa, #7c3aed);
+                color: white; font-size: 1rem; font-weight: 600; cursor: pointer;
+                transition: all 0.3s; box-shadow: 0 4px 15px rgba(167,139,250,0.3);
+            }
+            #body-magic-modal .bmm-btn-apply:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(167,139,250,0.5); }
+            #body-magic-modal .bmm-btn-cancel {
+                padding: 12px 24px; border: 1px solid rgba(148,163,184,0.3);
+                background: transparent; color: #94a3b8; border-radius: 10px;
+                font-size: 0.9rem; cursor: pointer; transition: all 0.3s;
+            }
+            #body-magic-modal .bmm-btn-cancel:hover { border-color: #94a3b8; color: #e2e8f0; }
+        </style>
 
         <div class="bmm-particles" id="bmm-particles"></div>
         <div class="bmm-container">
