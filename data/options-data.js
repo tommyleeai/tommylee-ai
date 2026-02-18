@@ -1063,8 +1063,8 @@ window.PromptGen.Data = (function () {
     const TAB_SECTIONS = {
         base: [
             { id: 'gender', title: { zh: '性別', en: 'Gender' }, type: 'gender' },
-            { id: 'race', title: { zh: '種族', en: 'Race' }, data: RACES, count: 20 },
             { id: 'age', title: { zh: '年齡', en: 'Age' }, type: 'ageSlider' },
+            { id: 'race', title: { zh: '種族', en: 'Race' }, data: RACES, count: 20 },
             { id: 'job', title: { zh: '職業', en: 'Job / Class' }, data: JOBS, count: 30 },
             { id: 'hairstyle', title: { zh: '髮型', en: 'Hairstyle' }, data: null, count: 30, genderDependent: true },
             { id: 'bodyType', title: { zh: '身材', en: 'Body Type' }, data: null, count: 40, genderDependent: true }
