@@ -35,7 +35,9 @@ window.PromptGen.ConflictSystem = (function () {
             const selA = rule.a === 'gender' ? state.gender : state.selections[rule.a];
             const selB = rule.b === 'gender' ? state.gender : state.selections[rule.b];
             if (!selA || !selB) continue;
-            if (selA.toLowerCase().includes(rule.keyword_a) && selB.toLowerCase().includes(rule.keyword_b)) {
+            const matchA = rule.a === 'gender' ? selA === rule.keyword_a : selA.toLowerCase().includes(rule.keyword_a);
+            const matchB = rule.b === 'gender' ? selB === rule.keyword_b : selB.toLowerCase().includes(rule.keyword_b);
+            if (matchA && matchB) {
                 // Find labels from data arrays
                 let labelA = rule.keyword_a, labelB = rule.keyword_b;
                 const findLabel = (data, val) => {
@@ -163,26 +165,26 @@ window.PromptGen.ConflictSystem = (function () {
         </div>
         <div class="conflict-desc">「<strong>${conflict.labelA}</strong>」×「<strong>${conflict.labelB}</strong>」組合偵測到衝突！</div>
         <div class="conflict-reason">${conflict.reason}</div>
-        <div class="conflict-prompt-label">請選擇處理方式:</div>
+        <div class="conflict-prompt-label">⚔️ 命運的岔路已現，魔法師請下達神諭：</div>
         <div class="conflict-options">
             <button class="conflict-option option-1" id="conflict-opt-ignore">
-                <div class="option-title">🔥 忽略警告，繼續執行</div>
-                <div class="option-desc">⚠ 可能產生兩個角色的圖片，但保留你的原始設定</div>
+                <div class="option-title">🔥 無視禁忌，強行突破！</div>
+                <div class="option-desc">⚠ 代價未知，但你的原始魔法陣將完整保留</div>
             </button>
             <button class="conflict-option option-2" id="conflict-opt-dual">
-                <div class="option-title">👥 接受雙人構圖</div>
-                <div class="option-desc">系統加入「2characters」提示詞，明確生成雙角色構圖</div>
+                <div class="option-title">👥 召喚分身！雙重存在！</div>
+                <div class="option-desc">系統植入「2characters」咒文，讓兩個靈魂同時現身</div>
             </button>
             <button class="conflict-option option-3" id="conflict-opt-merge">
-                <div class="option-title">✨ 合併為一體</div>
-                <div class="option-desc">系統強調「一個角色同時具有兩種特質」，避免分裂</div>
+                <div class="option-title">✨ 禁忌融合！兩魂歸一！</div>
+                <div class="option-desc">系統將兩種矛盾特質鍛造成一個全新的生命體</div>
             </button>
         </div>
         <div class="remember-choice ${state.conflictWarningCount >= 3 ? 'visible' : ''}" id="remember-choice">
             <input type="checkbox" id="remember-checkbox">
             <div>
-                <label for="remember-checkbox">以後都用此方式處理，不再顯示警告</label>
-                <div class="hint">可在「設定」中隨時重新開啟警告</div>
+                <label for="remember-checkbox">記住我的選擇，別再煩我！</label>
+                <div class="hint">在「設定」中可以重新召喚這個煩人的警告</div>
             </div>
         </div>
     </div>
@@ -213,7 +215,7 @@ window.PromptGen.ConflictSystem = (function () {
             overlay.remove();
             playResolveSound();
             let toastMsg = '';
-            if (type === 'ignore') toastMsg = '🔥 已忽略警告 — 保留原始設定';
+            if (type === 'ignore') toastMsg = '🔥 禁忌已無視 — 原始魔法陣完整保留';
             else if (type === 'dual') toastMsg = '👥 已切換為雙人構圖 — 加入 "2characters"';
             else if (type === 'merge') toastMsg = '✨ 已合併為一體 — 強調單一角色';
             if (rememberCb && rememberCb.checked) toastMsg += '\n📌 已記住此選擇';
@@ -257,7 +259,7 @@ window.PromptGen.ConflictSystem = (function () {
                 if (!state.conflictWarningsEnabled && state.conflictAutoResolution) {
                     state.conflictResolution = state.conflictAutoResolution;
                     generatePrompt();
-                    showConflictToast('⚡ 已自動套用: ' + (state.conflictAutoResolution === 'ignore' ? '🔥 忽略警告' : state.conflictAutoResolution === 'dual' ? '👥 雙人構圖' : '✨ 合併一體'));
+                    showConflictToast('⚡ 已自動套用: ' + (state.conflictAutoResolution === 'ignore' ? '🔥 無視禁忌' : state.conflictAutoResolution === 'dual' ? '👥 召喚分身' : '✨ 禁忌融合'));
                     return;
                 }
                 showConflictModal(conflict);

@@ -528,7 +528,7 @@
         updateLockedPreview();
         // Check for conflicts on any conflict-relevant selection
         if (['race', 'job', 'outfit', 'bodyType', 'hairstyle'].includes(sectionId)) {
-            onSelectionChanged();
+            window.PromptGen.ConflictSystem.onSelectionChanged();
         } else {
             generatePrompt();
         }
@@ -863,6 +863,7 @@
         RACES, JOBS, OUTFITS, BODY_TYPES_FEMALE, BODY_TYPES_MALE,
         HAIRSTYLES_FEMALE, HAIRSTYLES_MALE
     });
+
 
 
 
