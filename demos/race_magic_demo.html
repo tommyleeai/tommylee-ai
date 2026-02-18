@@ -433,13 +433,14 @@
             display: flex;
             flex-direction: column;
             overflow: hidden;
-            min-height: 0
+            min-height: 0;
+            padding-top: 14px
         }
 
         .rmm-grid-wrap {
             flex: 1;
             overflow-y: auto;
-            padding: 14px 10px 14px 20px;
+            padding: 0 10px 14px 20px;
             min-height: 0
         }
 
@@ -572,12 +573,16 @@
             background: rgba(124, 58, 237, .4)
         }
 
-        /* === 加分特徵 === */
+        /* === 加分特徵（卡片容器）=== */
         .rmm-bonus {
-            padding: 10px 24px;
-            border-top: 1px solid rgba(148, 163, 184, .1);
+            margin: 8px 16px;
+            padding: 12px 16px;
+            border-radius: 10px;
+            background: rgba(15, 23, 42, .6);
+            border: 1px solid rgba(168, 85, 247, .2);
             display: none;
-            flex-shrink: 0
+            flex-shrink: 0;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, .03), 0 2px 8px rgba(0, 0, 0, .2)
         }
 
         .rmm-bonus.show {
@@ -877,17 +882,93 @@
             isHot: HOT_RACES.includes(r.en)
         }));
 
-        // === 加分特徵 ===
+        // === 加分特徵（含圖標、中文、英文）===
         const BONUS_TRAITS = {
-            human: ['pale skin', 'red eyes', 'fangs', 'transformation', 'divine aura', 'warrior armor', 'mystical robes'],
-            elf: ['pointed ears', 'elegant', 'ancient', 'magical aura', 'nature', 'glowing eyes', 'long hair', 'ethereal'],
-            beast: ['animal ears', 'tail', 'fur', 'fangs', 'claws', 'whiskers', 'fluffy', 'feral eyes'],
-            mecha: ['mechanical parts', 'glowing circuits', 'metal skin', 'laser eyes', 'holographic', 'neon glow'],
-            myth: ['wings', 'halo', 'horns', 'divine light', 'scales', 'trident', 'crown', 'sacred flame'],
-            undead: ['pale skin', 'hollow eyes', 'skeletal', 'ghostly glow', 'dark aura', 'chains', 'tattered cloak', 'blood'],
-            yokai: ['oni horns', 'fox mask', 'spiritual fire', 'kimono', 'paper talismans', 'ethereal mist', 'red markings'],
-            other: ['supernatural aura', 'crystalline', 'alien features', 'dark magic', 'glowing', 'translucent', 'shapeshifting'],
-            fantasy: ['dragon horns', 'dragon wings', 'dragon tail', 'scales', 'crown', 'massive', 'cosmic', 'primordial aura']
+            human: [
+                { icon: '🦷', zh: '蒼白肌膚', en: 'pale skin' },
+                { icon: '👁️', zh: '紅瞳', en: 'red eyes' },
+                { icon: '🦷', zh: '尖牙', en: 'fangs' },
+                { icon: '🔄', zh: '變身', en: 'transformation' },
+                { icon: '✨', zh: '神聖氣息', en: 'divine aura' },
+                { icon: '🛡️', zh: '戰士鎧甲', en: 'warrior armor' },
+                { icon: '🧥', zh: '神秘長袍', en: 'mystical robes' }
+            ],
+            elf: [
+                { icon: '🧝', zh: '尖耳', en: 'pointed ears' },
+                { icon: '🌸', zh: '優雅', en: 'elegant' },
+                { icon: '🏛️', zh: '古老', en: 'ancient' },
+                { icon: '🔮', zh: '魔法氣息', en: 'magical aura' },
+                { icon: '🌿', zh: '自然', en: 'nature' },
+                { icon: '👀', zh: '發光瞳孔', en: 'glowing eyes' },
+                { icon: '💇', zh: '長髮', en: 'long hair' },
+                { icon: '🌌', zh: '空靈', en: 'ethereal' }
+            ],
+            beast: [
+                { icon: '🐾', zh: '獸耳', en: 'animal ears' },
+                { icon: '🦬', zh: '尾巴', en: 'tail' },
+                { icon: '🦸', zh: '絨毛', en: 'fur' },
+                { icon: '🦷', zh: '尖牙', en: 'fangs' },
+                { icon: '💅', zh: '利爪', en: 'claws' },
+                { icon: '🐱', zh: '髭鬚', en: 'whiskers' },
+                { icon: '☁️', zh: '蓬鬆', en: 'fluffy' },
+                { icon: '👁️', zh: '野性眷神', en: 'feral eyes' }
+            ],
+            mecha: [
+                { icon: '⚙️', zh: '機械部件', en: 'mechanical parts' },
+                { icon: '💠', zh: '發光電路', en: 'glowing circuits' },
+                { icon: '🦿', zh: '金屬肌膚', en: 'metal skin' },
+                { icon: '🔫', zh: '雷射眼', en: 'laser eyes' },
+                { icon: '🌐', zh: '全息投影', en: 'holographic' },
+                { icon: '💡', zh: '霓虹光暈', en: 'neon glow' }
+            ],
+            myth: [
+                { icon: '🪽', zh: '翼翅', en: 'wings' },
+                { icon: '😇', zh: '光環', en: 'halo' },
+                { icon: '🦷', zh: '角', en: 'horns' },
+                { icon: '✨', zh: '神聖之光', en: 'divine light' },
+                { icon: '🐉', zh: '鱗片', en: 'scales' },
+                { icon: '🔱', zh: '三叉戟', en: 'trident' },
+                { icon: '👑', zh: '皇冠', en: 'crown' },
+                { icon: '🔥', zh: '聖焰', en: 'sacred flame' }
+            ],
+            undead: [
+                { icon: '🦷', zh: '蒼白肌膚', en: 'pale skin' },
+                { icon: '💀', zh: '空洞眼眶', en: 'hollow eyes' },
+                { icon: '💠', zh: '骷髅化', en: 'skeletal' },
+                { icon: '👻', zh: '幽靈光暈', en: 'ghostly glow' },
+                { icon: '🌑', zh: '黑暗氣息', en: 'dark aura' },
+                { icon: '⛓️', zh: '鎖鏈', en: 'chains' },
+                { icon: '🧥', zh: '殘破斗篷', en: 'tattered cloak' },
+                { icon: '🩸', zh: '血液', en: 'blood' }
+            ],
+            yokai: [
+                { icon: '👹', zh: '鬼角', en: 'oni horns' },
+                { icon: '🎭', zh: '狐狸面具', en: 'fox mask' },
+                { icon: '🔥', zh: '靈火', en: 'spiritual fire' },
+                { icon: '👘', zh: '和服', en: 'kimono' },
+                { icon: '📜', zh: '紙符', en: 'paper talismans' },
+                { icon: '🌫️', zh: '靈霧', en: 'ethereal mist' },
+                { icon: '❤️', zh: '紅色紋様', en: 'red markings' }
+            ],
+            other: [
+                { icon: '✨', zh: '超自然氣息', en: 'supernatural aura' },
+                { icon: '💎', zh: '水晶化', en: 'crystalline' },
+                { icon: '👽', zh: '外星特徵', en: 'alien features' },
+                { icon: '🌑', zh: '黑魔法', en: 'dark magic' },
+                { icon: '💡', zh: '發光', en: 'glowing' },
+                { icon: '👁️', zh: '半透明', en: 'translucent' },
+                { icon: '🔄', zh: '變形', en: 'shapeshifting' }
+            ],
+            fantasy: [
+                { icon: '🐲', zh: '龍角', en: 'dragon horns' },
+                { icon: '🪽', zh: '龍翼', en: 'dragon wings' },
+                { icon: '🦬', zh: '龍尾', en: 'dragon tail' },
+                { icon: '🐉', zh: '鱗片', en: 'scales' },
+                { icon: '👑', zh: '皇冠', en: 'crown' },
+                { icon: '🗻', zh: '巨大化', en: 'massive' },
+                { icon: '🌌', zh: '宇宙感', en: 'cosmic' },
+                { icon: '🌋', zh: '太古氣息', en: 'primordial aura' }
+            ]
         };
 
         // === Modal State ===
@@ -902,7 +983,7 @@
             if (existing) existing.remove();
             selectedBonuses.clear();
             filterLetter = null;
-            activeCat = 'all';
+            activeCat = 'hot';
             searchQuery = '';
 
             const overlay = document.createElement('div');
@@ -941,7 +1022,7 @@
         <div class="rmm-az" id="rmm-az"></div>
       </div>
       <div class="rmm-bonus" id="rmm-bonus">
-        <div class="rmm-bonus-title">⭐ 加分特徵 — <span id="rmm-bonus-race"></span></div>
+        <div class="rmm-bonus-title">⭐ 點選增加特徵 — <span id="rmm-bonus-race"></span></div>
         <div class="rmm-bonus-tags" id="rmm-bonus-tags"></div>
       </div>
       <div class="rmm-footer">
@@ -1166,11 +1247,11 @@
             tagsEl.innerHTML = '';
             traits.forEach(trait => {
                 const tag = document.createElement('button');
-                tag.className = 'rmm-bonus-tag' + (selectedBonuses.has(trait) ? ' active' : '');
-                tag.textContent = trait;
+                tag.className = 'rmm-bonus-tag' + (selectedBonuses.has(trait.en) ? ' active' : '');
+                tag.innerHTML = `<span class="rmm-chip-icon">${trait.icon}</span> ${trait.zh}`;
                 tag.addEventListener('click', () => {
-                    if (selectedBonuses.has(trait)) selectedBonuses.delete(trait);
-                    else selectedBonuses.add(trait);
+                    if (selectedBonuses.has(trait.en)) selectedBonuses.delete(trait.en);
+                    else selectedBonuses.add(trait.en);
                     tag.classList.toggle('active');
                 });
                 tagsEl.appendChild(tag);
