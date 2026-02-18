@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>種族選擇器 Demo — 分頁 + 高級魔法師</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --accent-color: #bb86fc;
+            --secondary-color: #03dac6;
+            --text-color: #e8e0f0;
+            --glass-bg: rgba(255, 255, 255, 0.04);
+            --glass-border: rgba(255, 255, 255, 0.08);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0a0e1a;
+            color: var(--text-color);
+            min-height: 100vh;
+            padding: 30px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 1.6rem;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, #a78bfa, #60a5fa);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            text-align: center;
+            font-size: 0.85rem;
+            color: #64748b;
+            margin-bottom: 30px;
+        }
+
+        .demo-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        /* === Section Block === */
+        .section-block {
+            margin-bottom: 16px;
+            padding: 12px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .section-header-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .section-block-title {
+            margin: 0;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--accent-color);
+        }
+
+        /* === Selected Badge START === */
+        .selected-race-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 2px 10px;
+            background: rgba(187, 134, 252, 0.15);
+            border: 1px solid rgba(187, 134, 252, 0.3);
+            border-radius: 12px;
+            font-size: 0.72rem;
+            color: var(--accent-color);
+            font-weight: 500;
+            animation: badgeFadeIn 0.3s ease;
+        }
+
+        .selected-race-badge .badge-x {
+            cursor: pointer;
+            opacity: 0.6;
+            transition: opacity 0.2s;
+            font-size: 0.65rem;
+            margin-left: 2px;
+        }
+
+        .selected-race-badge .badge-x:hover {
+            opacity: 1;
+        }
+
+        @keyframes badgeFadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* === Selected Badge END === */
+
+        /* === Race Magic Button START === */
+        .race-magic-btn {
+            padding: 4px 12px;
+            border: 1px solid rgba(251, 191, 36, 0.4);
+            background: linear-gradient(135deg, rgba(167, 139, 250, 0.15), rgba(251, 191, 36, 0.15));
+            color: #fbbf24;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.72rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            text-shadow: 0 0 8px rgba(251, 191, 36, 0.3);
+        }
+
+        .race-magic-btn:hover {
+            background: linear-gradient(135deg, rgba(167, 139, 250, 0.3), rgba(251, 191, 36, 0.3));
+            border-color: #fbbf24;
+            box-shadow: 0 0 15px rgba(251, 191, 36, 0.3);
+            transform: translateY(-1px);
+        }
+
+        /* === Race Magic Button END === */
+
+        /* === Paginated Tag Grid START === */
+        .tag-grid-paginated {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 6px;
+            padding: 2px;
+        }
+
+        .tag-chip {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            padding: 0.35rem 0.4rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.2s;
+            user-select: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            min-height: 32px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .tag-chip:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+            box-shadow: 0 0 15px rgba(187, 134, 252, 0.6);
+            border-color: var(--accent-color);
+        }
+
+        .tag-chip.active {
+            background: var(--accent-color);
+            color: #121212;
+            font-weight: 600;
+            box-shadow: 0 0 15px rgba(187, 134, 252, 0.4);
+            border-color: var(--accent-color);
+        }
+
+        /* === Paginated Tag Grid END === */
+
+        /* === Pagination Nav START === */
+        .pagination-nav {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 8px;
+            margin-top: 10px;
+            user-select: none;
+        }
+
+        .page-btn {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--glass-border);
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-color);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+
+        .page-btn:hover:not(:disabled) {
+            background: var(--accent-color);
+            color: #121212;
+            border-color: var(--accent-color);
+            transform: translateY(-1px);
+        }
+
+        .page-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .page-indicator {
+            font-size: 0.82rem;
+            color: rgba(255, 255, 255, 0.5);
+            min-width: 50px;
+            text-align: center;
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* === Pagination Nav END === */
+
+        /* === Custom Toggle === */
+        .btn-custom-toggle {
+            padding: 4px 10px;
+            font-size: 0.75rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            color: var(--text-color);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            opacity: 0.7;
+        }
+
+        .btn-custom-toggle:hover {
+            opacity: 1;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* === Info Panel === */
+        .info-panel {
+            margin-top: 20px;
+            padding: 16px;
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid rgba(148, 163, 184, 0.15);
+            border-radius: 12px;
+        }
+
+        .info-panel h3 {
+            font-size: 0.95rem;
+            color: var(--accent-color);
+            margin-bottom: 10px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            font-size: 0.82rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            color: #94a3b8;
+        }
+
+        .info-value {
+            color: var(--text-color);
+            font-weight: 500;
+        }
+
+        .info-value.selected {
+            color: var(--accent-color);
+        }
+
+        /* === Conflict Test === */
+        .conflict-test {
+            margin-top: 20px;
+            padding: 16px;
+            background: rgba(255, 34, 68, 0.05);
+            border: 1px solid rgba(255, 34, 68, 0.15);
+            border-radius: 12px;
+        }
+
+        .conflict-test h3 {
+            font-size: 0.95rem;
+            color: #ff6666;
+            margin-bottom: 8px;
+        }
+
+        .conflict-test p {
+            font-size: 0.8rem;
+            color: #94a3b8;
+            margin-bottom: 12px;
+        }
+
+        .conflict-result {
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            font-size: 0.8rem;
+            color: #cbd5e1;
+            min-height: 40px;
+        }
+
+        .conflict-result.has-conflict {
+            border: 1px solid rgba(255, 34, 68, 0.3);
+            color: #ff8888;
+        }
+
+        .conflict-result.no-conflict {
+            border: 1px solid rgba(3, 218, 198, 0.3);
+            color: #03dac6;
+        }
+
+        .job-quick-select {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 10px;
+        }
+
+        .job-chip {
+            padding: 4px 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            transition: all 0.2s;
+            color: var(--text-color);
+        }
+
+        .job-chip:hover {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: #60a5fa;
+        }
+
+        .job-chip.active {
+            background: #3b82f6;
+            color: #fff;
+            border-color: #3b82f6;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>🧬 種族選擇器 Demo — 分頁模式</h1>
+    <p class="subtitle">Race Selector — Paginated Grid (最多 3 行 × 10 欄 = 30 項/頁) + 高級魔法師按鈕預留</p>
+
+    <div class="demo-container">
+        <div class="section-block" id="race-section"></div>
+
+        <div class="info-panel" id="info-panel">
+            <h3>📊 狀態資訊</h3>
+            <div class="info-row"><span class="info-label">總種族數</span><span class="info-value" id="info-total">—</span>
+            </div>
+            <div class="info-row"><span class="info-label">每頁顯示</span><span class="info-value"
+                    id="info-per-page">—</span></div>
+            <div class="info-row"><span class="info-label">總頁數</span><span class="info-value" id="info-pages">—</span>
+            </div>
+            <div class="info-row"><span class="info-label">當前頁碼</span><span class="info-value"
+                    id="info-current">—</span></div>
+            <div class="info-row"><span class="info-label">已選種族</span><span class="info-value selected"
+                    id="info-selected">未選擇</span></div>
+            <div class="info-row"><span class="info-label">已選種族所在頁</span><span class="info-value"
+                    id="info-selected-page">—</span></div>
+        </div>
+
+        <div class="conflict-test">
+            <h3>⚡ 衝突判斷測試</h3>
+            <p>選擇一個種族後，再從下方選一個職業，看衝突結果</p>
+            <div class="job-quick-select" id="job-select"></div>
+            <div class="conflict-result" id="conflict-result">請先選擇種族和職業</div>
+        </div>
+    </div>
+
+    <!-- 載入主專案的資料模組 -->
+    <script src="../data/options-data.js"></script>
+    <script>
+        // ============================================
+        // 從主專案取得 RACES 和 CONFLICT_RULES
+        // ============================================
+        let RACES, CONFLICT_RULES;
+        try {
+            const Data = window.PromptGen.Data;
+            RACES = Data.RACES;
+            CONFLICT_RULES = Data.CONFLICT_RULES || [];
+        } catch (e) {
+            console.error('無法載入主專案資料，使用內建備份', e);
+            RACES = [];
+            CONFLICT_RULES = [];
+        }
+
+        // 衝突測試用的職業子集
+        const JOBS_FOR_TEST = [
+            { label: '巫女', value: 'shrine maiden, miko' },
+            { label: '騎士', value: 'knight, armor, sword' },
+            { label: '忍者', value: 'ninja, shinobi' },
+            { label: '戰士', value: 'warrior, fighting stance' },
+            { label: '魔法師', value: 'mage, wizard, robe, staff' },
+            { label: '修女', value: 'nun, habit' },
+            { label: '女僕', value: 'maid, maid headdress' },
+        ];
+
+        // ============================================
+        // STATE
+        // ============================================
+        const MAX_ROWS = 3;
+        const COLS = 10;
+        const ITEMS_PER_PAGE = MAX_ROWS * COLS; // 30
+
+        let demoState = {
+            selectedRace: null,
+            selectedJob: null,
+            currentPage: 1,
+            totalPages: Math.ceil(RACES.length / ITEMS_PER_PAGE),
+        };
+
+        // ============================================
+        // RENDER RACE SECTION
+        // ============================================
+        function render() {
+            const section = document.getElementById('race-section');
+            section.innerHTML = '';
+
+            // === Header ===
+            const header = document.createElement('div');
+            header.className = 'section-header';
+
+            const headerLeft = document.createElement('div');
+            headerLeft.className = 'section-header-left';
+
+            const title = document.createElement('h4');
+            title.className = 'section-block-title';
+            title.textContent = '種族';
+            headerLeft.appendChild(title);
+
+            // Selected race badge next to title
+            if (demoState.selectedRace) {
+                const badge = document.createElement('span');
+                badge.className = 'selected-race-badge';
+                const raceObj = RACES.find(r => r.value === demoState.selectedRace);
+                badge.innerHTML = `✓ ${raceObj ? raceObj.label : ''} <span class="badge-x" title="取消選擇">✕</span>`;
+                badge.querySelector('.badge-x').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    demoState.selectedRace = null;
+                    render();
+                    checkConflict();
+                });
+                headerLeft.appendChild(badge);
+            }
+            header.appendChild(headerLeft);
+
+            // Right side: magic button + custom toggle
+            const headerRight = document.createElement('div');
+            headerRight.style.cssText = 'display:flex;gap:6px;align-items:center;';
+
+            const magicBtn = document.createElement('button');
+            magicBtn.className = 'race-magic-btn';
+            magicBtn.innerHTML = '<i class="fa-solid fa-wand-sparkles"></i> 🔮 高級魔法師';
+            magicBtn.addEventListener('click', () => {
+                alert('🔮 高級魔法師 Modal 將在 Phase 2 實作！\n\n將包含：\n• 搜尋框（中英文即時搜尋）\n• 分類折疊面板\n• 🔥 熱門標記\n• 🎲 隨機選取\n• 📋 最近使用');
+            });
+            headerRight.appendChild(magicBtn);
+
+            const customBtn = document.createElement('button');
+            customBtn.className = 'btn-custom-toggle';
+            customBtn.innerHTML = '<i class="fa-solid fa-pen"></i> 自訂';
+            headerRight.appendChild(customBtn);
+
+            header.appendChild(headerRight);
+            section.appendChild(header);
+
+            // === Paginated Tag Grid ===
+            const startIdx = (demoState.currentPage - 1) * ITEMS_PER_PAGE;
+            const endIdx = Math.min(startIdx + ITEMS_PER_PAGE, RACES.length);
+            const pageData = RACES.slice(startIdx, endIdx);
+
+            const grid = document.createElement('div');
+            grid.className = 'tag-grid-paginated';
+
+            pageData.forEach(option => {
+                const chip = document.createElement('div');
+                chip.className = `tag-chip${demoState.selectedRace === option.value ? ' active' : ''}`;
+                chip.textContent = option.label;
+                chip.title = option.en || option.label;
+                chip.addEventListener('click', () => {
+                    demoState.selectedRace = (demoState.selectedRace === option.value) ? null : option.value;
+                    render();
+                    checkConflict();
+                });
+                grid.appendChild(chip);
+            });
+            section.appendChild(grid);
+
+            // === Pagination Nav ===
+            const nav = document.createElement('div');
+            nav.className = 'pagination-nav';
+
+            const prevBtn = document.createElement('button');
+            prevBtn.className = 'page-btn';
+            prevBtn.innerHTML = '<i class="fa-solid fa-chevron-left"></i>';
+            prevBtn.disabled = demoState.currentPage === 1;
+            prevBtn.addEventListener('click', () => {
+                if (demoState.currentPage > 1) { demoState.currentPage--; render(); }
+            });
+
+            const pageText = document.createElement('span');
+            pageText.className = 'page-indicator';
+            pageText.textContent = `${demoState.currentPage} / ${demoState.totalPages}`;
+
+            const nextBtn = document.createElement('button');
+            nextBtn.className = 'page-btn';
+            nextBtn.innerHTML = '<i class="fa-solid fa-chevron-right"></i>';
+            nextBtn.disabled = demoState.currentPage === demoState.totalPages;
+            nextBtn.addEventListener('click', () => {
+                if (demoState.currentPage < demoState.totalPages) { demoState.currentPage++; render(); }
+            });
+
+            nav.appendChild(prevBtn);
+            nav.appendChild(pageText);
+            nav.appendChild(nextBtn);
+            section.appendChild(nav);
+
+            updateInfo();
+        }
+
+        function updateInfo() {
+            document.getElementById('info-total').textContent = RACES.length;
+            document.getElementById('info-per-page').textContent = ITEMS_PER_PAGE;
+            document.getElementById('info-pages').textContent = demoState.totalPages;
+            document.getElementById('info-current').textContent = demoState.currentPage;
+
+            if (demoState.selectedRace) {
+                const raceObj = RACES.find(r => r.value === demoState.selectedRace);
+                document.getElementById('info-selected').textContent = raceObj ? raceObj.label : demoState.selectedRace;
+                const raceIdx = RACES.findIndex(r => r.value === demoState.selectedRace);
+                const racePage = Math.ceil((raceIdx + 1) / ITEMS_PER_PAGE);
+                document.getElementById('info-selected-page').textContent = `第 ${racePage} 頁`;
+            } else {
+                document.getElementById('info-selected').textContent = '未選擇';
+                document.getElementById('info-selected-page').textContent = '—';
+            }
+        }
+
+        // ============================================
+        // CONFLICT CHECK
+        // ============================================
+        function checkConflict() {
+            const result = document.getElementById('conflict-result');
+            if (!demoState.selectedRace || !demoState.selectedJob) {
+                result.textContent = '請先選擇種族和職業';
+                result.className = 'conflict-result';
+                return;
+            }
+
+            // 使用和主專案 conflict-system.js 相同的 keyword 模糊匹配邏輯
+            const raceVal = demoState.selectedRace.toLowerCase();
+            const jobVal = demoState.selectedJob.toLowerCase();
+
+            const conflict = CONFLICT_RULES.find(rule => {
+                if (rule.a === 'race' && rule.b === 'job') {
+                    return raceVal.includes(rule.keyword_a) && jobVal.includes(rule.keyword_b);
+                }
+                if (rule.a === 'job' && rule.b === 'race') {
+                    return jobVal.includes(rule.keyword_a) && raceVal.includes(rule.keyword_b);
+                }
+                return false;
+            });
+
+            if (conflict) {
+                const raceObj = RACES.find(r => r.value === demoState.selectedRace);
+                const jobObj = JOBS_FOR_TEST.find(j => j.value === demoState.selectedJob);
+                result.innerHTML = `⚠️ <strong>衝突偵測！</strong> ${raceObj?.label || ''} × ${jobObj?.label || ''}<br>原因：${conflict.reason || '設定衝突'}`;
+                result.className = 'conflict-result has-conflict';
+            } else {
+                const raceObj = RACES.find(r => r.value === demoState.selectedRace);
+                const jobObj = JOBS_FOR_TEST.find(j => j.value === demoState.selectedJob);
+                result.innerHTML = `✅ 無衝突 — ${raceObj?.label || ''} + ${jobObj?.label || ''} 相容`;
+                result.className = 'conflict-result no-conflict';
+            }
+        }
+
+        // ============================================
+        // JOB SELECT
+        // ============================================
+        function renderJobs() {
+            const container = document.getElementById('job-select');
+            container.innerHTML = '';
+            JOBS_FOR_TEST.forEach(job => {
+                const chip = document.createElement('div');
+                chip.className = `job-chip${demoState.selectedJob === job.value ? ' active' : ''}`;
+                chip.textContent = job.label;
+                chip.addEventListener('click', () => {
+                    demoState.selectedJob = (demoState.selectedJob === job.value) ? null : job.value;
+                    renderJobs();
+                    checkConflict();
+                });
+                container.appendChild(chip);
+            });
+        }
+
+        // ============================================
+        // INIT
+        // ============================================
+        render();
+        renderJobs();
+    </script>
+</body>
+
+</html>
