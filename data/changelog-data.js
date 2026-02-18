@@ -7,6 +7,18 @@ window.PromptGen.Changelog = (function () {
     // Changelog Data
     const changelog = [
         {
+            version: "v6.7",
+            date: "2026-02-19",
+            changes: [
+                "🔮 改名為「次元繪師 · 角色招喚 · 禁忌魔導書」",
+                "📐 性別+年齡合併為「基本設定」一行，省下 50% 垂直空間",
+                "✂️ 髮型推桿改為「拖動即啟用」，無需先勾選",
+                "🛡️ 髮型高級魔法啟用時，基礎髮型 grid 自動灰化不可選",
+                "🔧 修復摘要列間距不一致問題",
+                "🔧 修復 index.html 中文標籤編碼遺失問題"
+            ]
+        },
+        {
             version: "v6.6",
             date: "2026-02-18",
             changes: [
