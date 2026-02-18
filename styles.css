@@ -2433,6 +2433,7 @@ input[type=range]::-webkit-slider-runnable-track {
     font-size: 0.75rem;
     color: #fbbf24;
     flex-wrap: wrap;
+    margin-bottom: 6px;
 }
 
 .body-advanced-summary span {
