@@ -2031,19 +2031,37 @@ input[type=range]::-webkit-slider-runnable-track {
     font-weight: 600;
 }
 
-/* Main Gender Toggle (standalone section) */
-.gender-toggle-main .gender-btn {
-    padding: 10px 16px;
-    font-size: 0.95rem;
-}
-
-/* Age Slider */
-.age-slider-wrap {
+/* === Gender + Age Combined Row START === */
+.gender-age-row {
     display: flex;
     align-items: center;
     gap: 16px;
 }
 
+.gender-toggle-compact {
+    display: flex;
+    gap: 4px;
+    flex-shrink: 0;
+    margin-bottom: 0;
+}
+
+.gender-toggle-compact .gender-btn {
+    padding: 6px 14px;
+    font-size: 0.82rem;
+    flex: none;
+}
+
+.age-compact-wrap {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+    min-width: 0;
+}
+
+/* === Gender + Age Combined Row END === */
+
+/* Age Slider */
 .age-display {
     display: flex;
     align-items: baseline;

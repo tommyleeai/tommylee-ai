@@ -1268,8 +1268,7 @@ window.PromptGen.Data = (function () {
     // Section definitions per tab
     const TAB_SECTIONS = {
         base: [
-            { id: 'gender', title: { zh: '性別', en: 'Gender' }, type: 'gender' },
-            { id: 'age', title: { zh: '年齡', en: 'Age' }, type: 'ageSlider' },
+            { id: 'genderAge', title: { zh: '基本設定', en: 'Basic' }, type: 'genderAge' },
             { id: 'race', title: { zh: '種族', en: 'Race' }, data: RACES, count: 20 },
             { id: 'job', title: { zh: '職業', en: 'Job / Class' }, data: JOBS, count: 30 },
             { id: 'hairstyle', title: { zh: '髮型', en: 'Hairstyle' }, data: null, count: 30, genderDependent: true },

@@ -189,8 +189,8 @@
             titleEl.textContent = state.lang === 'zh' ? section.title.zh : section.title.en;
             header.appendChild(titleEl);
 
-            // Custom button (skip for gender and age sections)
-            if (section.type !== 'gender' && section.type !== 'ageSlider') {
+            // Custom button (skip for genderAge section)
+            if (section.type !== 'genderAge') {
                 const customBtn = document.createElement('button');
                 customBtn.className = `btn-custom-toggle${state.customInputVisible[section.id] ? ' active' : ''}`;
                 customBtn.innerHTML = '<i class="fa-solid fa-pen"></i> ' + (state.lang === 'zh' ? '自訂' : 'Custom');
@@ -204,10 +204,14 @@
 
             sectionEl.appendChild(header);
 
-            // === Gender Section ===
-            if (section.type === 'gender') {
+            // === Gender + Age Combined Section ===
+            if (section.type === 'genderAge') {
+                const row = document.createElement('div');
+                row.className = 'gender-age-row';
+
+                // Gender toggle (compact)
                 const genderToggle = document.createElement('div');
-                genderToggle.className = 'gender-toggle gender-toggle-main';
+                genderToggle.className = 'gender-toggle gender-toggle-compact';
                 ['female', 'male'].forEach(g => {
                     const btn = document.createElement('button');
                     btn.className = `gender-btn${state.gender === g ? ' active' : ''}`;
@@ -224,15 +228,11 @@
                     });
                     genderToggle.appendChild(btn);
                 });
-                sectionEl.appendChild(genderToggle);
-                tabContent.appendChild(sectionEl);
-                return; // Skip custom input for gender
-            }
+                row.appendChild(genderToggle);
 
-            // === Age Slider Section ===
-            if (section.type === 'ageSlider') {
-                const sliderWrap = document.createElement('div');
-                sliderWrap.className = 'age-slider-wrap';
+                // Age slider (compact)
+                const ageWrap = document.createElement('div');
+                ageWrap.className = 'age-compact-wrap';
 
                 const ageDisplay = document.createElement('div');
                 ageDisplay.className = 'age-display';
@@ -271,11 +271,10 @@
                         const gain = sliderAudioCtx.createGain();
                         osc.connect(gain);
                         gain.connect(sliderAudioCtx.destination);
-                        // Map age 1-100 to freq 200Hz-1200Hz
                         const freq = 200 + ((state.age - 1) / 99) * 1000;
                         osc.frequency.value = freq;
                         osc.type = 'sine';
-                        gain.gain.value = 0.08; // Subtle volume
+                        gain.gain.value = 0.08;
                         osc.start();
                         gain.gain.exponentialRampToValueAtTime(0.001, sliderAudioCtx.currentTime + 0.08);
                         osc.stop(sliderAudioCtx.currentTime + 0.1);
@@ -288,11 +287,13 @@
                 sliderContainer.appendChild(minLabel);
                 sliderContainer.appendChild(slider);
                 sliderContainer.appendChild(maxLabel);
-                sliderWrap.appendChild(ageDisplay);
-                sliderWrap.appendChild(sliderContainer);
-                sectionEl.appendChild(sliderWrap);
+                ageWrap.appendChild(ageDisplay);
+                ageWrap.appendChild(sliderContainer);
+                row.appendChild(ageWrap);
+
+                sectionEl.appendChild(row);
                 tabContent.appendChild(sectionEl);
-                return; // Skip custom input for age
+                return; // genderAge section 處理完畢
             }
 
             // genderDependent sections: no toggle needed here, follows top-level gender
