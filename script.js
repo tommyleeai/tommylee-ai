@@ -1234,10 +1234,10 @@
                     const summaryBar = document.createElement('div');
                     summaryBar.className = 'body-advanced-summary';
                     const summaryText = document.createElement('span');
-                    const gravObj = POSE_DATA.GRAVITY.find(g => g.id === pa.gravity);
-                    const gazeObj = POSE_DATA.GAZE.find(g => g.id === pa.gaze);
+                    const gravObj = pa.gravity ? POSE_DATA.GRAVITY.find(g => g.id === pa.gravity) : null;
+                    const gazeObj = pa.gaze ? POSE_DATA.GAZE.find(g => g.id === pa.gaze) : null;
                     let detailText = pa.pose.label;
-                    if (gravObj && gravObj.id !== 'neutral') detailText += ` ${gravObj.label}`;
+                    if (gravObj) detailText += ` ${gravObj.label}`;
                     if (gazeObj) detailText += ` ${gazeObj.label}`;
                     summaryText.innerHTML = `🔮 姿勢魔法啟用中：${detailText}`;
                     const editBtn = document.createElement('button');

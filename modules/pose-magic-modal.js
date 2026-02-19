@@ -22,8 +22,8 @@ window.PromptGen.PoseMagicModal = (function () {
         // 讀取已儲存的狀態
         const saved = state.poseAdvanced || {};
         let selectedPose = saved.pose || null;  // { label, en, value, category }
-        let selectedGravity = saved.gravity || 'neutral';
-        let selectedGaze = saved.gaze || 'direct';
+        let selectedGravity = saved.gravity || null;
+        let selectedGaze = saved.gaze || null;
         let currentTab = selectedPose ? selectedPose.category : 'standing';
         let searchQuery = '';
 
@@ -186,11 +186,11 @@ window.PromptGen.PoseMagicModal = (function () {
             controls.classList.add('show');
 
             // 重心值顯示
-            const grav = GRAVITY.find(g => g.id === selectedGravity);
+            const grav = selectedGravity ? GRAVITY.find(g => g.id === selectedGravity) : null;
             gravityVal.textContent = grav ? grav.label : '';
 
             // 視線值顯示
-            const gz = GAZE.find(g => g.id === selectedGaze);
+            const gz = selectedGaze ? GAZE.find(g => g.id === selectedGaze) : null;
             gazeVal.textContent = gz ? gz.label : '';
 
             // 組合提示詞
@@ -266,15 +266,17 @@ window.PromptGen.PoseMagicModal = (function () {
             const chip = e.target.closest('.pmm-attr-chip');
             if (!chip) return;
             sfx.playClick();
-            // toggle：再次點擊已選中的項目 → 回到預設 neutral
+            // toggle：再次點擊已選中的項目 → 取消選取
             if (selectedGravity === chip.dataset.gid) {
-                selectedGravity = 'neutral';
+                selectedGravity = null;
             } else {
                 selectedGravity = chip.dataset.gid;
             }
             document.querySelectorAll('#pmm-gravity-grid .pmm-attr-chip').forEach(c => c.classList.remove('active'));
-            const activeChip = document.querySelector(`#pmm-gravity-grid .pmm-attr-chip[data-gid="${selectedGravity}"]`);
-            if (activeChip) activeChip.classList.add('active');
+            if (selectedGravity) {
+                const activeChip = document.querySelector(`#pmm-gravity-grid .pmm-attr-chip[data-gid="${selectedGravity}"]`);
+                if (activeChip) activeChip.classList.add('active');
+            }
             updatePreview();
         });
 
@@ -283,15 +285,17 @@ window.PromptGen.PoseMagicModal = (function () {
             const chip = e.target.closest('.pmm-attr-chip');
             if (!chip) return;
             sfx.playClick();
-            // toggle：再次點擊已選中的項目 → 回到預設 direct
+            // toggle：再次點擊已選中的項目 → 取消選取
             if (selectedGaze === chip.dataset.gzid) {
-                selectedGaze = 'direct';
+                selectedGaze = null;
             } else {
                 selectedGaze = chip.dataset.gzid;
             }
             document.querySelectorAll('#pmm-gaze-grid .pmm-attr-chip').forEach(c => c.classList.remove('active'));
-            const activeChip = document.querySelector(`#pmm-gaze-grid .pmm-attr-chip[data-gzid="${selectedGaze}"]`);
-            if (activeChip) activeChip.classList.add('active');
+            if (selectedGaze) {
+                const activeChip = document.querySelector(`#pmm-gaze-grid .pmm-attr-chip[data-gzid="${selectedGaze}"]`);
+                if (activeChip) activeChip.classList.add('active');
+            }
             updatePreview();
         });
 
@@ -299,18 +303,16 @@ window.PromptGen.PoseMagicModal = (function () {
         document.getElementById('pmm-reset').addEventListener('click', () => {
             sfx.playClick();
             selectedPose = null;
-            selectedGravity = 'neutral';
-            selectedGaze = 'direct';
+            selectedGravity = null;
+            selectedGaze = null;
             searchQuery = '';
             const searchInput = document.getElementById('pmm-search');
             if (searchInput) searchInput.value = '';
             overlay.querySelectorAll('.pmm-pose-chip').forEach(c => c.classList.remove('selected'));
             // 重設重心選擇
             document.querySelectorAll('#pmm-gravity-grid .pmm-attr-chip').forEach(c => c.classList.remove('active'));
-            document.querySelector('#pmm-gravity-grid .pmm-attr-chip[data-gid="neutral"]').classList.add('active');
             // 重設視線選擇
             document.querySelectorAll('#pmm-gaze-grid .pmm-attr-chip').forEach(c => c.classList.remove('active'));
-            document.querySelector('#pmm-gaze-grid .pmm-attr-chip[data-gzid="direct"]').classList.add('active');
             renderGrid();
             updatePreview();
         });
