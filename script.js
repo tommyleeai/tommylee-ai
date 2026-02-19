@@ -64,6 +64,7 @@
         outfitPage: 1,      // v6.8 服裝分頁
         headwearPage: 1,    // v6.91 頭飾分頁
         handItemsPage: 1,   // v6.92 手持物件分頁
+        expressionPage: 1,  // v7.2 表情分頁
         heterochromia: false // v6.9 異色瞳模式
     };
 
@@ -969,8 +970,8 @@
                     titleWrapper.appendChild(badge);
                 }
 
-                // 渲染基礎 tag grid
-                renderTagGrid(sectionEl, section, section.data);
+                // 渲染分頁 grid（與服飾/頭飾/手持物一致）
+                renderPaginatedGrid(sectionEl, section, section.data, 'expressionPage');
                 tabContent.appendChild(sectionEl);
 
                 // Custom input
