@@ -3526,7 +3526,7 @@ body.screen-shake {
 /* === 27. Body Magic Modal END === */
 
 /* === 28. 眼色色盤 START === */
-/* v6.9 Eye Color Palette */
+/* v6.9 Eye Color Palette — 複用 .color-swatch 元件，僅保留開關與佈局 */
 
 /* 異色瞳開關區塊 */
 .eye-heterochromia-toggle {
@@ -3592,12 +3592,9 @@ body.screen-shake {
     box-shadow: 0 0 8px rgba(167, 139, 250, 0.5);
 }
 
-/* 單色盤容器 */
-.eye-palette-single {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
+/* 眼色 swatch grid 覆寫：允許換行（24 色需多行） */
+.eye-swatch-grid {
+    flex-wrap: wrap;
 }
 
 /* 雙色盤容器 */
@@ -3610,7 +3607,6 @@ body.screen-shake {
 .eye-palette-half {
     display: flex;
     flex-direction: column;
-    align-items: center;
     gap: 8px;
     padding: 10px;
     background: rgba(255, 255, 255, 0.02);
@@ -3623,122 +3619,13 @@ body.screen-shake {
     font-weight: 600;
     color: #e2e8f0;
     margin-bottom: 4px;
-}
-
-/* 色盤 Grid — 8 列 */
-.eye-palette-grid {
-    display: grid;
-    grid-template-columns: repeat(8, 1fr);
-    gap: 6px;
-    width: 100%;
-    justify-items: center;
-}
-
-/* 色塊圓點 */
-.eye-palette-dot {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    border: 2px solid rgba(255, 255, 255, 0.08);
-    cursor: pointer;
-    transition: all 0.25s ease;
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0;
-    outline: none;
-}
-
-.eye-palette-dot:hover {
-    transform: scale(1.2);
-    border-color: rgba(255, 255, 255, 0.4);
-    box-shadow: 0 0 16px rgba(255, 255, 255, 0.2),
-        0 0 4px currentColor;
-    z-index: 2;
-}
-
-.eye-palette-dot.active {
-    border-color: #fff;
-    border-width: 3px;
-    box-shadow: 0 0 12px rgba(255, 255, 255, 0.4),
-        0 0 24px rgba(187, 134, 252, 0.3);
-    transform: scale(1.15);
-}
-
-/* 選中打勾 */
-.eye-dot-check {
-    font-size: 14px;
-    font-weight: 900;
-    color: #fff;
-    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
-    pointer-events: none;
-    line-height: 1;
-}
-
-/* 發光效果 */
-.eye-dot-glowing {
-    animation: eyeGlow 2s ease-in-out infinite;
-    border-color: rgba(254, 243, 199, 0.4);
-}
-
-@keyframes eyeGlow {
-
-    0%,
-    100% {
-        box-shadow: 0 0 6px rgba(254, 243, 199, 0.3),
-            0 0 12px rgba(254, 243, 199, 0.1);
-    }
-
-    50% {
-        box-shadow: 0 0 12px rgba(254, 243, 199, 0.6),
-            0 0 24px rgba(254, 243, 199, 0.3),
-            0 0 36px rgba(254, 243, 199, 0.1);
-    }
-}
-
-/* 已選顏色指示器 */
-.eye-selected-indicator {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 6px 12px;
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 20px;
-    font-size: 0.8rem;
-    color: #e2e8f0;
-    min-height: 30px;
-    margin-top: 4px;
-}
-
-.eye-indicator-dot {
-    width: 14px;
-    height: 14px;
-    border-radius: 50%;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    flex-shrink: 0;
-}
-
-.eye-indicator-name {
-    font-weight: 500;
-}
-
-.eye-indicator-empty {
-    color: #64748b;
-    font-style: italic;
-    justify-content: center;
+    text-align: center;
 }
 
 /* 響應式 */
 @media (max-width: 768px) {
     .eye-palette-dual {
         grid-template-columns: 1fr;
-    }
-
-    .eye-palette-dot {
-        width: 32px;
-        height: 32px;
     }
 }
 

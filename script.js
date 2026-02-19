@@ -826,8 +826,6 @@
                     leftTitle.innerHTML = `👁 ${state.lang === 'zh' ? '左眼' : 'Left Eye'}`;
                     leftHalf.appendChild(leftTitle);
                     renderEyeColorPalette(leftHalf, section, section.data, false);
-                    // 左眼已選指示
-                    renderEyeSelectedIndicator(leftHalf, 'eyeColorLeft');
 
                     // 右眼
                     const rightHalf = document.createElement('div');
@@ -839,20 +837,13 @@
                     if (rightSection) {
                         renderEyeColorPalette(rightHalf, rightSection, rightSection.data, false);
                     }
-                    // 右眼已選指示
-                    renderEyeSelectedIndicator(rightHalf, 'eyeColorRight');
 
                     dualRow.appendChild(leftHalf);
                     dualRow.appendChild(rightHalf);
                     sectionEl.appendChild(dualRow);
                 } else {
                     // === 預設模式：單一色盤，雙眼同步 ===
-                    const singleWrapper = document.createElement('div');
-                    singleWrapper.className = 'eye-palette-single';
-                    renderEyeColorPalette(singleWrapper, section, section.data, true);
-                    // 已選指示
-                    renderEyeSelectedIndicator(singleWrapper, 'eyeColorLeft');
-                    sectionEl.appendChild(singleWrapper);
+                    renderEyeColorPalette(sectionEl, section, section.data, true);
                 }
 
                 tabContent.appendChild(sectionEl);
@@ -1132,39 +1123,34 @@
         container.appendChild(grid);
     }
 
-    // === v6.9 眼色色盤渲染 ===
+    // === v6.9 眼色色盤渲染（複用 color-swatch 元件，與髮色一致）===
     function renderEyeColorPalette(container, section, data, syncBoth) {
         const grid = document.createElement('div');
-        grid.className = 'eye-palette-grid';
+        grid.className = 'color-swatch-grid eye-swatch-grid';
 
         data.forEach(option => {
-            const dot = document.createElement('button');
+            const swatch = document.createElement('button');
             const isActive = state.selections[section.id] === option.value;
-            dot.className = `eye-palette-dot${isActive ? ' active' : ''}`;
-            dot.title = getOptionLabel(option);
-            dot.setAttribute('aria-label', getOptionLabel(option));
+            swatch.className = `color-swatch${isActive ? ' active' : ''}`;
+            swatch.title = getOptionLabel(option);
+            swatch.dataset.section = section.id;
+            swatch.dataset.value = option.value;
 
-            // 色塊樣式
+            const colorCircle = document.createElement('span');
+            colorCircle.className = 'swatch-circle';
             if (option.color && option.color.startsWith('linear')) {
-                dot.style.background = option.color;
+                colorCircle.style.background = option.color;
             } else {
-                dot.style.backgroundColor = option.color;
+                colorCircle.style.backgroundColor = option.color;
             }
+            swatch.appendChild(colorCircle);
 
-            // 「發光」特殊效果
-            if (option.value === 'glowing eyes') {
-                dot.classList.add('eye-dot-glowing');
-            }
+            const label = document.createElement('span');
+            label.className = 'swatch-label';
+            label.textContent = getOptionLabel(option);
+            swatch.appendChild(label);
 
-            // 選中打勾
-            if (isActive) {
-                const check = document.createElement('span');
-                check.className = 'eye-dot-check';
-                check.textContent = '✓';
-                dot.appendChild(check);
-            }
-
-            dot.addEventListener('click', () => {
+            swatch.addEventListener('click', () => {
                 if (syncBoth) {
                     // 同步模式：兩眼一起選
                     if (state.selections[section.id] === option.value) {
@@ -1182,32 +1168,10 @@
                 }
             });
 
-            grid.appendChild(dot);
+            grid.appendChild(swatch);
         });
 
         container.appendChild(grid);
-    }
-
-    // 已選顏色指示器
-    function renderEyeSelectedIndicator(container, sectionId) {
-        const selected = state.selections[sectionId];
-        const indicator = document.createElement('div');
-        indicator.className = 'eye-selected-indicator';
-        if (selected) {
-            const eyeOption = EYE_COLORS.find(c => c.value === selected);
-            const colorDot = document.createElement('span');
-            colorDot.className = 'eye-indicator-dot';
-            colorDot.style.backgroundColor = eyeOption ? eyeOption.color : '#888';
-            const colorName = document.createElement('span');
-            colorName.className = 'eye-indicator-name';
-            colorName.textContent = eyeOption ? getOptionLabel(eyeOption) : selected;
-            indicator.appendChild(colorDot);
-            indicator.appendChild(colorName);
-        } else {
-            indicator.textContent = state.lang === 'zh' ? '未選擇' : 'None';
-            indicator.classList.add('eye-indicator-empty');
-        }
-        container.appendChild(indicator);
     }
 
     // 保留舊函式名以防其他地方呼叫
