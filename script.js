@@ -785,7 +785,7 @@
                 // 取得 eyeColorRight section 定義
                 const rightSection = sections.find(s => s.id === 'eyeColorRight');
 
-                // --- 異色瞳開關 ---
+                // --- 異色瞳開關（放到 header 按鈕群組，與自訂按鈕並排）---
                 const toggleWrapper = document.createElement('div');
                 toggleWrapper.className = 'eye-heterochromia-toggle';
                 const toggleLabel = document.createElement('span');
@@ -811,7 +811,14 @@
                 toggleSwitch.appendChild(toggleSlider);
                 toggleWrapper.appendChild(toggleLabel);
                 toggleWrapper.appendChild(toggleSwitch);
-                sectionEl.appendChild(toggleWrapper);
+
+                // 插入 header 按鈕群組（異色瞳 + 自訂）
+                const eyeCustomToggle = header.querySelector('.btn-custom-toggle');
+                const eyeBtnGroup = document.createElement('div');
+                eyeBtnGroup.className = 'section-header-buttons';
+                header.insertBefore(eyeBtnGroup, eyeCustomToggle);
+                eyeBtnGroup.appendChild(toggleWrapper);
+                eyeBtnGroup.appendChild(eyeCustomToggle);
 
                 // === 永遠顯示雙色盤（左眼 + 右眼）===
                 // syncBoth = !heterochromia：同步模式時，點任一眼另一眼自動 match
