@@ -776,6 +776,21 @@
 
             // === v6.91 頭飾 section 特殊處理 ===
             if (section.id === 'headwear') {
+                // 高級魔法專用按鈕
+                const hwMagicBtn = document.createElement('button');
+                hwMagicBtn.className = 'race-magic-btn';
+                hwMagicBtn.innerHTML = '<i class="fa-solid fa-wand-sparkles"></i> ' +
+                    (state.lang === 'zh' ? '🔮 高級魔法專用' : '🔮 Advanced Magic');
+                hwMagicBtn.addEventListener('click', () => {
+                    openHeadwearMagicModal();
+                });
+                const hwCustomToggle = header.querySelector('.btn-custom-toggle');
+                const hwBtnGroup = document.createElement('div');
+                hwBtnGroup.className = 'section-header-buttons';
+                header.insertBefore(hwBtnGroup, hwCustomToggle);
+                hwBtnGroup.appendChild(hwMagicBtn);
+                hwBtnGroup.appendChild(hwCustomToggle);
+
                 // 已選頭飾 badge
                 if (state.selections.headwear) {
                     const hwObj = HEADWEAR.find(o => o.value === state.selections.headwear);
@@ -1020,6 +1035,13 @@
     // ============================================
     function openOutfitMagicModal() {
         window.PromptGen.OutfitMagicModal.openOutfitMagicModal();
+    }
+
+    // ============================================
+    // Headwear Magic Modal — 由 modules/headwear-magic-modal.js 提供
+    // ============================================
+    function openHeadwearMagicModal() {
+        window.PromptGen.HeadwearMagicModal.openHeadwearMagicModal();
     }
 
     // ============================================
@@ -1625,6 +1647,9 @@
     });
     window.PromptGen.OutfitMagicModal.setup({
         state, sfx, OUTFITS, selectOption, generatePrompt, saveState, renderTabContent
+    });
+    window.PromptGen.HeadwearMagicModal.setup({
+        state, sfx, HEADWEAR, selectOption, generatePrompt, saveState, renderTabContent
     });
     window.PromptGen.ConflictSystem.setup({
         state, sfx, CONFLICT_RULES, generatePrompt, saveState, selectOption,

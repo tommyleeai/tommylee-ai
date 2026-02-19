@@ -7,6 +7,18 @@ window.PromptGen.Changelog = (function () {
     // Changelog Data
     const changelog = [
         {
+            version: "v7.0",
+            date: "2026-02-19",
+            changes: [
+                "👑 頭飾高級魔法 Modal：62 種頭飾 × 12 大分類（全部/最近/熱門/髮飾/穿刺/帽子/圍巾頸部/面部覆蓋/頭部裝置/動物異種/宗教儀式/特殊能量）",
+                "⭐ 每類專屬加分特徵（Bonus Traits）：寶石鑲嵌、蕾絲材質、發光效果等",
+                "🔥 熱門頭飾 Top 20 + 火焰 badge",
+                "📋 最近使用記錄（localStorage 最多 10 筆）",
+                "🎲 頭飾隨機骰子：隨機選取 + 旋轉動畫 + 音效",
+                "🔍 搜尋 + A-Z 索引：支援中英文即時過濾"
+            ]
+        },
+        {
             version: "v6.9",
             date: "2026-02-19",
             changes: [
