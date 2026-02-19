@@ -813,38 +813,35 @@
                 toggleWrapper.appendChild(toggleSwitch);
                 sectionEl.appendChild(toggleWrapper);
 
-                if (state.heterochromia) {
-                    // === 異色瞳模式：左右雙色盤 ===
-                    const dualRow = document.createElement('div');
-                    dualRow.className = 'eye-palette-dual';
+                // === 永遠顯示雙色盤（左眼 + 右眼）===
+                // syncBoth = !heterochromia：同步模式時，點任一眼另一眼自動 match
+                const syncBoth = !state.heterochromia;
+                const dualRow = document.createElement('div');
+                dualRow.className = 'eye-palette-dual';
 
-                    // 左眼
-                    const leftHalf = document.createElement('div');
-                    leftHalf.className = 'eye-palette-half';
-                    const leftTitle = document.createElement('div');
-                    leftTitle.className = 'eye-palette-subtitle';
-                    leftTitle.innerHTML = `👁 ${state.lang === 'zh' ? '左眼' : 'Left Eye'}`;
-                    leftHalf.appendChild(leftTitle);
-                    renderEyeColorPalette(leftHalf, section, section.data, false);
+                // 左眼
+                const leftHalf = document.createElement('div');
+                leftHalf.className = 'eye-palette-half';
+                const leftTitle = document.createElement('div');
+                leftTitle.className = 'eye-palette-subtitle';
+                leftTitle.innerHTML = `\ud83d\udc41 ${state.lang === 'zh' ? '左眼' : 'Left Eye'}`;
+                leftHalf.appendChild(leftTitle);
+                renderEyeColorPalette(leftHalf, section, section.data, syncBoth);
 
-                    // 右眼
-                    const rightHalf = document.createElement('div');
-                    rightHalf.className = 'eye-palette-half';
-                    const rightTitle = document.createElement('div');
-                    rightTitle.className = 'eye-palette-subtitle';
-                    rightTitle.innerHTML = `👁 ${state.lang === 'zh' ? '右眼' : 'Right Eye'}`;
-                    rightHalf.appendChild(rightTitle);
-                    if (rightSection) {
-                        renderEyeColorPalette(rightHalf, rightSection, rightSection.data, false);
-                    }
-
-                    dualRow.appendChild(leftHalf);
-                    dualRow.appendChild(rightHalf);
-                    sectionEl.appendChild(dualRow);
-                } else {
-                    // === 預設模式：單一色盤，雙眼同步 ===
-                    renderEyeColorPalette(sectionEl, section, section.data, true);
+                // 右眼
+                const rightHalf = document.createElement('div');
+                rightHalf.className = 'eye-palette-half';
+                const rightTitle = document.createElement('div');
+                rightTitle.className = 'eye-palette-subtitle';
+                rightTitle.innerHTML = `\ud83d\udc41 ${state.lang === 'zh' ? '右眼' : 'Right Eye'}`;
+                rightHalf.appendChild(rightTitle);
+                if (rightSection) {
+                    renderEyeColorPalette(rightHalf, rightSection, rightSection.data, syncBoth);
                 }
+
+                dualRow.appendChild(leftHalf);
+                dualRow.appendChild(rightHalf);
+                sectionEl.appendChild(dualRow);
 
                 tabContent.appendChild(sectionEl);
 
@@ -1151,21 +1148,24 @@
             swatch.appendChild(label);
 
             swatch.addEventListener('click', () => {
-                if (syncBoth) {
-                    // 同步模式：兩眼一起選
-                    if (state.selections[section.id] === option.value) {
-                        delete state.selections['eyeColorLeft'];
-                        delete state.selections['eyeColorRight'];
-                    } else {
-                        state.selections['eyeColorLeft'] = option.value;
-                        state.selections['eyeColorRight'] = option.value;
+                // Toggle：再點同色取消
+                if (state.selections[section.id] === option.value) {
+                    delete state.selections[section.id];
+                    if (syncBoth) {
+                        // 同步模式：另一眼也取消
+                        const otherId = section.id === 'eyeColorLeft' ? 'eyeColorRight' : 'eyeColorLeft';
+                        delete state.selections[otherId];
                     }
-                    renderTabContent();
-                    generatePrompt();
                 } else {
-                    // 獨立模式：只選該眼
-                    selectOption(section.id, option.value, option);
+                    state.selections[section.id] = option.value;
+                    if (syncBoth) {
+                        // 同步模式：另一眼自動 match
+                        const otherId = section.id === 'eyeColorLeft' ? 'eyeColorRight' : 'eyeColorLeft';
+                        state.selections[otherId] = option.value;
+                    }
                 }
+                renderTabContent();
+                generatePrompt();
             });
 
             grid.appendChild(swatch);
