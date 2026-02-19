@@ -218,6 +218,7 @@
                 ['female', 'male'].forEach(g => {
                     const btn = document.createElement('button');
                     btn.className = `gender-btn${state.gender === g ? ' active' : ''}`;
+                    btn.dataset.gender = g;
                     btn.textContent = g === 'female'
                         ? (state.lang === 'zh' ? '♀ 女性' : '♀ Female')
                         : (state.lang === 'zh' ? '♂ 男性' : '♂ Male');
@@ -1801,8 +1802,13 @@
         setTimeout(() => btnCopy.innerHTML = originalText, 2000);
 
         // Load AI sites
+        const DEFAULT_AI_SITES = [
+            { name: 'Grok 速度型', url: 'https://grok.com/' },
+            { name: 'Gpt 乖寶型', url: 'https://chatgpt.com/' },
+            { name: 'bing 笨呆型', url: 'https://www.bing.com/images/create/ai-image-generator' }
+        ];
         const saved = localStorage.getItem('aiSites');
-        const aiSites = saved ? JSON.parse(saved) : [];
+        const aiSites = saved ? JSON.parse(saved) : DEFAULT_AI_SITES;
         const validSites = aiSites.filter(site => site.name && site.url);
 
         if (validSites.length === 0) {
@@ -1918,8 +1924,13 @@
 
     // Load AI sites from localStorage
     function loadAISites() {
+        const DEFAULT_AI_SITES = [
+            { name: 'Grok 速度型', url: 'https://grok.com/' },
+            { name: 'Gpt 乖寶型', url: 'https://chatgpt.com/' },
+            { name: 'bing 笨呆型', url: 'https://www.bing.com/images/create/ai-image-generator' }
+        ];
         const saved = localStorage.getItem('aiSites');
-        aiSitesConfig = saved ? JSON.parse(saved) : [];
+        aiSitesConfig = saved ? JSON.parse(saved) : DEFAULT_AI_SITES;
         renderAISites();
     }
 

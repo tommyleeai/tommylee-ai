@@ -1178,7 +1178,8 @@ window.PromptGen.Data = (function () {
     ];
 
     const HEADWEAR = [
-        // ── 01 髮飾（9 件）──
+        // ── 01 髮飾（10 件）──
+        { label: '呆毛', en: 'Ahoge', value: 'ahoge, antenna hair, single strand of hair sticking up' },
         { label: '髮夾', en: 'Hair Clip', value: 'hair clip, hair pin' },
         { label: '蝴蝶結髮飾', en: 'Hair Bow', value: 'hair bow, ribbon bow in hair' },
         { label: '髮圈', en: 'Scrunchie', value: 'scrunchie, hair tie' },

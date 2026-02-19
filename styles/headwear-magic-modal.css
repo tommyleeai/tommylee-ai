@@ -335,7 +335,7 @@
 
 .hmm-tab {
     box-sizing: border-box;
-    padding: 7px 14px;
+    padding: 7px 10px;
     font-size: .76rem;
     border-radius: 8px 8px 0 0;
     cursor: pointer;
@@ -350,7 +350,7 @@
     flex-direction: column;
     align-items: center;
     gap: 2px;
-    min-width: 64px;
+    min-width: 54px;
     flex-shrink: 0;
     position: relative
 }

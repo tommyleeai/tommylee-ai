@@ -7,6 +7,15 @@ window.PromptGen.Changelog = (function () {
     // Changelog Data
     const changelog = [
         {
+            version: "v7.1",
+            date: "2026-02-19",
+            changes: [
+                "✨ 性別按鈕發光效果：女性粉紅光暈、男性藍色光暈，選中狀態更清晰",
+                "🌐 預設 AI 網站：新使用者自動載入 Grok / ChatGPT / Bing Image Creator",
+                "🎀 新增「呆毛 Ahoge」頭飾：基礎頁面第 1 位 + 髮飾分類第 1 位"
+            ]
+        },
+        {
             version: "v7.0",
             date: "2026-02-19",
             changes: [

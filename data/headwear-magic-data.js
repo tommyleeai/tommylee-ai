@@ -25,8 +25,9 @@ window.PromptGen.HeadwearMagicData = (function () {
     // ── 所有頭飾 Chip 項目 ──
     const ITEMS = [
         // ══════════════════════════════════
-        // ── 髮飾 hair_acc（9 件）──
+        // ── 髮飾 hair_acc（10 件）──
         // ══════════════════════════════════
+        { id: 'ahoge', name: '呆毛', en: 'Ahoge', icon: '📌', cat: 'hair_acc', value: 'ahoge, antenna hair, single strand of hair sticking up' },
         { id: 'hair_clip', name: '髮夾', en: 'Hair Clip', icon: '📎', cat: 'hair_acc', value: 'hair clip, hair pin' },
         { id: 'hair_bow', name: '蝴蝶結髮飾', en: 'Hair Bow', icon: '🎀', cat: 'hair_acc', value: 'hair bow, ribbon bow in hair' },
         { id: 'scrunchie', name: '髮圈', en: 'Scrunchie', icon: '⭕', cat: 'hair_acc', value: 'scrunchie, hair tie' },
