@@ -55,7 +55,7 @@ window.PromptGen.OutfitMagicModal = (function () {
         if (existing) existing.remove();
 
         let selectedOutfit = null;
-        let selectedBonuses = new Set();
+        let selectedBonuses = new Map();
         let activeCat = 'hot';
         let searchQuery = '';
         let filterLetter = null;
@@ -297,12 +297,15 @@ window.PromptGen.OutfitMagicModal = (function () {
                 }
                 // ★ 整合關鍵：呼叫主頁面的 selectOption 更新服裝選擇
                 selectOption('outfit', selectedOutfit.value, { label: selectedOutfit.name, en: selectedOutfit.en, value: selectedOutfit.value });
-                // 如果有加分特徵，附加到自訂欄位
-                const bonusArr = [...selectedBonuses];
+                // 如果有加分特徵，存入 state.outfitAdvanced
+                const bonusArr = [...selectedBonuses.keys()];
+                const bonusZhArr = [...selectedBonuses.values()];
                 if (bonusArr.length) {
-                    state.customInputs['outfit'] = (state.customInputs['outfit'] || '') +
-                        (state.customInputs['outfit'] ? ', ' : '') + bonusArr.join(', ');
-                    state.customInputVisible['outfit'] = true;
+                    state.outfitAdvanced = {
+                        selectedOutfit: selectedOutfit.name + ' ' + selectedOutfit.en,
+                        bonusTraits: bonusArr,
+                        bonusTraitsZh: bonusZhArr
+                    };
                 }
                 generatePrompt();
                 saveState();
@@ -398,7 +401,7 @@ window.PromptGen.OutfitMagicModal = (function () {
                 tag.innerHTML = `<span class="cmm-chip-icon">${trait.icon}</span> ${trait.zh}`;
                 tag.addEventListener('click', () => {
                     if (selectedBonuses.has(trait.en)) selectedBonuses.delete(trait.en);
-                    else selectedBonuses.add(trait.en);
+                    else selectedBonuses.set(trait.en, trait.zh);
                     tag.classList.toggle('active');
                 });
                 tagsEl.appendChild(tag);

@@ -130,6 +130,11 @@
                 state.hairMagicPrompts = parsed.hairMagicPrompts || null;
                 state.raceAdvanced = parsed.raceAdvanced || null;
                 state.jobAdvanced = parsed.jobAdvanced || null;
+                state.outfitAdvanced = parsed.outfitAdvanced || null;
+                state.headwearAdvanced = parsed.headwearAdvanced || null;
+                state.handItemsAdvanced = parsed.handItemsAdvanced || null;
+                state.expressionAdvanced = parsed.expressionAdvanced || null;
+                state.poseAdvanced = parsed.poseAdvanced || null;
                 state.ageEnabled = parsed.ageEnabled !== false;
 
                 // Conflict system state restoration
@@ -825,8 +830,42 @@
                     }
                 }
 
+                // outfitAdvanced 橫幅（加分特徵）
+                if (state.outfitAdvanced && state.outfitAdvanced.bonusTraits && state.outfitAdvanced.bonusTraits.length > 0) {
+                    const oa = state.outfitAdvanced;
+                    const summaryBar = document.createElement('div');
+                    summaryBar.className = 'body-advanced-summary';
+                    const summaryText = document.createElement('span');
+                    const zhList = (oa.bonusTraitsZh || oa.bonusTraits).join('、');
+                    summaryText.innerHTML = `🔮 服飾魔法啟用中：${oa.selectedOutfit || ''} — ${zhList}`;
+                    const editBtn = document.createElement('button');
+                    editBtn.className = 'body-advanced-edit-btn';
+                    editBtn.textContent = '編輯';
+                    editBtn.addEventListener('click', () => { openOutfitMagicModal(); });
+                    const clearBtn = document.createElement('button');
+                    clearBtn.className = 'body-advanced-clear-btn';
+                    clearBtn.textContent = '清除';
+                    clearBtn.addEventListener('click', () => {
+                        delete state.outfitAdvanced;
+                        renderTabContent();
+                        generatePrompt();
+                        saveState();
+                    });
+                    summaryBar.appendChild(summaryText);
+                    summaryBar.appendChild(editBtn);
+                    summaryBar.appendChild(clearBtn);
+                    sectionEl.appendChild(summaryBar);
+                }
+
                 // 渲染分頁 grid
                 renderPaginatedGrid(sectionEl, section, OUTFITS, 'outfitPage');
+
+                // outfitAdvanced 啟用時，灰色 grid
+                if (state.outfitAdvanced && state.outfitAdvanced.bonusTraits && state.outfitAdvanced.bonusTraits.length > 0) {
+                    const tagGrid = sectionEl.querySelector('.tag-grid-paginated');
+                    if (tagGrid) tagGrid.classList.add('body-section-disabled');
+                }
+
                 tabContent.appendChild(sectionEl);
 
                 // Custom input
@@ -900,8 +939,42 @@
                     }
                 }
 
+                // headwearAdvanced 橫幅（加分特徵）
+                if (state.headwearAdvanced && state.headwearAdvanced.bonusTraits && state.headwearAdvanced.bonusTraits.length > 0) {
+                    const ha = state.headwearAdvanced;
+                    const summaryBar = document.createElement('div');
+                    summaryBar.className = 'body-advanced-summary';
+                    const summaryText = document.createElement('span');
+                    const zhList = (ha.bonusTraitsZh || ha.bonusTraits).join('、');
+                    summaryText.innerHTML = `🔮 頭飾魔法啟用中：${ha.selectedItem || ''} — ${zhList}`;
+                    const editBtn = document.createElement('button');
+                    editBtn.className = 'body-advanced-edit-btn';
+                    editBtn.textContent = '編輯';
+                    editBtn.addEventListener('click', () => { openHeadwearMagicModal(); });
+                    const clearBtn = document.createElement('button');
+                    clearBtn.className = 'body-advanced-clear-btn';
+                    clearBtn.textContent = '清除';
+                    clearBtn.addEventListener('click', () => {
+                        delete state.headwearAdvanced;
+                        renderTabContent();
+                        generatePrompt();
+                        saveState();
+                    });
+                    summaryBar.appendChild(summaryText);
+                    summaryBar.appendChild(editBtn);
+                    summaryBar.appendChild(clearBtn);
+                    sectionEl.appendChild(summaryBar);
+                }
+
                 // 渲染分頁 grid
                 renderPaginatedGrid(sectionEl, section, HEADWEAR, 'headwearPage');
+
+                // headwearAdvanced 啟用時，灰色 grid
+                if (state.headwearAdvanced && state.headwearAdvanced.bonusTraits && state.headwearAdvanced.bonusTraits.length > 0) {
+                    const tagGrid = sectionEl.querySelector('.tag-grid-paginated');
+                    if (tagGrid) tagGrid.classList.add('body-section-disabled');
+                }
+
                 tabContent.appendChild(sectionEl);
 
                 // Custom input
@@ -975,8 +1048,42 @@
                     }
                 }
 
+                // handItemsAdvanced 橫幅（加分特徵）
+                if (state.handItemsAdvanced && state.handItemsAdvanced.bonusTraits && state.handItemsAdvanced.bonusTraits.length > 0) {
+                    const hia = state.handItemsAdvanced;
+                    const summaryBar = document.createElement('div');
+                    summaryBar.className = 'body-advanced-summary';
+                    const summaryText = document.createElement('span');
+                    const zhList = (hia.bonusTraitsZh || hia.bonusTraits).join('、');
+                    summaryText.innerHTML = `🔮 手持物魔法啟用中：${hia.selectedItem || ''} — ${zhList}`;
+                    const editBtn = document.createElement('button');
+                    editBtn.className = 'body-advanced-edit-btn';
+                    editBtn.textContent = '編輯';
+                    editBtn.addEventListener('click', () => { openHandItemsMagicModal(); });
+                    const clearBtn = document.createElement('button');
+                    clearBtn.className = 'body-advanced-clear-btn';
+                    clearBtn.textContent = '清除';
+                    clearBtn.addEventListener('click', () => {
+                        delete state.handItemsAdvanced;
+                        renderTabContent();
+                        generatePrompt();
+                        saveState();
+                    });
+                    summaryBar.appendChild(summaryText);
+                    summaryBar.appendChild(editBtn);
+                    summaryBar.appendChild(clearBtn);
+                    sectionEl.appendChild(summaryBar);
+                }
+
                 // 渲染分頁 grid
                 renderPaginatedGrid(sectionEl, section, HAND_ITEMS, 'handItemsPage');
+
+                // handItemsAdvanced 啟用時，灰色 grid
+                if (state.handItemsAdvanced && state.handItemsAdvanced.bonusTraits && state.handItemsAdvanced.bonusTraits.length > 0) {
+                    const tagGrid = sectionEl.querySelector('.tag-grid-paginated');
+                    if (tagGrid) tagGrid.classList.add('body-section-disabled');
+                }
+
                 tabContent.appendChild(sectionEl);
 
                 // Custom input
@@ -1027,33 +1134,45 @@
                 exprBtnGroup.appendChild(exprMagicBtn);
                 exprBtnGroup.appendChild(exprCustomToggle);
 
-                // expressionAdvanced badge
+                // expressionAdvanced 橫幅（與種族/職業一致）
                 if (state.expressionAdvanced && state.expressionAdvanced.expression) {
                     const ea = state.expressionAdvanced;
-                    const badge = document.createElement('span');
-                    badge.className = 'selected-race-badge';
+                    const summaryBar = document.createElement('div');
+                    summaryBar.className = 'body-advanced-summary';
+                    const summaryText = document.createElement('span');
                     const lvlStr = EXPR_DATA.INTENSITY[ea.intensity || 4].zh;
                     const efxCount = ea.effects ? ea.effects.length : 0;
-                    let badgeText = `✓ ${ea.expression.label} (${lvlStr})`;
-                    if (efxCount > 0) badgeText += ` +${efxCount}特效`;
-                    badge.innerHTML = `${badgeText} <span class="badge-x" title="${state.lang === 'zh' ? '取消進階設定' : 'Clear advanced'}">✕</span>`;
-                    badge.querySelector('.badge-x').addEventListener('click', (e) => {
-                        e.stopPropagation();
+                    let detailText = `${ea.expression.label} (${lvlStr})`;
+                    if (efxCount > 0) detailText += ` +${efxCount}特效`;
+                    summaryText.innerHTML = `🔮 表情魔法啟用中：${detailText}`;
+                    const editBtn = document.createElement('button');
+                    editBtn.className = 'body-summary-action';
+                    editBtn.textContent = '編輯';
+                    editBtn.addEventListener('click', () => { openExpressionMagicModal(); });
+                    const clearBtn = document.createElement('button');
+                    clearBtn.className = 'body-summary-action clear';
+                    clearBtn.textContent = '清除';
+                    clearBtn.addEventListener('click', () => {
                         delete state.expressionAdvanced;
                         renderTabContent();
                         generatePrompt();
                         saveState();
                     });
-                    const titleEl = header.querySelector('.section-block-title');
-                    const titleWrapper = document.createElement('div');
-                    titleWrapper.className = 'section-title-with-badge';
-                    titleEl.parentNode.insertBefore(titleWrapper, titleEl);
-                    titleWrapper.appendChild(titleEl);
-                    titleWrapper.appendChild(badge);
+                    summaryBar.appendChild(summaryText);
+                    summaryBar.appendChild(editBtn);
+                    summaryBar.appendChild(clearBtn);
+                    sectionEl.appendChild(summaryBar);
                 }
 
-                // 渲染分頁 grid（與服飾/頭飾/手持物一致）
+                // 渲染分頁 grid
                 renderPaginatedGrid(sectionEl, section, section.data, 'expressionPage');
+
+                // If expressionAdvanced active, add disabled overlay（與髮型/身材一致）
+                if (state.expressionAdvanced && state.expressionAdvanced.expression) {
+                    const tagGrid = sectionEl.querySelector('.tag-grid-paginated');
+                    if (tagGrid) tagGrid.classList.add('body-section-disabled');
+                }
+
                 tabContent.appendChild(sectionEl);
 
                 // Custom input
@@ -1104,34 +1223,46 @@
                 poseBtnGroup.appendChild(poseMagicBtn);
                 poseBtnGroup.appendChild(poseCustomToggle);
 
-                // poseAdvanced badge
+                // poseAdvanced 橫幅（與種族/職業一致）
                 if (state.poseAdvanced && state.poseAdvanced.pose) {
                     const pa = state.poseAdvanced;
-                    const badge = document.createElement('span');
-                    badge.className = 'selected-race-badge';
+                    const summaryBar = document.createElement('div');
+                    summaryBar.className = 'body-advanced-summary';
+                    const summaryText = document.createElement('span');
                     const gravObj = POSE_DATA.GRAVITY.find(g => g.id === pa.gravity);
                     const gazeObj = POSE_DATA.GAZE.find(g => g.id === pa.gaze);
-                    let badgeText = `✓ ${pa.pose.label}`;
-                    if (gravObj && gravObj.id !== 'neutral') badgeText += ` ${gravObj.label}`;
-                    if (gazeObj) badgeText += ` ${gazeObj.label}`;
-                    badge.innerHTML = `${badgeText} <span class="badge-x" title="${state.lang === 'zh' ? '取消進階設定' : 'Clear advanced'}">✕</span>`;
-                    badge.querySelector('.badge-x').addEventListener('click', (e) => {
-                        e.stopPropagation();
+                    let detailText = pa.pose.label;
+                    if (gravObj && gravObj.id !== 'neutral') detailText += ` ${gravObj.label}`;
+                    if (gazeObj) detailText += ` ${gazeObj.label}`;
+                    summaryText.innerHTML = `🔮 姿勢魔法啟用中：${detailText}`;
+                    const editBtn = document.createElement('button');
+                    editBtn.className = 'body-summary-action';
+                    editBtn.textContent = '編輯';
+                    editBtn.addEventListener('click', () => { openPoseMagicModal(); });
+                    const clearBtn = document.createElement('button');
+                    clearBtn.className = 'body-summary-action clear';
+                    clearBtn.textContent = '清除';
+                    clearBtn.addEventListener('click', () => {
                         delete state.poseAdvanced;
                         renderTabContent();
                         generatePrompt();
                         saveState();
                     });
-                    const titleEl = header.querySelector('.section-block-title');
-                    const titleWrapper = document.createElement('div');
-                    titleWrapper.className = 'section-title-with-badge';
-                    titleEl.parentNode.insertBefore(titleWrapper, titleEl);
-                    titleWrapper.appendChild(titleEl);
-                    titleWrapper.appendChild(badge);
+                    summaryBar.appendChild(summaryText);
+                    summaryBar.appendChild(editBtn);
+                    summaryBar.appendChild(clearBtn);
+                    sectionEl.appendChild(summaryBar);
                 }
 
-                // 渲染分頁 grid（與服飾/頭飾/手持物一致）
+                // 渲染分頁 grid
                 renderPaginatedGrid(sectionEl, section, section.data, 'posePage');
+
+                // If poseAdvanced active, add disabled overlay（與髮型/身材一致）
+                if (state.poseAdvanced && state.poseAdvanced.pose) {
+                    const tagGrid = sectionEl.querySelector('.tag-grid-paginated');
+                    if (tagGrid) tagGrid.classList.add('body-section-disabled');
+                }
+
                 tabContent.appendChild(sectionEl);
 
                 // Custom input
@@ -1799,6 +1930,21 @@
             if (secId === 'job' && state.jobAdvanced && state.jobAdvanced.bonusTraits && state.jobAdvanced.bonusTraits.length > 0) {
                 state.jobAdvanced.bonusTraits.forEach(trait => parts.push(trait));
             }
+
+            // ★ outfitAdvanced bonusTraits
+            if (secId === 'outfit' && state.outfitAdvanced && state.outfitAdvanced.bonusTraits && state.outfitAdvanced.bonusTraits.length > 0) {
+                state.outfitAdvanced.bonusTraits.forEach(trait => parts.push(trait));
+            }
+
+            // ★ headwearAdvanced bonusTraits
+            if (secId === 'headwear' && state.headwearAdvanced && state.headwearAdvanced.bonusTraits && state.headwearAdvanced.bonusTraits.length > 0) {
+                state.headwearAdvanced.bonusTraits.forEach(trait => parts.push(trait));
+            }
+
+            // ★ handItemsAdvanced bonusTraits
+            if (secId === 'handItems' && state.handItemsAdvanced && state.handItemsAdvanced.bonusTraits && state.handItemsAdvanced.bonusTraits.length > 0) {
+                state.handItemsAdvanced.bonusTraits.forEach(trait => parts.push(trait));
+            }
         });
 
         // Quality tags
@@ -1934,6 +2080,18 @@
             // ★ jobAdvanced bonusTraits（YAML）
             if (secId === 'job' && state.jobAdvanced && state.jobAdvanced.bonusTraits && state.jobAdvanced.bonusTraits.length > 0) {
                 state.jobAdvanced.bonusTraits.forEach(trait => parts.push(trait));
+            }
+            // ★ outfitAdvanced bonusTraits（YAML）
+            if (secId === 'outfit' && state.outfitAdvanced && state.outfitAdvanced.bonusTraits && state.outfitAdvanced.bonusTraits.length > 0) {
+                state.outfitAdvanced.bonusTraits.forEach(trait => parts.push(trait));
+            }
+            // ★ headwearAdvanced bonusTraits（YAML）
+            if (secId === 'headwear' && state.headwearAdvanced && state.headwearAdvanced.bonusTraits && state.headwearAdvanced.bonusTraits.length > 0) {
+                state.headwearAdvanced.bonusTraits.forEach(trait => parts.push(trait));
+            }
+            // ★ handItemsAdvanced bonusTraits（YAML）
+            if (secId === 'handItems' && state.handItemsAdvanced && state.handItemsAdvanced.bonusTraits && state.handItemsAdvanced.bonusTraits.length > 0) {
+                state.handItemsAdvanced.bonusTraits.forEach(trait => parts.push(trait));
             }
             if (parts.length > 0) {
                 yaml += `${yamlMap[secId]}: ${parts.join(', ')}\n`;
