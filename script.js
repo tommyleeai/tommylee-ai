@@ -60,7 +60,8 @@
         jobPage: 1,    // v6.6 職業分頁
         hairstylePage: 1,  // v6.6 髮型分頁
         bodyTypePage: 1,   // v6.6 身材分頁
-        outfitPage: 1      // v6.8 服裝分頁
+        outfitPage: 1,      // v6.8 服裝分頁
+        heterochromia: false // v6.9 異色瞳模式
     };
 
     // All section IDs for iteration
@@ -772,48 +773,91 @@
                 return; // outfit section 處理完畢
             }
 
-            // === v6.8 眼色合併：跳過 eyeColorRight，由 eyeColorLeft 一併處理 ===
+            // === v6.9 眼色色盤：跳過 eyeColorRight，由 eyeColorLeft 一併處理 ===
             if (section.id === 'eyeColorRight') return;
 
-            // === v6.8 眼色合併渲染 ===
+            // === v6.9 眼色色盤渲染 ===
             if (section.id === 'eyeColorLeft') {
                 // 改標題為「眼色」
                 const eyeTitle = header.querySelector('.section-block-title');
                 eyeTitle.textContent = state.lang === 'zh' ? '眼色' : 'Eye Color';
 
-                const dualRow = document.createElement('div');
-                dualRow.className = 'eye-dual-row';
-
                 // 取得 eyeColorRight section 定義
                 const rightSection = sections.find(s => s.id === 'eyeColorRight');
 
-                // 左眼
-                const leftHalf = document.createElement('div');
-                leftHalf.className = 'eye-half';
-                const leftTitle = document.createElement('div');
-                leftTitle.className = 'eye-half-title';
-                leftTitle.innerHTML = `👁 ${state.lang === 'zh' ? '左眼' : 'Left'}`;
-                leftHalf.appendChild(leftTitle);
-                renderEyeColors(leftHalf, section, section.data);
+                // --- 異色瞳開關 ---
+                const toggleWrapper = document.createElement('div');
+                toggleWrapper.className = 'eye-heterochromia-toggle';
+                const toggleLabel = document.createElement('span');
+                toggleLabel.className = 'eye-toggle-label';
+                toggleLabel.textContent = state.lang === 'zh' ? '異色瞳' : 'Heterochromia';
+                const toggleSwitch = document.createElement('label');
+                toggleSwitch.className = 'eye-toggle-switch';
+                const toggleInput = document.createElement('input');
+                toggleInput.type = 'checkbox';
+                toggleInput.checked = state.heterochromia;
+                toggleInput.addEventListener('change', (e) => {
+                    state.heterochromia = e.target.checked;
+                    // 關閉異色瞳時同步右眼 = 左眼
+                    if (!state.heterochromia && state.selections['eyeColorLeft']) {
+                        state.selections['eyeColorRight'] = state.selections['eyeColorLeft'];
+                    }
+                    renderTabContent();
+                    generatePrompt();
+                });
+                const toggleSlider = document.createElement('span');
+                toggleSlider.className = 'eye-toggle-slider';
+                toggleSwitch.appendChild(toggleInput);
+                toggleSwitch.appendChild(toggleSlider);
+                toggleWrapper.appendChild(toggleLabel);
+                toggleWrapper.appendChild(toggleSwitch);
+                sectionEl.appendChild(toggleWrapper);
 
-                // 右眼
-                const rightHalf = document.createElement('div');
-                rightHalf.className = 'eye-half';
-                const rightTitle = document.createElement('div');
-                rightTitle.className = 'eye-half-title';
-                rightTitle.innerHTML = `👁 ${state.lang === 'zh' ? '右眼' : 'Right'}`;
-                rightHalf.appendChild(rightTitle);
-                if (rightSection) {
-                    renderEyeColors(rightHalf, rightSection, rightSection.data);
+                if (state.heterochromia) {
+                    // === 異色瞳模式：左右雙色盤 ===
+                    const dualRow = document.createElement('div');
+                    dualRow.className = 'eye-palette-dual';
+
+                    // 左眼
+                    const leftHalf = document.createElement('div');
+                    leftHalf.className = 'eye-palette-half';
+                    const leftTitle = document.createElement('div');
+                    leftTitle.className = 'eye-palette-subtitle';
+                    leftTitle.innerHTML = `👁 ${state.lang === 'zh' ? '左眼' : 'Left Eye'}`;
+                    leftHalf.appendChild(leftTitle);
+                    renderEyeColorPalette(leftHalf, section, section.data, false);
+                    // 左眼已選指示
+                    renderEyeSelectedIndicator(leftHalf, 'eyeColorLeft');
+
+                    // 右眼
+                    const rightHalf = document.createElement('div');
+                    rightHalf.className = 'eye-palette-half';
+                    const rightTitle = document.createElement('div');
+                    rightTitle.className = 'eye-palette-subtitle';
+                    rightTitle.innerHTML = `👁 ${state.lang === 'zh' ? '右眼' : 'Right Eye'}`;
+                    rightHalf.appendChild(rightTitle);
+                    if (rightSection) {
+                        renderEyeColorPalette(rightHalf, rightSection, rightSection.data, false);
+                    }
+                    // 右眼已選指示
+                    renderEyeSelectedIndicator(rightHalf, 'eyeColorRight');
+
+                    dualRow.appendChild(leftHalf);
+                    dualRow.appendChild(rightHalf);
+                    sectionEl.appendChild(dualRow);
+                } else {
+                    // === 預設模式：單一色盤，雙眼同步 ===
+                    const singleWrapper = document.createElement('div');
+                    singleWrapper.className = 'eye-palette-single';
+                    renderEyeColorPalette(singleWrapper, section, section.data, true);
+                    // 已選指示
+                    renderEyeSelectedIndicator(singleWrapper, 'eyeColorLeft');
+                    sectionEl.appendChild(singleWrapper);
                 }
-
-                dualRow.appendChild(leftHalf);
-                dualRow.appendChild(rightHalf);
-                sectionEl.appendChild(dualRow);
 
                 tabContent.appendChild(sectionEl);
 
-                // Custom input（左眼）
+                // Custom input
                 if (state.customInputVisible[section.id]) {
                     const customRow = document.createElement('div');
                     customRow.className = 'custom-input-row';
@@ -1088,37 +1132,87 @@
         container.appendChild(grid);
     }
 
-    function renderEyeColors(container, section, data) {
+    // === v6.9 眼色色盤渲染 ===
+    function renderEyeColorPalette(container, section, data, syncBoth) {
         const grid = document.createElement('div');
-        grid.className = 'eye-color-grid';
+        grid.className = 'eye-palette-grid';
 
         data.forEach(option => {
-            const btn = document.createElement('button');
-            btn.className = `eye-color-btn${state.selections[section.id] === option.value ? ' active' : ''}`;
-            btn.title = getOptionLabel(option);
+            const dot = document.createElement('button');
+            const isActive = state.selections[section.id] === option.value;
+            dot.className = `eye-palette-dot${isActive ? ' active' : ''}`;
+            dot.title = getOptionLabel(option);
+            dot.setAttribute('aria-label', getOptionLabel(option));
 
-            const circle = document.createElement('span');
-            circle.className = 'eye-circle';
-            if (option.color.startsWith('linear')) {
-                circle.style.background = option.color;
+            // 色塊樣式
+            if (option.color && option.color.startsWith('linear')) {
+                dot.style.background = option.color;
             } else {
-                circle.style.backgroundColor = option.color;
+                dot.style.backgroundColor = option.color;
             }
-            btn.appendChild(circle);
 
-            const label = document.createElement('span');
-            label.className = 'eye-label';
-            label.textContent = getOptionLabel(option);
-            btn.appendChild(label);
+            // 「發光」特殊效果
+            if (option.value === 'glowing eyes') {
+                dot.classList.add('eye-dot-glowing');
+            }
 
-            btn.addEventListener('click', () => {
-                selectOption(section.id, option.value, option);
+            // 選中打勾
+            if (isActive) {
+                const check = document.createElement('span');
+                check.className = 'eye-dot-check';
+                check.textContent = '✓';
+                dot.appendChild(check);
+            }
+
+            dot.addEventListener('click', () => {
+                if (syncBoth) {
+                    // 同步模式：兩眼一起選
+                    if (state.selections[section.id] === option.value) {
+                        delete state.selections['eyeColorLeft'];
+                        delete state.selections['eyeColorRight'];
+                    } else {
+                        state.selections['eyeColorLeft'] = option.value;
+                        state.selections['eyeColorRight'] = option.value;
+                    }
+                    renderTabContent();
+                    generatePrompt();
+                } else {
+                    // 獨立模式：只選該眼
+                    selectOption(section.id, option.value, option);
+                }
             });
 
-            grid.appendChild(btn);
+            grid.appendChild(dot);
         });
 
         container.appendChild(grid);
+    }
+
+    // 已選顏色指示器
+    function renderEyeSelectedIndicator(container, sectionId) {
+        const selected = state.selections[sectionId];
+        const indicator = document.createElement('div');
+        indicator.className = 'eye-selected-indicator';
+        if (selected) {
+            const eyeOption = EYE_COLORS.find(c => c.value === selected);
+            const colorDot = document.createElement('span');
+            colorDot.className = 'eye-indicator-dot';
+            colorDot.style.backgroundColor = eyeOption ? eyeOption.color : '#888';
+            const colorName = document.createElement('span');
+            colorName.className = 'eye-indicator-name';
+            colorName.textContent = eyeOption ? getOptionLabel(eyeOption) : selected;
+            indicator.appendChild(colorDot);
+            indicator.appendChild(colorName);
+        } else {
+            indicator.textContent = state.lang === 'zh' ? '未選擇' : 'None';
+            indicator.classList.add('eye-indicator-empty');
+        }
+        container.appendChild(indicator);
+    }
+
+    // 保留舊函式名以防其他地方呼叫
+    function renderEyeColors(container, section, data) {
+        renderEyeColorPalette(container, section, data, false);
     }
 
     // --- Single Select ---

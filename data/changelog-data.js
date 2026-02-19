@@ -7,6 +7,17 @@ window.PromptGen.Changelog = (function () {
     // Changelog Data
     const changelog = [
         {
+            version: "v6.9",
+            date: "2026-02-19",
+            changes: [
+                "👁 眼色色盤全新設計：24 色漸層 8×3 grid，純色塊直覺選色",
+                "🎨 新增 5 種眼色：玫瑰、靛青、翡翠、橄欖、冰藍",
+                "👀 異色瞳開關：預設雙眼同步，開啟後左右眼獨立選色",
+                "✨ 色塊 hover 放大光暈 + 選中白框打勾 + tooltip 顯示色名",
+                "📝 已選顏色即時指示器（色點 + 名稱）"
+            ]
+        },
+        {
             version: "v6.8",
             date: "2026-02-19",
             changes: [

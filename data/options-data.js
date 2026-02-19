@@ -953,27 +953,35 @@ window.PromptGen.Data = (function () {
         { label: '彩虹', en: 'Rainbow', value: 'rainbow hair', color: 'linear-gradient(to right, #ef4444, #fcd34d, #22c55e, #3b82f6, #a855f7)' }
     ];
 
+    // v6.9 眼色色盤 — 24 色漸層排列 (8×3)
     const EYE_COLORS = [
-        { label: '藍色', en: 'Blue', value: 'blue', color: '#3b82f6' },
-        { label: '紅色', en: 'Red', value: 'red', color: '#ef4444' },
-        { label: '綠色', en: 'Green', value: 'green', color: '#22c55e' },
-        { label: '琥珀', en: 'Amber', value: 'amber', color: '#f59e0b' },
-        { label: '紫色', en: 'Purple', value: 'purple', color: '#a855f7' },
-        { label: '粉紅', en: 'Pink', value: 'pink', color: '#ec4899' },
-        { label: '金色', en: 'Gold', value: 'gold', color: '#eab308' },
-        { label: '銀灰', en: 'Silver', value: 'silver', color: '#94a3b8' },
+        // Row 1：深色 → 暖色
         { label: '黑色', en: 'Black', value: 'black', color: '#171717' },
         { label: '棕色', en: 'Brown', value: 'brown', color: '#78350f' },
-        { label: '青色', en: 'Teal', value: 'teal', color: '#14b8a6' },
-        { label: '橙色', en: 'Orange', value: 'orange', color: '#f97316' },
-        { label: '深藍', en: 'Dark Blue', value: 'dark blue', color: '#1e3a8a' },
+        { label: '琥珀', en: 'Amber', value: 'amber', color: '#f59e0b' },
+        { label: '金色', en: 'Gold', value: 'gold', color: '#eab308' },
         { label: '黃色', en: 'Yellow', value: 'yellow', color: '#facc15' },
-        { label: '白色', en: 'White', value: 'white', color: '#ffffff' },
-        { label: '紫羅蘭', en: 'Violet', value: 'violet', color: '#7c3aed' },
-        { label: '水藍', en: 'Aqua', value: 'aqua', color: '#06b6d4' },
+        { label: '橙色', en: 'Orange', value: 'orange', color: '#f97316' },
+        { label: '紅色', en: 'Red', value: 'red', color: '#ef4444' },
         { label: '血紅', en: 'Blood Red', value: 'blood red', color: '#991b1b' },
-        { label: '發光', en: 'Glowing', value: 'glowing eyes', color: '#fef3c7' },
-        { label: '異色', en: 'Heterochromia', value: 'heterochromia', color: 'linear-gradient(to right, #3b82f6, #ef4444)' }
+        // Row 2：粉紅 → 冷色
+        { label: '粉紅', en: 'Pink', value: 'pink', color: '#ec4899' },
+        { label: '玫瑰粉', en: 'Rose', value: 'rose', color: '#f43f5e' },
+        { label: '紫色', en: 'Purple', value: 'purple', color: '#a855f7' },
+        { label: '紫羅蘭', en: 'Violet', value: 'violet', color: '#7c3aed' },
+        { label: '靛藍', en: 'Indigo', value: 'indigo', color: '#4f46e5' },
+        { label: '深藍', en: 'Dark Blue', value: 'dark blue', color: '#1e3a8a' },
+        { label: '藍色', en: 'Blue', value: 'blue', color: '#3b82f6' },
+        { label: '水藍', en: 'Aqua', value: 'aqua', color: '#06b6d4' },
+        // Row 3：青綠 → 特殊色
+        { label: '青色', en: 'Teal', value: 'teal', color: '#14b8a6' },
+        { label: '綠色', en: 'Green', value: 'green', color: '#22c55e' },
+        { label: '翠綠', en: 'Emerald', value: 'emerald', color: '#10b981' },
+        { label: '橄欖綠', en: 'Olive', value: 'olive', color: '#84cc16' },
+        { label: '銀灰', en: 'Silver', value: 'silver', color: '#94a3b8' },
+        { label: '白色', en: 'White', value: 'white', color: '#ffffff' },
+        { label: '冰藍', en: 'Ice Blue', value: 'ice blue', color: '#bae6fd' },
+        { label: '發光', en: 'Glowing', value: 'glowing eyes', color: '#fef3c7' }
     ];
 
     const OUTFITS = [

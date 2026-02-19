@@ -3524,3 +3524,222 @@ body.screen-shake {
 }
 
 /* === 27. Body Magic Modal END === */
+
+/* === 28. 眼色色盤 START === */
+/* v6.9 Eye Color Palette */
+
+/* 異色瞳開關區塊 */
+.eye-heterochromia-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-bottom: 12px;
+    padding: 6px 0;
+}
+
+.eye-toggle-label {
+    font-size: 0.82rem;
+    color: #94a3b8;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+}
+
+/* Toggle Switch */
+.eye-toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+    cursor: pointer;
+}
+
+.eye-toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.eye-toggle-slider {
+    position: absolute;
+    inset: 0;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 24px;
+    transition: all 0.3s;
+}
+
+.eye-toggle-slider::before {
+    content: '';
+    position: absolute;
+    height: 18px;
+    width: 18px;
+    left: 2px;
+    bottom: 2px;
+    background: #64748b;
+    border-radius: 50%;
+    transition: all 0.3s;
+}
+
+.eye-toggle-switch input:checked+.eye-toggle-slider {
+    background: rgba(167, 139, 250, 0.3);
+    border-color: rgba(167, 139, 250, 0.5);
+}
+
+.eye-toggle-switch input:checked+.eye-toggle-slider::before {
+    transform: translateX(20px);
+    background: #a78bfa;
+    box-shadow: 0 0 8px rgba(167, 139, 250, 0.5);
+}
+
+/* 單色盤容器 */
+.eye-palette-single {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+/* 雙色盤容器 */
+.eye-palette-dual {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.eye-palette-half {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 12px;
+}
+
+.eye-palette-subtitle {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #e2e8f0;
+    margin-bottom: 4px;
+}
+
+/* 色盤 Grid — 8 列 */
+.eye-palette-grid {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    gap: 6px;
+    width: 100%;
+    justify-items: center;
+}
+
+/* 色塊圓點 */
+.eye-palette-dot {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.08);
+    cursor: pointer;
+    transition: all 0.25s ease;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    outline: none;
+}
+
+.eye-palette-dot:hover {
+    transform: scale(1.2);
+    border-color: rgba(255, 255, 255, 0.4);
+    box-shadow: 0 0 16px rgba(255, 255, 255, 0.2),
+        0 0 4px currentColor;
+    z-index: 2;
+}
+
+.eye-palette-dot.active {
+    border-color: #fff;
+    border-width: 3px;
+    box-shadow: 0 0 12px rgba(255, 255, 255, 0.4),
+        0 0 24px rgba(187, 134, 252, 0.3);
+    transform: scale(1.15);
+}
+
+/* 選中打勾 */
+.eye-dot-check {
+    font-size: 14px;
+    font-weight: 900;
+    color: #fff;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+    pointer-events: none;
+    line-height: 1;
+}
+
+/* 發光效果 */
+.eye-dot-glowing {
+    animation: eyeGlow 2s ease-in-out infinite;
+    border-color: rgba(254, 243, 199, 0.4);
+}
+
+@keyframes eyeGlow {
+
+    0%,
+    100% {
+        box-shadow: 0 0 6px rgba(254, 243, 199, 0.3),
+            0 0 12px rgba(254, 243, 199, 0.1);
+    }
+
+    50% {
+        box-shadow: 0 0 12px rgba(254, 243, 199, 0.6),
+            0 0 24px rgba(254, 243, 199, 0.3),
+            0 0 36px rgba(254, 243, 199, 0.1);
+    }
+}
+
+/* 已選顏色指示器 */
+.eye-selected-indicator {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 20px;
+    font-size: 0.8rem;
+    color: #e2e8f0;
+    min-height: 30px;
+    margin-top: 4px;
+}
+
+.eye-indicator-dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    flex-shrink: 0;
+}
+
+.eye-indicator-name {
+    font-weight: 500;
+}
+
+.eye-indicator-empty {
+    color: #64748b;
+    font-style: italic;
+    justify-content: center;
+}
+
+/* 響應式 */
+@media (max-width: 768px) {
+    .eye-palette-dual {
+        grid-template-columns: 1fr;
+    }
+
+    .eye-palette-dot {
+        width: 32px;
+        height: 32px;
+    }
+}
+
+/* === 28. 眼色色盤 END === */
