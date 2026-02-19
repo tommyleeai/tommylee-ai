@@ -1506,17 +1506,78 @@ window.PromptGen.Data = (function () {
         { label: '放鬆', en: 'Relaxed', value: 'relaxed, chill' }
     ];
 
-    // v7.3 姿勢基礎選項（每大分類代表，共 9 個）
+    // v7.3 姿勢基礎選項（全部 60 個，分頁顯示）
     const POSES = [
+        // ── ① 站姿系 ──
         { label: '正面站立', en: 'Front Standing', value: 'standing, front view, upright posture' },
-        { label: '正坐', en: 'Sitting', value: 'sitting, proper sitting pose, upright seated' },
-        { label: '奔跑', en: 'Running', value: 'running, sprinting, dynamic movement' },
-        { label: '持武器待戰', en: 'Weapon Ready', value: 'holding weapon, battle ready, combat stance' },
-        { label: '揮手', en: 'Waving', value: 'waving hand, greeting wave' },
+        { label: '側身站立', en: 'Side Standing', value: 'standing sideways, side profile, side pose' },
+        { label: '背對站立', en: 'Back Standing', value: 'from behind, back view, standing facing away' },
+        { label: '雙手插腰', en: 'Hands on Hips', value: 'hands on hips, confident standing pose' },
+        { label: '單手叉腰', en: 'One Hand on Hip', value: 'one hand on hip, casual standing pose' },
+        { label: '抱胸站立', en: 'Arms Crossed', value: 'arms crossed, crossed arms, standing with folded arms' },
+        { label: '放鬆站姿', en: 'Relaxed Stand', value: 'relaxed standing, casual stance, natural pose' },
+        { label: '軍姿站立', en: 'Military Stand', value: 'military stance, attention pose, soldier standing' },
+        // ── ② 坐姿系 ──
+        { label: '正坐', en: 'Sitting Straight', value: 'sitting, proper sitting pose, upright seated' },
+        { label: '側坐', en: 'Side Sitting', value: 'sitting sideways, side seated, turned sitting' },
+        { label: '盤腿', en: 'Cross-Legged', value: 'sitting cross-legged, indian style sitting, lotus position' },
+        { label: '翹腳', en: 'Legs Crossed', value: 'legs crossed, crossed legs while sitting, elegant sitting' },
+        { label: '坐椅子後仰', en: 'Leaning Back', value: 'leaning back in chair, reclining seated, relaxed in chair' },
+        { label: '坐地面', en: 'Sitting on Floor', value: 'sitting on floor, seated on ground, floor sitting' },
+        { label: '坐在桌上', en: 'Sitting on Table', value: 'sitting on table, perched on desk, casual table sitting' },
+        { label: '坐在高處邊緣', en: 'Edge Sitting', value: 'sitting on edge, sitting on ledge, dangling legs from height' },
+        // ── ③ 行動系 ──
+        { label: '走路', en: 'Walking', value: 'walking, walking pose, mid-stride' },
+        { label: '奔跑', en: 'Running', value: 'running, sprinting, running pose, dynamic movement' },
+        { label: '跳躍', en: 'Jumping', value: 'jumping, leap, mid-air jump, airborne' },
+        { label: '回頭走', en: 'Looking Back Walk', value: 'walking while looking back, turning head while walking' },
+        { label: '跨步前進', en: 'Striding Forward', value: 'striding forward, large step, confident stride' },
+        { label: '空中翻身', en: 'Aerial Flip', value: 'aerial flip, mid-air acrobatics, somersault' },
+        { label: '俯衝', en: 'Dive', value: 'diving pose, swooping down, plunging downward' },
+        // ── ④ 戰鬥系 ──
+        { label: '持武器待戰', en: 'Weapon Ready', value: 'holding weapon, battle ready, combat stance with weapon' },
+        { label: '防禦姿態', en: 'Defensive Pose', value: 'defensive stance, guarding pose, blocking position' },
+        { label: '攻擊揮砍', en: 'Attack Slash', value: 'slashing attack, swinging weapon, mid-attack motion' },
+        { label: '弓箭拉弦', en: 'Drawing Bow', value: 'drawing bow, pulling bowstring, archer pose' },
+        { label: '單手舉劍', en: 'Raised Sword', value: 'sword raised, holding sword up, blade pointed skyward' },
+        { label: '法術施放', en: 'Casting Spell', value: 'casting spell, magic casting, magical energy in hands' },
+        { label: '半蹲警戒', en: 'Crouching Guard', value: 'crouching, low guard stance, half-squat alert pose' },
+        // ── ⑤ 互動系 ──
+        { label: '揮手', en: 'Waving', value: 'waving hand, greeting wave, friendly wave' },
+        { label: '指向前方', en: 'Pointing Forward', value: 'pointing forward, finger pointing, outstretched arm pointing' },
+        { label: '雙手合十', en: 'Prayer Hands', value: 'hands together, prayer pose, clasped hands' },
+        { label: '比心', en: 'Heart Sign', value: 'heart hands, making heart shape with hands, finger heart' },
+        { label: '手插口袋', en: 'Hands in Pockets', value: 'hands in pockets, casual pocket pose' },
+        { label: '手托下巴', en: 'Chin Rest', value: 'hand on chin, resting chin on hand, thinking pose' },
+        { label: '握拳加油', en: 'Fist Pump', value: 'fist pump, clenched fist raised, cheering pose' },
+        // ── ⑥ 情緒演出系 ──
+        { label: '抱膝縮成一團', en: 'Hugging Knees', value: 'hugging knees, curled up, fetal position sitting' },
+        { label: '低頭垂肩', en: 'Drooping Shoulders', value: 'head down, slumped shoulders, dejected posture' },
+        { label: '仰頭大笑', en: 'Head Back Laugh', value: 'head thrown back laughing, looking up while laughing' },
         { label: '崩潰跪地', en: 'Collapse Kneel', value: 'kneeling on ground, collapsed, on knees despair' },
-        { label: '坐王座', en: 'Throne Sitting', value: 'sitting on throne, royal seat' },
+        { label: '仰天吶喊', en: 'Screaming Skyward', value: 'screaming at sky, shouting upward, anguished cry' },
+        { label: '背靠牆滑落', en: 'Sliding Down Wall', value: 'sliding down wall, back against wall slumping, wall slide' },
+        // ── ⑦ 王者氣場系 ──
+        { label: '高處俯視', en: 'Overlooking', value: 'looking down from above, overlooking, dominant high position' },
+        { label: '坐王座', en: 'Throne Sitting', value: 'sitting on throne, royal seat, king on throne' },
+        { label: '披風展開', en: 'Cape Spread', value: 'cape flowing, cloak spread, dramatic cape unfurling' },
+        { label: '單腳踩物', en: 'Foot on Object', value: 'foot on object, stepping on, dominant foot placement' },
+        { label: '單手持權杖', en: 'Holding Scepter', value: 'holding scepter, staff in hand, royal staff pose' },
+        { label: '緩步前行', en: 'Slow Walk', value: 'slow confident walk, leisurely stride, powerful slow walk' },
+        // ── ⑧ 可愛Q版系 ──
+        { label: '內八站姿', en: 'Pigeon-Toed', value: 'pigeon-toed standing, inward feet, cute shy standing' },
+        { label: '雙手背後', en: 'Hands Behind', value: 'hands behind back, arms behind, innocent pose' },
         { label: '輕跳', en: 'Light Hop', value: 'light hop, small jump, bouncing happily' },
-        { label: '45度側身', en: '45-Degree Angle', value: 'three-quarter view, 45 degree angle' }
+        { label: '頭歪一邊', en: 'Head Tilt', value: 'head tilt, tilted head, curious head angle' },
+        { label: '單腳抬起', en: 'One Leg Up', value: 'one leg raised, standing on one foot, playful leg lift' },
+        { label: '轉圈裙擺飛起', en: 'Twirling Skirt', value: 'twirling, spinning, skirt flowing, dress twirl' },
+        // ── ⑨ 構圖特殊系 ──
+        { label: '俯視仰望鏡頭', en: 'Looking Up at Camera', value: 'looking up at viewer, from below, low angle looking up' },
+        { label: '仰視低角度', en: 'Low Angle View', value: 'low angle shot, from below, dramatic low perspective' },
+        { label: '近距離臉貼鏡頭', en: 'Close-Up Face', value: 'extreme close-up, face close to camera, leaning toward viewer' },
+        { label: '背影遠景', en: 'Back View Distance', value: 'back view, distant figure, rear silhouette, from behind far away' },
+        { label: '半身特寫', en: 'Upper Body Shot', value: 'upper body, portrait shot, waist up, half body' },
+        { label: '45度側身構圖', en: '45-Degree Angle', value: 'three-quarter view, 45 degree angle, angled portrait' }
     ];
 
     const ANIME_STYLES = [
@@ -1843,7 +1904,7 @@ window.PromptGen.Data = (function () {
         action: [
             { id: 'expression', title: { zh: '表情', en: 'Expression' }, data: EXPRESSIONS },
             { id: 'mood', title: { zh: '心情', en: 'Mood' }, data: MOODS, count: 28 },
-            { id: 'pose', title: { zh: '角色姿勢', en: 'Pose' }, data: POSES }
+            { id: 'pose', title: { zh: '角色姿勢', en: 'Pose' }, data: POSES, count: 30 }
         ],
         style: [
             { id: 'animeStyle', title: { zh: '動漫風格', en: 'Anime Style' }, data: ANIME_STYLES, count: 28 },
