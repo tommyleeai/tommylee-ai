@@ -385,6 +385,13 @@
 
                 // 渲染分頁 grid
                 renderPaginatedRaceGrid(sectionEl, section, RACES);
+
+                // If raceAdvanced active, add disabled overlay（與髮型/身材一致）
+                if (state.raceAdvanced && state.raceAdvanced.bonusTraits && state.raceAdvanced.bonusTraits.length > 0) {
+                    const tagGrid = sectionEl.querySelector('.tag-grid-paginated');
+                    if (tagGrid) tagGrid.classList.add('body-section-disabled');
+                }
+
                 tabContent.appendChild(sectionEl);
 
                 // Custom input field (shown when toggled)
@@ -492,6 +499,13 @@
 
                 // 渲染分頁 grid（獨立 jobPage）
                 renderPaginatedGrid(sectionEl, section, JOBS, 'jobPage');
+
+                // If jobAdvanced active, add disabled overlay（與髮型/身材一致）
+                if (state.jobAdvanced && state.jobAdvanced.bonusTraits && state.jobAdvanced.bonusTraits.length > 0) {
+                    const tagGrid = sectionEl.querySelector('.tag-grid-paginated');
+                    if (tagGrid) tagGrid.classList.add('body-section-disabled');
+                }
+
                 tabContent.appendChild(sectionEl);
 
                 // Custom input
