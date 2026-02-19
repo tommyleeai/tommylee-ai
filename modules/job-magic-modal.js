@@ -54,7 +54,7 @@ window.PromptGen.JobMagicModal = (function () {
         if (existing) existing.remove();
 
         let selectedJob = null;
-        let selectedBonuses = new Set();
+        let selectedBonuses = new Map(); // en → zh
         let activeCat = 'hot';
         let searchQuery = '';
         let filterLetter = null;
@@ -294,11 +294,17 @@ window.PromptGen.JobMagicModal = (function () {
                     recentTab.querySelector('.jmm-tab-count').textContent = getRecentJobs().length;
                 }
                 selectOption('job', selectedJob.value, { label: selectedJob.label, en: selectedJob.en, value: selectedJob.value });
-                const bonusArr = [...selectedBonuses];
-                if (bonusArr.length) {
-                    state.customInputs['job'] = (state.customInputs['job'] || '') +
-                        (state.customInputs['job'] ? ', ' : '') + bonusArr.join(', ');
-                    state.customInputVisible['job'] = true;
+                // ★ 加分特徵 → 存入 state.jobAdvanced（紫色橫幅顯示用）
+                const bonusEn = [...selectedBonuses.keys()];
+                const bonusZh = [...selectedBonuses.values()];
+                if (bonusEn.length) {
+                    state.jobAdvanced = {
+                        selectedJob: { label: selectedJob.label, en: selectedJob.en, value: selectedJob.value },
+                        bonusTraits: bonusEn,
+                        bonusTraitsZh: bonusZh
+                    };
+                } else {
+                    delete state.jobAdvanced;
                 }
                 generatePrompt();
                 saveState();
@@ -394,7 +400,7 @@ window.PromptGen.JobMagicModal = (function () {
                 tag.innerHTML = `<span class="jmm-chip-icon">${trait.icon}</span> ${trait.zh}`;
                 tag.addEventListener('click', () => {
                     if (selectedBonuses.has(trait.en)) selectedBonuses.delete(trait.en);
-                    else selectedBonuses.add(trait.en);
+                    else selectedBonuses.set(trait.en, trait.zh);
                     tag.classList.toggle('active');
                 });
                 tagsEl.appendChild(tag);

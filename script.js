@@ -128,6 +128,8 @@
                 state.bodyAdvanced = parsed.bodyAdvanced || null;
                 state.hairAdvanced = parsed.hairAdvanced || null;
                 state.hairMagicPrompts = parsed.hairMagicPrompts || null;
+                state.raceAdvanced = parsed.raceAdvanced || null;
+                state.jobAdvanced = parsed.jobAdvanced || null;
                 state.ageEnabled = parsed.ageEnabled !== false;
 
                 // Conflict system state restoration
@@ -349,6 +351,38 @@
                     }
                 }
 
+                // ★ raceAdvanced 橫幅：顯示加分特徵
+                if (state.raceAdvanced && state.raceAdvanced.bonusTraits && state.raceAdvanced.bonusTraits.length > 0) {
+                    const ra = state.raceAdvanced;
+                    const traitNames = ra.bonusTraitsZh ? ra.bonusTraitsZh.join('、') : ra.bonusTraits.join(', ');
+                    const raceName = ra.selectedRace ? `${ra.selectedRace.label} ${ra.selectedRace.en}` : '';
+
+                    const summaryBar = document.createElement('div');
+                    summaryBar.className = 'body-advanced-summary';
+                    const summaryText = document.createElement('span');
+                    summaryText.innerHTML = `🔮 ${state.lang === 'zh' ? '種族魔法啟用中' : 'Race Magic Active'}：${raceName} / 🏷️ ${traitNames}`;
+
+                    const editBtn = document.createElement('button');
+                    editBtn.className = 'body-summary-action';
+                    editBtn.textContent = state.lang === 'zh' ? '編輯' : 'Edit';
+                    editBtn.addEventListener('click', () => openRaceMagicModal());
+
+                    const clearBtn = document.createElement('button');
+                    clearBtn.className = 'body-summary-action clear';
+                    clearBtn.textContent = state.lang === 'zh' ? '清除' : 'Clear';
+                    clearBtn.addEventListener('click', () => {
+                        state.raceAdvanced = null;
+                        renderTabContent();
+                        generatePrompt();
+                        saveState();
+                    });
+
+                    summaryBar.appendChild(summaryText);
+                    summaryBar.appendChild(editBtn);
+                    summaryBar.appendChild(clearBtn);
+                    sectionEl.appendChild(summaryBar);
+                }
+
                 // 渲染分頁 grid
                 renderPaginatedRaceGrid(sectionEl, section, RACES);
                 tabContent.appendChild(sectionEl);
@@ -422,6 +456,38 @@
                         titleWrapper.appendChild(titleEl);
                         titleWrapper.appendChild(badge);
                     }
+                }
+
+                // ★ jobAdvanced 橫幅：顯示加分特徵
+                if (state.jobAdvanced && state.jobAdvanced.bonusTraits && state.jobAdvanced.bonusTraits.length > 0) {
+                    const ja = state.jobAdvanced;
+                    const traitNames = ja.bonusTraitsZh ? ja.bonusTraitsZh.join('、') : ja.bonusTraits.join(', ');
+                    const jobName = ja.selectedJob ? `${ja.selectedJob.label} ${ja.selectedJob.en}` : '';
+
+                    const summaryBar = document.createElement('div');
+                    summaryBar.className = 'body-advanced-summary';
+                    const summaryText = document.createElement('span');
+                    summaryText.innerHTML = `🔮 ${state.lang === 'zh' ? '職業魔法啟用中' : 'Job Magic Active'}：${jobName} / 🏷️ ${traitNames}`;
+
+                    const editBtn = document.createElement('button');
+                    editBtn.className = 'body-summary-action';
+                    editBtn.textContent = state.lang === 'zh' ? '編輯' : 'Edit';
+                    editBtn.addEventListener('click', () => openJobMagicModal());
+
+                    const clearBtn = document.createElement('button');
+                    clearBtn.className = 'body-summary-action clear';
+                    clearBtn.textContent = state.lang === 'zh' ? '清除' : 'Clear';
+                    clearBtn.addEventListener('click', () => {
+                        state.jobAdvanced = null;
+                        renderTabContent();
+                        generatePrompt();
+                        saveState();
+                    });
+
+                    summaryBar.appendChild(summaryText);
+                    summaryBar.appendChild(editBtn);
+                    summaryBar.appendChild(clearBtn);
+                    sectionEl.appendChild(summaryBar);
                 }
 
                 // 渲染分頁 grid（獨立 jobPage）
@@ -1709,6 +1775,16 @@
             if (secId === 'hairstyle' && state.hairMagicPrompts && state.hairMagicPrompts.positive && state.hairMagicPrompts.positive.length > 0) {
                 state.hairMagicPrompts.positive.forEach(tag => parts.push(tag));
             }
+
+            // ★ raceAdvanced bonusTraits（附加在 race section 後）
+            if (secId === 'race' && state.raceAdvanced && state.raceAdvanced.bonusTraits && state.raceAdvanced.bonusTraits.length > 0) {
+                state.raceAdvanced.bonusTraits.forEach(trait => parts.push(trait));
+            }
+
+            // ★ jobAdvanced bonusTraits（附加在 job section 後）
+            if (secId === 'job' && state.jobAdvanced && state.jobAdvanced.bonusTraits && state.jobAdvanced.bonusTraits.length > 0) {
+                state.jobAdvanced.bonusTraits.forEach(trait => parts.push(trait));
+            }
         });
 
         // Quality tags
@@ -1836,6 +1912,14 @@
             // Hair Magic prompts (append to hairstyle)
             if (secId === 'hairstyle' && state.hairMagicPrompts && state.hairMagicPrompts.positive && state.hairMagicPrompts.positive.length > 0) {
                 state.hairMagicPrompts.positive.forEach(tag => parts.push(tag));
+            }
+            // ★ raceAdvanced bonusTraits（YAML）
+            if (secId === 'race' && state.raceAdvanced && state.raceAdvanced.bonusTraits && state.raceAdvanced.bonusTraits.length > 0) {
+                state.raceAdvanced.bonusTraits.forEach(trait => parts.push(trait));
+            }
+            // ★ jobAdvanced bonusTraits（YAML）
+            if (secId === 'job' && state.jobAdvanced && state.jobAdvanced.bonusTraits && state.jobAdvanced.bonusTraits.length > 0) {
+                state.jobAdvanced.bonusTraits.forEach(trait => parts.push(trait));
             }
             if (parts.length > 0) {
                 yaml += `${yamlMap[secId]}: ${parts.join(', ')}\n`;

@@ -56,7 +56,7 @@ window.PromptGen.RaceMagicModal = (function () {
         if (existing) existing.remove();
 
         let selectedRace = null;
-        let selectedBonuses = new Set();
+        let selectedBonuses = new Map(); // en → zh
         let activeCat = 'hot';
         let searchQuery = '';
         let filterLetter = null;
@@ -298,12 +298,18 @@ window.PromptGen.RaceMagicModal = (function () {
                 }
                 // ★ 整合關鍵：呼叫主頁面的 selectOption 更新種族選擇
                 selectOption('race', selectedRace.value, { label: selectedRace.label, en: selectedRace.en, value: selectedRace.value });
-                // 如果有加分特徵，附加到自訂欄位
-                const bonusArr = [...selectedBonuses];
-                if (bonusArr.length) {
-                    state.customInputs['race'] = (state.customInputs['race'] || '') +
-                        (state.customInputs['race'] ? ', ' : '') + bonusArr.join(', ');
-                    state.customInputVisible['race'] = true;
+                // ★ 加分特徵 → 存入 state.raceAdvanced（紫色橫幅顯示用）
+                const bonusEn = [...selectedBonuses.keys()];
+                const bonusZh = [...selectedBonuses.values()];
+                if (bonusEn.length) {
+                    state.raceAdvanced = {
+                        selectedRace: { label: selectedRace.label, en: selectedRace.en, value: selectedRace.value },
+                        bonusTraits: bonusEn,
+                        bonusTraitsZh: bonusZh
+                    };
+                } else {
+                    // 沒選加分特徵就清除
+                    delete state.raceAdvanced;
                 }
                 generatePrompt();
                 saveState();
@@ -399,7 +405,7 @@ window.PromptGen.RaceMagicModal = (function () {
                 tag.innerHTML = `<span class="rmm-chip-icon">${trait.icon}</span> ${trait.zh}`;
                 tag.addEventListener('click', () => {
                     if (selectedBonuses.has(trait.en)) selectedBonuses.delete(trait.en);
-                    else selectedBonuses.add(trait.en);
+                    else selectedBonuses.set(trait.en, trait.zh);
                     tag.classList.toggle('active');
                 });
                 tagsEl.appendChild(tag);
