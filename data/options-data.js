@@ -1506,6 +1506,19 @@ window.PromptGen.Data = (function () {
         { label: '放鬆', en: 'Relaxed', value: 'relaxed, chill' }
     ];
 
+    // v7.3 姿勢基礎選項（每大分類代表，共 9 個）
+    const POSES = [
+        { label: '正面站立', en: 'Front Standing', value: 'standing, front view, upright posture' },
+        { label: '正坐', en: 'Sitting', value: 'sitting, proper sitting pose, upright seated' },
+        { label: '奔跑', en: 'Running', value: 'running, sprinting, dynamic movement' },
+        { label: '持武器待戰', en: 'Weapon Ready', value: 'holding weapon, battle ready, combat stance' },
+        { label: '揮手', en: 'Waving', value: 'waving hand, greeting wave' },
+        { label: '崩潰跪地', en: 'Collapse Kneel', value: 'kneeling on ground, collapsed, on knees despair' },
+        { label: '坐王座', en: 'Throne Sitting', value: 'sitting on throne, royal seat' },
+        { label: '輕跳', en: 'Light Hop', value: 'light hop, small jump, bouncing happily' },
+        { label: '45度側身', en: '45-Degree Angle', value: 'three-quarter view, 45 degree angle' }
+    ];
+
     const ANIME_STYLES = [
         { label: '宮崎駿 (吉卜力)', en: 'Hayao Miyazaki', value: 'studio ghibli style, by hayao miyazaki' },
         { label: '新海誠 (風景光影)', en: 'Makoto Shinkai', value: 'by makoto shinkai' },
@@ -1829,7 +1842,8 @@ window.PromptGen.Data = (function () {
         ],
         action: [
             { id: 'expression', title: { zh: '表情', en: 'Expression' }, data: EXPRESSIONS },
-            { id: 'mood', title: { zh: '心情', en: 'Mood' }, data: MOODS, count: 28 }
+            { id: 'mood', title: { zh: '心情', en: 'Mood' }, data: MOODS, count: 28 },
+            { id: 'pose', title: { zh: '角色姿勢', en: 'Pose' }, data: POSES }
         ],
         style: [
             { id: 'animeStyle', title: { zh: '動漫風格', en: 'Anime Style' }, data: ANIME_STYLES, count: 28 },
@@ -1858,7 +1872,7 @@ window.PromptGen.Data = (function () {
 
     return {
         TABS, RACES, JOBS, CONFLICT_RULES, HAIRSTYLES_FEMALE, HAIRSTYLES_MALE,
-        HAIR_COLORS, EYE_COLORS, OUTFITS, HEADWEAR, HAND_ITEMS, EXPRESSIONS, MOODS,
+        HAIR_COLORS, EYE_COLORS, OUTFITS, HEADWEAR, HAND_ITEMS, EXPRESSIONS, MOODS, POSES,
         ANIME_STYLES, ART_STYLES, ARTISTS, QUALITY_TAGS,
         SCENES, WEATHER, LIGHTING, CAMERA_ANGLES,
         SHOT_SIZES, FOCAL_LENGTHS, APERTURES, LENS_EFFECTS,

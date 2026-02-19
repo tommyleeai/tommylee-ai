@@ -17,6 +17,7 @@
     const BODY_MAGIC_DATA = window.PromptGen.BodyMagicData;
     const HAIR_MAGIC_DATA = window.PromptGen.HairMagicData;
     const EXPR_DATA = window.PromptGen.ExpressionMagicData;
+    const POSE_DATA = window.PromptGen.PoseMagicData;
     const changelog = window.PromptGen.Changelog;
     const SoundManager = window.PromptGen.SoundManager;
 
@@ -65,6 +66,7 @@
         headwearPage: 1,    // v6.91 頭飾分頁
         handItemsPage: 1,   // v6.92 手持物件分頁
         expressionPage: 1,  // v7.2 表情分頁
+        posePage: 1,         // v7.3 姿勢分頁
         heterochromia: false // v6.9 異色瞳模式
     };
 
@@ -1004,6 +1006,84 @@
                 tabContent.appendChild(sectionEl);
                 return; // expression section 處理完畢
             }
+
+            // === v7.3 姿勢 section 特殊處理 ===
+            if (section.id === 'pose') {
+                // 高級魔法按鈕
+                const poseMagicBtn = document.createElement('button');
+                poseMagicBtn.className = 'race-magic-btn';
+                poseMagicBtn.innerHTML = '<i class="fa-solid fa-wand-sparkles"></i> ' +
+                    (state.lang === 'zh' ? '🔮 高級魔法專用' : '🔮 Advanced Magic');
+                poseMagicBtn.addEventListener('click', () => {
+                    openPoseMagicModal();
+                });
+                const poseCustomToggle = header.querySelector('.btn-custom-toggle');
+                const poseBtnGroup = document.createElement('div');
+                poseBtnGroup.className = 'section-header-buttons';
+                header.insertBefore(poseBtnGroup, poseCustomToggle);
+                poseBtnGroup.appendChild(poseMagicBtn);
+                poseBtnGroup.appendChild(poseCustomToggle);
+
+                // poseAdvanced badge
+                if (state.poseAdvanced && state.poseAdvanced.pose) {
+                    const pa = state.poseAdvanced;
+                    const badge = document.createElement('span');
+                    badge.className = 'selected-race-badge';
+                    const gravObj = POSE_DATA.GRAVITY.find(g => g.id === pa.gravity);
+                    const gazeObj = POSE_DATA.GAZE.find(g => g.id === pa.gaze);
+                    let badgeText = `✓ ${pa.pose.label}`;
+                    if (gravObj && gravObj.id !== 'neutral') badgeText += ` ${gravObj.label}`;
+                    if (gazeObj) badgeText += ` ${gazeObj.label}`;
+                    badge.innerHTML = `${badgeText} <span class="badge-x" title="${state.lang === 'zh' ? '取消進階設定' : 'Clear advanced'}">✕</span>`;
+                    badge.querySelector('.badge-x').addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        delete state.poseAdvanced;
+                        renderTabContent();
+                        generatePrompt();
+                        saveState();
+                    });
+                    const titleEl = header.querySelector('.section-block-title');
+                    const titleWrapper = document.createElement('div');
+                    titleWrapper.className = 'section-title-with-badge';
+                    titleEl.parentNode.insertBefore(titleWrapper, titleEl);
+                    titleWrapper.appendChild(titleEl);
+                    titleWrapper.appendChild(badge);
+                }
+
+                // 渲染分頁 grid（與服飾/頭飾/手持物一致）
+                renderPaginatedGrid(sectionEl, section, section.data, 'posePage');
+                tabContent.appendChild(sectionEl);
+
+                // Custom input
+                if (state.customInputVisible[section.id]) {
+                    const customRow = document.createElement('div');
+                    customRow.className = 'custom-input-row';
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.className = 'custom-section-input';
+                    input.placeholder = state.lang === 'zh' ? '輸入自訂值...' : 'Enter custom value...';
+                    input.value = state.customInputs[section.id] || '';
+                    input.addEventListener('input', (e) => {
+                        state.customInputs[section.id] = e.target.value.trim();
+                        generatePrompt();
+                    });
+                    customRow.appendChild(input);
+                    const clearBtn = document.createElement('button');
+                    clearBtn.className = 'btn-clear-custom';
+                    clearBtn.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+                    clearBtn.addEventListener('click', () => {
+                        state.customInputs[section.id] = '';
+                        state.customInputVisible[section.id] = false;
+                        renderTabContent();
+                        generatePrompt();
+                    });
+                    customRow.appendChild(clearBtn);
+                    sectionEl.appendChild(customRow);
+                }
+
+                tabContent.appendChild(sectionEl);
+                return; // pose section 處理完畢
+            }
             // === v6.9 眼色色盤：跳過 eyeColorRight，由 eyeColorLeft 一併處理 ===
             if (section.id === 'eyeColorRight') return;
 
@@ -1211,6 +1291,13 @@
     // ============================================
     function openExpressionMagicModal() {
         window.PromptGen.ExpressionMagicModal.openExpressionMagicModal();
+    }
+
+    // ============================================
+    // Pose Magic Modal — 由 modules/pose-magic-modal.js 提供
+    // ============================================
+    function openPoseMagicModal() {
+        window.PromptGen.PoseMagicModal.openPoseMagicModal();
     }
 
     // ============================================
@@ -1529,7 +1616,7 @@
 
         // Generate order based on tabs
         const sectionOrder = ['race', 'job', 'hairstyle', 'bodyType', 'hairColor', 'eyeColorLeft', 'eyeColorRight',
-            'outfit', 'headwear', 'handItems', 'expression', 'mood', 'animeStyle', 'artStyle', 'artist', 'quality',
+            'outfit', 'headwear', 'handItems', 'expression', 'mood', 'pose', 'animeStyle', 'artStyle', 'artist', 'quality',
             'scene', 'weather', 'lighting', 'cameraAngle', 'shotSize', 'focalLength', 'aperture', 'lensEffect'];
 
         sectionOrder.forEach(secId => {
@@ -1577,6 +1664,16 @@
                         }
                     });
                 }
+                return;
+            }
+            // Skip pose if poseAdvanced is active
+            if (secId === 'pose' && state.poseAdvanced) {
+                const pa = state.poseAdvanced;
+                parts.push(pa.pose.value);
+                const gravObj = POSE_DATA.GRAVITY.find(g => g.id === pa.gravity);
+                if (gravObj && gravObj.value) parts.push(gravObj.value);
+                const gazeObj = POSE_DATA.GAZE.find(g => g.id === pa.gaze);
+                if (gazeObj && gazeObj.value) parts.push(gazeObj.value);
                 return;
             }
             const val = state.selections[secId];
@@ -1669,7 +1766,7 @@
             'hairColor': 'hair_color',
             'eyeColorLeft': 'left_eye', 'eyeColorRight': 'right_eye', 'outfit': 'outfit',
             'headwear': 'headwear', 'handItems': 'hand_items',
-            'expression': 'expression', 'mood': 'mood', 'animeStyle': 'anime_style',
+            'expression': 'expression', 'mood': 'mood', 'pose': 'pose', 'animeStyle': 'anime_style',
             'artStyle': 'art_style', 'artist': 'artist', 'quality': 'quality',
             'scene': 'scene', 'weather': 'weather', 'lighting': 'lighting',
             'cameraAngle': 'camera_angle', 'shotSize': 'shot_size', 'focalLength': 'focal_length',
@@ -1720,6 +1817,17 @@
                     });
                 }
                 yaml += `expression: ${exprParts.join(', ')}\n`;
+                return;
+            }
+            // Skip pose if poseAdvanced is active
+            if (secId === 'pose' && state.poseAdvanced) {
+                const pa = state.poseAdvanced;
+                const poseParts = [pa.pose.value];
+                const gravObj = POSE_DATA.GRAVITY.find(g => g.id === pa.gravity);
+                if (gravObj && gravObj.value) poseParts.push(gravObj.value);
+                const gazeObj = POSE_DATA.GAZE.find(g => g.id === pa.gaze);
+                if (gazeObj && gazeObj.value) poseParts.push(gazeObj.value);
+                yaml += `pose: ${poseParts.join(', ')}\n`;
                 return;
             }
             const parts = [];
@@ -1877,6 +1985,9 @@
     });
     window.PromptGen.ExpressionMagicModal.setup({
         state, sfx, EXPR_DATA, generatePrompt, saveState, renderTabContent
+    });
+    window.PromptGen.PoseMagicModal.setup({
+        state, sfx, POSE_DATA, generatePrompt, saveState, renderTabContent
     });
     window.PromptGen.ConflictSystem.setup({
         state, sfx, CONFLICT_RULES, generatePrompt, saveState, selectOption,
