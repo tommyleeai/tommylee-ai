@@ -25,6 +25,7 @@ window.PromptGen.PoseMagicModal = (function () {
         let selectedGravity = saved.gravity || 'neutral';
         let selectedGaze = saved.gaze || 'direct';
         let currentTab = selectedPose ? selectedPose.category : 'standing';
+        let searchQuery = '';
 
         const TABS = POSE_DATA.TABS;
         const POSES = POSE_DATA.POSES;
@@ -68,6 +69,9 @@ window.PromptGen.PoseMagicModal = (function () {
                     </div>
                 </div>
                 <div class="pmm-tabs" id="pmm-tabs">${tabsHtml}</div>
+                <div class="pmm-search-bar" style="padding:0 20px;margin-top:8px">
+                    <input type="text" id="pmm-search" class="cmm-search-input" placeholder="🔍 搜尋姿勢（中文/英文）..." style="width:100%;padding:8px 12px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:8px;color:#e2e8f0;font-size:13px;outline:none;transition:border-color 0.2s" onfocus="this.style.borderColor='rgba(34,211,238,0.5)'" onblur="this.style.borderColor='rgba(255,255,255,0.12)'">
+                </div>
 
                 <div class="pmm-body">
                     <div class="pmm-grid-wrap" id="pmm-grid-wrap">
@@ -143,9 +147,16 @@ window.PromptGen.PoseMagicModal = (function () {
         // === 渲染姿勢網格 ===
         function renderGrid() {
             const grid = document.getElementById('pmm-grid');
-            const filtered = POSES.filter(p => p.category === currentTab);
+            let filtered = POSES.filter(p => p.category === currentTab);
+            // 搜尋過濾
+            if (searchQuery) {
+                const q = searchQuery.toLowerCase();
+                filtered = filtered.filter(p =>
+                    p.label.includes(searchQuery) || p.en.toLowerCase().includes(q) || p.value.toLowerCase().includes(q)
+                );
+            }
             if (filtered.length === 0) {
-                grid.innerHTML = '<div class="pmm-empty">此分類暫無姿勢</div>';
+                grid.innerHTML = `<div class="pmm-empty">${searchQuery ? '找不到符合的姿勢' : '此分類暫無姿勢'}</div>`;
                 return;
             }
             grid.innerHTML = filtered.map(p => {
@@ -207,6 +218,12 @@ window.PromptGen.PoseMagicModal = (function () {
         renderGrid();
         updatePreview();
 
+        // === 搜尋 ===
+        document.getElementById('pmm-search').addEventListener('input', (e) => {
+            searchQuery = e.target.value.trim();
+            renderGrid();
+        });
+
         // === Tab 切換 ===
         document.getElementById('pmm-tabs').addEventListener('click', (e) => {
             const tab = e.target.closest('.pmm-tab');
@@ -215,6 +232,10 @@ window.PromptGen.PoseMagicModal = (function () {
             currentTab = tab.dataset.tab;
             overlay.querySelectorAll('.pmm-tab').forEach(t => t.classList.remove('active'));
             tab.classList.add('active');
+            // 清空搜尋
+            searchQuery = '';
+            const searchInput = document.getElementById('pmm-search');
+            if (searchInput) searchInput.value = '';
             renderGrid();
         });
 
@@ -268,6 +289,9 @@ window.PromptGen.PoseMagicModal = (function () {
             selectedPose = null;
             selectedGravity = 'neutral';
             selectedGaze = 'direct';
+            searchQuery = '';
+            const searchInput = document.getElementById('pmm-search');
+            if (searchInput) searchInput.value = '';
             overlay.querySelectorAll('.pmm-pose-chip').forEach(c => c.classList.remove('selected'));
             // 重設重心選擇
             document.querySelectorAll('#pmm-gravity-grid .pmm-attr-chip').forEach(c => c.classList.remove('active'));
@@ -275,6 +299,7 @@ window.PromptGen.PoseMagicModal = (function () {
             // 重設視線選擇
             document.querySelectorAll('#pmm-gaze-grid .pmm-attr-chip').forEach(c => c.classList.remove('active'));
             document.querySelector('#pmm-gaze-grid .pmm-attr-chip[data-gzid="direct"]').classList.add('active');
+            renderGrid();
             updatePreview();
         });
 

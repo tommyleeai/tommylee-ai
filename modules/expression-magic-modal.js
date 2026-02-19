@@ -25,6 +25,7 @@ window.PromptGen.ExpressionMagicModal = (function () {
         let intensity = saved.intensity || 4;
         let activeEffects = new Set(saved.effects || []);
         let currentTab = selectedExpr ? selectedExpr.category : 'joy';
+        let searchQuery = '';
 
         const TABS = EXPR_DATA.TABS;
         const EXPRS = EXPR_DATA.EXPRESSIONS;
@@ -63,6 +64,9 @@ window.PromptGen.ExpressionMagicModal = (function () {
                     </div>
                 </div>
                 <div class="emm-tabs" id="emm-tabs">${tabsHtml}</div>
+                <div class="emm-search-bar" style="padding:0 20px;margin-top:8px">
+                    <input type="text" id="emm-search" class="cmm-search-input" placeholder="🔍 搜尋表情（中文/英文）..." style="width:100%;padding:8px 12px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:8px;color:#e2e8f0;font-size:13px;outline:none;transition:border-color 0.2s" onfocus="this.style.borderColor='rgba(167,139,250,0.5)'" onblur="this.style.borderColor='rgba(255,255,255,0.12)'">
+                </div>
 
                 <div class="emm-fbanner" id="emm-fbanner">
                     <span>🔮</span>
@@ -153,9 +157,16 @@ window.PromptGen.ExpressionMagicModal = (function () {
         // === 渲染表情網格 ===
         function renderGrid() {
             const grid = document.getElementById('emm-grid');
-            const filtered = EXPRS.filter(e => e.category === currentTab);
+            let filtered = EXPRS.filter(e => e.category === currentTab);
+            // 搜尋過濾
+            if (searchQuery) {
+                const q = searchQuery.toLowerCase();
+                filtered = filtered.filter(e =>
+                    e.label.includes(searchQuery) || e.en.toLowerCase().includes(q) || e.value.toLowerCase().includes(q)
+                );
+            }
             if (filtered.length === 0) {
-                grid.innerHTML = '<div class="emm-empty">此分類暫無表情</div>';
+                grid.innerHTML = `<div class="emm-empty">${searchQuery ? '找不到符合的表情' : '此分類暫無表情'}</div>`;
                 return;
             }
             grid.innerHTML = filtered.map(e => {
@@ -283,6 +294,12 @@ window.PromptGen.ExpressionMagicModal = (function () {
         renderGrid();
         updatePreview();
 
+        // === 搜尋 ===
+        document.getElementById('emm-search').addEventListener('input', (e) => {
+            searchQuery = e.target.value.trim();
+            renderGrid();
+        });
+
         // === Tab 切換 ===
         document.getElementById('emm-tabs').addEventListener('click', (e) => {
             const tab = e.target.closest('.emm-tab');
@@ -291,6 +308,10 @@ window.PromptGen.ExpressionMagicModal = (function () {
             currentTab = tab.dataset.tab;
             overlay.querySelectorAll('.emm-tab').forEach(t => t.classList.remove('active'));
             tab.classList.add('active');
+            // 清空搜尋
+            searchQuery = '';
+            const searchInput = document.getElementById('emm-search');
+            if (searchInput) searchInput.value = '';
             renderGrid();
         });
 
@@ -350,9 +371,13 @@ window.PromptGen.ExpressionMagicModal = (function () {
             selectedExpr = null;
             intensity = 4;
             activeEffects.clear();
+            searchQuery = '';
+            const searchInput = document.getElementById('emm-search');
+            if (searchInput) searchInput.value = '';
             document.getElementById('emm-slider').value = 4;
             overlay.querySelectorAll('.emm-expr-chip').forEach(c => c.classList.remove('selected'));
             overlay.querySelectorAll('.emm-effect-chip').forEach(c => c.classList.remove('active'));
+            renderGrid();
             updatePreview();
         });
 
