@@ -288,7 +288,7 @@
 
 .jmm-search {
     width: 100%;
-    padding: 9px 16px 9px 36px;
+    padding: 9px 16px 9px 48px !important;
     background: rgba(30, 41, 59, .8);
     border: 1px solid rgba(148, 163, 184, .2);
     border-radius: 10px;

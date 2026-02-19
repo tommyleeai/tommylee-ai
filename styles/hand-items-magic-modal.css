@@ -1,11 +1,10 @@
 /* ===================================================================
-   Hair Magic Modal — 髮型大全 CSS
-   使用 hmm- 前綴（Hair Magic Modal）
-   遵循 magic-modal-style 規範
+   Hand Items Magic Modal — 手持物件大全 CSS
+   從 headwear-magic-modal.css 模版改編，使用 him- 前綴
    =================================================================== */
 
-/* === Hair Magic Modal Overlay === */
-#hair-magic-modal {
+/* === Hand Items Magic Modal Overlay === */
+#hand-items-magic-modal {
     position: fixed;
     inset: 0;
     z-index: 10000;
@@ -13,10 +12,10 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    animation: hmm-fadeIn .4s ease
+    animation: him-fadeIn .4s ease
 }
 
-@keyframes hmm-fadeIn {
+@keyframes him-fadeIn {
     from {
         opacity: 0
     }
@@ -26,8 +25,76 @@
     }
 }
 
+/* === 閃光爆發 === */
+.him-flash {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+    background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, .8) 0%, rgba(168, 85, 247, .3) 30%, transparent 70%);
+    animation: him-flash .6s ease-out forwards
+}
+
+@keyframes him-flash {
+    0% {
+        opacity: 1;
+        transform: scale(.5)
+    }
+
+    50% {
+        opacity: .6;
+        transform: scale(1.2)
+    }
+
+    100% {
+        opacity: 0;
+        transform: scale(2)
+    }
+}
+
+/* === 旋轉魔法陣 === */
+.him-magic-circle {
+    position: absolute;
+    width: 500px;
+    height: 500px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    z-index: 0;
+    opacity: .1;
+    animation: him-circleIn 1s ease-out, him-rotate 25s linear infinite
+}
+
+.him-magic-circle svg {
+    width: 100%;
+    height: 100%
+}
+
+@keyframes him-rotate {
+    from {
+        transform: translate(-50%, -50%) rotate(0deg)
+    }
+
+    to {
+        transform: translate(-50%, -50%) rotate(360deg)
+    }
+}
+
+@keyframes him-circleIn {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(.3) rotate(-90deg)
+    }
+
+    to {
+        opacity: .1;
+        transform: translate(-50%, -50%) scale(1) rotate(0deg)
+    }
+}
+
 /* === 粒子 === */
-.hmm-particles {
+.him-particles {
     position: absolute;
     inset: 0;
     pointer-events: none;
@@ -35,13 +102,13 @@
     overflow: hidden
 }
 
-.hmm-particle {
+.him-particle {
     position: absolute;
     border-radius: 50%;
-    animation: hmm-sparkle linear infinite
+    animation: him-sparkle linear infinite
 }
 
-@keyframes hmm-sparkle {
+@keyframes him-sparkle {
     0% {
         transform: translateY(100vh) scale(0);
         opacity: 0
@@ -67,7 +134,7 @@
 }
 
 /* === 流星 === */
-.hmm-meteor {
+.him-meteor {
     position: absolute;
     pointer-events: none;
     z-index: 0;
@@ -75,11 +142,11 @@
     height: 80px;
     background: linear-gradient(to bottom, rgba(251, 191, 36, 0), rgba(251, 191, 36, .7), rgba(251, 191, 36, 0));
     border-radius: 2px;
-    animation: hmm-meteor linear forwards;
+    animation: him-meteor linear forwards;
     opacity: 0
 }
 
-@keyframes hmm-meteor {
+@keyframes him-meteor {
     0% {
         opacity: 0;
         transform: translate(0, 0) rotate(30deg)
@@ -99,8 +166,8 @@
     }
 }
 
-/* === Container === */
-.hmm-container {
+/* === Container（固定高度）=== */
+.him-container {
     position: relative;
     z-index: 2;
     width: 92vw;
@@ -112,11 +179,11 @@
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    animation: hmm-containerIn .5s cubic-bezier(.34, 1.56, .64, 1);
+    animation: him-containerIn .5s cubic-bezier(.34, 1.56, .64, 1);
     box-shadow: 0 0 50px rgba(124, 58, 237, .2), 0 0 100px rgba(124, 58, 237, .08)
 }
 
-@keyframes hmm-containerIn {
+@keyframes him-containerIn {
     from {
         opacity: 0;
         transform: scale(.5)
@@ -129,19 +196,19 @@
 }
 
 /* === Header === */
-.hmm-header {
+.him-header {
     padding: 16px 24px 12px;
     border-bottom: 1px solid rgba(148, 163, 184, .1);
     flex-shrink: 0
 }
 
-.hmm-title-row {
+.him-title-row {
     display: flex;
     align-items: center;
     justify-content: space-between
 }
 
-.hmm-title {
+.him-title {
     font-size: 1.2rem;
     font-weight: 700;
     background: linear-gradient(90deg, #fbbf24, #a855f7, #7c3aed, #fbbf24);
@@ -149,10 +216,10 @@
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
-    animation: hmm-titleGlow 3s ease infinite, hmm-titleIn .8s ease .3s both
+    animation: him-titleGlow 3s ease infinite, him-titleIn .8s ease .3s both
 }
 
-@keyframes hmm-titleGlow {
+@keyframes him-titleGlow {
 
     0%,
     100% {
@@ -164,7 +231,7 @@
     }
 }
 
-@keyframes hmm-titleIn {
+@keyframes him-titleIn {
     from {
         opacity: 0;
         filter: blur(8px)
@@ -177,12 +244,12 @@
 }
 
 /* === 工具列按鈕 === */
-.hmm-toolbar {
+.him-toolbar {
     display: flex;
     gap: 6px
 }
 
-.hmm-tool-btn {
+.him-tool-btn {
     padding: 6px 12px;
     font-size: .72rem;
     border-radius: 8px;
@@ -197,29 +264,29 @@
     gap: 4px
 }
 
-.hmm-tool-btn:hover {
+.him-tool-btn:hover {
     border-color: rgba(168, 85, 247, .4);
     color: #c084fc;
     transform: translateY(-1px)
 }
 
-.hmm-tool-icon {
+.him-tool-icon {
     font-size: 1rem
 }
 
 /* === 搜尋框 === */
-.hmm-search-row {
+.him-search-row {
     display: flex;
     gap: 8px;
     margin-top: 10px
 }
 
-.hmm-search-wrap {
+.him-search-wrap {
     flex: 1;
     position: relative
 }
 
-.hmm-search {
+.him-search {
     width: 100%;
     padding: 9px 16px 9px 48px !important;
     background: rgba(30, 41, 59, .8);
@@ -229,16 +296,15 @@
     font-size: .82rem;
     font-family: inherit;
     outline: none;
-    transition: border-color .3s;
-    box-sizing: border-box
+    transition: border-color .3s
 }
 
-.hmm-search:focus {
+.him-search:focus {
     border-color: rgba(168, 85, 247, .5);
     box-shadow: 0 0 10px rgba(168, 85, 247, .12)
 }
 
-.hmm-search-icon {
+.him-search-icon {
     position: absolute;
     left: 12px;
     top: 50%;
@@ -248,21 +314,28 @@
 }
 
 /* === 分類 Tabs === */
-.hmm-tabs {
+.him-tabs {
     display: flex;
     gap: 4px;
     padding: 10px 24px 0;
     overflow-x: auto;
+    flex-shrink: 0;
+    scroll-padding-right: 24px
+}
+
+.him-tabs::after {
+    content: '';
+    min-width: 20px;
     flex-shrink: 0
 }
 
-.hmm-tabs::-webkit-scrollbar {
+.him-tabs::-webkit-scrollbar {
     height: 0
 }
 
-.hmm-tab {
+.him-tab {
     box-sizing: border-box;
-    padding: 7px 14px;
+    padding: 7px 10px;
     font-size: .76rem;
     border-radius: 8px 8px 0 0;
     cursor: pointer;
@@ -277,11 +350,12 @@
     flex-direction: column;
     align-items: center;
     gap: 2px;
-    min-width: 64px;
+    min-width: 54px;
+    flex-shrink: 0;
     position: relative
 }
 
-.hmm-tab:hover {
+.him-tab:hover {
     color: #c084fc;
     background: rgba(124, 58, 237, .15);
     border-color: rgba(168, 85, 247, .25);
@@ -290,7 +364,7 @@
     box-shadow: 0 2px 8px rgba(124, 58, 237, .15)
 }
 
-.hmm-tab.active {
+.him-tab.active {
     background: linear-gradient(180deg, rgba(124, 58, 237, .2) 0%, rgba(30, 41, 59, .9) 100%);
     color: #f3e8ff;
     border-color: rgba(168, 85, 247, .4);
@@ -299,34 +373,34 @@
     transform: translateY(-1px)
 }
 
-.hmm-tab.active .hmm-tab-icon {
+.him-tab.active .him-tab-icon {
     transform: scale(1.15);
     filter: drop-shadow(0 0 6px rgba(168, 85, 247, .6))
 }
 
-.hmm-tab-icon {
+.him-tab-icon {
     font-size: .95rem;
     transition: transform .25s ease, filter .25s ease
 }
 
-.hmm-tab-label {
+.him-tab-label {
     font-size: .65rem
 }
 
-.hmm-tab-count {
+.him-tab-count {
     font-size: .55rem;
     color: #64748b;
     margin-top: 1px;
     transition: color .25s ease
 }
 
-.hmm-tab.active .hmm-tab-count {
+.him-tab.active .him-tab-count {
     color: #c084fc;
     font-weight: 600
 }
 
-/* === 主體 === */
-.hmm-body {
+/* === 主體（固定高度 flex-grow）=== */
+.him-body {
     display: flex;
     flex: 1;
     overflow: hidden;
@@ -334,7 +408,7 @@
     min-height: 0
 }
 
-.hmm-main {
+.him-main {
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -343,22 +417,22 @@
     padding-top: 14px
 }
 
-.hmm-grid-wrap {
+.him-grid-wrap {
     flex: 1;
     overflow-y: auto;
     padding: 0 10px 14px 20px;
     min-height: 0
 }
 
-.hmm-grid {
+.him-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 5px;
     align-content: start
 }
 
-/* === 髮型 Chip === */
-.hmm-item-chip {
+/* === 手持物件 Chip === */
+.him-race-chip {
     padding: 7px 9px;
     font-size: .73rem;
     border-radius: 8px;
@@ -375,32 +449,26 @@
     position: relative
 }
 
-.hmm-item-chip:hover {
+.him-race-chip:hover {
     border-color: rgba(168, 85, 247, .4);
     color: #e2e8f0;
     background: rgba(124, 58, 237, .08);
     transform: translateY(-1px)
 }
 
-.hmm-item-chip.selected {
+.him-race-chip.selected {
     background: rgba(124, 58, 237, .2);
     border-color: #a855f7;
     color: #fff;
     box-shadow: 0 0 10px rgba(168, 85, 247, .15)
 }
 
-.hmm-item-chip.disabled {
-    opacity: .35;
-    pointer-events: none;
-    filter: grayscale(.5)
-}
-
-.hmm-chip-icon {
+.him-chip-icon {
     font-size: .85rem;
     flex-shrink: 0
 }
 
-.hmm-chip-text {
+.him-chip-text {
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -408,7 +476,7 @@
     flex: 1
 }
 
-.hmm-chip-zh {
+.him-chip-zh {
     font-size: .73rem;
     font-weight: 500;
     white-space: nowrap;
@@ -416,7 +484,7 @@
     text-overflow: ellipsis
 }
 
-.hmm-chip-en {
+.him-chip-en {
     font-size: .58rem;
     color: #64748b;
     white-space: nowrap;
@@ -424,12 +492,12 @@
     text-overflow: ellipsis
 }
 
-.hmm-item-chip.selected .hmm-chip-en {
+.him-race-chip.selected .him-chip-en {
     color: rgba(255, 255, 255, .5)
 }
 
-/* === 熱門標記 === */
-.hmm-hot-badge {
+/* === 🔥 熱門標記 === */
+.him-hot-badge {
     position: absolute;
     top: 2px;
     right: 3px;
@@ -438,12 +506,12 @@
     opacity: .7
 }
 
-.hmm-item-chip:hover .hmm-hot-badge {
+.him-race-chip:hover .him-hot-badge {
     opacity: 1
 }
 
-/* === 最近使用標記 === */
-.hmm-recent-badge {
+/* === 📋 最近使用標記 === */
+.him-recent-badge {
     position: absolute;
     bottom: 2px;
     right: 3px;
@@ -453,7 +521,7 @@
 }
 
 /* === A-Z 索引 === */
-.hmm-az {
+.him-az {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -465,7 +533,7 @@
     flex-shrink: 0
 }
 
-.hmm-az-letter {
+.him-az-letter {
     font-size: .5rem;
     color: #475569;
     cursor: pointer;
@@ -475,18 +543,73 @@
     line-height: 1.2
 }
 
-.hmm-az-letter:hover {
+.him-az-letter:hover {
     color: #a855f7;
     background: rgba(168, 85, 247, .1)
 }
 
-.hmm-az-letter.active {
+.him-az-letter.active {
     color: #fff;
     background: rgba(124, 58, 237, .4)
 }
 
+/* === 加分特徵（卡片容器）=== */
+.him-bonus {
+    margin: 8px 16px;
+    padding: 12px 16px;
+    border-radius: 10px;
+    background: rgba(15, 23, 42, .6);
+    border: 1px solid rgba(168, 85, 247, .2);
+    display: none;
+    flex-shrink: 0;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .03), 0 2px 8px rgba(0, 0, 0, .2)
+}
+
+.him-bonus.show {
+    display: block
+}
+
+.him-bonus-title {
+    font-size: .75rem;
+    color: #94a3b8;
+    margin-bottom: 6px
+}
+
+.him-bonus-title span {
+    color: #fbbf24
+}
+
+.him-bonus-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px
+}
+
+.him-bonus-tag {
+    padding: 3px 10px;
+    font-size: .7rem;
+    border-radius: 16px;
+    cursor: pointer;
+    border: 1px solid rgba(148, 163, 184, .15);
+    background: rgba(30, 41, 59, .5);
+    color: #94a3b8;
+    transition: all .2s;
+    font-family: inherit
+}
+
+.him-bonus-tag:hover {
+    border-color: rgba(251, 191, 36, .4);
+    color: #fbbf24
+}
+
+.him-bonus-tag.active {
+    background: rgba(251, 191, 36, .15);
+    border-color: #fbbf24;
+    color: #fbbf24
+}
+
 /* === Footer === */
-.hmm-footer {
+.him-footer {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -495,21 +618,21 @@
     flex-shrink: 0
 }
 
-.hmm-status {
+.him-status {
     font-size: .7rem;
     color: #64748b
 }
 
-.hmm-status b {
+.him-status b {
     color: #a855f7
 }
 
-.hmm-actions {
+.him-actions {
     display: flex;
     gap: 10px
 }
 
-.hmm-btn {
+.him-btn {
     padding: 7px 18px;
     border-radius: 8px;
     font-size: .78rem;
@@ -519,29 +642,29 @@
     transition: all .2s
 }
 
-.hmm-btn-cancel {
+.him-btn-cancel {
     background: rgba(100, 116, 139, .2);
     color: #94a3b8
 }
 
-.hmm-btn-cancel:hover {
+.him-btn-cancel:hover {
     background: rgba(100, 116, 139, .3);
     color: #e2e8f0
 }
 
-.hmm-btn-apply {
+.him-btn-apply {
     background: linear-gradient(135deg, #7c3aed, #a855f7);
     color: #fff;
     box-shadow: 0 3px 12px rgba(124, 58, 237, .3)
 }
 
-.hmm-btn-apply:hover {
+.him-btn-apply:hover {
     transform: translateY(-1px);
     box-shadow: 0 5px 16px rgba(124, 58, 237, .4)
 }
 
 /* === 空結果 === */
-.hmm-empty {
+.him-empty {
     grid-column: 1/-1;
     padding: 40px;
     text-align: center;
@@ -549,17 +672,17 @@
     font-size: .85rem
 }
 
-.hmm-grid-wrap::-webkit-scrollbar {
+.him-grid-wrap::-webkit-scrollbar {
     width: 5px
 }
 
-.hmm-grid-wrap::-webkit-scrollbar-thumb {
+.him-grid-wrap::-webkit-scrollbar-thumb {
     background: rgba(148, 163, 184, .15);
     border-radius: 3px
 }
 
 /* === 🎲 骰子動畫覆蓋層 === */
-.hmm-dice-overlay {
+.him-dice-overlay {
     position: absolute;
     inset: 0;
     background: rgba(0, 0, 0, .6);
@@ -573,19 +696,20 @@
     border-radius: 16px
 }
 
-.hmm-dice-overlay.active {
+.him-dice-overlay.active {
     opacity: 1;
     pointer-events: auto
 }
 
-.hmm-dice-emoji {
+.him-dice-emoji {
     font-size: 80px;
     line-height: 1;
     filter: drop-shadow(0 0 20px rgba(168, 85, 247, .7)) drop-shadow(0 0 50px rgba(124, 58, 237, .4));
-    animation: hmm-dice-drop .4s cubic-bezier(.22, .68, .31, 1.2) forwards
+    animation: him-dice-drop .4s cubic-bezier(.22, .68, .31, 1.2) forwards
 }
 
-@keyframes hmm-dice-drop {
+/* Phase 1: 從上方掉落到中央 */
+@keyframes him-dice-drop {
     0% {
         transform: translateY(-200px) rotate(-90deg) scale(.5);
         opacity: 0
@@ -606,11 +730,12 @@
     }
 }
 
-.hmm-dice-emoji.rolling {
-    animation: hmm-dice-bounce 1s ease-out forwards
+/* Phase 2: 旋轉 + 多次回彈 */
+.him-dice-emoji.rolling {
+    animation: him-dice-bounce 1s ease-out forwards
 }
 
-@keyframes hmm-dice-bounce {
+@keyframes him-dice-bounce {
     0% {
         transform: translateY(0) rotate(0deg) scale(1)
     }
@@ -656,11 +781,12 @@
     }
 }
 
-.hmm-dice-emoji.exit {
-    animation: hmm-dice-exit .3s ease-in forwards
+/* Phase 3: 彈出消失 */
+.him-dice-emoji.exit {
+    animation: him-dice-exit .3s ease-in forwards
 }
 
-@keyframes hmm-dice-exit {
+@keyframes him-dice-exit {
     0% {
         transform: translateY(0) rotate(720deg) scale(1);
         opacity: 1
@@ -672,251 +798,7 @@
     }
 
     100% {
-        transform: translateY(-120px) rotate(900deg) scale(.3);
+        transform: translateY(-60px) rotate(780deg) scale(.3);
         opacity: 0
     }
 }
-
-.hmm-dice-spinning .hmm-tool-icon {
-    animation: hmm-dice-btn-spin .6s ease-out
-}
-
-@keyframes hmm-dice-btn-spin {
-    from {
-        transform: rotate(0)
-    }
-
-    to {
-        transform: rotate(360deg)
-    }
-}
-
-/* === 推桿區域（Hair Magic 專用）=== */
-/* === Hair Slider Panel START === */
-.hmm-slider-panel {
-    padding: 16px 20px;
-}
-
-.hmm-slider-group {
-    margin-bottom: 20px;
-    padding: 16px;
-    border-radius: 12px;
-    background: rgba(15, 23, 42, .4);
-    border: 1px solid rgba(148, 163, 184, .1);
-    transition: border-color .3s
-}
-
-.hmm-slider-group:hover {
-    border-color: rgba(168, 85, 247, .25)
-}
-
-.hmm-slider-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 10px
-}
-
-.hmm-slider-label {
-    font-size: .82rem;
-    font-weight: 600;
-    color: #e2e8f0;
-    display: flex;
-    align-items: center;
-    gap: 6px
-}
-
-.hmm-slider-label-icon {
-    font-size: 1.1rem
-}
-
-.hmm-slider-value {
-    font-size: .78rem;
-    font-weight: 600;
-    color: #a855f7;
-    padding: 2px 10px;
-    border-radius: 6px;
-    background: rgba(124, 58, 237, .12);
-    border: 1px solid rgba(168, 85, 247, .2);
-    transition: all .3s
-}
-
-.hmm-slider-value.fantasy {
-    color: #fbbf24;
-    background: rgba(251, 191, 36, .12);
-    border-color: rgba(251, 191, 36, .3);
-    animation: hmm-fantasy-pulse 1.5s ease infinite
-}
-
-@keyframes hmm-fantasy-pulse {
-
-    0%,
-    100% {
-        box-shadow: 0 0 5px rgba(251, 191, 36, .1)
-    }
-
-    50% {
-        box-shadow: 0 0 15px rgba(251, 191, 36, .3)
-    }
-}
-
-.hmm-scale {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 6px;
-    padding: 0 2px
-}
-
-.hmm-scale span {
-    font-size: .6rem;
-    color: #64748b;
-    transition: color .2s
-}
-
-.hmm-scale span.fantasy-label {
-    color: #fbbf24;
-    font-weight: 600
-}
-
-.hmm-slider-wrap {
-    position: relative;
-    padding: 4px 0
-}
-
-.hmm-slider-wrap input[type="range"] {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 100%;
-    height: 6px;
-    border-radius: 3px;
-    background: linear-gradient(to right, rgba(148, 163, 184, .15), rgba(148, 163, 184, .25));
-    outline: none;
-    cursor: pointer;
-    transition: background .3s
-}
-
-.hmm-slider-wrap input[type="range"]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #7c3aed, #a855f7);
-    border: 2px solid rgba(255, 255, 255, .3);
-    box-shadow: 0 0 10px rgba(124, 58, 237, .4);
-    cursor: pointer;
-    transition: all .2s
-}
-
-.hmm-slider-wrap input[type="range"]::-webkit-slider-thumb:hover {
-    transform: scale(1.2);
-    box-shadow: 0 0 20px rgba(124, 58, 237, .6)
-}
-
-.hmm-slider-wrap input[type="range"].in-fantasy::-webkit-slider-thumb {
-    background: linear-gradient(135deg, #f59e0b, #fbbf24);
-    box-shadow: 0 0 15px rgba(251, 191, 36, .5)
-}
-
-/* Firefox */
-.hmm-slider-wrap input[type="range"]::-moz-range-thumb {
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #7c3aed, #a855f7);
-    border: 2px solid rgba(255, 255, 255, .3);
-    box-shadow: 0 0 10px rgba(124, 58, 237, .4);
-    cursor: pointer
-}
-
-.hmm-slider-prompt {
-    margin-top: 8px;
-    padding: 8px 12px;
-    border-radius: 8px;
-    background: rgba(30, 41, 59, .6);
-    border: 1px solid rgba(148, 163, 184, .08);
-    font-size: .7rem;
-    color: #94a3b8;
-    font-family: 'Consolas', monospace;
-    word-break: break-all
-}
-
-.hmm-slider-prompt strong {
-    color: #c084fc
-}
-
-/* === Hair Slider Panel END === */
-
-/* === 預設組合按鈕 === */
-/* === Hair Presets START === */
-.hmm-presets-section {
-    padding: 0 20px 12px;
-    flex-shrink: 0
-}
-
-.hmm-presets-title {
-    font-size: .75rem;
-    color: #94a3b8;
-    margin-bottom: 8px;
-    display: flex;
-    align-items: center;
-    gap: 6px
-}
-
-.hmm-presets-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px
-}
-
-.hmm-preset-btn {
-    padding: 5px 12px;
-    font-size: .7rem;
-    border-radius: 16px;
-    cursor: pointer;
-    border: 1px solid rgba(148, 163, 184, .15);
-    background: rgba(30, 41, 59, .5);
-    color: #94a3b8;
-    transition: all .2s;
-    font-family: inherit;
-    white-space: nowrap
-}
-
-.hmm-preset-btn:hover {
-    border-color: rgba(168, 85, 247, .4);
-    color: #c084fc;
-    background: rgba(124, 58, 237, .1);
-    transform: translateY(-1px)
-}
-
-.hmm-preset-btn.active {
-    background: rgba(124, 58, 237, .2);
-    border-color: #a855f7;
-    color: #f3e8ff
-}
-
-/* === Hair Presets END === */
-
-/* === 幻想警告橫幅 === */
-/* === Fantasy Banner START === */
-.hmm-fantasy-banner {
-    display: none;
-    align-items: center;
-    gap: 8px;
-    margin: 8px 20px;
-    padding: 8px 14px;
-    border-radius: 8px;
-    background: linear-gradient(135deg, rgba(251, 191, 36, .1), rgba(245, 158, 11, .05));
-    border: 1px solid rgba(251, 191, 36, .25);
-    font-size: .73rem;
-    color: #fbbf24
-}
-
-.hmm-fantasy-banner.show {
-    display: flex
-}
-
-.hmm-fantasy-banner .icon {
-    font-size: 1.2rem
-}
-
-/* === Fantasy Banner END === */
