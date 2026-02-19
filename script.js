@@ -2,7 +2,7 @@
     // --- Data ---
 
     // ============================================
-    // v6.1 模組化匯入 — 從 window.PromptGen 讀取
+    // v7.4.1 模組化匯入 — 從 window.PromptGen 讀取
     // ============================================
     const Data = window.PromptGen.Data;
     const {
@@ -1141,9 +1141,14 @@
                     summaryBar.className = 'body-advanced-summary';
                     const summaryText = document.createElement('span');
                     const lvlStr = EXPR_DATA.INTENSITY[ea.intensity || 4].zh;
-                    const efxCount = ea.effects ? ea.effects.length : 0;
                     let detailText = `${ea.expression.label} (${lvlStr})`;
-                    if (efxCount > 0) detailText += ` +${efxCount}特效`;
+                    if (ea.effects && ea.effects.length > 0) {
+                        const efxNames = ea.effects.map(eid => {
+                            const ef = EXPR_DATA.EFFECTS.find(e => e.id === eid);
+                            return ef ? ef.label : eid;
+                        }).join('、');
+                        detailText += ` — ${efxNames}`;
+                    }
                     summaryText.innerHTML = `🔮 表情魔法啟用中：${detailText}`;
                     const editBtn = document.createElement('button');
                     editBtn.className = 'body-summary-action';

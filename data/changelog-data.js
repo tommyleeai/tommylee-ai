@@ -7,6 +7,15 @@ window.PromptGen.Changelog = (function () {
     // Changelog Data
     const changelog = [
         {
+            version: "v7.4.1",
+            date: "2026-02-19",
+            changes: [
+                "🔮 統一所有 Magic Modal 橫幅：表情/姿勢/服飾/頭飾/手持物全部統一為紫色橫幅 + 灰色 Grid 覆蓋",
+                "🔧 修復 expressionAdvanced/poseAdvanced localStorage 持久化 bug（頁面重載後橫幅消失）",
+                "📝 表情橫幅特效顯示改為列出具體名稱（如 💧 淚水、😰 汗珠），不再只顯示 +N特效"
+            ]
+        },
+        {
             version: "v7.4",
             date: "2026-02-19",
             changes: [
