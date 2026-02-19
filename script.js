@@ -59,7 +59,8 @@
         racePage: 1,  // v6.3 種族分頁當前頁碼
         jobPage: 1,    // v6.6 職業分頁
         hairstylePage: 1,  // v6.6 髮型分頁
-        bodyTypePage: 1    // v6.6 身材分頁
+        bodyTypePage: 1,   // v6.6 身材分頁
+        outfitPage: 1      // v6.8 服裝分頁
     };
 
     // All section IDs for iteration
@@ -696,6 +697,153 @@
                 data = state.gender === 'female' ? section.dataFemale : section.dataMale;
             }
 
+            // === v6.8 服裝 Magic Modal — outfit section 特殊處理 ===
+            if (section.id === 'outfit') {
+                // 高級魔法專用按鈕
+                const outfitMagicBtn = document.createElement('button');
+                outfitMagicBtn.className = 'race-magic-btn';
+                outfitMagicBtn.innerHTML = '<i class="fa-solid fa-wand-sparkles"></i> ' +
+                    (state.lang === 'zh' ? '🔮 高級魔法專用' : '🔮 Advanced Magic');
+                outfitMagicBtn.addEventListener('click', () => {
+                    openOutfitMagicModal();
+                });
+                const outfitCustomToggle = header.querySelector('.btn-custom-toggle');
+                const outfitBtnGroup = document.createElement('div');
+                outfitBtnGroup.className = 'section-header-buttons';
+                header.insertBefore(outfitBtnGroup, outfitCustomToggle);
+                outfitBtnGroup.appendChild(outfitMagicBtn);
+                outfitBtnGroup.appendChild(outfitCustomToggle);
+
+                // 已選服裝 badge
+                if (state.selections.outfit) {
+                    const outfitObj = OUTFITS.find(o => o.value === state.selections.outfit);
+                    if (outfitObj) {
+                        const badge = document.createElement('span');
+                        badge.className = 'selected-race-badge';
+                        badge.innerHTML = `✓ ${getOptionLabel(outfitObj)} <span class="badge-x" title="${state.lang === 'zh' ? '取消選擇' : 'Deselect'}">✕</span>`;
+                        badge.querySelector('.badge-x').addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            delete state.selections.outfit;
+                            renderTabContent();
+                            generatePrompt();
+                            saveState();
+                        });
+                        const titleEl = header.querySelector('.section-block-title');
+                        const titleWrapper = document.createElement('div');
+                        titleWrapper.className = 'section-title-with-badge';
+                        titleEl.parentNode.insertBefore(titleWrapper, titleEl);
+                        titleWrapper.appendChild(titleEl);
+                        titleWrapper.appendChild(badge);
+                    }
+                }
+
+                // 渲染分頁 grid
+                renderPaginatedGrid(sectionEl, section, OUTFITS, 'outfitPage');
+                tabContent.appendChild(sectionEl);
+
+                // Custom input
+                if (state.customInputVisible[section.id]) {
+                    const customRow = document.createElement('div');
+                    customRow.className = 'custom-input-row';
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.className = 'custom-section-input';
+                    input.placeholder = state.lang === 'zh' ? '輸入自訂值...' : 'Enter custom value...';
+                    input.value = state.customInputs[section.id] || '';
+                    input.addEventListener('input', (e) => {
+                        state.customInputs[section.id] = e.target.value.trim();
+                        generatePrompt();
+                    });
+                    customRow.appendChild(input);
+                    const clearBtn = document.createElement('button');
+                    clearBtn.className = 'btn-clear-custom';
+                    clearBtn.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+                    clearBtn.addEventListener('click', () => {
+                        state.customInputs[section.id] = '';
+                        state.customInputVisible[section.id] = false;
+                        renderTabContent();
+                        generatePrompt();
+                    });
+                    customRow.appendChild(clearBtn);
+                    sectionEl.appendChild(customRow);
+                }
+
+                tabContent.appendChild(sectionEl);
+                return; // outfit section 處理完畢
+            }
+
+            // === v6.8 眼色合併：跳過 eyeColorRight，由 eyeColorLeft 一併處理 ===
+            if (section.id === 'eyeColorRight') return;
+
+            // === v6.8 眼色合併渲染 ===
+            if (section.id === 'eyeColorLeft') {
+                // 改標題為「眼色」
+                const eyeTitle = header.querySelector('.section-block-title');
+                eyeTitle.textContent = state.lang === 'zh' ? '眼色' : 'Eye Color';
+
+                const dualRow = document.createElement('div');
+                dualRow.className = 'eye-dual-row';
+
+                // 取得 eyeColorRight section 定義
+                const rightSection = sections.find(s => s.id === 'eyeColorRight');
+
+                // 左眼
+                const leftHalf = document.createElement('div');
+                leftHalf.className = 'eye-half';
+                const leftTitle = document.createElement('div');
+                leftTitle.className = 'eye-half-title';
+                leftTitle.innerHTML = `👁 ${state.lang === 'zh' ? '左眼' : 'Left'}`;
+                leftHalf.appendChild(leftTitle);
+                renderEyeColors(leftHalf, section, section.data);
+
+                // 右眼
+                const rightHalf = document.createElement('div');
+                rightHalf.className = 'eye-half';
+                const rightTitle = document.createElement('div');
+                rightTitle.className = 'eye-half-title';
+                rightTitle.innerHTML = `👁 ${state.lang === 'zh' ? '右眼' : 'Right'}`;
+                rightHalf.appendChild(rightTitle);
+                if (rightSection) {
+                    renderEyeColors(rightHalf, rightSection, rightSection.data);
+                }
+
+                dualRow.appendChild(leftHalf);
+                dualRow.appendChild(rightHalf);
+                sectionEl.appendChild(dualRow);
+
+                tabContent.appendChild(sectionEl);
+
+                // Custom input（左眼）
+                if (state.customInputVisible[section.id]) {
+                    const customRow = document.createElement('div');
+                    customRow.className = 'custom-input-row';
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.className = 'custom-section-input';
+                    input.placeholder = state.lang === 'zh' ? '輸入自訂值...' : 'Enter custom value...';
+                    input.value = state.customInputs[section.id] || '';
+                    input.addEventListener('input', (e) => {
+                        state.customInputs[section.id] = e.target.value.trim();
+                        generatePrompt();
+                    });
+                    customRow.appendChild(input);
+                    const clearBtn = document.createElement('button');
+                    clearBtn.className = 'btn-clear-custom';
+                    clearBtn.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+                    clearBtn.addEventListener('click', () => {
+                        state.customInputs[section.id] = '';
+                        state.customInputVisible[section.id] = false;
+                        renderTabContent();
+                        generatePrompt();
+                    });
+                    customRow.appendChild(clearBtn);
+                    sectionEl.appendChild(customRow);
+                }
+
+                tabContent.appendChild(sectionEl);
+                return; // 眼色 section 處理完畢
+            }
+
             // Render options based on type
             if (section.type === 'color') {
                 renderColorSwatches(sectionEl, section, data);
@@ -765,6 +913,13 @@
     // ============================================
     function openHairMagicModal() {
         window.PromptGen.HairMagicModal.openHairMagicModal();
+    }
+
+    // ============================================
+    // Outfit Magic Modal — 由 modules/outfit-magic-modal.js 提供
+    // ============================================
+    function openOutfitMagicModal() {
+        window.PromptGen.OutfitMagicModal.openOutfitMagicModal();
     }
 
     // ============================================
@@ -1340,6 +1495,9 @@
     });
     window.PromptGen.HairMagicModal.setup({
         state, sfx, HAIR_MAGIC_DATA, generatePrompt, saveState, renderTabContent
+    });
+    window.PromptGen.OutfitMagicModal.setup({
+        state, sfx, OUTFITS, selectOption, generatePrompt, saveState, renderTabContent
     });
     window.PromptGen.ConflictSystem.setup({
         state, sfx, CONFLICT_RULES, generatePrompt, saveState, selectOption,

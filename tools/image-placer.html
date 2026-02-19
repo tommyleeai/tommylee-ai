@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🖼️ Preview Image Placer Tool</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* === 全域重置 & 變數 === */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --bg: #0f0f17;
+            --surface: #1a1a2e;
+            --surface2: #222240;
+            --border: #2d2d50;
+            --text: #e8e8f0;
+            --text-dim: #8888aa;
+            --accent: #7c5cff;
+            --accent-glow: rgba(124,92,255,0.3);
+            --success: #22c55e;
+            --success-glow: rgba(34,197,94,0.2);
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --radius: 12px;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.5;
+        }
+
+        /* === 頂部工具列 === */
+        .toolbar {
+            position: sticky; top: 0; z-index: 100;
+            background: rgba(15,15,23,0.95);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            padding: 12px 24px;
+            display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+        }
+        .toolbar h1 {
+            font-size: 18px; font-weight: 700;
+            background: linear-gradient(135deg, #7c5cff, #a78bfa);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            white-space: nowrap;
+        }
+        .toolbar select {
+            background: var(--surface2); color: var(--text);
+            border: 1px solid var(--border); border-radius: 8px;
+            padding: 8px 12px; font-size: 14px; font-family: inherit;
+            cursor: pointer; min-width: 180px;
+        }
+        .toolbar select:focus { outline: none; border-color: var(--accent); }
+        .toolbar .stats {
+            margin-left: auto; font-size: 13px; color: var(--text-dim);
+            display: flex; gap: 16px; align-items: center;
+        }
+        .toolbar .stats .done { color: var(--success); font-weight: 600; }
+        .toolbar .stats .missing { color: var(--warning); font-weight: 600; }
+
+        /* === 進度條 === */
+        .progress-bar-wrap {
+            width: 100%; height: 6px; background: var(--surface2);
+            border-radius: 3px; overflow: hidden;
+        }
+        .progress-bar-fill {
+            height: 100%; background: linear-gradient(90deg, var(--accent), var(--success));
+            border-radius: 3px; transition: width 0.4s ease;
+        }
+
+        /* === 主區域 === */
+        .main { display: flex; gap: 0; height: calc(100vh - 80px); }
+
+        /* === 左側選項列表 === */
+        .item-list {
+            width: 340px; min-width: 300px;
+            overflow-y: auto; background: var(--surface);
+            border-right: 1px solid var(--border);
+            padding: 8px;
+        }
+        .item-list::-webkit-scrollbar { width: 6px; }
+        .item-list::-webkit-scrollbar-track { background: transparent; }
+        .item-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+        .search-box {
+            position: sticky; top: 0; z-index: 10;
+            margin-bottom: 8px;
+        }
+        .search-box input {
+            width: 100%; padding: 10px 12px; border-radius: 8px;
+            background: var(--surface2); color: var(--text);
+            border: 1px solid var(--border); font-size: 14px; font-family: inherit;
+        }
+        .search-box input:focus { outline: none; border-color: var(--accent); }
+        .search-box input::placeholder { color: var(--text-dim); }
+
+        .item-card {
+            display: flex; align-items: center; gap: 10px;
+            padding: 10px 12px; border-radius: 8px;
+            cursor: pointer; transition: all 0.15s;
+            border: 1px solid transparent;
+            margin-bottom: 2px;
+        }
+        .item-card:hover { background: var(--surface2); }
+        .item-card.active {
+            background: rgba(124,92,255,0.12);
+            border-color: var(--accent);
+        }
+        .item-card.has-image { opacity: 0.55; }
+        .item-card.has-image .item-status { color: var(--success); }
+
+        .item-thumb {
+            width: 40px; height: 40px; border-radius: 6px;
+            background: var(--surface2); flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 12px; color: var(--text-dim);
+            overflow: hidden;
+        }
+        .item-thumb img { width: 100%; height: 100%; object-fit: cover; }
+        .item-info { flex: 1; min-width: 0; }
+        .item-label { font-size: 14px; font-weight: 500; }
+        .item-en { font-size: 12px; color: var(--text-dim); }
+        .item-status { font-size: 16px; flex-shrink: 0; }
+
+        /* === 右側工作區 === */
+        .workspace {
+            flex: 1; display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            padding: 32px; position: relative;
+        }
+
+        /* 空狀態 */
+        .empty-state {
+            text-align: center; color: var(--text-dim);
+            font-size: 16px;
+        }
+        .empty-state .big-icon { font-size: 64px; margin-bottom: 16px; display: block; }
+
+        /* 選中項目的詳情 */
+        .detail-panel {
+            width: 100%; max-width: 680px;
+            display: none; flex-direction: column; align-items: center; gap: 20px;
+        }
+        .detail-panel.visible { display: flex; }
+
+        .detail-header {
+            text-align: center;
+        }
+        .detail-header h2 { font-size: 24px; font-weight: 700; margin-bottom: 4px; }
+        .detail-header .detail-en { font-size: 14px; color: var(--text-dim); }
+        .detail-header .detail-filename {
+            margin-top: 8px; font-size: 13px;
+            background: var(--surface2); padding: 6px 14px; border-radius: 6px;
+            font-family: 'Consolas', monospace; color: var(--accent);
+            display: inline-block; cursor: pointer;
+        }
+        .detail-header .detail-filename:hover { background: var(--border); }
+        .detail-header .detail-filename::after { content: ' 📋'; font-size: 11px; }
+
+        /* 拖拽/貼上區域 */
+        .drop-zone {
+            width: 100%; max-width: 480px; aspect-ratio: 1/1;
+            border: 2px dashed var(--border); border-radius: var(--radius);
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center; gap: 12px;
+            transition: all 0.2s; cursor: pointer;
+            position: relative; overflow: hidden;
+            background: var(--surface);
+        }
+        .drop-zone:hover, .drop-zone.dragover {
+            border-color: var(--accent);
+            background: rgba(124,92,255,0.05);
+            box-shadow: 0 0 30px var(--accent-glow);
+        }
+        .drop-zone .drop-icon { font-size: 48px; }
+        .drop-zone .drop-text { font-size: 14px; color: var(--text-dim); text-align: center; }
+        .drop-zone .drop-text kbd {
+            background: var(--surface2); padding: 2px 8px; border-radius: 4px;
+            font-family: inherit; font-size: 13px; border: 1px solid var(--border);
+        }
+        .drop-zone.has-image { border-style: solid; border-color: var(--success); }
+        .drop-zone .preview-img {
+            position: absolute; inset: 0; width: 100%; height: 100%;
+            object-fit: contain; display: none;
+        }
+        .drop-zone.has-image .preview-img { display: block; }
+        .drop-zone.has-image .drop-icon,
+        .drop-zone.has-image .drop-text { display: none; }
+
+        /* 操作按鈕 */
+        .actions {
+            display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;
+        }
+        .btn {
+            padding: 10px 24px; border-radius: 8px; border: none;
+            font-family: inherit; font-size: 14px; font-weight: 600;
+            cursor: pointer; transition: all 0.15s;
+            display: flex; align-items: center; gap: 6px;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #7c5cff, #6a4ee0);
+            color: white;
+        }
+        .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 16px var(--accent-glow); }
+        .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
+        .btn-success {
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            color: white;
+        }
+        .btn-success:hover { transform: translateY(-1px); box-shadow: 0 4px 16px var(--success-glow); }
+        .btn-success:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
+        .btn-outline {
+            background: transparent; border: 1px solid var(--border); color: var(--text);
+        }
+        .btn-outline:hover { background: var(--surface2); }
+
+        /* GROK 提示詞面板 */
+        .prompt-panel {
+            width: 100%; max-width: 480px;
+            background: var(--surface2); border-radius: var(--radius);
+            padding: 14px; font-size: 13px;
+        }
+        .prompt-panel .prompt-title {
+            font-size: 12px; color: var(--text-dim); margin-bottom: 6px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .prompt-panel .prompt-text {
+            color: var(--text); font-family: 'Consolas', monospace;
+            word-break: break-all; line-height: 1.6;
+            user-select: all;
+        }
+        .prompt-panel .copy-btn {
+            background: none; border: none; color: var(--accent);
+            cursor: pointer; font-size: 12px; font-family: inherit;
+        }
+        .prompt-panel .copy-btn:hover { text-decoration: underline; }
+
+        /* 批量模式指示 */
+        .batch-indicator {
+            position: fixed; bottom: 24px; right: 24px;
+            background: var(--accent); color: white;
+            padding: 10px 20px; border-radius: 24px;
+            font-size: 13px; font-weight: 600;
+            box-shadow: 0 4px 20px var(--accent-glow);
+            display: none; align-items: center; gap: 8px;
+            z-index: 200;
+        }
+        .batch-indicator.visible { display: flex; }
+
+        /* Toast 通知 */
+        .toast {
+            position: fixed; top: 80px; right: 24px; z-index: 300;
+            background: var(--surface2); border: 1px solid var(--border);
+            border-radius: 8px; padding: 12px 20px;
+            font-size: 13px; box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            transform: translateX(120%); transition: transform 0.3s ease;
+        }
+        .toast.show { transform: translateX(0); }
+        .toast.success { border-color: var(--success); }
+        .toast.error { border-color: var(--danger); }
+
+        /* 篩選按鈕組 */
+        .filter-tabs {
+            display: flex; gap: 4px; flex-wrap: wrap;
+        }
+        .filter-tab {
+            padding: 5px 12px; border-radius: 6px; border: none;
+            background: var(--surface2); color: var(--text-dim);
+            font-size: 12px; font-family: inherit; cursor: pointer;
+            transition: all 0.15s;
+        }
+        .filter-tab:hover { color: var(--text); }
+        .filter-tab.active { background: var(--accent); color: white; }
+
+        /* 底部操作列 */
+        .bottom-bar {
+            position: sticky; bottom: 0;
+            background: rgba(15,15,23,0.95); backdrop-filter: blur(12px);
+            border-top: 1px solid var(--border);
+            padding: 10px 24px;
+            display: flex; align-items: center; gap: 16px;
+        }
+        .batch-toggle {
+            display: flex; align-items: center; gap: 8px;
+            font-size: 13px; color: var(--text-dim);
+        }
+        .batch-toggle input[type="checkbox"] {
+            accent-color: var(--accent);
+            width: 16px; height: 16px;
+        }
+
+        /* 已有圖片的預覽 */
+        .existing-preview {
+            width: 100%; max-width: 480px; aspect-ratio: 1/1;
+            border-radius: var(--radius); overflow: hidden;
+            border: 2px solid var(--success);
+            position: relative;
+        }
+        .existing-preview img {
+            width: 100%; height: 100%; object-fit: contain;
+            background: var(--surface);
+        }
+        .existing-badge {
+            position: absolute; top: 12px; right: 12px;
+            background: var(--success); color: white;
+            padding: 4px 12px; border-radius: 16px;
+            font-size: 12px; font-weight: 600;
+        }
+        .replace-hint {
+            font-size: 12px; color: var(--text-dim); text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<!-- 頂部工具列 -->
+<div class="toolbar">
+    <h1>🖼️ Image Placer</h1>
+    <select id="categorySelect">
+        <option value="">— 選擇類別 —</option>
+    </select>
+    <div class="filter-tabs" id="filterTabs">
+        <button class="filter-tab active" data-filter="all">全部</button>
+        <button class="filter-tab" data-filter="missing">❌ 缺圖</button>
+        <button class="filter-tab" data-filter="done">✅ 已有</button>
+    </div>
+    <div class="stats">
+        <span>✅ 已完成: <span class="done" id="doneCount">0</span></span>
+        <span>❌ 缺圖: <span class="missing" id="missingCount">0</span></span>
+        <span id="totalCount"></span>
+    </div>
+</div>
+<div class="progress-bar-wrap"><div class="progress-bar-fill" id="progressBar" style="width:0%"></div></div>
+
+<!-- 主區域 -->
+<div class="main">
+    <!-- 左側選項列表 -->
+    <div class="item-list" id="itemList">
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="🔍 搜尋選項..." />
+        </div>
+        <div id="itemContainer"></div>
+    </div>
+
+    <!-- 右側工作區 -->
+    <div class="workspace" id="workspace">
+        <div class="empty-state" id="emptyState">
+            <span class="big-icon">👈</span>
+            請先選擇一個類別，<br>然後點擊左側的選項
+        </div>
+        <div class="detail-panel" id="detailPanel">
+            <div class="detail-header">
+                <h2 id="detailLabel"></h2>
+                <div class="detail-en" id="detailEn"></div>
+                <div class="detail-filename" id="detailFilename" title="點擊複製檔名"></div>
+            </div>
+
+            <!-- GROK 提示詞 -->
+            <div class="prompt-panel">
+                <div class="prompt-title">
+                    <span>📝 GROK 生圖提示詞</span>
+                    <button class="copy-btn" id="copyPromptBtn">複製提示詞</button>
+                </div>
+                <div class="prompt-text" id="promptText"></div>
+            </div>
+
+            <!-- 拖拽/貼上區域 或 已有圖片 -->
+            <div id="imageArea"></div>
+
+            <!-- 操作按鈕 -->
+            <div class="actions" id="actionButtons"></div>
+        </div>
+    </div>
+</div>
+
+<!-- 底部操作列 -->
+<div class="bottom-bar">
+    <label class="batch-toggle">
+        <input type="checkbox" id="batchMode" />
+        ⚡ 批量模式（下載後自動跳到下一個缺圖項目）
+    </label>
+</div>
+
+<!-- Toast 通知 -->
+<div class="toast" id="toast"></div>
+
+<!-- 批量模式指示 -->
+<div class="batch-indicator" id="batchIndicator">⚡ 批量模式</div>
+
+<script>
+// ============================================
+// Image Placer Tool — 核心邏輯
+// ============================================
+
+// === 資料定義 (直接嵌入，避免跨域問題) ===
+// 我們需要從 options-data.js 讀取，但由於是本地檔案，直接用 script 標籤載入
+
+let DATA = null;
+
+// 類別映射: categoryKey → { prefix, data, label }
+const CATEGORIES = {};
+
+function initCategories() {
+    const D = DATA;
+    const cats = {
+        // 需要預覽圖的主要類別
+        race:             { prefix: 'race',      data: D.RACES,             label: '🧝 種族 Race' },
+        job:              { prefix: 'job',        data: D.JOBS,              label: '⚔️ 職業 Job' },
+        hairstyle_female: { prefix: 'hair',       data: D.HAIRSTYLES_FEMALE, label: '💇‍♀️ 女性髮型' },
+        hairstyle_male:   { prefix: 'hair_m',     data: D.HAIRSTYLES_MALE,   label: '💇‍♂️ 男性髮型' },
+        outfit:           { prefix: 'clothing',   data: D.OUTFITS,           label: '👗 服裝 Outfit' },
+        lighting:         { prefix: 'lighting',   data: D.LIGHTING,          label: '💡 光影 Lighting' },
+        scene:            { prefix: 'scene',      data: D.SCENES,            label: '🏞️ 場景 Scene' },
+        expression:       { prefix: 'expr',       data: D.EXPRESSIONS,       label: '😀 表情 Expression' },
+        mood:             { prefix: 'mood',       data: D.MOODS,             label: '💭 心情 Mood' },
+        anime_style:      { prefix: 'anime',      data: D.ANIME_STYLES,      label: '🎨 動漫風格' },
+        art_style:        { prefix: 'art',        data: D.ART_STYLES,        label: '🖌️ 藝術風格' },
+        body_female:      { prefix: 'body_f',     data: D.BODY_TYPES_FEMALE, label: '🚺 女性體型' },
+        body_male:        { prefix: 'body_m',     data: D.BODY_TYPES_MALE,   label: '🚹 男性體型' },
+    };
+    Object.assign(CATEGORIES, cats);
+}
+
+// === 工具函數 ===
+function toSnakeCase(str) {
+    return str
+        .toLowerCase()
+        .replace(/['']/g, '')
+        .replace(/[^a-z0-9]+/g, '_')
+        .replace(/^_|_$/g, '');
+}
+
+function getFilename(prefix, en) {
+    return `${prefix}_${toSnakeCase(en)}.png`;
+}
+
+function getImagePath(prefix, en) {
+    return `assets/previews/${getFilename(prefix, en)}`;
+}
+
+// 生成 GROK 提示詞
+function generatePrompt(item, categoryKey) {
+    const base = 'A single character preview icon, clean white background, facing forward, upper body portrait, anime style, high quality, detailed';
+    const cat = CATEGORIES[categoryKey];
+    
+    if (categoryKey === 'race') {
+        return `${base}, ${item.value}, fantasy character design`;
+    } else if (categoryKey === 'job') {
+        return `${base}, ${item.value}, professional outfit and equipment`;
+    } else if (categoryKey.startsWith('hairstyle')) {
+        return `${base}, beautiful girl with ${item.value}, focus on hairstyle detail`;
+    } else if (categoryKey === 'outfit') {
+        return `${base}, beautiful girl wearing ${item.value}, full outfit visible`;
+    } else if (categoryKey === 'lighting') {
+        return `${base}, beautiful portrait with ${item.value}, dramatic lighting demonstration`;
+    } else if (categoryKey === 'scene') {
+        return `Background scene illustration, no characters, ${item.value}, wide angle, detailed environment`;
+    } else if (categoryKey === 'expression' || categoryKey === 'mood') {
+        return `${base}, beautiful girl face, ${item.value}, focus on facial expression`;
+    } else if (categoryKey.startsWith('anime_style') || categoryKey.startsWith('art_style')) {
+        return `Character illustration sample, ${item.value}, demonstration of art style`;
+    } else if (categoryKey.startsWith('body')) {
+        return `${base}, ${item.value}, body type reference`;
+    }
+    return `${base}, ${item.value}`;
+}
+
+// === 狀態管理 ===
+let currentCategory = '';
+let currentFilter = 'all';
+let currentSearch = '';
+let currentItem = null;
+let currentImageBlob = null;
+
+// === DOM 元素 ===
+const $ = id => document.getElementById(id);
+const categorySelect = $('categorySelect');
+const itemContainer = $('itemContainer');
+const searchInput = $('searchInput');
+const emptyState = $('emptyState');
+const detailPanel = $('detailPanel');
+const progressBar = $('progressBar');
+const doneCount = $('doneCount');
+const missingCount = $('missingCount');
+const totalCount = $('totalCount');
+const toast = $('toast');
+const batchMode = $('batchMode');
+const batchIndicator = $('batchIndicator');
+
+// === Toast 系統 ===
+let toastTimer = null;
+function showToast(msg, type = '') {
+    clearTimeout(toastTimer);
+    toast.textContent = msg;
+    toast.className = `toast ${type} show`;
+    toastTimer = setTimeout(() => toast.classList.remove('show'), 2500);
+}
+
+// === 初始化類別下拉選單 ===
+function initCategorySelect() {
+    for (const [key, cat] of Object.entries(CATEGORIES)) {
+        const opt = document.createElement('option');
+        opt.value = key;
+        opt.textContent = `${cat.label} (${cat.data.length})`;
+        categorySelect.appendChild(opt);
+    }
+}
+
+// === 渲染選項列表 ===
+function renderItems() {
+    if (!currentCategory) {
+        itemContainer.innerHTML = '<div style="text-align:center;color:var(--text-dim);padding:40px;">請先選擇類別</div>';
+        updateStats(0, 0, 0);
+        return;
+    }
+    const cat = CATEGORIES[currentCategory];
+    const items = cat.data;
+    let doneN = 0, missingN = 0;
+
+    const fragment = document.createDocumentFragment();
+
+    items.forEach((item, idx) => {
+        const hasImage = !!item.image;
+        if (hasImage) doneN++; else missingN++;
+
+        // 篩選
+        if (currentFilter === 'missing' && hasImage) return;
+        if (currentFilter === 'done' && !hasImage) return;
+
+        // 搜尋
+        if (currentSearch) {
+            const q = currentSearch.toLowerCase();
+            if (!item.label.toLowerCase().includes(q) && 
+                !item.en.toLowerCase().includes(q) &&
+                !item.value.toLowerCase().includes(q)) return;
+        }
+
+        const card = document.createElement('div');
+        card.className = `item-card ${hasImage ? 'has-image' : ''} ${currentItem === idx ? 'active' : ''}`;
+        card.dataset.idx = idx;
+        
+        const expectedPath = hasImage ? item.image : getImagePath(cat.prefix, item.en);
+        
+        card.innerHTML = `
+            <div class="item-thumb">${hasImage ? `<img src="../${item.image}" onerror="this.style.display='none';this.parentElement.textContent='?'" />` : '?'}</div>
+            <div class="item-info">
+                <div class="item-label">${item.label}</div>
+                <div class="item-en">${item.en}</div>
+            </div>
+            <div class="item-status">${hasImage ? '✅' : '❌'}</div>
+        `;
+
+        card.addEventListener('click', () => selectItem(idx));
+        fragment.appendChild(card);
+    });
+
+    itemContainer.innerHTML = '';
+    itemContainer.appendChild(fragment);
+    updateStats(doneN, missingN, items.length);
+}
+
+function updateStats(done, missing, total) {
+    doneCount.textContent = done;
+    missingCount.textContent = missing;
+    totalCount.textContent = `(共 ${total} 項)`;
+    const pct = total > 0 ? (done / total * 100) : 0;
+    progressBar.style.width = pct + '%';
+}
+
+// === 選擇項目 ===
+function selectItem(idx) {
+    const cat = CATEGORIES[currentCategory];
+    const item = cat.data[idx];
+    currentItem = idx;
+    currentImageBlob = null;
+
+    // 更新左側高亮
+    document.querySelectorAll('.item-card').forEach(c => c.classList.remove('active'));
+    const activeCard = document.querySelector(`.item-card[data-idx="${idx}"]`);
+    if (activeCard) activeCard.classList.add('active');
+
+    // 顯示詳情面板
+    emptyState.style.display = 'none';
+    detailPanel.classList.add('visible');
+
+    const filename = getFilename(cat.prefix, item.en);
+    const filepath = getImagePath(cat.prefix, item.en);
+
+    $('detailLabel').textContent = item.label;
+    $('detailEn').textContent = item.en + '  →  ' + item.value;
+    $('detailFilename').textContent = filename;
+    $('detailFilename').dataset.filename = filename;
+    $('detailFilename').onclick = () => {
+        navigator.clipboard.writeText(filename);
+        showToast('✅ 檔名已複製!', 'success');
+    };
+
+    // 提示詞
+    const prompt = generatePrompt(item, currentCategory);
+    $('promptText').textContent = prompt;
+    $('copyPromptBtn').onclick = () => {
+        navigator.clipboard.writeText(prompt);
+        showToast('✅ 提示詞已複製到剪貼簿!', 'success');
+    };
+
+    // 圖片區域
+    const imageArea = $('imageArea');
+    const hasImage = !!item.image;
+
+    if (hasImage) {
+        imageArea.innerHTML = `
+            <div class="existing-preview">
+                <img src="../${item.image}" alt="${item.en}" />
+                <span class="existing-badge">✅ 已有圖片</span>
+            </div>
+            <div class="replace-hint">如需替換，可在下方貼上新圖片</div>
+            <div class="drop-zone" id="dropZone" style="max-height:200px;aspect-ratio:auto;">
+                <span class="drop-icon" style="font-size:28px;">📋</span>
+                <span class="drop-text" style="font-size:12px;"><kbd>Ctrl+V</kbd> 貼上新圖片替換</span>
+                <img class="preview-img" id="previewImg" />
+            </div>
+        `;
+    } else {
+        imageArea.innerHTML = `
+            <div class="drop-zone" id="dropZone">
+                <span class="drop-icon">📋</span>
+                <div class="drop-text">
+                    <kbd>Ctrl+V</kbd> 貼上圖片<br>
+                    或拖拽圖片到這裡
+                </div>
+                <img class="preview-img" id="previewImg" />
+            </div>
+        `;
+    }
+
+    // 按鈕
+    const btns = $('actionButtons');
+    btns.innerHTML = `
+        <button class="btn btn-primary" id="downloadBtn" disabled>
+            💾 下載為 ${filename}
+        </button>
+        <button class="btn btn-outline" id="clearBtn" style="display:none;">
+            🗑️ 清除
+        </button>
+    `;
+
+    // 綁定事件
+    setupDropZone();
+    $('downloadBtn').onclick = downloadImage;
+    $('clearBtn').onclick = clearImage;
+}
+
+// === 拖拽/貼上 ===
+function setupDropZone() {
+    const dz = $('dropZone');
+    if (!dz) return;
+
+    dz.addEventListener('dragover', e => {
+        e.preventDefault();
+        dz.classList.add('dragover');
+    });
+    dz.addEventListener('dragleave', () => dz.classList.remove('dragover'));
+    dz.addEventListener('drop', e => {
+        e.preventDefault();
+        dz.classList.remove('dragover');
+        const file = e.dataTransfer.files[0];
+        if (file && file.type.startsWith('image/')) {
+            loadImage(file);
+        }
+    });
+    dz.addEventListener('click', () => {
+        // 點擊也可以選擇檔案
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'image/*';
+        input.onchange = e => {
+            if (e.target.files[0]) loadImage(e.target.files[0]);
+        };
+        input.click();
+    });
+}
+
+// 全域 Ctrl+V 監聽
+document.addEventListener('paste', e => {
+    if (currentItem === null) return;
+    const items = e.clipboardData.items;
+    for (const item of items) {
+        if (item.type.startsWith('image/')) {
+            e.preventDefault();
+            const blob = item.getAsFile();
+            loadImage(blob);
+            return;
+        }
+    }
+});
+
+function loadImage(file) {
+    const reader = new FileReader();
+    reader.onload = e => {
+        const img = $('previewImg');
+        const dz = $('dropZone');
+        if (!img || !dz) return;
+        
+        img.src = e.target.result;
+        dz.classList.add('has-image');
+        
+        // 轉換為 PNG blob
+        const canvas = document.createElement('canvas');
+        const tempImg = new Image();
+        tempImg.onload = () => {
+            canvas.width = tempImg.naturalWidth;
+            canvas.height = tempImg.naturalHeight;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(tempImg, 0, 0);
+            canvas.toBlob(blob => {
+                currentImageBlob = blob;
+                $('downloadBtn').disabled = false;
+                $('clearBtn').style.display = '';
+                showToast('✅ 圖片已載入！按「下載」保存', 'success');
+            }, 'image/png');
+        };
+        tempImg.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+}
+
+function clearImage() {
+    currentImageBlob = null;
+    const dz = $('dropZone');
+    if (dz) {
+        dz.classList.remove('has-image');
+        const img = $('previewImg');
+        if (img) img.src = '';
+    }
+    $('downloadBtn').disabled = true;
+    $('clearBtn').style.display = 'none';
+}
+
+// === 下載圖片 ===
+function downloadImage() {
+    if (!currentImageBlob || currentItem === null) return;
+    const cat = CATEGORIES[currentCategory];
+    const item = cat.data[currentItem];
+    const filename = getFilename(cat.prefix, item.en);
+
+    const url = URL.createObjectURL(currentImageBlob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    showToast(`✅ 已下載: ${filename}`, 'success');
+
+    // 批量模式：自動跳到下一個缺圖項目
+    if (batchMode.checked) {
+        setTimeout(() => jumpToNextMissing(), 500);
+    }
+}
+
+function jumpToNextMissing() {
+    const cat = CATEGORIES[currentCategory];
+    const items = cat.data;
+    for (let i = currentItem + 1; i < items.length; i++) {
+        if (!items[i].image) {
+            selectItem(i);
+            // 滾動到可見
+            const card = document.querySelector(`.item-card[data-idx="${i}"]`);
+            if (card) card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            return;
+        }
+    }
+    // 如果後面沒有了，從頭找
+    for (let i = 0; i < currentItem; i++) {
+        if (!items[i].image) {
+            selectItem(i);
+            const card = document.querySelector(`.item-card[data-idx="${i}"]`);
+            if (card) card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            return;
+        }
+    }
+    showToast('🎉 這個類別全部完成囉！', 'success');
+}
+
+// === 事件綁定 ===
+categorySelect.addEventListener('change', e => {
+    currentCategory = e.target.value;
+    currentItem = null;
+    currentImageBlob = null;
+    detailPanel.classList.remove('visible');
+    emptyState.style.display = '';
+    emptyState.innerHTML = '<span class="big-icon">👈</span>點擊左側的選項開始';
+    renderItems();
+});
+
+searchInput.addEventListener('input', e => {
+    currentSearch = e.target.value;
+    renderItems();
+});
+
+document.querySelectorAll('.filter-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+        document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        currentFilter = tab.dataset.filter;
+        renderItems();
+    });
+});
+
+batchMode.addEventListener('change', () => {
+    batchIndicator.classList.toggle('visible', batchMode.checked);
+});
+
+// === 載入資料 ===
+const script = document.createElement('script');
+script.src = '../data/options-data.js';
+script.onload = () => {
+    DATA = window.PromptGen.Data;
+    initCategories();
+    initCategorySelect();
+    showToast('✅ 資料載入完成！選擇類別開始', 'success');
+};
+script.onerror = () => {
+    showToast('❌ 無法載入 options-data.js! 請確認檔案路徑', 'error');
+    document.body.innerHTML += '<div style="text-align:center;padding:40px;color:#ef4444;font-size:18px;">❌ 無法載入 data/options-data.js<br><br>請確認這個頁面在專案的 tools/ 目錄下開啟<br>且上層有 data/options-data.js 檔案</div>';
+};
+document.head.appendChild(script);
+</script>
+</body>
+</html>
