@@ -3532,10 +3532,7 @@ body.screen-shake {
 .eye-heterochromia-toggle {
     display: flex;
     align-items: center;
-    justify-content: flex-end;
-    gap: 10px;
-    margin-bottom: 12px;
-    padding: 6px 0;
+    gap: 8px;
 }
 
 .eye-toggle-label {
