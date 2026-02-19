@@ -266,9 +266,15 @@ window.PromptGen.PoseMagicModal = (function () {
             const chip = e.target.closest('.pmm-attr-chip');
             if (!chip) return;
             sfx.playClick();
-            selectedGravity = chip.dataset.gid;
+            // toggle：再次點擊已選中的項目 → 回到預設 neutral
+            if (selectedGravity === chip.dataset.gid) {
+                selectedGravity = 'neutral';
+            } else {
+                selectedGravity = chip.dataset.gid;
+            }
             document.querySelectorAll('#pmm-gravity-grid .pmm-attr-chip').forEach(c => c.classList.remove('active'));
-            chip.classList.add('active');
+            const activeChip = document.querySelector(`#pmm-gravity-grid .pmm-attr-chip[data-gid="${selectedGravity}"]`);
+            if (activeChip) activeChip.classList.add('active');
             updatePreview();
         });
 
@@ -277,9 +283,15 @@ window.PromptGen.PoseMagicModal = (function () {
             const chip = e.target.closest('.pmm-attr-chip');
             if (!chip) return;
             sfx.playClick();
-            selectedGaze = chip.dataset.gzid;
+            // toggle：再次點擊已選中的項目 → 回到預設 direct
+            if (selectedGaze === chip.dataset.gzid) {
+                selectedGaze = 'direct';
+            } else {
+                selectedGaze = chip.dataset.gzid;
+            }
             document.querySelectorAll('#pmm-gaze-grid .pmm-attr-chip').forEach(c => c.classList.remove('active'));
-            chip.classList.add('active');
+            const activeChip = document.querySelector(`#pmm-gaze-grid .pmm-attr-chip[data-gzid="${selectedGaze}"]`);
+            if (activeChip) activeChip.classList.add('active');
             updatePreview();
         });
 
