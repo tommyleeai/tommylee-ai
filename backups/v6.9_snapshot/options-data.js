@@ -1177,74 +1177,6 @@ window.PromptGen.Data = (function () {
         { label: '荷葉邊比基尼', en: 'Ruffle Bikini', value: 'ruffle bikini, frilly swimwear' }
     ];
 
-    const HEADWEAR = [
-        // ── 01 髮飾（9 件）──
-        { label: '髮夾', en: 'Hair Clip', value: 'hair clip, hair pin' },
-        { label: '蝴蝶結髮飾', en: 'Hair Bow', value: 'hair bow, ribbon bow in hair' },
-        { label: '髮圈', en: 'Scrunchie', value: 'scrunchie, hair tie' },
-        { label: '髮箍', en: 'Headband', value: 'headband' },
-        { label: '髮帶', en: 'Hair Band', value: 'hair band, fabric hair band' },
-        { label: '絲帶', en: 'Hair Ribbon', value: 'hair ribbon, silk ribbon in hair' },
-        { label: '皇冠小飾', en: 'Mini Tiara', value: 'mini tiara, small crown hair accessory' },
-        { label: '花朵髮飾', en: 'Flower Hair Accessory', value: 'flower hair accessory, floral hair ornament' },
-        { label: '珍珠髮飾', en: 'Pearl Hair Pin', value: 'pearl hair pin, pearl hair ornament' },
-        // ── 02 穿刺飾品（5 件）──
-        { label: '耳環', en: 'Earrings', value: 'earrings' },
-        { label: '耳骨環', en: 'Ear Cuff', value: 'ear cuff, cartilage earring' },
-        { label: '鼻環', en: 'Nose Ring', value: 'nose ring, nose piercing' },
-        { label: '唇環', en: 'Lip Ring', value: 'lip ring, lip piercing' },
-        { label: '眉環', en: 'Eyebrow Piercing', value: 'eyebrow piercing, eyebrow ring' },
-        // ── 03 帽子（8 件）──
-        { label: '鴨舌帽', en: 'Baseball Cap', value: 'baseball cap' },
-        { label: '貝雷帽', en: 'Beret', value: 'beret' },
-        { label: '巫師帽', en: 'Witch Hat', value: 'witch hat, wizard hat' },
-        { label: '草帽', en: 'Straw Hat', value: 'straw hat, sun hat' },
-        { label: '軍帽', en: 'Military Cap', value: 'military cap, officer cap' },
-        { label: '漁夫帽', en: 'Bucket Hat', value: 'bucket hat, fisherman hat' },
-        { label: '高禮帽', en: 'Top Hat', value: 'top hat, formal hat' },
-        { label: '毛帽', en: 'Beanie', value: 'beanie, knit cap, winter hat' },
-        // ── 04 圍巾與頸部（5 件）──
-        { label: '圍巾', en: 'Scarf', value: 'scarf, winter scarf' },
-        { label: '領巾', en: 'Neckerchief', value: 'neckerchief, neck scarf' },
-        { label: '披肩', en: 'Shawl', value: 'shawl, shoulder wrap' },
-        { label: '斗篷帽', en: 'Hooded Cloak', value: 'hooded cloak, cloak with hood' },
-        { label: '頭巾', en: 'Bandana', value: 'bandana, head bandana' },
-        // ── 05 面部覆蓋（6 件）──
-        { label: '面具', en: 'Mask', value: 'mask, masquerade mask' },
-        { label: '半面罩', en: 'Half Mask', value: 'half mask, half face mask' },
-        { label: '眼罩', en: 'Eye Patch', value: 'eye patch, eyepatch' },
-        { label: '面紗', en: 'Veil', value: 'veil, face veil' },
-        { label: '口罩', en: 'Face Mask', value: 'face mask, surgical mask' },
-        { label: '防毒面具', en: 'Gas Mask', value: 'gas mask, respirator mask' },
-        // ── 06 頭部裝置（5 件）──
-        { label: 'VR眼鏡', en: 'VR Headset', value: 'VR headset, virtual reality goggles' },
-        { label: '戰術耳機', en: 'Tactical Headset', value: 'tactical headset, military headphones' },
-        { label: '通訊耳機', en: 'Comm Earpiece', value: 'communication earpiece, radio headset' },
-        { label: '賽博義眼', en: 'Cyber Eye', value: 'cybernetic eye, cyber eye implant' },
-        { label: '護目鏡', en: 'Goggles', value: 'goggles, aviator goggles' },
-        // ── 07 動物 / 異種附加（7 件）──
-        { label: '貓耳', en: 'Cat Ears', value: 'cat ears, nekomimi' },
-        { label: '狐耳', en: 'Fox Ears', value: 'fox ears, kitsune ears' },
-        { label: '兔耳', en: 'Bunny Ears', value: 'bunny ears, rabbit ears headband' },
-        { label: '龍角', en: 'Dragon Horns', value: 'dragon horns' },
-        { label: '惡魔角', en: 'Demon Horns', value: 'demon horns, devil horns' },
-        { label: '天使光環', en: 'Angel Halo', value: 'angel halo, glowing halo above head' },
-        { label: '鹿角', en: 'Antlers', value: 'antlers, deer antlers' },
-        // ── 08 宗教 / 儀式物（6 件）──
-        { label: '王冠', en: 'Crown', value: 'crown, royal crown' },
-        { label: '教冠', en: 'Papal Tiara', value: 'papal tiara, religious crown' },
-        { label: '頭紗', en: 'Bridal Veil', value: 'bridal veil, wedding veil' },
-        { label: '羽毛冠', en: 'Feather Crown', value: 'feather crown, feathered headdress' },
-        { label: '月桂冠', en: 'Laurel Wreath', value: 'laurel wreath, victory wreath' },
-        { label: '花冠', en: 'Flower Crown', value: 'flower crown, floral wreath' },
-        // ── 09 特殊能量 / 概念型（5 件）──
-        { label: '發光光環', en: 'Glowing Halo', value: 'glowing halo, luminous ring above head' },
-        { label: '能量火焰', en: 'Energy Flames', value: 'energy flames on head, fire crown, flaming hair' },
-        { label: '漂浮符文', en: 'Floating Runes', value: 'floating runes around head, magic symbols' },
-        { label: '星辰光環', en: 'Star Halo', value: 'star halo, constellation crown, celestial ring' },
-        { label: '電弧光圈', en: 'Arc Crown', value: 'electric arc crown, lightning halo, energy sparks' }
-    ];
-
     const EXPRESSIONS = [
         { label: '傲嬌', en: 'Tsundere', value: 'tsundere, slight smile' },
         { label: '微笑', en: 'Smile', value: 'gentle smile' },
@@ -1602,8 +1534,7 @@ window.PromptGen.Data = (function () {
             { id: 'hairColor', title: { zh: '髮色', en: 'Hair Color' }, data: HAIR_COLORS, type: 'color' },
             { id: 'eyeColorLeft', title: { zh: '左眼色', en: 'Left Eye' }, data: EYE_COLORS, type: 'eyeColor' },
             { id: 'eyeColorRight', title: { zh: '右眼色', en: 'Right Eye' }, data: EYE_COLORS, type: 'eyeColor' },
-            { id: 'outfit', title: { zh: '服裝', en: 'Outfit' }, data: OUTFITS, count: 31 },
-            { id: 'headwear', title: { zh: '頭飾', en: 'Headwear' }, data: HEADWEAR, count: 30 }
+            { id: 'outfit', title: { zh: '服裝', en: 'Outfit' }, data: OUTFITS, count: 31 }
         ],
         action: [
             { id: 'expression', title: { zh: '表情', en: 'Expression' }, data: EXPRESSIONS },
@@ -1636,7 +1567,7 @@ window.PromptGen.Data = (function () {
 
     return {
         TABS, RACES, JOBS, CONFLICT_RULES, HAIRSTYLES_FEMALE, HAIRSTYLES_MALE,
-        HAIR_COLORS, EYE_COLORS, OUTFITS, HEADWEAR, EXPRESSIONS, MOODS,
+        HAIR_COLORS, EYE_COLORS, OUTFITS, EXPRESSIONS, MOODS,
         ANIME_STYLES, ART_STYLES, ARTISTS, QUALITY_TAGS,
         SCENES, WEATHER, LIGHTING, CAMERA_ANGLES,
         SHOT_SIZES, FOCAL_LENGTHS, APERTURES, LENS_EFFECTS,
