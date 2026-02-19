@@ -1,0 +1,622 @@
+/* ===================================================================
+   Expression Magic Modal — 表情魔法 CSS
+   prefix: emm- (Expression Magic Modal)
+   沿用 cmm- 的基礎視覺風格，新增 emm- 前綴的表情專屬樣式
+   =================================================================== */
+
+/* === Expression Magic Modal START === */
+
+/* === Overlay === */
+#expression-magic-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    background: rgba(0, 0, 0, .85);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: emm-fadeIn .4s ease;
+}
+
+@keyframes emm-fadeIn {
+    from {
+        opacity: 0
+    }
+
+    to {
+        opacity: 1
+    }
+}
+
+/* === 粒子 === */
+.emm-particles {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+}
+
+.emm-particle {
+    position: absolute;
+    border-radius: 50%;
+    animation: emm-sparkle linear infinite;
+}
+
+@keyframes emm-sparkle {
+    0% {
+        transform: translateY(100vh) scale(0);
+        opacity: 0
+    }
+
+    10% {
+        opacity: 1;
+        transform: translateY(90vh) scale(1)
+    }
+
+    50% {
+        opacity: .3
+    }
+
+    90% {
+        opacity: .8
+    }
+
+    100% {
+        transform: translateY(-10vh) scale(0);
+        opacity: 0
+    }
+}
+
+/* === Container === */
+.emm-container {
+    position: relative;
+    z-index: 2;
+    width: 94vw;
+    max-width: 900px;
+    height: 78vh;
+    background: linear-gradient(135deg, rgba(15, 23, 42, .97), rgba(30, 41, 59, .97));
+    border: 1px solid rgba(148, 163, 184, .15);
+    border-radius: 16px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    animation: emm-containerIn .5s cubic-bezier(.34, 1.56, .64, 1);
+    box-shadow: 0 0 50px rgba(124, 58, 237, .2), 0 0 100px rgba(124, 58, 237, .08);
+}
+
+@keyframes emm-containerIn {
+    from {
+        opacity: 0;
+        transform: scale(.5)
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1)
+    }
+}
+
+/* === Header === */
+.emm-header {
+    padding: 16px 24px 12px;
+    border-bottom: 1px solid rgba(148, 163, 184, .1);
+    flex-shrink: 0;
+}
+
+.emm-title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.emm-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    background: linear-gradient(90deg, #fbbf24, #a855f7, #7c3aed, #fbbf24);
+    background-size: 300% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: emm-titleGlow 3s ease infinite;
+}
+
+@keyframes emm-titleGlow {
+
+    0%,
+    100% {
+        background-position: 0% 50%
+    }
+
+    50% {
+        background-position: 100% 50%
+    }
+}
+
+.emm-toolbar {
+    display: flex;
+    gap: 6px;
+}
+
+/* === 分類 Tabs（9 個 Tab）=== */
+.emm-tabs {
+    display: flex;
+    gap: 3px;
+    padding: 8px 16px 0;
+    overflow-x: auto;
+    flex-shrink: 0;
+}
+
+.emm-tabs::-webkit-scrollbar {
+    height: 0
+}
+
+.emm-tab {
+    box-sizing: border-box;
+    padding: 6px 10px;
+    font-size: .72rem;
+    border-radius: 8px 8px 0 0;
+    cursor: pointer;
+    border: 1px solid rgba(148, 163, 184, .1);
+    border-bottom: 2px solid transparent;
+    background: rgba(30, 41, 59, .4);
+    color: #94a3b8;
+    transition: all .25s ease;
+    font-family: inherit;
+    white-space: nowrap;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    min-width: 58px;
+    flex-shrink: 0;
+    position: relative;
+}
+
+.emm-tab:hover {
+    color: #c084fc;
+    background: rgba(124, 58, 237, .15);
+    border-color: rgba(168, 85, 247, .25);
+    border-bottom-color: rgba(168, 85, 247, .5);
+    transform: translateY(-2px);
+}
+
+.emm-tab.active {
+    background: linear-gradient(180deg, rgba(124, 58, 237, .2) 0%, rgba(30, 41, 59, .9) 100%);
+    color: #f3e8ff;
+    border-color: rgba(168, 85, 247, .4);
+    border-bottom: 3px solid #a855f7;
+    box-shadow: 0 -2px 12px rgba(168, 85, 247, .25);
+    transform: translateY(-1px);
+}
+
+.emm-tab-icon {
+    font-size: .95rem;
+    transition: transform .25s ease
+}
+
+.emm-tab.active .emm-tab-icon {
+    transform: scale(1.15);
+    filter: drop-shadow(0 0 6px rgba(168, 85, 247, .6))
+}
+
+.emm-tab-label {
+    font-size: .62rem
+}
+
+/* === 主體區域：上方表情網格 + 下方控制面板 === */
+.emm-body {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    overflow: hidden;
+    border-top: 1px solid rgba(148, 163, 184, .1);
+    min-height: 0;
+}
+
+/* 表情選擇網格 */
+.emm-grid-wrap {
+    flex: 1;
+    overflow-y: auto;
+    padding: 14px 16px;
+    min-height: 0;
+}
+
+.emm-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+    align-content: start;
+}
+
+/* 表情 Chip */
+.emm-expr-chip {
+    padding: 10px 8px;
+    font-size: .76rem;
+    border-radius: 10px;
+    cursor: pointer;
+    border: 1px solid rgba(148, 163, 184, .12);
+    background: rgba(30, 41, 59, .5);
+    color: #cbd5e1;
+    transition: all .2s;
+    font-family: inherit;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+}
+
+.emm-expr-chip:hover {
+    border-color: rgba(168, 85, 247, .4);
+    color: #e2e8f0;
+    background: rgba(124, 58, 237, .08);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(124, 58, 237, .15);
+}
+
+.emm-expr-chip.selected {
+    background: rgba(124, 58, 237, .25);
+    border-color: #a855f7;
+    color: #fff;
+    box-shadow: 0 0 14px rgba(168, 85, 247, .2);
+}
+
+.emm-chip-zh {
+    font-size: .78rem;
+    font-weight: 600
+}
+
+.emm-chip-en {
+    font-size: .58rem;
+    color: #64748b
+}
+
+.emm-expr-chip.selected .emm-chip-en {
+    color: rgba(255, 255, 255, .5)
+}
+
+/* === 控制面板（滑桿 + 特效）=== */
+.emm-controls {
+    padding: 12px 20px;
+    border-top: 1px solid rgba(148, 163, 184, .15);
+    background: rgba(15, 23, 42, .5);
+    flex-shrink: 0;
+    display: none;
+}
+
+.emm-controls.show {
+    display: block
+}
+
+.emm-controls-row {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+}
+
+/* 左：強度推桿 */
+.emm-intensity {
+    flex: 1.2;
+}
+
+.emm-intensity-label {
+    font-size: .75rem;
+    color: #94a3b8;
+    margin-bottom: 6px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.emm-intensity-value {
+    font-weight: 700;
+    color: #a855f7;
+    transition: color .3s;
+}
+
+.emm-intensity-value.fantasy {
+    color: #fbbf24;
+    text-shadow: 0 0 8px rgba(251, 191, 36, .6);
+}
+
+/* 推桿刻度 */
+.emm-scale {
+    display: flex;
+    justify-content: space-between;
+    font-size: .58rem;
+    color: #475569;
+    margin-bottom: 4px;
+    padding: 0 2px;
+}
+
+.emm-scale .fl {
+    color: #fbbf24;
+    text-shadow: 0 0 6px rgba(251, 191, 36, .3);
+}
+
+/* 滑桿容器 */
+.emm-slider-wrap {
+    position: relative;
+    padding: 8px 4px;
+}
+
+.emm-slider-wrap .emm-fz {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity .3s;
+}
+
+.emm-slider-wrap .emm-fz-l {
+    left: -8px;
+    background: radial-gradient(circle, rgba(251, 191, 36, .4), transparent)
+}
+
+.emm-slider-wrap .emm-fz-r {
+    right: -8px;
+    background: radial-gradient(circle, rgba(251, 191, 36, .4), transparent)
+}
+
+/* Range input 樣式 */
+.emm-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 8px;
+    border-radius: 4px;
+    background: linear-gradient(90deg,
+            rgba(251, 191, 36, .4) 0%,
+            rgba(148, 163, 184, .2) 15%,
+            rgba(148, 163, 184, .25) 50%,
+            rgba(148, 163, 184, .2) 85%,
+            rgba(251, 191, 36, .4) 100%);
+    outline: none;
+    cursor: pointer;
+    transition: background .3s;
+}
+
+.emm-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #a855f7, #7c3aed);
+    box-shadow: 0 0 8px rgba(168, 85, 247, .5);
+    cursor: pointer;
+    transition: transform .2s, box-shadow .2s;
+}
+
+.emm-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.15);
+    box-shadow: 0 0 16px rgba(168, 85, 247, .7);
+}
+
+.emm-slider.in-fantasy::-webkit-slider-thumb {
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    box-shadow: 0 0 12px rgba(251, 191, 36, .6);
+}
+
+.emm-slider.in-fantasy {
+    background: linear-gradient(90deg,
+            rgba(251, 191, 36, .5) 0%,
+            rgba(251, 191, 36, .3) 20%,
+            rgba(148, 163, 184, .2) 50%,
+            rgba(251, 191, 36, .3) 80%,
+            rgba(251, 191, 36, .5) 100%);
+}
+
+/* 說明文字 */
+.emm-explain {
+    font-size: .68rem;
+    color: #64748b;
+    margin-top: 6px;
+    line-height: 1.4;
+    min-height: 32px;
+}
+
+/* 右：特效區域 */
+.emm-effects {
+    flex: 1;
+}
+
+.emm-effects-label {
+    font-size: .75rem;
+    color: #94a3b8;
+    margin-bottom: 6px;
+}
+
+.emm-effects-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+.emm-effect-chip {
+    padding: 4px 10px;
+    font-size: .7rem;
+    border-radius: 16px;
+    cursor: pointer;
+    border: 1px solid rgba(148, 163, 184, .15);
+    background: rgba(30, 41, 59, .5);
+    color: #94a3b8;
+    transition: all .2s;
+    font-family: inherit;
+    user-select: none;
+}
+
+.emm-effect-chip:hover {
+    border-color: rgba(251, 191, 36, .4);
+    color: #fbbf24;
+}
+
+.emm-effect-chip.active {
+    background: rgba(251, 191, 36, .15);
+    border-color: #fbbf24;
+    color: #fbbf24;
+    box-shadow: 0 0 8px rgba(251, 191, 36, .15);
+}
+
+/* === 幻想級別 Banner === */
+.emm-fbanner {
+    display: none;
+    padding: 6px 16px;
+    background: linear-gradient(90deg, rgba(251, 191, 36, .08), rgba(124, 58, 237, .08));
+    border: 1px solid rgba(251, 191, 36, .2);
+    border-radius: 8px;
+    margin: 8px 20px 0;
+    font-size: .72rem;
+    color: #fbbf24;
+    align-items: center;
+    gap: 6px;
+}
+
+.emm-fbanner.show {
+    display: flex;
+}
+
+/* === 預覽區域 === */
+.emm-preview {
+    padding: 8px 20px;
+    flex-shrink: 0;
+}
+
+.emm-preview-label {
+    font-size: .68rem;
+    color: #64748b;
+    margin-bottom: 4px;
+}
+
+.emm-preview-text {
+    padding: 8px 12px;
+    background: rgba(15, 23, 42, .6);
+    border: 1px solid rgba(148, 163, 184, .1);
+    border-radius: 8px;
+    font-size: .72rem;
+    color: #e2e8f0;
+    font-family: 'Consolas', monospace;
+    min-height: 24px;
+    word-break: break-all;
+}
+
+.emm-preview-text .fantasy-tag {
+    color: #fbbf24;
+    text-shadow: 0 0 4px rgba(251, 191, 36, .3);
+}
+
+.emm-preview-text .weight-tag {
+    color: #a855f7;
+}
+
+/* === 權重指示器 === */
+.emm-weight-ind {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 6px;
+    font-size: .68rem;
+}
+
+.emm-weight-bar {
+    flex: 1;
+    height: 4px;
+    background: rgba(148, 163, 184, .1);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.emm-weight-fill {
+    height: 100%;
+    background: #86efac;
+    border-radius: 2px;
+    transition: width .3s, background .3s;
+}
+
+.emm-weight-num {
+    font-weight: 700;
+    color: #86efac;
+    font-size: .72rem;
+    transition: color .3s;
+}
+
+/* === Footer === */
+.emm-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 24px;
+    border-top: 1px solid rgba(148, 163, 184, .1);
+    flex-shrink: 0;
+}
+
+.emm-status {
+    font-size: .7rem;
+    color: #64748b;
+}
+
+.emm-status b {
+    color: #a855f7
+}
+
+.emm-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.emm-btn {
+    padding: 7px 18px;
+    border-radius: 8px;
+    font-size: .78rem;
+    cursor: pointer;
+    font-family: inherit;
+    border: none;
+    transition: all .2s;
+}
+
+.emm-btn-cancel {
+    background: rgba(100, 116, 139, .2);
+    color: #94a3b8;
+}
+
+.emm-btn-cancel:hover {
+    background: rgba(100, 116, 139, .3);
+    color: #e2e8f0;
+}
+
+.emm-btn-apply {
+    background: linear-gradient(135deg, #7c3aed, #a855f7);
+    color: #fff;
+    box-shadow: 0 3px 12px rgba(124, 58, 237, .3);
+}
+
+.emm-btn-apply:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 5px 16px rgba(124, 58, 237, .4);
+}
+
+/* === 空結果 === */
+.emm-empty {
+    grid-column: 1/-1;
+    padding: 40px;
+    text-align: center;
+    color: #475569;
+    font-size: .85rem;
+}
+
+/* === 滾動條 === */
+.emm-grid-wrap::-webkit-scrollbar {
+    width: 5px
+}
+
+.emm-grid-wrap::-webkit-scrollbar-thumb {
+    background: rgba(148, 163, 184, .15);
+    border-radius: 3px;
+}
+
+/* === Expression Magic Modal END === */

@@ -16,6 +16,7 @@
     } = Data;
     const BODY_MAGIC_DATA = window.PromptGen.BodyMagicData;
     const HAIR_MAGIC_DATA = window.PromptGen.HairMagicData;
+    const EXPR_DATA = window.PromptGen.ExpressionMagicData;
     const changelog = window.PromptGen.Changelog;
     const SoundManager = window.PromptGen.SoundManager;
 
@@ -926,6 +927,82 @@
                 return; // handItems section 處理完畢
             }
 
+            // === v7.2 表情 section 特殊處理 ===
+            if (section.id === 'expression') {
+                // 高級魔法按鈕
+                const exprMagicBtn = document.createElement('button');
+                exprMagicBtn.className = 'race-magic-btn';
+                exprMagicBtn.innerHTML = '<i class="fa-solid fa-wand-sparkles"></i> ' +
+                    (state.lang === 'zh' ? '🔮 高級魔法專用' : '🔮 Advanced Magic');
+                exprMagicBtn.addEventListener('click', () => {
+                    openExpressionMagicModal();
+                });
+                const exprCustomToggle = header.querySelector('.btn-custom-toggle');
+                const exprBtnGroup = document.createElement('div');
+                exprBtnGroup.className = 'section-header-buttons';
+                header.insertBefore(exprBtnGroup, exprCustomToggle);
+                exprBtnGroup.appendChild(exprMagicBtn);
+                exprBtnGroup.appendChild(exprCustomToggle);
+
+                // expressionAdvanced badge
+                if (state.expressionAdvanced && state.expressionAdvanced.expression) {
+                    const ea = state.expressionAdvanced;
+                    const badge = document.createElement('span');
+                    badge.className = 'selected-race-badge';
+                    const lvlStr = EXPR_DATA.INTENSITY[ea.intensity || 4].zh;
+                    const efxCount = ea.effects ? ea.effects.length : 0;
+                    let badgeText = `✓ ${ea.expression.label} (${lvlStr})`;
+                    if (efxCount > 0) badgeText += ` +${efxCount}特效`;
+                    badge.innerHTML = `${badgeText} <span class="badge-x" title="${state.lang === 'zh' ? '取消進階設定' : 'Clear advanced'}">✕</span>`;
+                    badge.querySelector('.badge-x').addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        delete state.expressionAdvanced;
+                        renderTabContent();
+                        generatePrompt();
+                        saveState();
+                    });
+                    const titleEl = header.querySelector('.section-block-title');
+                    const titleWrapper = document.createElement('div');
+                    titleWrapper.className = 'section-title-with-badge';
+                    titleEl.parentNode.insertBefore(titleWrapper, titleEl);
+                    titleWrapper.appendChild(titleEl);
+                    titleWrapper.appendChild(badge);
+                }
+
+                // 渲染基礎 tag grid
+                renderTagGrid(sectionEl, section, section.data);
+                tabContent.appendChild(sectionEl);
+
+                // Custom input
+                if (state.customInputVisible[section.id]) {
+                    const customRow = document.createElement('div');
+                    customRow.className = 'custom-input-row';
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.className = 'custom-section-input';
+                    input.placeholder = state.lang === 'zh' ? '輸入自訂值...' : 'Enter custom value...';
+                    input.value = state.customInputs[section.id] || '';
+                    input.addEventListener('input', (e) => {
+                        state.customInputs[section.id] = e.target.value.trim();
+                        generatePrompt();
+                    });
+                    customRow.appendChild(input);
+                    const clearBtn = document.createElement('button');
+                    clearBtn.className = 'btn-clear-custom';
+                    clearBtn.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+                    clearBtn.addEventListener('click', () => {
+                        state.customInputs[section.id] = '';
+                        state.customInputVisible[section.id] = false;
+                        renderTabContent();
+                        generatePrompt();
+                    });
+                    customRow.appendChild(clearBtn);
+                    sectionEl.appendChild(customRow);
+                }
+
+                tabContent.appendChild(sectionEl);
+                return; // expression section 處理完畢
+            }
             // === v6.9 眼色色盤：跳過 eyeColorRight，由 eyeColorLeft 一併處理 ===
             if (section.id === 'eyeColorRight') return;
 
@@ -1126,6 +1203,13 @@
     // ============================================
     function openHandItemsMagicModal() {
         window.PromptGen.HandItemsMagicModal.openHandItemsMagicModal();
+    }
+
+    // ============================================
+    // Expression Magic Modal — 由 modules/expression-magic-modal.js 提供
+    // ============================================
+    function openExpressionMagicModal() {
+        window.PromptGen.ExpressionMagicModal.openExpressionMagicModal();
     }
 
     // ============================================
@@ -1466,6 +1550,34 @@
                 }
                 return;
             }
+            // Skip expression if expressionAdvanced is active
+            if (secId === 'expression' && state.expressionAdvanced) {
+                const ea = state.expressionAdvanced;
+                const lvl = EXPR_DATA.INTENSITY[ea.intensity || 4];
+                let baseValue = ea.expression.value;
+                // 加入強度修飾
+                if (lvl.modifier) baseValue = lvl.modifier + ' ' + baseValue;
+                // 權重包裝
+                if (lvl.weight > 1.0) {
+                    parts.push(`(${baseValue}:${lvl.weight.toFixed(1)})`);
+                } else {
+                    parts.push(baseValue);
+                }
+                // 特效
+                if (ea.effects && ea.effects.length > 0) {
+                    ea.effects.forEach(eid => {
+                        const ef = EXPR_DATA.EFFECTS.find(e => e.id === eid);
+                        if (ef) {
+                            if (lvl.weight > 1.0) {
+                                parts.push(`(${ef.value}:${lvl.weight.toFixed(1)})`);
+                            } else {
+                                parts.push(ef.value);
+                            }
+                        }
+                    });
+                }
+                return;
+            }
             const val = state.selections[secId];
             if (val) {
                 // Handle eye colors specially
@@ -1583,6 +1695,30 @@
                 if (bodyParts.length > 0) {
                     yaml += `body_type: ${bodyParts.join(', ')}\n`;
                 }
+                return;
+            }
+            // Skip expression if expressionAdvanced is active
+            if (secId === 'expression' && state.expressionAdvanced) {
+                const ea = state.expressionAdvanced;
+                const lvl = EXPR_DATA.INTENSITY[ea.intensity || 4];
+                const exprParts = [];
+                let baseValue = ea.expression.value;
+                if (lvl.modifier) baseValue = lvl.modifier + ' ' + baseValue;
+                if (lvl.weight > 1.0) {
+                    exprParts.push(`(${baseValue}:${lvl.weight.toFixed(1)})`);
+                } else {
+                    exprParts.push(baseValue);
+                }
+                if (ea.effects && ea.effects.length > 0) {
+                    ea.effects.forEach(eid => {
+                        const ef = EXPR_DATA.EFFECTS.find(e => e.id === eid);
+                        if (ef) {
+                            if (lvl.weight > 1.0) exprParts.push(`(${ef.value}:${lvl.weight.toFixed(1)})`);
+                            else exprParts.push(ef.value);
+                        }
+                    });
+                }
+                yaml += `expression: ${exprParts.join(', ')}\n`;
                 return;
             }
             const parts = [];
@@ -1737,6 +1873,9 @@
     });
     window.PromptGen.HandItemsMagicModal.setup({
         state, sfx, HAND_ITEMS, selectOption, generatePrompt, saveState, renderTabContent
+    });
+    window.PromptGen.ExpressionMagicModal.setup({
+        state, sfx, EXPR_DATA, generatePrompt, saveState, renderTabContent
     });
     window.PromptGen.ConflictSystem.setup({
         state, sfx, CONFLICT_RULES, generatePrompt, saveState, selectOption,

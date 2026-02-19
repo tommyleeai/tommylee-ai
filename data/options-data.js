@@ -1463,12 +1463,16 @@ window.PromptGen.Data = (function () {
     ];
 
     const EXPRESSIONS = [
-        { label: '傲嬌', en: 'Tsundere', value: 'tsundere, slight smile' },
+        // 每大分類的代表表情（基礎頁面用，共 9 個）
         { label: '微笑', en: 'Smile', value: 'gentle smile' },
-        { label: '害羞', en: 'Shy', value: 'blushing, shy' },
-        { label: '高冷', en: 'Cold', value: 'expressionless, cold eyes' },
-        { label: '興奮', en: 'Excited', value: 'excited, happy, open mouth' },
-        { label: '哭泣', en: 'Crying', value: 'crying, tears' }
+        { label: '怒視', en: 'Angry Glare', value: 'angry glare, furrowed brows' },
+        { label: '流淚', en: 'Crying', value: 'crying, tears' },
+        { label: '驚訝', en: 'Surprised', value: 'surprised, wide eyes' },
+        { label: '臉紅', en: 'Blushing', value: 'blushing, shy' },
+        { label: '無表情', en: 'Expressionless', value: 'expressionless, cold eyes' },
+        { label: '病嬌笑', en: 'Yandere Smile', value: 'yandere smile, crazy eyes' },
+        { label: '崩潰', en: 'Breakdown', value: 'comedic breakdown, anime tears' },
+        { label: '戰意', en: 'Battle Spirit', value: 'battle spirit, determined eyes' }
     ];
 
     const MOODS = [
