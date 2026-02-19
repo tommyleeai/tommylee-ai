@@ -18,9 +18,9 @@ Every time a feature is added, a bug is fixed, or any meaningful change is made 
 5. **`script.js` changelog array** — Add a new entry at the TOP of the `changelog` array with version, date, and changes
 
 ## Version numbering rules
-- Bug fix / minor tweak → increment by 0.01 (e.g. v5.50 → v5.51)
-- New feature → increment by 0.1 (e.g. v5.5 → v5.6)
-- Major overhaul → increment by 1.0 (e.g. v5.5 → v6.0)
+- Bug fix / 微調 / 加搜尋 bar 等小改動 → 第三位遞增 (e.g. v7.4 → v7.4.1 → v7.4.2)
+- 新功能模組（如新增一整個 Magic Modal） → 第二位遞增 (e.g. v7.4 → v7.5)
+- 大改版 / 架構重構 → 第一位遞增 (e.g. v7.5 → v8.0)
 
 ## IMPORTANT
 - Always update ALL 5 locations — never leave any behind
