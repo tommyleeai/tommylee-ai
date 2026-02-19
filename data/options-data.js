@@ -978,9 +978,12 @@ window.PromptGen.Data = (function () {
         { label: '綠色', en: 'Green', value: 'green', color: '#22c55e' },
         { label: '翠綠', en: 'Emerald', value: 'emerald', color: '#10b981' },
         { label: '橄欖綠', en: 'Olive', value: 'olive', color: '#84cc16' },
+        { label: '薰衣草', en: 'Lavender', value: 'lavender', color: '#c4b5fd' },
+        { label: '灰色', en: 'Gray', value: 'gray', color: '#6b7280' },
         { label: '銀灰', en: 'Silver', value: 'silver', color: '#94a3b8' },
         { label: '白色', en: 'White', value: 'white', color: '#ffffff' },
         { label: '冰藍', en: 'Ice Blue', value: 'ice blue', color: '#bae6fd' },
+        { label: '虹彩', en: 'Iridescent', value: 'iridescent eyes, rainbow', color: 'linear-gradient(135deg, #f43f5e, #f59e0b, #22c55e, #3b82f6, #a855f7)' },
         { label: '發光', en: 'Glowing', value: 'glowing eyes', color: '#fef3c7' }
     ];
 
@@ -1503,7 +1506,21 @@ window.PromptGen.Data = (function () {
         { label: '懷舊', en: 'Nostalgic', value: 'nostalgic' },
         { label: '浪漫', en: 'Romantic', value: 'romantic, love' },
         { label: '緊張', en: 'Nervous', value: 'nervous, sweating' },
-        { label: '放鬆', en: 'Relaxed', value: 'relaxed, chill' }
+        { label: '放鬆', en: 'Relaxed', value: 'relaxed, chill' },
+        { label: '嫉妒', en: 'Jealous', value: 'jealous, envious' },
+        { label: '感激', en: 'Grateful', value: 'grateful, thankful, heartfelt' },
+        { label: '絕望', en: 'Despair', value: 'despair, hopeless' },
+        { label: '得意', en: 'Smug', value: 'smug, proud, triumphant' },
+        { label: '溫柔', en: 'Tender', value: 'tender, gentle, warm' },
+        { label: '焦慮', en: 'Anxious', value: 'anxious, worried, restless' },
+        { label: '尷尬', en: 'Embarrassed', value: 'embarrassed, awkward' },
+        { label: '狂喜', en: 'Ecstatic', value: 'ecstatic, overjoyed, euphoric' },
+        { label: '厭惡', en: 'Disgusted', value: 'disgusted, repulsed' },
+        { label: '恐懼', en: 'Fearful', value: 'fearful, terrified, scared' },
+        { label: '迷茫', en: 'Lost', value: 'lost, dazed, spacing out' },
+        { label: '堅定', en: 'Resolute', value: 'resolute, unwavering, strong will' },
+        { label: '慵懶', en: 'Lazy', value: 'lazy, lethargic, sluggish' },
+        { label: '狡猾', en: 'Cunning', value: 'cunning, sly, scheming' }
     ];
 
     // v7.3 姿勢基礎選項（全部 60 個，分頁顯示）
