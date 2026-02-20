@@ -1,0 +1,3905 @@
+/* ============================================
+   📋 CSS 模組目錄 (Module Index)
+   ============================================
+   1.  全域變數與基底樣式     (🔒 核心)
+   2.  背景與動畫
+   3.  容器與主佈局           (🔒 核心佈局)
+   4.  Header 與 Logo
+   5.  按鈕系統               (🔒 共用元件)
+   6.  主佈局：左欄/右欄      (🔒 核心佈局)
+   7.  表單元素
+   8.  自訂欄位
+   9.  Tag 標籤系統
+   10. 預覽區 (Preview)
+   11. 輸出區 (Output)
+   12. 語言切換
+   13. 通用按鈕
+   14. 設定面板 (Settings Modal)
+   15. 響應式 (Responsive)
+   16. 吉祥物 (Mascot)
+   17. 拖放排序 (Drag & Drop)
+   18. 可收合區段 (Collapsible)
+   19. Settings Modal — 古地圖風格
+   20. AI 網站設定 (Site Picker)
+   21. v5.0 Tab UI
+   22. Section Block
+   23. 性別切換 & 年齡滑桿
+   24. 色彩選擇器
+   25. Body Magic 進階體型
+   ============================================
+   🔒 = 禁止隨意修改，需使用者明確要求
+   修改前請執行 /css-safety workflow
+   ============================================ */
+
+/* === 1. 全域變數與基底樣式 START === 🔒 */
+/* Global Styles */
+:root {
+    --bg-color: #121212;
+    --text-color: #e0e0e0;
+    --accent-color: #bb86fc;
+    --accent-hover: #9965f4;
+    --secondary-color: #03dac6;
+    --glass-bg: rgba(255, 255, 255, 0.05);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --glass-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    --danger-color: #cf6679;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    /* Fixed height */
+    overflow: hidden;
+    /* Prevent window scroll */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+html {
+    height: 100%;
+    overflow: hidden;
+}
+
+/* Custom Background Image (v4.7) */
+.custom-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -2;
+    background-image: url('assets/background_v2.jpg');
+    background-size: cover;
+    background-position: center;
+    opacity: 0.2;
+    /* Low opacity */
+    filter: blur(2px) grayscale(30%);
+    /* Blur and desaturate */
+
+    /* Vignette Mask: Center visible, edges fade to transparent */
+    -webkit-mask-image: radial-gradient(circle at center, black 40%, transparent 90%);
+    mask-image: radial-gradient(circle at center, black 40%, transparent 90%);
+    pointer-events: none;
+    /* Ensure clicks pass through */
+}
+
+/* === 1. 全域變數與基底樣式 END === */
+
+/* === 2. 背景與動畫 START === */
+/* Dynamic Background */
+.background-globes {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    overflow: hidden;
+}
+
+.globe {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.6;
+}
+
+.globe-1 {
+    width: 400px;
+    height: 400px;
+    background: #7a28ff;
+    top: -100px;
+    left: -100px;
+    animation: float 10s infinite ease-in-out;
+}
+
+.globe-2 {
+    width: 300px;
+    height: 300px;
+    background: #ff28a9;
+    bottom: -50px;
+    right: -50px;
+    animation: float 12s infinite ease-in-out reverse;
+}
+
+
+
+@keyframes float {
+    0% {
+        transform: translate(0, 0);
+    }
+
+    50% {
+        transform: translate(30px, 30px);
+    }
+
+    100% {
+        transform: translate(0, 0);
+    }
+}
+
+/* === 2. 背景與動畫 END === */
+
+/* === 3. 容器與主佈局 START === 🔒 */
+/* Glassmorphism Container */
+.container {
+    background: var(--glass-bg);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    box-shadow: var(--glass-shadow);
+    width: 90%;
+    max-width: 1400px;
+    /* Increased width for v2 */
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    height: 90vh;
+    overflow-y: hidden;
+    /* Hide main scroll, scroll inside sections */
+}
+
+#app-logo {
+    height: 120px;
+    vertical-align: middle;
+    margin-right: 10px;
+    filter: drop-shadow(0 0 5px rgba(187, 134, 252, 0.5));
+    /* Add subtle glow to match theme */
+}
+
+/* === 3. 容器與主佈局 END === */
+
+/* === 4. Header 與 Logo START === */
+.header {
+    text-align: left;
+    /* Align left */
+    margin-top: 1.2rem;
+    /* Align with right column Preview title */
+    margin-bottom: 1rem;
+    flex-shrink: 0;
+}
+
+.header h1 {
+    font-size: 1.8rem;
+    /* Reduced from 2.5rem */
+    margin: 0;
+    background: linear-gradient(90deg, #bb86fc, #03dac6);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.version-tag {
+    font-size: 0.5em;
+    vertical-align: super;
+    background: rgba(187, 134, 252, 0.2);
+    -webkit-text-fill-color: var(--accent-color);
+    color: var(--accent-color);
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin-left: 5px;
+}
+
+/* Header Buttons Container */
+.header-buttons {
+    display: inline-flex;
+    gap: 8px;
+    margin-left: 12px;
+    vertical-align: middle;
+    -webkit-text-fill-color: initial;
+    /* Fix: Prevent inheriting transparent text from h1 */
+}
+
+.btn-icon {
+    background: rgba(187, 134, 252, 0.15);
+    border: 1px solid rgba(187, 134, 252, 0.3);
+    color: var(--accent-color);
+    padding: 6px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+}
+
+.btn-icon:hover {
+    background: rgba(187, 134, 252, 0.25);
+    border-color: var(--accent-color);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(187, 134, 252, 0.3);
+}
+
+/* Fix: Ensure icon remains colored and visible on hover */
+/* === 4. Header 與 Logo END === */
+
+/* === 5. 按鈕系統 START === 🔒 */
+.btn-icon:hover i {
+    color: var(--accent-color);
+    opacity: 1;
+    visibility: visible;
+}
+
+.btn-icon.muted {
+    background: rgba(255, 100, 100, 0.15);
+    border-color: rgba(255, 100, 100, 0.3);
+    color: #ff6464;
+}
+
+.btn-icon.muted:hover {
+    background: rgba(255, 100, 100, 0.25);
+    border-color: #ff6464;
+}
+
+/* === 標題列 Toggle 按鈕狀態 START === */
+.btn-icon.active {
+    background: rgba(187, 134, 252, 0.3);
+    border-color: var(--accent-color);
+    color: var(--accent-color);
+    box-shadow: 0 0 12px rgba(187, 134, 252, 0.4);
+    text-shadow: 0 0 8px rgba(187, 134, 252, 0.6);
+}
+
+.btn-icon.dim {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: #555;
+    box-shadow: none;
+    text-shadow: none;
+}
+
+.btn-icon.dim:hover {
+    color: #999;
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* 文字型 toggle 按鈕（EN/中） */
+.btn-icon-text {
+    min-width: 34px;
+    text-align: center;
+}
+
+.btn-icon-label {
+    font-weight: 700;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+}
+
+/* === 標題列 Toggle 按鈕狀態 END === */
+
+/* === 5. 按鈕系統 END === */
+
+/* === 6. 主佈局：左欄/右欄 START === 🔒 */
+/* Main Layout */
+.main-content {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr);
+    /* CRITICAL: Constrain row height */
+    /* More space for controls */
+    gap: 2rem;
+    height: 100%;
+    min-height: 0;
+    /* CRITICAL: Prevent flex item from expanding */
+    overflow: hidden;
+    max-width: 1600px;
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+}
+
+/* Left Column: Controls */
+.controls-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    overflow-y: auto;
+    padding-right: 0.5rem;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    height: 100%;
+    min-height: 0;
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.controls-section::-webkit-scrollbar {
+    display: none;
+}
+
+/* Tab Content: prevent flex shrink so sections don't overlap */
+#tab-content {
+    flex-shrink: 0;
+}
+
+/* Custom Fields & Negative Prompt: also prevent shrink */
+#custom-fields-container,
+#btn-add-custom {
+    flex-shrink: 0;
+}
+
+/* === 6. 主佈局：左欄/右欄 END === */
+
+/* === 7. 表單元素 & 輸出區 START === */
+/* Right Column: Output */
+.output-section {
+    height: 100%;
+    min-height: 0;
+    /* Allow shrinking in grid */
+    overflow-y: auto;
+    /* Independent scrolling */
+    display: flex;
+    flex-direction: column;
+    scrollbar-width: none;
+    /* Firefox */
+    -ms-overflow-style: none;
+    /* IE/Edge */
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.output-section::-webkit-scrollbar {
+    display: none;
+}
+
+/* Output Section Internal Wrapper */
+.sticky-output {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    height: auto;
+    /* Allow natural growth */
+}
+
+.section-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--secondary-color);
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+    border-bottom: 1px solid var(--glass-border);
+    padding-bottom: 0.5rem;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    flex-shrink: 0;
+}
+
+.input-group label {
+    font-weight: 500;
+    color: #bdbdbd;
+}
+
+textarea,
+input[type="text"] {
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid var(--glass-border);
+    border-radius: 8px;
+    padding: 0.75rem;
+    color: #D4A574;
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+textarea:focus,
+input[type="text"]:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    box-shadow: 0 0 10px rgba(187, 134, 252, 0.3);
+}
+
+textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+/* Output Display (for syntax highlighting) */
+.output-display {
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid var(--glass-border);
+    border-radius: 8px;
+    padding: 0.75rem;
+    color: #D4A574;
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-size: 1rem;
+    min-height: 80px;
+    overflow: visible;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    user-select: text;
+    cursor: text;
+}
+
+.output-display:empty::before {
+    content: attr(data-placeholder);
+    color: rgba(255, 255, 255, 0.3);
+    font-style: italic;
+}
+
+/* Custom Fields */
+.custom-field-row {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.custom-field-checkbox {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    flex-shrink: 0;
+    accent-color: var(--accent-color);
+}
+
+.custom-field-row input[type="text"] {
+    flex: 1;
+}
+
+.btn-delete {
+    background: rgba(207, 102, 121, 0.2);
+    color: var(--danger-color);
+    border: 1px solid rgba(207, 102, 121, 0.5);
+    padding: 0 1rem;
+}
+
+.btn-delete:hover {
+    background: rgba(207, 102, 121, 0.4);
+}
+
+
+/* === 8. 自訂欄位 END === */
+
+/* === 9. Tag 標籤系統 START === */
+/* Tag Grid System */
+.category-block {
+    margin-bottom: 0.2rem;
+    /* Reduced from 0.5rem */
+}
+
+.category-block h3 {
+    font-size: 1.1rem;
+    margin: 0;
+    /* Remove all margins */
+    background: linear-gradient(90deg, #bb86fc, #03dac6);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    width: fit-content;
+    display: flex;
+    align-items: center;
+}
+
+/* Drag and Drop Styles */
+.drag-handle {
+    cursor: grab;
+    margin-right: 10px;
+    color: var(--secondary-color);
+    opacity: 0.5;
+    transition: opacity 0.2s;
+    padding: 5px;
+    /* Increase touch target */
+}
+
+.drag-handle:hover {
+    opacity: 1;
+}
+
+.category-block.dragging {
+    opacity: 0.4;
+    border: 1px dashed var(--accent-color);
+}
+
+.category-block.drag-over {
+    border-top: 2px solid var(--secondary-color);
+    transform: translateY(2px);
+    /* Visual nudge */
+}
+
+/* Collapsible Styles */
+.collapsible-header {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    user-select: none;
+}
+
+.selected-summary {
+    color: var(--accent-color);
+    font-size: 0.9rem;
+    font-weight: normal;
+    font-style: italic;
+    margin-left: 10px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 200px;
+    /* Prevent it from pushing layout too much */
+}
+
+.toggle-icon {
+    font-size: 0.8rem;
+    color: var(--secondary-color);
+    transition: transform 0.3s ease;
+    -webkit-text-fill-color: var(--secondary-color);
+    /* Override gradient for icon */
+}
+
+.toggle-icon.rotated {
+    transform: rotate(-90deg);
+    /* Rotate to point right (collapsed) */
+}
+
+.collapsible-content {
+    transition: max-height 0.3s ease, opacity 0.3s ease;
+    max-height: 1000px;
+    /* Arbitrary large height */
+    opacity: 1;
+    overflow: hidden;
+}
+
+.collapsible-content.collapsed {
+    max-height: 0;
+    opacity: 0;
+    margin: 0;
+    padding: 0;
+}
+
+.tags-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    gap: 0.5rem;
+    padding: 4px 2px;
+    /* Prevent first-row hover translateY clipping + last-row box-shadow clipping */
+}
+
+.tag-chip {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--glass-border);
+    padding: 0.35rem 0.6rem;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    transition: all 0.2s;
+    user-select: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    min-height: 32px;
+}
+
+.tag-chip:hover {
+    background: rgba(255, 255, 255, 0.15);
+    transform: translateY(-2px);
+    box-shadow: 0 0 15px rgba(187, 134, 252, 0.6);
+    border-color: var(--accent-color);
+}
+
+.tag-chip.active {
+    background: var(--accent-color);
+    color: #121212;
+    font-weight: 600;
+    box-shadow: 0 0 15px rgba(187, 134, 252, 0.4);
+    border-color: var(--accent-color);
+}
+
+.custom-tag-input {
+    grid-column: 1 / -1;
+    /* Span full width */
+    margin-top: 0.5rem;
+}
+
+/* === 9. Tag 標籤系統 END === */
+
+/* === 10. 預覽區 & 輸出區 START === */
+/* Preview Container */
+.preview-container {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 12px;
+    padding: 1rem;
+    border: 1px solid var(--glass-border);
+}
+
+.preview-container h3 {
+    margin: 0 0 0.75rem 0;
+    font-size: 1rem;
+    color: var(--secondary-color);
+}
+
+#preview-wrapper {
+    position: relative;
+    min-height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border-radius: 8px;
+}
+
+#preview-placeholder {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    color: rgba(255, 255, 255, 0.3);
+    font-size: 1rem;
+    text-align: center;
+    padding: 2rem;
+}
+
+#preview-placeholder.active {
+    display: flex;
+}
+
+#preview-placeholder i {
+    font-size: 2rem;
+    opacity: 0.5;
+}
+
+#preview-placeholder .preview-hint {
+    font-size: 0.8rem;
+    opacity: 0.5;
+}
+
+#preview-content {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    gap: 0.5rem;
+    animation: fadeIn 0.3s ease;
+}
+
+#preview-content.active {
+    display: flex;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+#preview-image-box {
+    width: 100%;
+    aspect-ratio: 3 / 4;
+    max-height: 400px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    border-radius: 8px;
+    transition: background-image 0.2s ease;
+}
+
+#preview-label {
+    font-size: 0.9rem;
+    color: var(--accent-color);
+    font-weight: 600;
+    text-align: center;
+    margin: 0;
+}
+
+/* === 咒語模式 Spell Mode START === */
+
+/* 咒語模式下的 prompt 顯示 — 阿拉伯文翻譯風格 */
+.spell-mode .output-display {
+    font-family: 'Amiri', 'Traditional Arabic', 'Noto Naskh Arabic', serif !important;
+    font-size: 0.95rem;
+    letter-spacing: 0px;
+    line-height: 1.8;
+    color: #c084fc;
+    text-shadow: 0 0 8px rgba(168, 85, 247, 0.4), 0 0 20px rgba(124, 58, 237, 0.15);
+    direction: rtl;
+    text-align: center;
+}
+
+/* 咒語模式下的語法高亮覆蓋 */
+.spell-mode .output-display .yaml-key,
+.spell-mode .output-display .yaml-value,
+.spell-mode .output-display .yaml-bracket,
+.spell-mode .output-display .yaml-weight {
+    color: #c084fc !important;
+    text-shadow: 0 0 8px rgba(168, 85, 247, 0.4);
+}
+
+.spell-mode .negative-output-container textarea {
+    font-family: 'Amiri', 'Traditional Arabic', 'Noto Naskh Arabic', serif !important;
+    font-size: 0.9rem;
+    letter-spacing: 0px;
+    line-height: 1.8;
+    color: #f87171;
+    text-shadow: 0 0 8px rgba(239, 68, 68, 0.3);
+    direction: rtl;
+    text-align: center;
+}
+
+/* 切換按鈕 */
+.spell-mode-toggle {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 4px 10px;
+    cursor: pointer;
+    color: #94a3b8;
+    font-size: 0.8rem;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.spell-mode-toggle:hover {
+    border-color: rgba(168, 85, 247, 0.4);
+    color: #c084fc;
+    background: rgba(168, 85, 247, 0.1);
+}
+
+.spell-mode-toggle.active {
+    background: linear-gradient(135deg, rgba(124, 58, 237, 0.3), rgba(168, 85, 247, 0.2));
+    border-color: #a855f7;
+    color: #e9d5ff;
+    box-shadow: 0 0 10px rgba(168, 85, 247, 0.3);
+}
+
+.spell-mode-toggle i {
+    font-size: 12px;
+}
+
+.spell-mode-toggle span {
+    font-size: 14px;
+}
+
+/* 方案 D：咒語模式發光動畫（中速 2秒，300% 強度，模糊半徑上限 40px） */
+@keyframes spell-glow-medium {
+
+    0%,
+    100% {
+        text-shadow: 0 0 15px rgba(168, 85, 247, 1);
+        color: #c084fc;
+    }
+
+    50% {
+        text-shadow:
+            0 0 40px rgba(168, 85, 247, 1),
+            0 0 40px rgba(124, 58, 237, 1);
+        color: #f5f0ff;
+    }
+}
+
+/* 發光啟動狀態 */
+.spell-glow-active .output-display {
+    animation: spell-glow-medium 2s ease-in-out infinite;
+}
+
+/* 咒語模式欄位高度鎖定，避免字體縮放時抖動 */
+.spell-mode .output-display {
+    min-height: 200px;
+    max-height: 400px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: none;
+    /* Firefox */
+    -ms-overflow-style: none;
+    /* IE/Edge */
+}
+
+.spell-mode .output-display::-webkit-scrollbar {
+    display: none;
+    /* Chrome/Safari */
+}
+
+/* === 咒語模式 Spell Mode END === */
+
+/* === 生成結果區域美化 START === */
+.prompt-section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    margin-bottom: 0;
+    background: linear-gradient(135deg, rgba(124, 58, 237, 0.15), rgba(168, 85, 247, 0.08), rgba(30, 41, 59, 0.4));
+    border: 1px solid rgba(168, 85, 247, 0.2);
+    border-bottom: none;
+    border-radius: 12px 12px 0 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.prompt-section-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #a855f7, #c084fc, #a855f7, transparent);
+    opacity: 0.6;
+}
+
+.prompt-section-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #7c3aed, #a855f7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    color: #fff;
+    box-shadow: 0 0 12px rgba(168, 85, 247, 0.4);
+    flex-shrink: 0;
+}
+
+.prompt-section-text {
+    flex: 1;
+}
+
+.prompt-section-text h2 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #e2e8f0, #c084fc);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    line-height: 1.3;
+}
+
+.prompt-section-sub {
+    font-size: 0.7rem;
+    color: #64748b;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    font-weight: 500;
+}
+
+.prompt-tag-count {
+    font-size: 0.75rem;
+    color: #94a3b8;
+    padding: 3px 10px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    white-space: nowrap;
+}
+
+.prompt-tag-count:empty {
+    display: none;
+}
+
+/* 負面提示詞的變體 */
+.prompt-section-header.negative-header {
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(220, 38, 38, 0.05), rgba(30, 41, 59, 0.4));
+    border-color: rgba(239, 68, 68, 0.15);
+    margin-top: 12px;
+}
+
+.prompt-section-header.negative-header::before {
+    background: linear-gradient(90deg, transparent, #ef4444, #f87171, #ef4444, transparent);
+    opacity: 0.4;
+}
+
+.prompt-section-icon.negative-icon {
+    background: linear-gradient(135deg, #dc2626, #ef4444);
+    box-shadow: 0 0 12px rgba(239, 68, 68, 0.3);
+}
+
+.negative-header .prompt-section-text h2 {
+    background: linear-gradient(135deg, #fca5a5, #f87171);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* === 生成結果區域美化 END === */
+
+.output-container {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 0 0 12px 12px;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    flex-grow: 1;
+    border: 1px solid rgba(168, 85, 247, 0.1);
+    border-top: none;
+}
+
+.output-container.negative-output-container {
+    border-color: rgba(239, 68, 68, 0.1);
+}
+
+#final-prompt {
+    width: 100%;
+    box-sizing: border-box;
+    min-height: 250px;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: pre-wrap;
+}
+
+#final-negative {
+    min-height: 250px;
+    resize: vertical;
+}
+
+.output-container h2 {
+    margin-top: 0;
+    font-size: 1.25rem;
+    color: var(--secondary-color);
+    margin-bottom: 0.5rem;
+}
+
+.output-container h3 {
+    margin-top: 0;
+    font-size: 1rem;
+    color: #ff5252;
+    margin-bottom: 0.5rem;
+}
+
+.output-container textarea {
+    background: transparent;
+    border: none;
+    font-family: 'Courier New', monospace;
+    font-size: 1.1rem;
+    line-height: 1.5;
+    flex-grow: 1;
+    color: #81c784;
+}
+
+.negative-output-container textarea {
+    color: #ff8a80;
+}
+
+/* === 10. 預覽區 & 輸出區 END === */
+
+/* === 12. 語言切換 START === */
+/* Language Toggle */
+.language-toggle {
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    gap: 1rem;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 0.75rem;
+    border-radius: 8px;
+    border: 1px solid var(--glass-border);
+}
+
+.language-toggle label {
+    margin: 0;
+    color: var(--secondary-color);
+    font-weight: 600;
+}
+
+.toggle-options {
+    display: grid;
+    grid-template-columns: 140px 160px;
+    gap: 1rem;
+}
+
+.toggle-options label {
+    color: var(--text-color);
+    font-weight: 400;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.toggle-options input[type="radio"] {
+    accent-color: var(--accent-color);
+    width: auto;
+    margin: 0;
+}
+
+/* === 12. 語言切換 END === */
+
+/* === 13. 通用按鈕 & 設定面板 START === */
+/* Buttons */
+.btn {
+    border: none;
+    border-radius: 8px;
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+input[type=range]::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+    box-shadow: 0 0 8px rgba(93, 64, 55, 0.4);
+}
+
+/* Fix: Ensure Settings Modal Supports Scrolling (Volume Control Visibility) */
+.settings-panel {
+    display: flex;
+    flex-direction: column;
+    max-height: 85vh;
+    /* Limit height to 85% of viewport */
+}
+
+.settings-body {
+    flex: 1;
+    /* Allow body to grow/shrink */
+    overflow-y: auto;
+    /* Enable vertical scroll */
+    padding-right: 8px;
+    /* Space for scrollbar */
+    min-height: 0;
+    /* Important for flex child scrolling */
+}
+
+/* Custom Scrollbar for Settings */
+.settings-body::-webkit-scrollbar {
+    width: 8px;
+}
+
+.settings-body::-webkit-scrollbar-track {
+    background: rgba(141, 110, 99, 0.1);
+    border-radius: 4px;
+}
+
+.settings-body::-webkit-scrollbar-thumb {
+    background: #8d6e63;
+    border-radius: 4px;
+}
+
+.settings-body::-webkit-scrollbar-thumb:hover {
+    background: #6d4c41;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--accent-color), #7c4dff);
+    color: white;
+    /* Ensure text is readable */
+}
+
+.btn-secondary {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+.btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+#btn-reset {
+    background: rgba(207, 102, 121, 0.2);
+    color: var(--danger-color);
+    border: 1px solid rgba(207, 102, 121, 0.5);
+    transition: all 0.3s ease;
+}
+
+#btn-reset:hover {
+    background: var(--danger-color);
+    color: #121212;
+    box-shadow: 0 0 15px rgba(207, 102, 121, 0.4);
+}
+
+.btn-block {
+    width: 100%;
+}
+
+.btn-sm {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+}
+
+.divider {
+    border: 0;
+    height: 1px;
+    background: var(--glass-border);
+    margin: 1rem 0;
+}
+
+/* === 13. 通用按鈕 & 設定面板 END === */
+
+/* === 15. 響應式 START === */
+/* Responsive */
+@media (max-width: 768px) {
+    .main-content {
+        grid-template-columns: 1fr;
+    }
+
+    .container {
+        height: auto;
+        min-height: 90vh;
+        overflow-y: visible;
+    }
+
+    .controls-section {
+        overflow-y: visible;
+    }
+}
+
+/* ==================== Preview Container ==================== */
+.preview-container {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    padding: 1.2rem;
+    margin-bottom: 0.5rem;
+    backdrop-filter: blur(10px);
+}
+
+.preview-container h3 {
+    margin: 0 0 1rem 0;
+    font-size: 1.1rem;
+    color: var(--primary-color);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+#preview-wrapper {
+    width: 100%;
+    /* height: 320px; Removed fixed height */
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 8px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#preview-placeholder {
+    /* position: absolute; Removed absolute */
+    /* top: 0; */
+    /* left: 0; */
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    /* Match image box ratio */
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.8rem;
+    color: #666;
+    text-align: center;
+    padding: 2rem;
+}
+
+#preview-placeholder.active {
+    display: flex;
+}
+
+#preview-placeholder i {
+    font-size: 3rem;
+    opacity: 0.3;
+}
+
+#preview-placeholder p {
+    margin: 0;
+    font-size: 0.95rem;
+}
+
+#preview-placeholder .preview-hint {
+    font-size: 0.85rem;
+    opacity: 0.6;
+}
+
+#preview-content {
+    /* position: absolute; Removed absolute */
+    /* top: 0; */
+    /* left: 0; */
+    width: 100%;
+    /* height: 100%; */
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+}
+
+#preview-content.active {
+    display: flex;
+}
+
+#preview-image-box {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    color: white;
+    text-align: center;
+    padding: 2rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    position: relative;
+    overflow: hidden;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.preview-image-real {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 5;
+    transition: opacity 0.3s ease;
+}
+
+#preview-image-box::before {
+    content: attr(data-icon);
+    position: absolute;
+    font-size: 80px;
+    opacity: 0.15;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    transition: all 0.3s ease;
+}
+
+#preview-image-box .preview-text {
+    position: relative;
+    z-index: 1;
+    font-weight: 500;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+#preview-label {
+    margin-top: 0.8rem;
+    font-size: 1.5rem;
+    /* Increased from 0.95rem */
+    color: var(--primary-color);
+    font-weight: 700;
+    /* Made bolder */
+    text-align: center;
+}
+
+.tags-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 0.8rem;
+    margin-bottom: 1rem;
+}
+
+.tag-chip {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--glass-border);
+    border-radius: 6px;
+    padding: 0.6rem 0.4rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s, transform 0.15s;
+    user-select: none;
+    font-size: 0.85rem;
+    color: var(--text-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1.2;
+}
+
+.tag-chip.active {
+    background: var(--accent-color);
+    border-color: var(--accent-color);
+    color: #121212;
+    font-weight: 600;
+    box-shadow: 0 0 15px rgba(187, 134, 252, 0.4);
+}
+
+.tag-chip:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.custom-tag-input {
+    width: 100%;
+    box-sizing: border-box;
+    margin-top: 0.5rem;
+}
+
+/* Mascot Styling */
+#mascot-wrapper {
+    position: fixed;
+    bottom: -10px;
+    right: -40px;
+    z-index: 9999;
+    pointer-events: none;
+    /* Allows clicking through the empty space around the image */
+    user-select: none;
+}
+
+#mascot-image {
+    width: 320px;
+    height: auto;
+    filter: drop-shadow(2px 4px 12px rgba(0, 0, 0, 0.3));
+    animation: mascotFloat 5s ease-in-out infinite;
+    transition: transform 0.3s ease;
+    pointer-events: auto;
+    /* Re-enable pointer events for the image itself */
+    cursor: pointer;
+}
+
+#mascot-image:hover {
+    transform: scale(1.05) translateY(-5px);
+    filter: drop-shadow(4px 8px 16px rgba(0, 0, 0, 0.4));
+}
+
+@keyframes mascotFloat {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+@media (max-width: 768px) {
+    #mascot-wrapper {
+        right: -50px;
+        bottom: -20px;
+    }
+
+    #mascot-image {
+        width: 180px;
+    }
+}
+
+/* App Logo Styles */
+#app-logo {
+    display: inline-block;
+    vertical-align: middle;
+    height: 32px;
+    /* Reduced from 50px */
+    width: auto;
+    margin-right: 10px;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.4));
+    animation: logoFloat 4s ease-in-out infinite;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+    object-fit: contain;
+}
+
+#app-logo:hover {
+    transform: scale(1.1);
+    animation-play-state: paused;
+}
+
+@keyframes logoFloat {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-8px);
+    }
+}
+
+@media (max-width: 768px) {
+    #app-logo {
+        height: 60px;
+        width: auto;
+        margin-right: 10px;
+    }
+}
+
+/* Drag and Drop States - Fixed for Jitter */
+.category-block.dragging {
+    opacity: 0.4;
+    border: 1px dashed var(--accent-color);
+}
+
+.category-block.drag-over {
+    /* Use box-shadow to prevent layout shift (jitter) */
+    box-shadow: 0 0 0 2px var(--accent-color), 0 0 15px rgba(107, 159, 232, 0.4);
+    background: rgba(107, 159, 232, 0.1);
+    transform: scale(1.005);
+    transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+
+
+
+/* v4.4.3 Fix: Ensure Header Layout & Grip Visibility */
+.collapsible-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    cursor: pointer;
+    user-select: none;
+    padding: 0.5rem;
+    /* Ensure click area */
+}
+
+/* Ensure title span takes up available space but leaves room for icon */
+.collapsible-header span:not(.selected-summary) {
+    flex-grow: 1;
+    margin-left: 5px;
+}
+
+.drag-handle {
+    cursor: grab;
+    margin-right: 12px;
+    color: var(--secondary-color);
+    opacity: 0.7;
+    /* Increased opacity */
+    transition: all 0.2s ease;
+    padding: 8px;
+    /* Larger hit area */
+    font-size: 1.1rem;
+    /* Visual size */
+    z-index: 10;
+    /* Ensure it's on top */
+}
+
+
+
+
+.toggle-icon {
+    margin-left: 10px;
+    transition: transform 0.3s ease;
+}
+
+/* v4.4.4 FORCE VISIBILITY FIX */
+.category-block h3 .drag-handle {
+    -webkit-text-fill-color: var(--secondary-color) !important;
+    color: var(--secondary-color) !important;
+    background: none !important;
+    opacity: 1 !important;
+    z-index: 100 !important;
+    display: inline-block !important;
+    width: 20px;
+    /* Ensure non-zero width */
+    text-align: center;
+}
+
+.category-block h3 .drag-handle:hover {
+    -webkit-text-fill-color: var(--accent-color) !important;
+    color: var(--accent-color) !important;
+}
+
+.category-block h3 .toggle-icon {
+    -webkit-text-fill-color: var(--text-color) !important;
+    color: var(--text-color) !important;
+}
+
+.category-block h3 .selected-summary {
+    -webkit-text-fill-color: var(--success-color, #4caf50) !important;
+    font-weight: normal;
+}
+
+/* v4.4.6 Reduce Spacing */
+.collapsible-header {
+    padding: 0.25rem 0.5rem !important;
+}
+
+/* === 18. 可收合區段 END === */
+
+/* === 19. Settings Modal — 古地圖風格 START === */
+/* ========================================
+   Settings Modal & Site Picker (v4.7)
+   ======================================== */
+
+/* Modal Overlay */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    /* Darker overlay for contrast */
+    backdrop-filter: blur(5px);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-overlay.active {
+    display: flex;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+/* Settings Panel - Ancient Map Style */
+.settings-panel {
+    /* Paper Texture Background - Light Beige */
+    background-color: #f0e6d2;
+    background-image:
+        repeating-linear-gradient(135deg, rgba(89, 59, 19, 0.03) 0px, rgba(89, 59, 19, 0.03) 1px, transparent 1px, transparent 10px),
+        radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.4), rgba(0, 0, 0, 0.05));
+    border: none;
+    width: 90%;
+    max-width: 650px;
+    max-height: 80vh;
+    overflow: hidden;
+    position: relative;
+    /* Unrolling animation */
+    animation: unroll 0.6s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+    transform-origin: top center;
+    box-shadow:
+        0 20px 60px rgba(0, 0, 0, 0.7),
+        inset 0 0 80px rgba(101, 67, 33, 0.2);
+    /* Inner aging effect */
+
+    /* Complex Irregular Torn Edges */
+    clip-path: polygon(1% 0%, 5% 1%, 10% 0%, 15% 2%, 20% 0%, 25% 1%, 30% 0%, 35% 1.5%,
+            40% 0%, 45% 1%, 50% 0%, 55% 1.5%, 60% 0%, 65% 1%, 70% 0%, 75% 1.5%,
+            80% 0%, 85% 1%, 90% 0%, 95% 1.5%, 99% 0%, 100% 2%,
+            99% 10%, 100% 20%, 99% 30%, 100% 40%, 99% 50%, 100% 60%, 99% 70%, 100% 80%, 99% 90%, 100% 98%,
+            95% 99%, 90% 100%, 85% 99%, 80% 100%, 75% 99%, 70% 100%, 65% 99%, 60% 100%,
+            55% 99%, 50% 100%, 45% 99%, 40% 100%, 35% 99%, 30% 100%, 25% 99%,
+            20% 100%, 15% 99%, 10% 100%, 5% 99%, 2% 100%, 0% 98%,
+            1% 90%, 0% 80%, 1% 70%, 0% 60%, 1% 50%, 0% 40%, 1% 30%, 0% 20%, 1% 10%, 0% 2%);
+    color: #3e2723;
+    /* Dark brown text for high contrast */
+    font-family: 'Courier New', Courier, monospace;
+    /* Typewriter/Map font */
+}
+
+.settings-panel::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: 1px;
+    background: rgba(101, 67, 33, 0.15);
+    /* Fold line */
+    transform: translateX(-50%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+@keyframes unroll {
+    from {
+        height: 0;
+        opacity: 0;
+        transform: scaleY(0.1);
+    }
+
+    to {
+        height: auto;
+        opacity: 1;
+        transform: scaleY(1);
+    }
+}
+
+.settings-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 2.5rem;
+    border-bottom: 2px dashed rgba(101, 67, 33, 0.3);
+    background: rgba(101, 67, 33, 0.05);
+    position: relative;
+    z-index: 1;
+}
+
+.settings-header h2 {
+    margin: 0;
+    font-size: 1.6rem;
+    color: #3e2723;
+    /* Dark brown */
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-shadow: 1px 1px 0px rgba(255, 255, 255, 0.5);
+    font-weight: 700;
+}
+
+.btn-close {
+    background: transparent;
+    border: none;
+    color: #8d6e63;
+    width: 36px;
+    height: 36px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 1.4rem;
+}
+
+.btn-close:hover {
+    color: #d32f2f;
+    transform: scale(1.2) rotate(90deg);
+}
+
+.settings-body {
+    padding: 1rem 1.5rem;
+    /* Reduced padding */
+    max-height: 65vh;
+    /* Increased max height */
+    overflow-y: auto;
+    position: relative;
+    z-index: 1;
+}
+
+/* Custom Scrollbar for Settings */
+.settings-body::-webkit-scrollbar {
+    width: 8px;
+}
+
+.settings-body::-webkit-scrollbar-track {
+    background: rgba(101, 67, 33, 0.1);
+}
+
+.settings-body::-webkit-scrollbar-thumb {
+    background: rgba(101, 67, 33, 0.4);
+    border-radius: 4px;
+}
+
+.settings-body::-webkit-scrollbar-thumb:hover {
+    background: #6d4c41;
+}
+
+/* Changelog Styles */
+.changelog-entry {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px dashed rgba(101, 67, 33, 0.2);
+}
+
+.changelog-entry:last-child {
+    border-bottom: none;
+}
+
+.changelog-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.changelog-version {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #3e2723;
+}
+
+.changelog-date {
+    font-size: 0.85rem;
+    color: #8d6e63;
+    font-style: italic;
+}
+
+.changelog-list {
+    list-style-type: none;
+    padding-left: 0;
+    margin: 0;
+}
+
+.changelog-list li {
+    font-size: 0.95rem;
+    color: #5d4037;
+    padding: 4px 0 4px 12px;
+    position: relative;
+}
+
+.changelog-list li::before {
+    content: "•";
+    color: #8d6e63;
+    position: absolute;
+    left: 0;
+    top: 4px;
+}
+
+.settings-hint {
+    color: #5d4037;
+    /* Medium brown */
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+    /* Reduced margin */
+    padding: 10px;
+    /* Reduced padding */
+    background: rgba(255, 255, 255, 0.6);
+    border-left: 4px solid #8d6e63;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    font-weight: 600;
+}
+
+#ai-sites-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    /* Reduced gap */
+    margin-bottom: 1rem;
+    /* Reduced margin */
+}
+
+.site-row {
+    display: grid;
+    grid-template-columns: 1fr 2fr auto;
+    gap: 8px;
+    /* Reduced gap */
+    align-items: center;
+    padding: 6px 8px;
+    /* Reduced padding */
+    background: rgba(255, 255, 255, 0.5);
+    /* Semi-transparent white */
+    border: 1px solid rgba(101, 67, 33, 0.2);
+    border-radius: 6px;
+    /* Slightly tighter radius */
+    transition: all 0.2s ease;
+}
+
+.site-row:hover {
+    background: rgba(255, 255, 255, 0.8);
+    border-color: #8d6e63;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+}
+
+.site-row input {
+    background: #fff;
+    border: 1px solid #d7ccc8;
+    color: #3e2723;
+    /* Dark text */
+    padding: 6px 10px;
+    /* Reduced padding */
+    border-radius: 4px;
+    font-size: 0.9rem;
+    font-family: inherit;
+}
+
+.site-row input:focus {
+    outline: none;
+    border-color: #8d6e63;
+    background: #fff;
+    box-shadow: 0 0 0 2px rgba(141, 110, 99, 0.2);
+}
+
+.site-row input::placeholder {
+    color: #a1887f;
+}
+
+.btn-delete-site {
+    background: rgba(211, 47, 47, 0.1);
+    border: 1px solid rgba(211, 47, 47, 0.3);
+    color: #c62828;
+    padding: 6px 10px;
+    /* Reduced padding */
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-delete-site:hover {
+    background: #ffebee;
+    color: #b71c1c;
+    transform: scale(1.1);
+}
+
+.btn-add-site {
+    width: 100%;
+    background: rgba(101, 67, 33, 0.1);
+    border: 2px dashed rgba(101, 67, 33, 0.3);
+    color: #5d4037;
+    padding: 10px;
+    /* Reduced padding */
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+.btn-add-site:hover {
+    background: rgba(101, 67, 33, 0.15);
+    border-color: #5d4037;
+    color: #3e2723;
+}
+
+.settings-footer {
+    padding: 1rem 1.5rem;
+    /* Reduced padding */
+    border-top: 2px dashed rgba(101, 67, 33, 0.3);
+    display: flex;
+    justify-content: flex-end;
+    background: rgba(101, 67, 33, 0.05);
+    position: relative;
+    z-index: 1;
+}
+
+.btn-save {
+    background: #5d4037;
+    /* Dark brown button */
+    border: none;
+    color: #f0e6d2;
+    /* Light text */
+    padding: 10px 24px;
+    /* Reduced padding */
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 700;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.btn-save:hover {
+    background: #3e2723;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* Site Picker Popup - Matching Map Style */
+.site-picker-popup {
+    display: none;
+    position: fixed;
+    background-color: #f0e6d2;
+    background-image: radial-gradient(circle, rgba(255, 255, 255, 0.5), rgba(0, 0, 0, 0.05));
+    border: 1px solid #8d6e63;
+    border-radius: 12px;
+    /* Ragged edges less strictly needed here, but kept simple */
+    padding: 12px;
+    /* Reduced padding */
+    z-index: 10000;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    min-width: 250px;
+    animation: popIn 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.site-picker-popup.active {
+    display: block;
+}
+
+@keyframes popIn {
+    from {
+        opacity: 0;
+        transform: scale(0.5);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.site-picker-header {
+    font-size: 0.9rem;
+    color: #5d4037;
+    margin-bottom: 10px;
+    /* Reduced margin */
+    text-align: center;
+    font-weight: 700;
+    border-bottom: 1px dashed rgba(101, 67, 33, 0.3);
+    padding-bottom: 6px;
+    /* Reduced padding */
+}
+
+#site-picker-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    /* Reduced gap */
+}
+
+.site-picker-btn {
+    background: rgba(255, 255, 255, 0.6);
+    border: 1px solid rgba(101, 67, 33, 0.2);
+    color: #3e2723;
+    padding: 8px 12px;
+    /* Reduced padding */
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: left;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.site-picker-btn:hover {
+    background: #fff;
+    border-color: #5d4037;
+    transform: translateX(4px);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* --- Settings: Custom Background Controls --- */
+.settings-divider {
+    border: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(78, 52, 46, 0.3), transparent);
+    margin: 1rem 0 0.8rem 0;
+    /* Reduced margins */
+}
+
+/* Toggle Switch */
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 26px;
+    flex-shrink: 0;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle-switch .toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: #8d6e63;
+    border-radius: 26px;
+    transition: 0.3s;
+}
+
+.toggle-switch .toggle-slider::before {
+    content: '';
+    position: absolute;
+    height: 20px;
+    width: 20px;
+    bottom: 3px;
+    left: 3px;
+    background: #f0e6d2;
+    border-radius: 50%;
+    transition: 0.3s;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.toggle-switch input:checked+.toggle-slider {
+    background: #a855f7;
+}
+
+.toggle-switch input:checked+.toggle-slider::before {
+    transform: translateX(24px);
+}
+
+.settings-subtitle {
+    font-size: 1rem;
+    color: #4e342e;
+    margin-bottom: 0.8rem;
+    /* Reduced margin */
+    border-left: 3px solid #8d6e63;
+    padding-left: 8px;
+}
+
+.setting-group {
+    margin-bottom: 0.8rem;
+    /* Reduced margin */
+}
+
+.setting-group label {
+    display: block;
+    font-size: 0.85rem;
+    color: #5d4037;
+    margin-bottom: 0.3rem;
+    font-weight: 500;
+    display: flex;
+    justify-content: space-between;
+}
+
+.input-with-action {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+.url-input-container {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.input-with-action input {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid rgba(141, 110, 99, 0.4);
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.5);
+    color: #3e2723;
+    font-family: inherit;
+}
+
+.btn-upload-site {
+    padding: 8px 12px;
+    background: #8d6e63;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-upload-site:hover {
+    background: #6d4c41;
+    transform: translateY(-1px);
+}
+
+.hint-text {
+    font-size: 0.75rem;
+    color: #8d6e63;
+    font-style: italic;
+}
+
+/* Range Sliders */
+input[type=range] {
+    width: 100%;
+    -webkit-appearance: none;
+    appearance: none;
+    background: transparent;
+}
+
+input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    height: 16px;
+    width: 16px;
+    border-radius: 50%;
+    background: #5d4037;
+    cursor: pointer;
+    margin-top: -6px;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
+}
+
+input[type=range]::-webkit-slider-runnable-track {
+    width: 100%;
+    height: 4px;
+    cursor: pointer;
+    background: rgba(141, 110, 99, 0.3);
+    border-radius: 2px;
+}
+
+/* === 20. AI 網站設定 END === */
+
+/* === 21. v5.0 Tab UI START === */
+
+/* Tab Toolbar (tab bar + reset button) */
+.tab-toolbar {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.btn-reset-inline {
+    align-self: flex-start;
+    padding: 4px 12px;
+    font-size: 0.78rem;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+}
+
+.btn-reset-inline:hover {
+    opacity: 1;
+}
+
+.btn-reset-standalone {
+    margin-top: 1rem;
+    padding: 8px 20px;
+    font-size: 0.85rem;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+    width: 100%;
+}
+
+.btn-reset-standalone:hover {
+    opacity: 1;
+}
+
+/* Tab Content — natural flow inside scrollable panel */
+.tab-content {
+    padding-bottom: 1rem;
+    min-height: 1500px;
+}
+
+/* Tab Bar */
+.tab-bar {
+    display: flex;
+    gap: 4px;
+    padding: 6px;
+    margin-bottom: 16px;
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 14px;
+    border: 1px solid rgba(187, 134, 252, 0.25);
+    overflow-x: auto;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
+}
+
+.tab-btn {
+    flex: 1;
+    min-width: 0;
+    padding: 12px 10px;
+    border: none;
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--text-color);
+    font-size: 0.88rem;
+    font-weight: 500;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    white-space: nowrap;
+    opacity: 0.7;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.tab-btn:hover {
+    opacity: 1;
+    background: rgba(187, 134, 252, 0.12);
+}
+
+.tab-btn.active {
+    opacity: 1;
+    background: linear-gradient(135deg, var(--accent-color), #9965f4);
+    color: #fff;
+    font-weight: 600;
+    box-shadow: 0 3px 12px rgba(187, 134, 252, 0.4);
+}
+
+.tab-btn i {
+    font-size: 1rem;
+}
+
+/* Section Block */
+.section-block {
+    margin-bottom: 16px;
+    padding: 12px;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 10px;
+    overflow: hidden;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.section-block-title {
+    margin: 0;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--accent-color);
+}
+
+/* Custom toggle button */
+.btn-custom-toggle {
+    padding: 4px 10px;
+    font-size: 0.75rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--glass-border);
+    color: var(--text-color);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    opacity: 0.7;
+}
+
+.btn-custom-toggle:hover {
+    opacity: 1;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.btn-custom-toggle.active {
+    background: var(--accent-color);
+    color: #fff;
+    opacity: 1;
+    border-color: var(--accent-color);
+}
+
+/* Gender Toggle */
+.gender-toggle {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 10px;
+}
+
+.gender-btn {
+    flex: 1;
+    padding: 6px 12px;
+    border: 1px solid var(--glass-border);
+    background: rgba(255, 255, 255, 0.03);
+    color: var(--text-color);
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.82rem;
+    transition: all 0.2s ease;
+    opacity: 0.6;
+}
+
+.gender-btn:hover {
+    opacity: 0.85;
+}
+
+/* === v7.0 性別按鈕視覺增強 START === */
+.gender-btn.active {
+    opacity: 1;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.gender-btn.active[data-gender="female"] {
+    background: linear-gradient(135deg, rgba(236, 72, 153, 0.2), rgba(244, 114, 182, 0.12));
+    border-color: rgba(236, 72, 153, 0.6);
+    color: #f472b6;
+    box-shadow: 0 0 12px rgba(236, 72, 153, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    text-shadow: 0 0 8px rgba(236, 72, 153, 0.3);
+}
+
+.gender-btn.active[data-gender="male"] {
+    background: linear-gradient(135deg, rgba(56, 189, 248, 0.2), rgba(96, 165, 250, 0.12));
+    border-color: rgba(56, 189, 248, 0.6);
+    color: #38bdf8;
+    box-shadow: 0 0 12px rgba(56, 189, 248, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    text-shadow: 0 0 8px rgba(56, 189, 248, 0.3);
+}
+
+/* === v7.0 性別按鈕視覺增強 END === */
+
+/* === Gender + Age Combined Row START === */
+.gender-age-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.gender-toggle-compact {
+    display: flex;
+    gap: 4px;
+    flex-shrink: 0;
+    margin-bottom: 0;
+}
+
+.gender-toggle-compact .gender-btn {
+    padding: 6px 14px;
+    font-size: 0.82rem;
+    flex: none;
+}
+
+.age-compact-wrap {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+    min-width: 0;
+}
+
+/* === Gender + Age Combined Row END === */
+
+/* Age Slider */
+.age-display {
+    display: flex;
+    align-items: baseline;
+    gap: 3px;
+    min-width: 60px;
+    justify-content: center;
+}
+
+.age-number {
+    font-size: 2rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--accent-color), #03dac6);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    line-height: 1;
+}
+
+.age-unit {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.slider-container {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.slider-label {
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.35);
+    min-width: 22px;
+    text-align: center;
+}
+
+/* Custom Range Slider */
+.age-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 6px;
+    border-radius: 3px;
+    background: linear-gradient(90deg, var(--accent-color) var(--val, 20%), rgba(255, 255, 255, 0.1) var(--val, 20%));
+    outline: none;
+    cursor: pointer;
+    transition: background 0.1s;
+}
+
+.age-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent-color), #9965f4);
+    border: 2px solid #fff;
+    box-shadow: 0 0 10px rgba(187, 134, 252, 0.5);
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.age-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+    box-shadow: 0 0 16px rgba(187, 134, 252, 0.7);
+}
+
+.age-slider::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent-color), #9965f4);
+    border: 2px solid #fff;
+    box-shadow: 0 0 10px rgba(187, 134, 252, 0.5);
+    cursor: pointer;
+}
+
+.age-slider::-moz-range-track {
+    height: 6px;
+    border-radius: 3px;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* Tag Grid */
+.tag-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+/* === v6.8 外觀壓縮 START === */
+
+/* Color Swatch Grid — 單行水平捲動 */
+.color-swatch-grid {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 6px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(187, 134, 252, 0.3) transparent;
+}
+
+.color-swatch-grid::-webkit-scrollbar {
+    height: 4px;
+}
+
+.color-swatch-grid::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.color-swatch-grid::-webkit-scrollbar-thumb {
+    background: rgba(187, 134, 252, 0.3);
+    border-radius: 2px;
+}
+
+.color-swatch {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    padding: 4px 6px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 2px solid transparent;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-width: 42px;
+    flex-shrink: 0;
+}
+
+.color-swatch:hover {
+    background: rgba(255, 255, 255, 0.08);
+    transform: translateY(-1px);
+}
+
+.color-swatch.active {
+    border-color: var(--accent-color);
+    background: rgba(187, 134, 252, 0.1);
+    box-shadow: 0 0 8px rgba(187, 134, 252, 0.2);
+}
+
+.swatch-circle {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.swatch-label {
+    font-size: 0.62rem;
+    color: var(--text-color);
+    opacity: 0.8;
+    text-align: center;
+    white-space: nowrap;
+}
+
+/* Eye Dual Row — 左右眼並排 */
+.eye-dual-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.eye-half {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.eye-half-title {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--secondary-color);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* Eye Color Grid — 單行水平捲動 */
+.eye-color-grid {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 4px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(3, 218, 198, 0.3) transparent;
+}
+
+.eye-color-grid::-webkit-scrollbar {
+    height: 4px;
+}
+
+.eye-color-grid::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.eye-color-grid::-webkit-scrollbar-thumb {
+    background: rgba(3, 218, 198, 0.3);
+    border-radius: 2px;
+}
+
+.eye-color-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    padding: 4px 5px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 2px solid transparent;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-width: 36px;
+    flex-shrink: 0;
+}
+
+.eye-color-btn:hover {
+    background: rgba(255, 255, 255, 0.08);
+    transform: translateY(-1px);
+}
+
+.eye-color-btn.active {
+    border-color: var(--secondary-color);
+    background: rgba(3, 218, 198, 0.1);
+    box-shadow: 0 0 8px rgba(3, 218, 198, 0.2);
+}
+
+.eye-circle {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.25);
+    box-shadow: 0 0 6px rgba(0, 0, 0, 0.3), inset 0 0 4px rgba(255, 255, 255, 0.1);
+}
+
+.eye-label {
+    font-size: 0.6rem;
+    color: var(--text-color);
+    opacity: 0.8;
+    text-align: center;
+    white-space: nowrap;
+}
+
+/* === v6.8 外觀壓縮 END === */
+
+/* Custom Input Row */
+.custom-input-row {
+    display: flex;
+    gap: 6px;
+    margin-top: 10px;
+}
+
+.custom-section-input {
+    flex: 1;
+    padding: 8px 12px;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--glass-border);
+    border-radius: 8px;
+    color: var(--text-color);
+    font-size: 0.85rem;
+    transition: border-color 0.2s;
+}
+
+.custom-section-input:focus {
+    border-color: var(--accent-color);
+    outline: none;
+}
+
+.btn-clear-custom {
+    padding: 6px 10px;
+    background: rgba(207, 102, 121, 0.2);
+    border: 1px solid rgba(207, 102, 121, 0.3);
+    color: var(--danger-color);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-clear-custom:hover {
+    background: rgba(207, 102, 121, 0.3);
+}
+
+/* === 24. 色彩選擇器 END === */
+
+/* === 25. Body Magic 進階體型 START === */
+.body-magic-btn {
+    padding: 4px 12px;
+    border: 1px solid rgba(251, 191, 36, 0.4);
+    background: linear-gradient(135deg, rgba(167, 139, 250, 0.15), rgba(251, 191, 36, 0.15));
+    color: #fbbf24;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.72rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    text-shadow: 0 0 8px rgba(251, 191, 36, 0.3);
+}
+
+.body-magic-btn:hover {
+    background: linear-gradient(135deg, rgba(167, 139, 250, 0.3), rgba(251, 191, 36, 0.3));
+    border-color: #fbbf24;
+    box-shadow: 0 0 15px rgba(251, 191, 36, 0.3);
+    transform: translateY(-1px);
+}
+
+/* === v6.3 Race Pagination START === */
+
+/* Race Magic Button (same style as body-magic-btn) */
+.race-magic-btn {
+    padding: 4px 12px;
+    border: 1px solid rgba(251, 191, 36, 0.4);
+    background: linear-gradient(135deg, rgba(167, 139, 250, 0.15), rgba(251, 191, 36, 0.15));
+    color: #fbbf24;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.72rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    text-shadow: 0 0 8px rgba(251, 191, 36, 0.3);
+}
+
+.race-magic-btn:hover {
+    background: linear-gradient(135deg, rgba(167, 139, 250, 0.3), rgba(251, 191, 36, 0.3));
+    border-color: #fbbf24;
+    box-shadow: 0 0 15px rgba(251, 191, 36, 0.3);
+    transform: translateY(-1px);
+}
+
+/* Section Header Button Group（magic + custom 靠在一起）*/
+.section-header-buttons {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Title + Badge Wrapper（讓 badge 緊貼標題右側） */
+.section-title-with-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Selected Race Badge */
+.selected-race-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 10px;
+    background: rgba(187, 134, 252, 0.15);
+    border: 1px solid rgba(187, 134, 252, 0.3);
+    border-radius: 12px;
+    font-size: 0.72rem;
+    color: var(--accent-color);
+    font-weight: 500;
+    animation: badgeFadeIn 0.3s ease;
+    margin-left: 6px;
+}
+
+.selected-race-badge .badge-x {
+    cursor: pointer;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+    font-size: 0.65rem;
+    margin-left: 2px;
+}
+
+.selected-race-badge .badge-x:hover {
+    opacity: 1;
+}
+
+@keyframes badgeFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Paginated Race Tag Grid (10 cols × 3 rows max) */
+.tag-grid-paginated {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 6px;
+    padding: 2px;
+}
+
+/* Pagination Nav Controls */
+.pagination-nav {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 10px;
+    user-select: none;
+}
+
+.page-btn {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--glass-border);
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-color);
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: all 0.2s;
+}
+
+.page-btn:hover:not(:disabled) {
+    background: var(--accent-color);
+    color: #121212;
+    border-color: var(--accent-color);
+    transform: translateY(-1px);
+}
+
+.page-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+.page-indicator {
+    font-size: 0.82rem;
+    color: rgba(255, 255, 255, 0.5);
+    min-width: 50px;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+}
+
+/* === v6.3 Race Pagination END === */
+.body-advanced-summary {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background: linear-gradient(135deg, rgba(167, 139, 250, 0.1), rgba(251, 191, 36, 0.08));
+    border: 1px solid rgba(251, 191, 36, 0.2);
+    border-radius: 8px;
+    font-size: 0.75rem;
+    color: #fbbf24;
+    flex-wrap: wrap;
+    margin-bottom: 6px;
+}
+
+.body-advanced-summary span {
+    flex: 1;
+    min-width: 0;
+}
+
+.body-summary-action {
+    padding: 3px 10px;
+    border: 1px solid rgba(167, 139, 250, 0.3);
+    background: rgba(167, 139, 250, 0.1);
+    color: #a78bfa;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.7rem;
+    transition: all 0.2s;
+}
+
+.body-summary-action:hover {
+    background: rgba(167, 139, 250, 0.25);
+}
+
+.body-summary-action.clear {
+    border-color: rgba(207, 102, 121, 0.3);
+    background: rgba(207, 102, 121, 0.1);
+    color: var(--danger-color);
+}
+
+.body-summary-action.clear:hover {
+    background: rgba(207, 102, 121, 0.25);
+}
+
+.body-section-disabled {
+    opacity: 0.3;
+    pointer-events: none;
+    filter: grayscale(0.8);
+    position: relative;
+}
+
+/* === 25. Body Magic 進階體型 END === */
+
+/* === 26. 衝突偵測 Modal START === */
+/* v6.1 從 conflict-system.js 外移 */
+
+#conflict-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#conflict-overlay .conflict-bg {
+    position: absolute;
+    inset: 0;
+    background: rgba(80, 0, 0, 0.6);
+    backdrop-filter: blur(8px);
+    animation: bg-pulse 1s ease-in-out infinite alternate;
+}
+
+@keyframes bg-pulse {
+    0% {
+        background: rgba(80, 0, 0, 0.6);
+    }
+
+    100% {
+        background: rgba(20, 0, 0, 0.75);
+    }
+}
+
+#conflict-overlay .conflict-modal {
+    position: relative;
+    width: 500px;
+    max-width: 92vw;
+    background: linear-gradient(145deg, #1a0a0a 0%, #2a1020 40%, #1a0a1a 100%);
+    border: 2px solid #ff2244;
+    border-radius: 16px;
+    overflow: hidden;
+    animation: modal-enter 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards, border-glow 2s ease-in-out infinite;
+    box-shadow: 0 0 30px rgba(255, 34, 68, 0.5), 0 0 60px rgba(255, 34, 68, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+@keyframes modal-enter {
+    0% {
+        transform: scale(0.3) rotate(-5deg);
+        opacity: 0;
+    }
+
+    60% {
+        transform: scale(1.05) rotate(0.5deg);
+        opacity: 1;
+    }
+
+    100% {
+        transform: scale(1) rotate(0deg);
+        opacity: 1;
+    }
+}
+
+@keyframes border-glow {
+    0% {
+        border-color: #ff2244;
+        box-shadow: 0 0 30px rgba(255, 34, 68, 0.5), 0 0 60px rgba(255, 34, 68, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    }
+
+    50% {
+        border-color: #ff6644;
+        box-shadow: 0 0 40px rgba(255, 102, 68, 0.6), 0 0 80px rgba(255, 102, 68, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    }
+
+    100% {
+        border-color: #ff2244;
+        box-shadow: 0 0 30px rgba(255, 34, 68, 0.5), 0 0 60px rgba(255, 34, 68, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    }
+}
+
+.conflict-header {
+    background: linear-gradient(135deg, rgba(255, 34, 68, 0.3), rgba(200, 0, 40, 0.2));
+    padding: 18px 24px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.conflict-header::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(90deg, transparent, transparent 20px, rgba(0, 0, 0, 0.1) 20px, rgba(0, 0, 0, 0.1) 22px);
+    animation: stripe-move 1s linear infinite;
+}
+
+@keyframes stripe-move {
+    0% {
+        transform: translateX(0);
+    }
+
+    100% {
+        transform: translateX(22px);
+    }
+}
+
+.conflict-title {
+    font-size: 1.3rem;
+    font-weight: 900;
+    color: #ff4444;
+    position: relative;
+    text-shadow: 0 0 15px rgba(255, 68, 68, 0.5);
+}
+
+.conflict-subtitle {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.7);
+    margin-top: 4px;
+    position: relative;
+    letter-spacing: 2px;
+}
+
+.conflict-body {
+    padding: 20px 24px;
+}
+
+.conflict-desc {
+    font-size: 1.1rem;
+    font-weight: 600;
+    line-height: 1.7;
+    color: #ddd;
+    margin-bottom: 8px;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.conflict-combo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    margin-bottom: 14px;
+}
+
+.combo-tag {
+    padding: 8px 16px;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 0.95rem;
+}
+
+.combo-race {
+    background: rgba(255, 68, 68, 0.2);
+    border: 1px solid #ff4444;
+    color: #ff8888;
+}
+
+.combo-job {
+    background: rgba(68, 136, 255, 0.2);
+    border: 1px solid #4488ff;
+    color: #88bbff;
+}
+
+.combo-x {
+    font-size: 1.4rem;
+    color: #ff4444;
+    font-weight: 900;
+    text-shadow: 0 0 10px rgba(255, 68, 68, 0.5);
+    animation: x-pulse 0.6s ease-in-out infinite alternate;
+}
+
+@keyframes x-pulse {
+    0% {
+        transform: scale(1);
+        opacity: 0.7;
+    }
+
+    100% {
+        transform: scale(1.2);
+        opacity: 1;
+    }
+}
+
+.conflict-reason {
+    font-size: 0.8rem;
+    color: #aa8888;
+    text-align: center;
+    margin-bottom: 16px;
+    font-style: italic;
+}
+
+.conflict-prompt-label {
+    font-size: 0.75rem;
+    color: #888;
+    margin-bottom: 8px;
+}
+
+.conflict-options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.conflict-option {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 14px 16px;
+    cursor: pointer;
+    transition: all 0.25s;
+    text-align: left;
+    font-family: inherit;
+    color: inherit;
+}
+
+.conflict-option:hover {
+    border-color: rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.08);
+    transform: translateX(4px);
+}
+
+.option-title {
+    font-size: 0.92rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* ⓘ 觸發圖示 */
+.option-info-trigger {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.4);
+    cursor: help;
+    flex-shrink: 0;
+    transition: all 0.2s;
+    margin-left: 4px;
+}
+
+.option-info-trigger:hover {
+    background: rgba(255, 255, 255, 0.15);
+    color: rgba(255, 255, 255, 0.8);
+}
+
+/* Tooltip 浮動說明 */
+.option-tooltip {
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(15, 23, 42, 0.95);
+    border: 1px solid rgba(148, 163, 184, 0.3);
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 0.75rem;
+    font-weight: 400;
+    color: #cbd5e1;
+    line-height: 1.5;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s, visibility 0.2s;
+    pointer-events: none;
+    z-index: 10;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+/* Tooltip 箭頭 */
+.option-tooltip::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-top-color: rgba(148, 163, 184, 0.3);
+}
+
+.option-info-trigger:hover .option-tooltip {
+    opacity: 1;
+    visibility: visible;
+}
+
+.option-1 .option-title {
+    color: #ff8844;
+}
+
+.option-2 .option-title {
+    color: #44aaff;
+}
+
+.option-3 .option-title {
+    color: #44ff88;
+}
+
+.conflict-counter {
+    position: absolute;
+    top: 12px;
+    right: 16px;
+    font-size: 0.65rem;
+    color: rgba(255, 255, 255, 0.5);
+    z-index: 1;
+}
+
+.screen-flash {
+    position: fixed;
+    inset: 0;
+    background: rgba(255, 0, 0, 0.3);
+    z-index: 9998;
+    pointer-events: none;
+    opacity: 0;
+}
+
+.screen-flash.active {
+    animation: flash-hit 0.4s ease-out forwards;
+}
+
+@keyframes flash-hit {
+    0% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+body.screen-shake {
+    animation: shake-screen 0.4s ease-in-out;
+}
+
+@keyframes shake-screen {
+
+    0%,
+    100% {
+        transform: translate(0);
+    }
+
+    10% {
+        transform: translate(-4px, 2px);
+    }
+
+    20% {
+        transform: translate(4px, -2px);
+    }
+
+    30% {
+        transform: translate(-3px, 1px);
+    }
+
+    40% {
+        transform: translate(3px, -1px);
+    }
+
+    50% {
+        transform: translate(-2px, 1px);
+    }
+
+    60% {
+        transform: translate(2px, 0);
+    }
+
+    70% {
+        transform: translate(-1px, 0);
+    }
+}
+
+.remember-choice {
+    margin-top: 14px;
+    padding: 12px 14px;
+    background: rgba(187, 134, 252, 0.06);
+    border: 1px solid rgba(187, 134, 252, 0.2);
+    border-radius: 8px;
+    display: none;
+}
+
+.remember-choice.visible {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    animation: fadeSlideIn 0.3s ease forwards;
+}
+
+@keyframes fadeSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.remember-choice input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: #bb86fc;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.remember-choice label {
+    font-size: 0.8rem;
+    color: #bb86fc;
+    cursor: pointer;
+    line-height: 1.4;
+}
+
+.remember-choice .hint {
+    font-size: 0.7rem;
+    color: #888;
+    margin-top: 2px;
+}
+
+.resolution-toast {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: rgba(0, 0, 0, 0.85);
+    border: 1px solid rgba(187, 134, 252, 0.4);
+    border-radius: 12px;
+    padding: 14px 24px;
+    color: #ddd;
+    font-size: 0.85rem;
+    z-index: 10000;
+    opacity: 0;
+    transition: all 0.3s ease;
+    max-width: 500px;
+    text-align: center;
+}
+
+.resolution-toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+/* === 26. 衝突偵測 Modal END === */
+
+/* === 27. Body Magic Modal START === */
+/* v6.1 從 body-magic-modal.js 外移 */
+
+#body-magic-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.9);
+    animation: bmm-fadeIn 0.5s ease;
+    font-family: 'Inter', sans-serif;
+}
+
+@keyframes bmm-fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+#body-magic-modal .bmm-particles {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+#body-magic-modal .bmm-particle {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: #fbbf24;
+    opacity: 0;
+    animation: bmm-float 3s ease-in-out infinite;
+}
+
+@keyframes bmm-float {
+    0% {
+        opacity: 0;
+        transform: translateY(100vh) scale(0);
+    }
+
+    50% {
+        opacity: 0.8;
+    }
+
+    100% {
+        opacity: 0;
+        transform: translateY(-20px) scale(1.5);
+    }
+}
+
+#body-magic-modal .bmm-container {
+    position: relative;
+    z-index: 1;
+    background: linear-gradient(135deg, #0a0e1a 0%, #1e1b4b 40%, #0f172a 100%);
+    border: 2px solid rgba(167, 139, 250, 0.4);
+    border-radius: 16px;
+    padding: 24px;
+    max-width: 1200px;
+    width: 95vw;
+    max-height: 90vh;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    box-shadow: 0 0 60px rgba(167, 139, 250, 0.3), 0 0 120px rgba(251, 191, 36, 0.1);
+}
+
+#body-magic-modal .bmm-title {
+    text-align: center;
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-bottom: 6px;
+    background: linear-gradient(135deg, #a78bfa, #60a5fa);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+#body-magic-modal .bmm-subtitle {
+    text-align: center;
+    font-size: 0.8rem;
+    color: #64748b;
+    margin-bottom: 20px;
+}
+
+#body-magic-modal .bmm-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+@media (max-width: 768px) {
+    #body-magic-modal .bmm-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+#body-magic-modal .bmm-panel {
+    background: rgba(30, 41, 59, 0.7);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(148, 163, 184, 0.15);
+    border-radius: 14px;
+    padding: 20px;
+}
+
+#body-magic-modal .bmm-panel h2 {
+    font-size: 1rem;
+    margin-bottom: 16px;
+    color: #a78bfa;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+#body-magic-modal .bmm-gender {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+#body-magic-modal .bmm-gender-btn {
+    flex: 1;
+    padding: 9px;
+    border: 2px solid transparent;
+    border-radius: 10px;
+    background: rgba(51, 65, 85, 0.6);
+    color: #94a3b8;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+#body-magic-modal .bmm-gender-btn.active {
+    border-color: #a78bfa;
+    color: #e2e8f0;
+    background: rgba(167, 139, 250, 0.15);
+}
+
+#body-magic-modal .bmm-gender-btn:hover {
+    background: rgba(167, 139, 250, 0.1);
+}
+
+#body-magic-modal .bmm-feature {
+    margin-bottom: 22px;
+}
+
+#body-magic-modal .bmm-feature-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+}
+
+#body-magic-modal .bmm-feature-label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #e2e8f0;
+}
+
+#body-magic-modal .bmm-feature-value {
+    font-size: 0.78rem;
+    color: #a78bfa;
+    padding: 3px 12px;
+    background: rgba(167, 139, 250, 0.15);
+    border-radius: 20px;
+    font-weight: 500;
+    transition: all 0.3s;
+}
+
+#body-magic-modal .bmm-feature-value.fantasy {
+    color: #fbbf24;
+    background: rgba(251, 191, 36, 0.2);
+    border: 1px solid rgba(251, 191, 36, 0.3);
+    animation: bmm-glow 2s ease-in-out infinite;
+}
+
+@keyframes bmm-glow {
+
+    0%,
+    100% {
+        box-shadow: 0 0 5px rgba(251, 191, 36, 0.2);
+    }
+
+    50% {
+        box-shadow: 0 0 15px rgba(251, 191, 36, 0.4);
+    }
+}
+
+#body-magic-modal .bmm-scale {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 5px;
+    font-size: 0.6rem;
+    color: #64748b;
+}
+
+#body-magic-modal .bmm-scale span {
+    text-align: center;
+    flex: 1;
+}
+
+#body-magic-modal .bmm-scale .fl {
+    color: #fbbf24;
+    font-weight: 600;
+    font-size: 0.58rem;
+}
+
+#body-magic-modal .bmm-slider-wrap {
+    position: relative;
+}
+
+#body-magic-modal .bmm-fz {
+    position: absolute;
+    top: -2px;
+    height: 12px;
+    border-radius: 4px;
+    pointer-events: none;
+    z-index: 0;
+}
+
+#body-magic-modal .bmm-fz-l {
+    left: 0;
+    width: 14.28%;
+    background: repeating-linear-gradient(45deg, rgba(251, 191, 36, 0.1), rgba(251, 191, 36, 0.1) 3px, transparent 3px, transparent 6px);
+    border: 1px dashed rgba(251, 191, 36, 0.3);
+    border-right: none;
+    border-radius: 4px 0 0 4px;
+}
+
+#body-magic-modal .bmm-fz-r {
+    right: 0;
+    width: 14.28%;
+    background: repeating-linear-gradient(45deg, rgba(251, 191, 36, 0.1), rgba(251, 191, 36, 0.1) 3px, transparent 3px, transparent 6px);
+    border: 1px dashed rgba(251, 191, 36, 0.3);
+    border-left: none;
+    border-radius: 0 4px 4px 0;
+}
+
+#body-magic-modal input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 8px;
+    border-radius: 4px;
+    outline: none;
+    cursor: pointer;
+    position: relative;
+    z-index: 1;
+}
+
+#body-magic-modal input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #a78bfa, #7c3aed);
+    box-shadow: 0 0 10px rgba(167, 139, 250, 0.5);
+    cursor: pointer;
+    margin-top: -7px;
+    transition: box-shadow 0.3s;
+}
+
+#body-magic-modal input[type="range"].in-fantasy::-webkit-slider-thumb {
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    box-shadow: 0 0 15px rgba(251, 191, 36, 0.6);
+}
+
+#body-magic-modal input[type="range"]::-webkit-slider-runnable-track {
+    height: 8px;
+    border-radius: 4px;
+}
+
+#body-magic-modal input[type="range"]::-moz-range-thumb {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: none;
+    background: linear-gradient(135deg, #a78bfa, #7c3aed);
+    box-shadow: 0 0 10px rgba(167, 139, 250, 0.5);
+    cursor: pointer;
+}
+
+#body-magic-modal input[type="range"].in-fantasy::-moz-range-thumb {
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    box-shadow: 0 0 15px rgba(251, 191, 36, 0.6);
+}
+
+#body-magic-modal .sl-bust {
+    background: linear-gradient(to right, #3b82f6, #60a5fa, #a78bfa, #f472b6, #ef4444);
+}
+
+#body-magic-modal .sl-muscle {
+    background: linear-gradient(to right, #3b82f6, #94a3b8, #60a5fa, #a78bfa, #f97316, #ef4444);
+}
+
+#body-magic-modal .sl-height {
+    background: linear-gradient(to right, #3b82f6, #f9a8d4, #94a3b8, #60a5fa, #a78bfa, #ef4444);
+}
+
+#body-magic-modal .sl-weight {
+    background: linear-gradient(to right, #3b82f6, #60a5fa, #94a3b8, #a78bfa, #f97316, #ef4444);
+}
+
+#body-magic-modal .bmm-output-label {
+    font-size: 0.7rem;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 5px;
+}
+
+#body-magic-modal .bmm-output-text {
+    background: rgba(15, 23, 42, 0.8);
+    border: 1px solid rgba(148, 163, 184, 0.1);
+    border-radius: 10px;
+    padding: 12px;
+    font-size: 0.8rem;
+    line-height: 1.6;
+    color: #cbd5e1;
+    height: 80px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+    margin-bottom: 12px;
+}
+
+#body-magic-modal .bmm-output-text .positive {
+    color: #86efac;
+}
+
+#body-magic-modal .bmm-output-text .negative {
+    color: #fca5a5;
+}
+
+#body-magic-modal .bmm-output-text .weight {
+    color: #fcd34d;
+}
+
+#body-magic-modal .bmm-output-text .tag {
+    color: #93c5fd;
+}
+
+#body-magic-modal .bmm-output-text .fantasy-tag {
+    color: #fbbf24;
+    font-weight: 600;
+}
+
+#body-magic-modal .bmm-weight-ind {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 6px;
+    font-size: 0.75rem;
+}
+
+#body-magic-modal .bmm-weight-bar {
+    flex: 1;
+    height: 6px;
+    background: rgba(51, 65, 85, 0.5);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+#body-magic-modal .bmm-weight-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.3s, background 0.3s;
+}
+
+#body-magic-modal .bmm-weight-num {
+    font-weight: 600;
+    min-width: 28px;
+    text-align: right;
+}
+
+#body-magic-modal .bmm-fbanner {
+    background: linear-gradient(135deg, rgba(251, 191, 36, 0.15), rgba(245, 158, 11, 0.1));
+    border: 1px solid rgba(251, 191, 36, 0.3);
+    border-radius: 10px;
+    padding: 9px 12px;
+    margin-bottom: 12px;
+    font-size: 0.75rem;
+    color: #fbbf24;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    visibility: hidden;
+    transition: opacity 0.3s;
+    opacity: 0;
+}
+
+#body-magic-modal .bmm-fbanner.show {
+    visibility: visible;
+    opacity: 1;
+}
+
+#body-magic-modal .bmm-fbanner .icon {
+    font-size: 1.1rem;
+}
+
+#body-magic-modal .bmm-explain {
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(148, 163, 184, 0.1);
+    border-radius: 10px;
+    padding: 12px;
+    margin-top: 12px;
+    font-size: 0.72rem;
+    line-height: 1.6;
+    color: #94a3b8;
+    height: 100px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+}
+
+#body-magic-modal .bmm-explain strong {
+    color: #e2e8f0;
+}
+
+#body-magic-modal .bmm-presets {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-top: 10px;
+}
+
+#body-magic-modal .bmm-preset-btn {
+    padding: 5px 10px;
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 7px;
+    background: rgba(51, 65, 85, 0.4);
+    color: #94a3b8;
+    font-size: 0.7rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+#body-magic-modal .bmm-preset-btn:hover {
+    border-color: #a78bfa;
+    color: #e2e8f0;
+    background: rgba(167, 139, 250, 0.15);
+}
+
+#body-magic-modal .bmm-preset-btn.fp {
+    border-color: rgba(251, 191, 36, 0.3);
+    color: #fbbf24;
+}
+
+#body-magic-modal .bmm-preset-btn.fp:hover {
+    border-color: #fbbf24;
+    background: rgba(251, 191, 36, 0.15);
+}
+
+#body-magic-modal .bmm-preset-divider {
+    width: 100%;
+    height: 1px;
+    background: rgba(148, 163, 184, 0.1);
+    margin: 3px 0;
+}
+
+#body-magic-modal .bmm-preset-label {
+    width: 100%;
+    font-size: 0.6rem;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+#body-magic-modal .bmm-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 18px;
+}
+
+#body-magic-modal .bmm-btn-apply {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #a78bfa, #7c3aed);
+    color: white;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 4px 15px rgba(167, 139, 250, 0.3);
+}
+
+#body-magic-modal .bmm-btn-apply:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(167, 139, 250, 0.5);
+}
+
+#body-magic-modal .bmm-btn-cancel {
+    padding: 12px 24px;
+    border: 1px solid rgba(148, 163, 184, 0.3);
+    background: transparent;
+    color: #94a3b8;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+#body-magic-modal .bmm-btn-cancel:hover {
+    border-color: #94a3b8;
+    color: #e2e8f0;
+}
+
+/* === 27. Body Magic Modal END === */
+
+/* === 28. 眼色色盤 START === */
+/* v6.9 Eye Color Palette — 複用 .color-swatch 元件，僅保留開關與佈局 */
+
+/* 異色瞳開關區塊 */
+.eye-heterochromia-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.eye-toggle-label {
+    font-size: 0.82rem;
+    color: #94a3b8;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+}
+
+/* Toggle Switch */
+.eye-toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+    cursor: pointer;
+}
+
+.eye-toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.eye-toggle-slider {
+    position: absolute;
+    inset: 0;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 24px;
+    transition: all 0.3s;
+}
+
+.eye-toggle-slider::before {
+    content: '';
+    position: absolute;
+    height: 18px;
+    width: 18px;
+    left: 2px;
+    bottom: 2px;
+    background: #64748b;
+    border-radius: 50%;
+    transition: all 0.3s;
+}
+
+.eye-toggle-switch input:checked+.eye-toggle-slider {
+    background: rgba(167, 139, 250, 0.3);
+    border-color: rgba(167, 139, 250, 0.5);
+}
+
+.eye-toggle-switch input:checked+.eye-toggle-slider::before {
+    transform: translateX(20px);
+    background: #a78bfa;
+    box-shadow: 0 0 8px rgba(167, 139, 250, 0.5);
+}
+
+/* 眼色 swatch grid 覆寫：允許換行（24 色需多行） */
+.eye-swatch-grid {
+    flex-wrap: wrap;
+}
+
+/* 雙色盤容器 */
+.eye-palette-dual {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.eye-palette-half {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 12px;
+}
+
+.eye-palette-subtitle {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #e2e8f0;
+    margin-bottom: 4px;
+    text-align: center;
+}
+
+/* 響應式 */
+@media (max-width: 768px) {
+    .eye-palette-dual {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* === 28. 眼色色盤 END === */
