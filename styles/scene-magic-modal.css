@@ -1,0 +1,859 @@
+/* ===================================================================
+   Scene Magic Modal — 場景大全 CSS
+   前綴: scmm- (Scene Magic Modal)
+   === Scene Magic Modal START === */
+
+/* === Overlay === */
+#scene-magic-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    background: rgba(0, 0, 0, .85);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: scmm-fadeIn .4s ease
+}
+
+@keyframes scmm-fadeIn {
+    from {
+        opacity: 0
+    }
+
+    to {
+        opacity: 1
+    }
+}
+
+/* === 閃光爆發 === */
+.scmm-flash {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+    background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, .8) 0%, rgba(34, 211, 238, .3) 30%, transparent 70%);
+    animation: scmm-flash .6s ease-out forwards
+}
+
+@keyframes scmm-flash {
+    0% {
+        opacity: 1;
+        transform: scale(.5)
+    }
+
+    50% {
+        opacity: .6;
+        transform: scale(1.2)
+    }
+
+    100% {
+        opacity: 0;
+        transform: scale(2)
+    }
+}
+
+/* === 旋轉魔法陣 === */
+.scmm-magic-circle {
+    position: absolute;
+    width: 500px;
+    height: 500px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    z-index: 0;
+    opacity: .1;
+    animation: scmm-circleIn 1s ease-out, scmm-rotate 25s linear infinite
+}
+
+.scmm-magic-circle svg {
+    width: 100%;
+    height: 100%
+}
+
+@keyframes scmm-rotate {
+    from {
+        transform: translate(-50%, -50%) rotate(0deg)
+    }
+
+    to {
+        transform: translate(-50%, -50%) rotate(360deg)
+    }
+}
+
+@keyframes scmm-circleIn {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(.3) rotate(-90deg)
+    }
+
+    to {
+        opacity: .1;
+        transform: translate(-50%, -50%) scale(1) rotate(0deg)
+    }
+}
+
+/* === 粒子 === */
+.scmm-particles {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden
+}
+
+.scmm-particle {
+    position: absolute;
+    border-radius: 50%;
+    animation: scmm-sparkle linear infinite
+}
+
+@keyframes scmm-sparkle {
+    0% {
+        transform: translateY(100vh) scale(0);
+        opacity: 0
+    }
+
+    10% {
+        opacity: 1;
+        transform: translateY(90vh) scale(1)
+    }
+
+    50% {
+        opacity: .3
+    }
+
+    90% {
+        opacity: .8
+    }
+
+    100% {
+        transform: translateY(-10vh) scale(0);
+        opacity: 0
+    }
+}
+
+/* === 流星 === */
+.scmm-meteor {
+    position: absolute;
+    pointer-events: none;
+    z-index: 0;
+    width: 2px;
+    height: 80px;
+    background: linear-gradient(to bottom, rgba(34, 211, 238, 0), rgba(34, 211, 238, .7), rgba(34, 211, 238, 0));
+    border-radius: 2px;
+    animation: scmm-meteor linear forwards;
+    opacity: 0
+}
+
+@keyframes scmm-meteor {
+    0% {
+        opacity: 0;
+        transform: translate(0, 0) rotate(30deg)
+    }
+
+    10% {
+        opacity: 1
+    }
+
+    90% {
+        opacity: .7
+    }
+
+    100% {
+        opacity: 0;
+        transform: translate(-400px, 600px) rotate(30deg)
+    }
+}
+
+/* === Container === */
+.scmm-container {
+    position: relative;
+    z-index: 2;
+    width: 92vw;
+    max-width: 900px;
+    height: 72vh;
+    background: linear-gradient(135deg, rgba(15, 23, 42, .97), rgba(30, 41, 59, .97));
+    border: 1px solid rgba(148, 163, 184, .15);
+    border-radius: 16px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    animation: scmm-containerIn .5s cubic-bezier(.34, 1.56, .64, 1);
+    box-shadow: 0 0 50px rgba(34, 211, 238, .15), 0 0 100px rgba(6, 182, 212, .08)
+}
+
+@keyframes scmm-containerIn {
+    from {
+        opacity: 0;
+        transform: scale(.5)
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1)
+    }
+}
+
+/* === Header === */
+.scmm-header {
+    padding: 16px 24px 12px;
+    border-bottom: 1px solid rgba(148, 163, 184, .1);
+    flex-shrink: 0
+}
+
+.scmm-title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between
+}
+
+.scmm-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    background: linear-gradient(90deg, #22d3ee, #a855f7, #06b6d4, #22d3ee);
+    background-size: 300% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: scmm-titleGlow 3s ease infinite, scmm-titleIn .8s ease .3s both
+}
+
+@keyframes scmm-titleGlow {
+
+    0%,
+    100% {
+        background-position: 0% 50%
+    }
+
+    50% {
+        background-position: 100% 50%
+    }
+}
+
+@keyframes scmm-titleIn {
+    from {
+        opacity: 0;
+        filter: blur(8px)
+    }
+
+    to {
+        opacity: 1;
+        filter: blur(0)
+    }
+}
+
+/* === 工具列按鈕 === */
+.scmm-toolbar {
+    display: flex;
+    gap: 6px
+}
+
+.scmm-tool-btn {
+    padding: 6px 12px;
+    font-size: .72rem;
+    border-radius: 8px;
+    cursor: pointer;
+    border: 1px solid rgba(148, 163, 184, .15);
+    background: rgba(30, 41, 59, .6);
+    color: #94a3b8;
+    font-family: inherit;
+    transition: all .2s;
+    display: flex;
+    align-items: center;
+    gap: 4px
+}
+
+.scmm-tool-btn:hover {
+    border-color: rgba(34, 211, 238, .4);
+    color: #22d3ee;
+    transform: translateY(-1px)
+}
+
+.scmm-clear-btn:hover {
+    border-color: rgba(239, 68, 68, .4);
+    color: #ef4444
+}
+
+.scmm-tool-icon {
+    font-size: 1rem
+}
+
+/* === 搜尋框 === */
+.scmm-search-row {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px
+}
+
+.scmm-search-wrap {
+    flex: 1;
+    position: relative
+}
+
+.scmm-search {
+    width: 100%;
+    padding: 9px 16px 9px 48px !important;
+    background: rgba(30, 41, 59, .8);
+    border: 1px solid rgba(148, 163, 184, .2);
+    border-radius: 10px;
+    color: #e2e8f0;
+    font-size: .82rem;
+    font-family: inherit;
+    outline: none;
+    transition: border-color .3s
+}
+
+.scmm-search:focus {
+    border-color: rgba(34, 211, 238, .5);
+    box-shadow: 0 0 10px rgba(34, 211, 238, .12)
+}
+
+.scmm-search-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #64748b;
+    font-size: .8rem
+}
+
+/* === 分類 Tabs === */
+.scmm-tabs {
+    display: flex;
+    gap: 3px;
+    padding: 10px 16px 0;
+    overflow-x: auto;
+    flex-shrink: 0
+}
+
+.scmm-tabs::-webkit-scrollbar {
+    height: 0
+}
+
+.scmm-tab {
+    box-sizing: border-box;
+    padding: 6px 10px;
+    font-size: .72rem;
+    border-radius: 8px 8px 0 0;
+    cursor: pointer;
+    border: 1px solid rgba(148, 163, 184, .1);
+    border-bottom: 2px solid transparent;
+    background: rgba(30, 41, 59, .4);
+    color: #94a3b8;
+    transition: all .25s ease;
+    font-family: inherit;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    min-width: 48px;
+    position: relative
+}
+
+.scmm-tab:hover {
+    color: #22d3ee;
+    background: rgba(6, 182, 212, .1);
+    border-color: rgba(34, 211, 238, .25);
+    border-bottom-color: rgba(34, 211, 238, .5);
+    transform: translateY(-2px);
+    box-shadow: 0 2px 8px rgba(6, 182, 212, .15)
+}
+
+.scmm-tab.active {
+    background: linear-gradient(180deg, rgba(6, 182, 212, .15) 0%, rgba(30, 41, 59, .9) 100%);
+    color: #ecfeff;
+    border-color: rgba(34, 211, 238, .4);
+    border-bottom: 3px solid #22d3ee;
+    box-shadow: 0 -2px 12px rgba(34, 211, 238, .2), inset 0 1px 0 rgba(34, 211, 238, .2);
+    transform: translateY(-1px)
+}
+
+.scmm-tab-label {
+    font-size: .68rem;
+    font-weight: 500
+}
+
+.scmm-tab-count {
+    font-size: .55rem;
+    color: #64748b;
+    transition: color .25s ease
+}
+
+.scmm-tab.active .scmm-tab-count {
+    color: #67e8f9;
+    font-weight: 600
+}
+
+/* === 主體 === */
+.scmm-body {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+    border-top: 1px solid rgba(148, 163, 184, .1);
+    min-height: 0
+}
+
+.scmm-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    min-height: 0;
+    padding-top: 14px
+}
+
+.scmm-grid-wrap {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0 10px 14px 20px;
+    min-height: 0
+}
+
+.scmm-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 5px;
+    align-content: start
+}
+
+/* === 場景 Chip === */
+.scmm-scene-chip {
+    padding: 7px 9px;
+    font-size: .73rem;
+    border-radius: 8px;
+    cursor: pointer;
+    border: 1px solid rgba(148, 163, 184, .12);
+    background: rgba(30, 41, 59, .5);
+    color: #cbd5e1;
+    transition: all .2s;
+    font-family: inherit;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    overflow: hidden;
+    position: relative
+}
+
+.scmm-scene-chip:hover {
+    border-color: rgba(34, 211, 238, .4);
+    color: #e2e8f0;
+    background: rgba(6, 182, 212, .08);
+    transform: translateY(-1px)
+}
+
+.scmm-scene-chip.selected {
+    background: rgba(6, 182, 212, .15);
+    border-color: #22d3ee;
+    color: #fff;
+    box-shadow: 0 0 10px rgba(34, 211, 238, .15)
+}
+
+.scmm-scene-chip.selected .scmm-chip-en {
+    color: rgba(255, 255, 255, .5)
+}
+
+.scmm-scene-chip.random-pick {
+    animation: scmm-randomPick .6s ease;
+}
+
+@keyframes scmm-randomPick {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 10px rgba(34, 211, 238, .15)
+    }
+
+    50% {
+        transform: scale(1.08);
+        box-shadow: 0 0 25px rgba(34, 211, 238, .5), 0 0 40px rgba(168, 85, 247, .3)
+    }
+
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 10px rgba(34, 211, 238, .15)
+    }
+}
+
+.scmm-chip-icon {
+    font-size: .85rem;
+    flex-shrink: 0
+}
+
+.scmm-chip-text {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    min-width: 0;
+    flex: 1
+}
+
+.scmm-chip-zh {
+    font-size: .73rem;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis
+}
+
+.scmm-chip-en {
+    font-size: .58rem;
+    color: #64748b;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis
+}
+
+/* === 🔥 熱門標記 === */
+.scmm-hot-badge {
+    position: absolute;
+    top: 2px;
+    right: 3px;
+    font-size: .55rem;
+    color: #f59e0b;
+    opacity: .7
+}
+
+.scmm-scene-chip:hover .scmm-hot-badge {
+    opacity: 1
+}
+
+/* === 📋 最近使用標記 === */
+.scmm-recent-badge {
+    position: absolute;
+    bottom: 2px;
+    right: 3px;
+    font-size: .5rem;
+    color: #38bdf8;
+    opacity: .6
+}
+
+/* === A-Z 索引 === */
+.scmm-az {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4px 6px;
+    gap: 1px;
+    border-left: 1px solid rgba(148, 163, 184, .08);
+    user-select: none;
+    flex-shrink: 0
+}
+
+.scmm-az-letter {
+    font-size: .5rem;
+    color: #475569;
+    cursor: pointer;
+    padding: 1px 4px;
+    border-radius: 3px;
+    transition: all .15s;
+    line-height: 1.2
+}
+
+.scmm-az-letter:hover {
+    color: #22d3ee;
+    background: rgba(34, 211, 238, .1)
+}
+
+.scmm-az-letter.active {
+    color: #fff;
+    background: rgba(6, 182, 212, .4)
+}
+
+/* === 加分特徵（Bonus Panel）=== */
+.scmm-bonus {
+    margin: 8px 16px;
+    padding: 12px 16px;
+    border-radius: 10px;
+    background: rgba(15, 23, 42, .6);
+    border: 1px solid rgba(34, 211, 238, .2);
+    display: none;
+    flex-shrink: 0;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .03), 0 2px 8px rgba(0, 0, 0, .2)
+}
+
+.scmm-bonus.show {
+    display: block
+}
+
+.scmm-bonus-title {
+    font-size: .75rem;
+    color: #94a3b8;
+    margin-bottom: 6px
+}
+
+.scmm-bonus-title span {
+    color: #22d3ee
+}
+
+.scmm-bonus-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px
+}
+
+.scmm-bonus-tag {
+    padding: 3px 10px;
+    font-size: .7rem;
+    border-radius: 16px;
+    cursor: pointer;
+    border: 1px solid rgba(148, 163, 184, .15);
+    background: rgba(30, 41, 59, .5);
+    color: #94a3b8;
+    transition: all .2s;
+    font-family: inherit
+}
+
+.scmm-bonus-tag:hover {
+    border-color: rgba(251, 191, 36, .4);
+    color: #fbbf24
+}
+
+.scmm-bonus-tag.active {
+    background: rgba(251, 191, 36, .15);
+    border-color: #fbbf24;
+    color: #fbbf24
+}
+
+/* === Footer === */
+.scmm-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 24px;
+    border-top: 1px solid rgba(148, 163, 184, .1);
+    flex-shrink: 0
+}
+
+.scmm-status {
+    font-size: .7rem;
+    color: #64748b
+}
+
+.scmm-status b {
+    color: #22d3ee
+}
+
+.scmm-actions {
+    display: flex;
+    gap: 10px
+}
+
+.scmm-btn {
+    padding: 7px 18px;
+    border-radius: 8px;
+    font-size: .78rem;
+    cursor: pointer;
+    font-family: inherit;
+    border: none;
+    transition: all .2s
+}
+
+.scmm-btn-cancel {
+    background: rgba(100, 116, 139, .2);
+    color: #94a3b8
+}
+
+.scmm-btn-cancel:hover {
+    background: rgba(100, 116, 139, .3);
+    color: #e2e8f0
+}
+
+.scmm-btn-apply {
+    background: linear-gradient(135deg, #0891b2, #22d3ee);
+    color: #fff;
+    box-shadow: 0 3px 12px rgba(6, 182, 212, .3)
+}
+
+.scmm-btn-apply:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 5px 16px rgba(6, 182, 212, .4)
+}
+
+/* === 空結果 === */
+.scmm-empty {
+    grid-column: 1/-1;
+    padding: 40px;
+    text-align: center;
+    color: #475569;
+    font-size: .85rem
+}
+
+.scmm-grid-wrap::-webkit-scrollbar {
+    width: 5px
+}
+
+.scmm-grid-wrap::-webkit-scrollbar-thumb {
+    background: rgba(148, 163, 184, .15);
+    border-radius: 3px
+}
+
+/* === 🎲 骰子動畫覆蓋層 === */
+.scmm-dice-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, .6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .2s ease;
+    border-radius: 16px
+}
+
+.scmm-dice-overlay.active {
+    opacity: 1;
+    pointer-events: auto
+}
+
+.scmm-dice-emoji {
+    font-size: 80px;
+    line-height: 1;
+    filter: drop-shadow(0 0 20px rgba(34, 211, 238, .7)) drop-shadow(0 0 50px rgba(6, 182, 212, .4));
+    animation: scmm-dice-drop .4s cubic-bezier(.22, .68, .31, 1.2) forwards
+}
+
+@keyframes scmm-dice-drop {
+    0% {
+        transform: translateY(-200px) rotate(-90deg) scale(.5);
+        opacity: 0
+    }
+
+    60% {
+        transform: translateY(20px) rotate(15deg) scale(1.05);
+        opacity: 1
+    }
+
+    80% {
+        transform: translateY(-8px) rotate(-5deg) scale(1)
+    }
+
+    100% {
+        transform: translateY(0) rotate(0deg) scale(1);
+        opacity: 1
+    }
+}
+
+.scmm-dice-emoji.rolling {
+    animation: scmm-dice-bounce 1s ease-out forwards
+}
+
+@keyframes scmm-dice-bounce {
+    0% {
+        transform: translateY(0) rotate(0deg) scale(1)
+    }
+
+    8% {
+        transform: translateY(60px) rotate(80deg) scale(1.1)
+    }
+
+    16% {
+        transform: translateY(-40px) rotate(180deg) scale(.95)
+    }
+
+    28% {
+        transform: translateY(40px) rotate(300deg) scale(1.08)
+    }
+
+    38% {
+        transform: translateY(-25px) rotate(420deg) scale(.97)
+    }
+
+    50% {
+        transform: translateY(25px) rotate(520deg) scale(1.04)
+    }
+
+    60% {
+        transform: translateY(-12px) rotate(610deg) scale(.99)
+    }
+
+    72% {
+        transform: translateY(10px) rotate(680deg) scale(1.02)
+    }
+
+    82% {
+        transform: translateY(-4px) rotate(710deg) scale(1)
+    }
+
+    92% {
+        transform: translateY(2px) rotate(718deg) scale(1)
+    }
+
+    100% {
+        transform: translateY(0) rotate(720deg) scale(1)
+    }
+}
+
+.scmm-dice-emoji.exit {
+    animation: scmm-dice-exit .3s ease-in forwards
+}
+
+@keyframes scmm-dice-exit {
+    0% {
+        transform: translateY(0) rotate(720deg) scale(1);
+        opacity: 1
+    }
+
+    40% {
+        transform: translateY(15px) rotate(740deg) scale(1.1);
+        opacity: .8
+    }
+
+    100% {
+        transform: translateY(-120px) rotate(900deg) scale(.3);
+        opacity: 0
+    }
+}
+
+.scmm-dice-spinning {
+    animation: scmm-spinBtn .3s ease infinite
+}
+
+@keyframes scmm-spinBtn {
+    0% {
+        transform: translateY(0)
+    }
+
+    50% {
+        transform: translateY(-2px)
+    }
+
+    100% {
+        transform: translateY(0)
+    }
+}
+
+/* === Responsive === */
+@media (max-width: 768px) {
+    .scmm-container {
+        width: 96vw;
+        height: 80vh
+    }
+
+    .scmm-grid {
+        grid-template-columns: repeat(3, 1fr)
+    }
+
+    .scmm-az {
+        display: none
+    }
+}
+
+@media (max-width: 480px) {
+    .scmm-grid {
+        grid-template-columns: repeat(2, 1fr)
+    }
+
+    .scmm-tab {
+        min-width: 40px;
+        padding: 5px 8px
+    }
+
+    .scmm-tab-label {
+        font-size: .6rem
+    }
+}
+
+/* === Scene Magic Modal END === */

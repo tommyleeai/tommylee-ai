@@ -142,6 +142,7 @@
                 state.handItemsAdvanced = parsed.handItemsAdvanced || null;
                 state.expressionAdvanced = parsed.expressionAdvanced || null;
                 state.poseAdvanced = parsed.poseAdvanced || null;
+                state.sceneAdvanced = parsed.sceneAdvanced || null;
                 state.ageEnabled = parsed.ageEnabled !== false;
 
                 // Conflict system state restoration
@@ -1527,6 +1528,111 @@
                 return;
             }
 
+            // === v7.6 場景 Magic Modal — scene section 特殊處理 ===
+            if (section.id === 'scene') {
+                // 高級魔法專用按鈕
+                const sceneMagicBtn = document.createElement('button');
+                sceneMagicBtn.className = 'race-magic-btn';
+                sceneMagicBtn.innerHTML = '<i class="fa-solid fa-wand-sparkles"></i> ' +
+                    (state.lang === 'zh' ? '🌍 高級魔法專用' : '🌍 Advanced Magic');
+                sceneMagicBtn.addEventListener('click', () => {
+                    openSceneMagicModal();
+                });
+                const scCustomToggle = header.querySelector('.btn-custom-toggle');
+                const scBtnGroup = document.createElement('div');
+                scBtnGroup.className = 'section-header-buttons';
+                header.insertBefore(scBtnGroup, scCustomToggle);
+                scBtnGroup.appendChild(sceneMagicBtn);
+                scBtnGroup.appendChild(scCustomToggle);
+
+                // 已選場景 badge
+                if (state.selections.scene) {
+                    const scData = window.PromptGen.SceneMagicData;
+                    const scObj = scData ? scData.ITEMS.find(s => s.value === state.selections.scene) : null;
+                    if (scObj) {
+                        const badge = document.createElement('span');
+                        badge.className = 'selected-race-badge';
+                        badge.innerHTML = `✓ ${scObj.icon} ${state.lang === 'zh' ? scObj.label : scObj.en} <span class="badge-x" title="${state.lang === 'zh' ? '取消選擇' : 'Deselect'}">✕</span>`;
+                        badge.querySelector('.badge-x').addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            delete state.selections.scene;
+                            delete state.sceneAdvanced;
+                            renderTabContent();
+                            generatePrompt();
+                            saveState();
+                        });
+                        const titleEl = header.querySelector('.section-block-title');
+                        const titleWrapper = document.createElement('div');
+                        titleWrapper.className = 'section-title-with-badge';
+                        titleEl.parentNode.insertBefore(titleWrapper, titleEl);
+                        titleWrapper.appendChild(titleEl);
+                        titleWrapper.appendChild(badge);
+                    }
+                }
+
+                // ★ sceneAdvanced 橫幅：顯示加分特徵
+                if (state.sceneAdvanced && state.sceneAdvanced.bonusTraits && state.sceneAdvanced.bonusTraits.length > 0) {
+                    const sa = state.sceneAdvanced;
+                    const traitNames = sa.bonusTraitsZh ? sa.bonusTraitsZh.join('、') : sa.bonusTraits.join(', ');
+                    const sceneName = sa.selectedScene ? `${sa.selectedScene.label} ${sa.selectedScene.en}` : '';
+
+                    const summaryBar = document.createElement('div');
+                    summaryBar.className = 'body-advanced-summary';
+                    const summaryText = document.createElement('span');
+                    summaryText.innerHTML = `🌍 ${state.lang === 'zh' ? '場景魔法啟用中' : 'Scene Magic Active'}：${sceneName} / 🏷️ ${traitNames}`;
+
+                    const editBtn = document.createElement('button');
+                    editBtn.className = 'body-summary-action';
+                    editBtn.textContent = state.lang === 'zh' ? '編輯' : 'Edit';
+                    editBtn.addEventListener('click', () => openSceneMagicModal());
+
+                    const clearBtn = document.createElement('button');
+                    clearBtn.className = 'body-summary-action clear';
+                    clearBtn.textContent = state.lang === 'zh' ? '清除' : 'Clear';
+                    clearBtn.addEventListener('click', () => {
+                        state.sceneAdvanced = null;
+                        delete state.selections.scene;
+                        renderTabContent();
+                        generatePrompt();
+                        saveState();
+                    });
+
+                    summaryBar.appendChild(summaryText);
+                    summaryBar.appendChild(editBtn);
+                    summaryBar.appendChild(clearBtn);
+                    sectionEl.appendChild(summaryBar);
+                }
+
+                // 渲染分頁 grid（使用原始 SCENES 資料）
+                renderPaginatedGrid(sectionEl, section, section.data, 'scenePage');
+
+                // Advanced 啟用時灰化 grid
+                if (state.sceneAdvanced && state.sceneAdvanced.bonusTraits && state.sceneAdvanced.bonusTraits.length > 0) {
+                    const tagGrid = sectionEl.querySelector('.tag-grid-paginated');
+                    if (tagGrid) tagGrid.classList.add('body-section-disabled');
+                }
+                tabContent.appendChild(sectionEl);
+
+                // Custom input
+                if (state.customInputVisible[section.id]) {
+                    const customRow = document.createElement('div');
+                    customRow.className = 'custom-input-row';
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.className = 'custom-section-input';
+                    input.placeholder = state.lang === 'zh' ? '輸入自訂場景...' : 'Enter custom scene...';
+                    input.value = state.customInputs[section.id] || '';
+                    input.addEventListener('input', (e) => {
+                        state.customInputs[section.id] = e.target.value.trim();
+                        generatePrompt();
+                        debouncedSaveState();
+                    });
+                    customRow.appendChild(input);
+                    tabContent.appendChild(customRow);
+                }
+                return;
+            }
+
             // === v6.9 眼色色盤：跳過 eyeColorRight，由 eyeColorLeft 一併處理 ===
             if (section.id === 'eyeColorRight') return;
 
@@ -1762,6 +1868,9 @@
     // ============================================
     function openArtistMagicModal() {
         window.PromptGen.ArtistMagicModal.openArtistMagicModal();
+    }
+    function openSceneMagicModal() {
+        window.PromptGen.SceneMagicModal.openSceneMagicModal();
     }
 
     // ============================================
@@ -2235,6 +2344,11 @@
             if (secId === 'handItems' && state.handItemsAdvanced && state.handItemsAdvanced.bonusTraits && state.handItemsAdvanced.bonusTraits.length > 0) {
                 state.handItemsAdvanced.bonusTraits.forEach(trait => parts.push(trait));
             }
+
+            // ★ sceneAdvanced bonusTraits（附加在 scene section 後）
+            if (secId === 'scene' && state.sceneAdvanced && state.sceneAdvanced.bonusTraits && state.sceneAdvanced.bonusTraits.length > 0) {
+                state.sceneAdvanced.bonusTraits.forEach(trait => parts.push(trait));
+            }
         });
 
         // Quality tags
@@ -2570,6 +2684,9 @@
         state, sfx, selectOption, generatePrompt, saveState, renderTabContent
     });
     window.PromptGen.ArtistMagicModal.setup({
+        state, sfx, selectOption, generatePrompt, saveState, renderTabContent
+    });
+    window.PromptGen.SceneMagicModal.setup({
         state, sfx, selectOption, generatePrompt, saveState, renderTabContent
     });
     window.PromptGen.ConflictSystem.setup({
