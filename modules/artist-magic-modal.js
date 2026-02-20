@@ -144,7 +144,7 @@ window.PromptGen.ArtistMagicModal = (function () {
             const el = document.createElement('div');
             el.className = 'smm-tab' + (tab.id === activeTab ? ' active' : '');
             el.dataset.cat = tab.id;
-            el.innerHTML = `<span class="smm-tab-label">${tab.label}</span><span class="smm-tab-count">${count}</span>`;
+            el.innerHTML = `<span class="smm-tab-icon">${tab.icon}</span><span class="smm-tab-zh">${tab.label}</span><span class="smm-tab-en">${tab.en}</span><span class="smm-tab-count">${count}</span>`;
             el.addEventListener('click', () => {
                 activeTab = tab.id;
                 filterLetter = null;

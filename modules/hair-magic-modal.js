@@ -168,7 +168,7 @@ window.PromptGen.HairMagicModal = (function () {
             const tab = document.createElement('div');
             tab.className = 'hmm-tab' + (c.id === activeCat ? ' active' : '');
             tab.dataset.cat = c.id;
-            tab.innerHTML = `<span class="hmm-tab-icon">${c.icon}</span><span class="hmm-tab-label">${c.label}<br>${c.en}</span><span class="hmm-tab-count">${count}</span>`;
+            tab.innerHTML = `<span class="hmm-tab-icon">${c.icon}</span><span class="hmm-tab-zh">${c.label}</span><span class="hmm-tab-en">${c.en}</span><span class="hmm-tab-count">${count}</span>`;
             tab.addEventListener('click', () => {
                 activeCat = c.id;
                 filterLetter = null;

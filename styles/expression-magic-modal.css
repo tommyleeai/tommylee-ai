@@ -200,8 +200,25 @@
     filter: drop-shadow(0 0 6px rgba(168, 85, 247, .6))
 }
 
-.emm-tab-label {
-    font-size: .62rem
+.emm-tab-zh {
+    font-size: .65rem;
+    font-weight: 500
+}
+
+.emm-tab-en {
+    font-size: .55rem;
+    color: #64748b
+}
+
+.emm-tab-count {
+    font-size: .55rem;
+    color: #64748b;
+    transition: color .25s ease
+}
+
+.emm-tab.active .emm-tab-count {
+    color: #c084fc;
+    font-weight: 600
 }
 
 /* === 主體區域：上方表情網格 + 下方控制面板 === */

@@ -352,8 +352,9 @@
     font-family: inherit;
     white-space: nowrap;
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 6px;
+    gap: 2px;
     min-width: 54px;
     flex-shrink: 0;
     position: relative
@@ -377,8 +378,24 @@
     transform: translateY(-1px)
 }
 
-.smm-tab-label {
-    font-size: .72rem
+.smm-tab-icon {
+    font-size: .95rem;
+    transition: transform .25s ease, filter .25s ease
+}
+
+.smm-tab.active .smm-tab-icon {
+    transform: scale(1.15);
+    filter: drop-shadow(0 0 6px rgba(168, 85, 247, .6))
+}
+
+.smm-tab-zh {
+    font-size: .65rem;
+    font-weight: 500
+}
+
+.smm-tab-en {
+    font-size: .55rem;
+    color: #64748b
 }
 
 .smm-tab-count {

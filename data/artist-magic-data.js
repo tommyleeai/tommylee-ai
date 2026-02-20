@@ -6,16 +6,16 @@ window.PromptGen = window.PromptGen || {};
 window.PromptGen.ArtistMagicData = {
 
     TABS: [
-        { id: 'all', label: '✨ 全部' },
-        { id: 'recent', label: '🕐 最近' },
-        { id: 'hot', label: '🔥 熱門' },
-        { id: 'manga', label: '📖 漫畫家' },
-        { id: 'anime_dir', label: '🎬 動畫導演' },
-        { id: 'digital', label: '💻 數位畫師' },
-        { id: 'concept', label: '🎮 概念藝術' },
-        { id: 'illustrator', label: '🖼️ 插畫家' },
-        { id: 'classic', label: '🏛️ 經典大師' },
-        { id: 'modern', label: '🎨 現代藝術家' }
+        { id: 'all', icon: '✨', label: '全部', en: 'All' },
+        { id: 'recent', icon: '🕐', label: '最近', en: 'Recent' },
+        { id: 'hot', icon: '🔥', label: '熱門', en: 'Hot' },
+        { id: 'manga', icon: '📖', label: '漫畫家', en: 'Manga' },
+        { id: 'anime_dir', icon: '🎬', label: '動畫導演', en: 'Director' },
+        { id: 'digital', icon: '💻', label: '數位畫師', en: 'Digital' },
+        { id: 'concept', icon: '🎮', label: '概念藝術', en: 'Concept' },
+        { id: 'illustrator', icon: '🖼️', label: '插畫家', en: 'Illustrator' },
+        { id: 'classic', icon: '🏛️', label: '經典大師', en: 'Classic' },
+        { id: 'modern', icon: '🎨', label: '現代藝術家', en: 'Modern' }
     ],
 
     HOT_ITEMS: [

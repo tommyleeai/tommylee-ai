@@ -38,12 +38,12 @@ window.PromptGen.PoseMagicModal = (function () {
 
         // Tab HTML
         const tabsHtml = TABS.map(t => {
-            const emoji = t.label.split(' ')[0];
-            const text = t.label.split(' ').slice(1).join(' ');
             const count = POSES.filter(p => p.category === t.id).length;
             return `<button class="pmm-tab${t.id === currentTab ? ' active' : ''}" data-tab="${t.id}">
-                <span class="pmm-tab-icon">${emoji}</span>
-                <span class="pmm-tab-label">${text}</span>
+                <span class="pmm-tab-icon">${t.icon}</span>
+                <span class="pmm-tab-zh">${t.label}</span>
+                <span class="pmm-tab-en">${t.en}</span>
+                <span class="pmm-tab-count">${count}</span>
             </button>`;
         }).join('');
 

@@ -6,20 +6,20 @@ window.PromptGen = window.PromptGen || {};
 window.PromptGen.AnimeStyleMagicData = {
 
     TABS: [
-        { id: 'all', label: '✨ 全部' },
-        { id: 'recent', label: '🕐 最近' },
-        { id: 'hot', label: '🔥 熱門' },
-        { id: 'shonen', label: '⚔️ 少年' },
-        { id: 'shoujo', label: '🌸 少女' },
-        { id: 'mecha', label: '🤖 機甲' },
-        { id: 'slice', label: '☕ 日常' },
-        { id: 'dark', label: '🌑 黑暗' },
-        { id: 'retro', label: '📺 復古' },
-        { id: 'game', label: '🎮 遊戲' },
-        { id: 'studio', label: '🏢 工作室' },
-        { id: 'chibi', label: '🧸 Q版' },
-        { id: 'fantasy', label: '🧙 奇幻' },
-        { id: 'scifi', label: '🚀 科幻' }
+        { id: 'all', icon: '✨', label: '全部', en: 'All' },
+        { id: 'recent', icon: '🕐', label: '最近', en: 'Recent' },
+        { id: 'hot', icon: '🔥', label: '熱門', en: 'Hot' },
+        { id: 'shonen', icon: '⚔️', label: '少年', en: 'Shonen' },
+        { id: 'shoujo', icon: '🌸', label: '少女', en: 'Shoujo' },
+        { id: 'mecha', icon: '🤖', label: '機甲', en: 'Mecha' },
+        { id: 'slice', icon: '☕', label: '日常', en: 'Daily' },
+        { id: 'dark', icon: '🌑', label: '黑暗', en: 'Dark' },
+        { id: 'retro', icon: '📺', label: '復古', en: 'Retro' },
+        { id: 'game', icon: '🎮', label: '遊戲', en: 'Game' },
+        { id: 'studio', icon: '🏢', label: '工作室', en: 'Studio' },
+        { id: 'chibi', icon: '🧸', label: 'Q版', en: 'Chibi' },
+        { id: 'fantasy', icon: '🧙', label: '奇幻', en: 'Fantasy' },
+        { id: 'scifi', icon: '🚀', label: '科幻', en: 'Sci-Fi' }
     ],
 
     HOT_ITEMS: [

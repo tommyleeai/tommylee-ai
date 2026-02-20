@@ -375,8 +375,14 @@
     transition: transform .25s ease, filter .25s ease
 }
 
-.rmm-tab-label {
-    font-size: .65rem
+.rmm-tab-zh {
+    font-size: .65rem;
+    font-weight: 500
+}
+
+.rmm-tab-en {
+    font-size: .55rem;
+    color: #64748b
 }
 
 .rmm-tab-count {

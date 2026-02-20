@@ -6,16 +6,16 @@ window.PromptGen = window.PromptGen || {};
 window.PromptGen.ArtStyleMagicData = {
 
     TABS: [
-        { id: 'all', label: '✨ 全部' },
-        { id: 'recent', label: '🕐 最近' },
-        { id: 'hot', label: '🔥 熱門' },
-        { id: 'medium', label: '🖌️ 媒材' },
-        { id: 'technique', label: '🎨 技法' },
-        { id: 'movement', label: '🏛️ 流派' },
-        { id: 'theme', label: '🌈 主題' },
-        { id: 'photo', label: '📷 攝影' },
-        { id: 'digital', label: '💻 數位' },
-        { id: 'print', label: '🖨️ 印刷' }
+        { id: 'all', icon: '✨', label: '全部', en: 'All' },
+        { id: 'recent', icon: '🕐', label: '最近', en: 'Recent' },
+        { id: 'hot', icon: '🔥', label: '熱門', en: 'Hot' },
+        { id: 'medium', icon: '🖌️', label: '媒材', en: 'Medium' },
+        { id: 'technique', icon: '🎨', label: '技法', en: 'Technique' },
+        { id: 'movement', icon: '🏛️', label: '流派', en: 'Movement' },
+        { id: 'theme', icon: '🌈', label: '主題', en: 'Theme' },
+        { id: 'photo', icon: '📷', label: '攝影', en: 'Photo' },
+        { id: 'digital', icon: '💻', label: '數位', en: 'Digital' },
+        { id: 'print', icon: '🖨️', label: '印刷', en: 'Print' }
     ],
 
     HOT_ITEMS: [

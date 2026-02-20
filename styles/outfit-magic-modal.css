@@ -376,8 +376,14 @@
     transition: transform .25s ease, filter .25s ease
 }
 
-.cmm-tab-label {
-    font-size: .65rem
+.cmm-tab-zh {
+    font-size: .65rem;
+    font-weight: 500
+}
+
+.cmm-tab-en {
+    font-size: .55rem;
+    color: #64748b
 }
 
 .cmm-tab-count {

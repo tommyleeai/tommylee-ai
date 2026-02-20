@@ -383,8 +383,14 @@
     transition: transform .25s ease, filter .25s ease
 }
 
-.him-tab-label {
-    font-size: .65rem
+.him-tab-zh {
+    font-size: .65rem;
+    font-weight: 500
+}
+
+.him-tab-en {
+    font-size: .55rem;
+    color: #64748b
 }
 
 .him-tab-count {

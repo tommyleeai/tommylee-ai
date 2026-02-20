@@ -155,7 +155,7 @@ window.PromptGen.RaceMagicModal = (function () {
             const tab = document.createElement('div');
             tab.className = 'rmm-tab' + (c.id === activeCat ? ' active' : '');
             tab.dataset.cat = c.id;
-            tab.innerHTML = `<span class="rmm-tab-icon">${c.icon}</span><span class="rmm-tab-label">${c.label}<br>${c.en}</span><span class="rmm-tab-count">${count}</span>`;
+            tab.innerHTML = `<span class="rmm-tab-icon">${c.icon}</span><span class="rmm-tab-zh">${c.label}</span><span class="rmm-tab-en">${c.en}</span><span class="rmm-tab-count">${count}</span>`;
             tab.addEventListener('click', () => {
                 activeCat = c.id;
                 filterLetter = null;

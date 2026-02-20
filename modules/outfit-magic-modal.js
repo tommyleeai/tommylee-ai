@@ -154,7 +154,7 @@ window.PromptGen.OutfitMagicModal = (function () {
             const tab = document.createElement('div');
             tab.className = 'cmm-tab' + (c.id === activeCat ? ' active' : '');
             tab.dataset.cat = c.id;
-            tab.innerHTML = `<span class="cmm-tab-icon">${c.icon}</span><span class="cmm-tab-label">${c.label}<br>${c.en}</span><span class="cmm-tab-count">${count}</span>`;
+            tab.innerHTML = `<span class="cmm-tab-icon">${c.icon}</span><span class="cmm-tab-zh">${c.label}</span><span class="cmm-tab-en">${c.en}</span><span class="cmm-tab-count">${count}</span>`;
             tab.addEventListener('click', () => {
                 activeCat = c.id;
                 filterLetter = null;

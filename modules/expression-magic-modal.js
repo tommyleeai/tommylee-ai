@@ -38,12 +38,12 @@ window.PromptGen.ExpressionMagicModal = (function () {
 
         // Tab HTML
         const tabsHtml = TABS.map(t => {
-            const emoji = t.label.split(' ')[0];
-            const text = t.label.split(' ').slice(1).join(' ');
             const count = EXPRS.filter(e => e.category === t.id).length;
             return `<button class="emm-tab${t.id === currentTab ? ' active' : ''}" data-tab="${t.id}">
-                <span class="emm-tab-icon">${emoji}</span>
-                <span class="emm-tab-label">${text}</span>
+                <span class="emm-tab-icon">${t.icon}</span>
+                <span class="emm-tab-zh">${t.label}</span>
+                <span class="emm-tab-en">${t.en}</span>
+                <span class="emm-tab-count">${count}</span>
             </button>`;
         }).join('');
 

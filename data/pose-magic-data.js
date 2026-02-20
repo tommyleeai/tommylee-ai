@@ -8,15 +8,15 @@ window.PromptGen.PoseMagicData = (function () {
 
     // ── 姿勢分類 Tab 定義 ──
     const TABS = [
-        { id: 'standing', label: '🧍 站姿系', en: 'Standing' },
-        { id: 'sitting', label: '🪑 坐姿系', en: 'Sitting' },
-        { id: 'movement', label: '🏃 行動系', en: 'Movement' },
-        { id: 'combat', label: '⚔️ 戰鬥系', en: 'Combat' },
-        { id: 'interact', label: '🤝 互動系', en: 'Interaction' },
-        { id: 'emotional', label: '💔 情緒演出系', en: 'Emotional' },
-        { id: 'dominant', label: '👑 王者氣場系', en: 'Dominant' },
-        { id: 'cute', label: '🌸 可愛Q版系', en: 'Cute' },
-        { id: 'camera', label: '📷 構圖特殊系', en: 'Camera' }
+        { id: 'standing', icon: '🧍', label: '站姿系', en: 'Standing' },
+        { id: 'sitting', icon: '🪑', label: '坐姿系', en: 'Sitting' },
+        { id: 'movement', icon: '🏃', label: '行動系', en: 'Movement' },
+        { id: 'combat', icon: '⚔️', label: '戰鬥系', en: 'Combat' },
+        { id: 'interact', icon: '🤝', label: '互動系', en: 'Interaction' },
+        { id: 'emotional', icon: '💔', label: '情緒演出系', en: 'Emotional' },
+        { id: 'dominant', icon: '👑', label: '王者氣場系', en: 'Dominant' },
+        { id: 'cute', icon: '🌸', label: '可愛Q版系', en: 'Cute' },
+        { id: 'camera', icon: '📷', label: '構圖特殊系', en: 'Camera' }
     ];
 
     // ── 姿勢項目（每項含 label, en, value, category）──

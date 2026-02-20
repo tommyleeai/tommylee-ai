@@ -7,15 +7,15 @@ window.PromptGen.ExpressionMagicData = (function () {
 
     // ── 表情分類 Tab 定義 ──
     const TABS = [
-        { id: 'joy', label: '😊 喜悅系', en: 'Joy' },
-        { id: 'anger', label: '😤 憤怒系', en: 'Anger' },
-        { id: 'sadness', label: '😢 悲傷系', en: 'Sadness' },
-        { id: 'surprise', label: '😲 驚訝系', en: 'Surprise' },
-        { id: 'shy', label: '😳 害羞系', en: 'Shy' },
-        { id: 'cool', label: '😐 冷酷系', en: 'Stoic' },
-        { id: 'mad', label: '🤪 狂氣系', en: 'Mad' },
-        { id: 'comedy', label: '😆 搞笑系', en: 'Comedy' },
-        { id: 'battle', label: '⚔️ 戰鬥系', en: 'Battle' }
+        { id: 'joy', icon: '😊', label: '喜悅系', en: 'Joy' },
+        { id: 'anger', icon: '😤', label: '憤怒系', en: 'Anger' },
+        { id: 'sadness', icon: '😢', label: '悲傷系', en: 'Sadness' },
+        { id: 'surprise', icon: '😲', label: '驚訝系', en: 'Surprise' },
+        { id: 'shy', icon: '😳', label: '害羞系', en: 'Shy' },
+        { id: 'cool', icon: '😐', label: '冷酷系', en: 'Stoic' },
+        { id: 'mad', icon: '🤪', label: '狂氣系', en: 'Mad' },
+        { id: 'comedy', icon: '😆', label: '搞笑系', en: 'Comedy' },
+        { id: 'battle', icon: '⚔️', label: '戰鬥系', en: 'Battle' }
     ];
 
     // ── 表情項目（每項含 label, en, value, category）──

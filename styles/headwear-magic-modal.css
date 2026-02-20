@@ -383,8 +383,14 @@
     transition: transform .25s ease, filter .25s ease
 }
 
-.hmm-tab-label {
-    font-size: .65rem
+.hmm-tab-zh {
+    font-size: .65rem;
+    font-weight: 500
+}
+
+.hmm-tab-en {
+    font-size: .55rem;
+    color: #64748b
 }
 
 .hmm-tab-count {

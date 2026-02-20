@@ -153,7 +153,7 @@ window.PromptGen.JobMagicModal = (function () {
             const tab = document.createElement('div');
             tab.className = 'jmm-tab' + (c.id === activeCat ? ' active' : '');
             tab.dataset.cat = c.id;
-            tab.innerHTML = `<span class="jmm-tab-icon">${c.icon}</span><span class="jmm-tab-label">${c.label}<br>${c.en}</span><span class="jmm-tab-count">${count}</span>`;
+            tab.innerHTML = `<span class="jmm-tab-icon">${c.icon}</span><span class="jmm-tab-zh">${c.label}</span><span class="jmm-tab-en">${c.en}</span><span class="jmm-tab-count">${count}</span>`;
             tab.addEventListener('click', () => {
                 activeCat = c.id;
                 filterLetter = null;

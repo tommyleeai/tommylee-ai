@@ -375,8 +375,14 @@
     transition: transform .25s ease, filter .25s ease
 }
 
-.jmm-tab-label {
-    font-size: .65rem
+.jmm-tab-zh {
+    font-size: .65rem;
+    font-weight: 500
+}
+
+.jmm-tab-en {
+    font-size: .55rem;
+    color: #64748b
 }
 
 .jmm-tab-count {

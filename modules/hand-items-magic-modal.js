@@ -154,7 +154,7 @@ window.PromptGen.HandItemsMagicModal = (function () {
             const tab = document.createElement('div');
             tab.className = 'him-tab' + (c.id === activeCat ? ' active' : '');
             tab.dataset.cat = c.id;
-            tab.innerHTML = `<span class="him-tab-icon">${c.icon}</span><span class="him-tab-label">${c.label}<br>${c.en}</span><span class="him-tab-count">${count}</span>`;
+            tab.innerHTML = `<span class="him-tab-icon">${c.icon}</span><span class="him-tab-zh">${c.label}</span><span class="him-tab-en">${c.en}</span><span class="him-tab-count">${count}</span>`;
             tab.addEventListener('click', () => {
                 activeCat = c.id;
                 filterLetter = null;
