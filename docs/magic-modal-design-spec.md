@@ -1,7 +1,7 @@
-# 🔮 Magic Modal 統一設計規範 v1.0
+# 🔮 Magic Modal 統一設計規範 v1.1
 
-> 本文件整理自所有現有 Magic Modal（種族/職業/表情/姿勢/服裝/頭飾/手持物/髮型/身材）的設計模式，
-> 作為後續新增 **風格、環境、攝影** 等 Tab 內 section 的標準參考。
+> 本文件整理自所有現有 Magic Modal（種族/職業/表情/姿勢/服裝/頭飾/手持物/髮型/身材/場景/動漫風格/藝術風格/藝術家）的設計模式，
+> 作為後續新增 Tab 內 section 的標準參考。
 
 ---
 
@@ -123,12 +123,25 @@ Hover: color #c084fc, translateY(-2px), border-bottom 紫
 Active: gradient 背景, color #f3e8ff, border-bottom 3px #a855f7
 ```
 
-**Tab 內容結構**：
+**Tab 統一四層結構**（v1.1 起所有 Modal 必須使用）：
 ```html
 <button class="xxx-tab">
-    <span class="xxx-tab-icon">🎭</span>
-    <span class="xxx-tab-label">分類名</span>
+    <span class="xxx-tab-icon">🎭</span>     <!-- 第 1 層：Emoji icon -->
+    <span class="xxx-tab-zh">分類名</span>    <!-- 第 2 層：中文標籤 -->
+    <span class="xxx-tab-en">English</span>   <!-- 第 3 層：英文標籤 -->
+    <span class="xxx-tab-count">12</span>     <!-- 第 4 層：項目數量 -->
 </button>
+```
+
+**Tab 四層 CSS 統一樣式**：
+```css
+.xxx-tab-icon   { font-size: .95rem; transition: transform .25s ease, filter .25s ease }
+.xxx-tab-zh     { font-size: .65rem; font-weight: 500 }
+.xxx-tab-en     { font-size: .55rem; color: #64748b }
+.xxx-tab-count  { font-size: .55rem; color: #64748b; transition: color .25s ease }
+/* Active 狀態 */
+.xxx-tab.active .xxx-tab-icon  { transform: scale(1.15); filter: drop-shadow(0 0 6px rgba(主題色, .6)) }
+.xxx-tab.active .xxx-tab-count { color: 主題淺色; font-weight: 600 }
 ```
 
 ### 2.3 搜尋 Bar
@@ -383,7 +396,10 @@ window.PromptGen.{Feature}MagicModal = (function () {
 window.PromptGen = window.PromptGen || {};
 window.PromptGen.{Feature}MagicData = {
     TABS: [
-        { id: 'cat1', label: '🎨 分類1' },
+        { id: 'all', icon: '🌐', label: '全部', en: 'All' },
+        { id: 'recent', icon: '📋', label: '最近', en: 'Recent' },
+        { id: 'hot', icon: '🔥', label: '熱門', en: 'Hot' },
+        { id: 'cat1', icon: '🎨', label: '分類1', en: 'Category1' },
         // ...
     ],
     ITEMS: [
@@ -411,13 +427,14 @@ window.PromptGen.{Feature}MagicData = {
 | 種族 | `rmm-` | Race Magic Modal |
 | 職業 | `jmm-` | Job Magic Modal |
 | 服裝 | `cmm-` | Costume Magic Modal |
-| 頭飾 | `hwmm-` | Headwear Magic Modal |
-| 手持物 | `himm-` | Hand Items Magic Modal |
+| 頭飾 | `hmm-` | Headwear Magic Modal |
+| 手持物 | `him-` | Hand Items Magic Modal |
 | 表情 | `emm-` | Expression Magic Modal |
 | 姿勢 | `pmm-` | Pose Magic Modal |
 | 髮型 | `hmm-` | Hair Magic Modal |
 | 身材 | `bmm-` | Body Magic Modal |
-| **新建** | `smm-` / `envmm-` / `camm-` | Style / Environment / Camera |
+| 場景 | `scmm-` | Scene Magic Modal |
+| 動漫/藝術/藝術家 | `smm-` | Style Magic Modal（三者共用） |
 
 ---
 
