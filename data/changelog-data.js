@@ -7,6 +7,14 @@ window.PromptGen.Changelog = (function () {
     // Changelog Data
     const changelog = [
         {
+            version: "v7.5.2",
+            date: "2026-02-20",
+            changes: [
+                "🌍 場景基礎選項格子完成：332 項場景全量放入分頁格子（12 頁），依常用度排序",
+                "🔧 修復 scenePage state 初始化缺失導致格子不顯示的問題"
+            ]
+        },
+        {
             version: "v7.5.1",
             date: "2026-02-20",
             changes: [
