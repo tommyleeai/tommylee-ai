@@ -1,0 +1,575 @@
+/* ===================================================================
+   Time & Atmosphere Magic Modal — 時間氛圍魔法 CSS
+   prefix: atmm- (Atmosphere Magic Modal)
+   主題色：風暴藍綠 (#22d3ee 系)
+   =================================================================== */
+
+/* === Atmosphere Magic Modal START === */
+
+/* === Overlay === */
+#atmosphere-magic-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    background: rgba(0, 0, 0, .85);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: atmm-fadeIn .4s ease;
+}
+
+@keyframes atmm-fadeIn {
+    from {
+        opacity: 0
+    }
+
+    to {
+        opacity: 1
+    }
+}
+
+/* === 粒子 === */
+.atmm-particles {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+}
+
+.atmm-particle {
+    position: absolute;
+    border-radius: 50%;
+    animation: atmm-sparkle linear infinite;
+}
+
+@keyframes atmm-sparkle {
+    0% {
+        transform: translateY(100vh) scale(0);
+        opacity: 0
+    }
+
+    10% {
+        opacity: 1;
+        transform: translateY(90vh) scale(1)
+    }
+
+    50% {
+        opacity: .3
+    }
+
+    90% {
+        opacity: .8
+    }
+
+    100% {
+        transform: translateY(-10vh) scale(0);
+        opacity: 0
+    }
+}
+
+/* === Container === */
+.atmm-container {
+    position: relative;
+    z-index: 2;
+    width: 94vw;
+    max-width: 920px;
+    height: 82vh;
+    background: linear-gradient(135deg, rgba(15, 23, 42, .97), rgba(30, 41, 59, .97));
+    border: 1px solid rgba(148, 163, 184, .15);
+    border-radius: 16px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    animation: atmm-containerIn .5s cubic-bezier(.34, 1.56, .64, 1);
+    box-shadow: 0 0 50px rgba(34, 211, 238, .2), 0 0 100px rgba(6, 182, 212, .08);
+}
+
+@keyframes atmm-containerIn {
+    from {
+        opacity: 0;
+        transform: scale(.5)
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1)
+    }
+}
+
+/* === Header === */
+.atmm-header {
+    padding: 16px 24px 12px;
+    border-bottom: 1px solid rgba(148, 163, 184, .1);
+    flex-shrink: 0;
+}
+
+.atmm-title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.atmm-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    background: linear-gradient(90deg, #22d3ee, #06b6d4, #67e8f9, #22d3ee);
+    background-size: 300% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: atmm-titleGlow 3s ease infinite;
+}
+
+@keyframes atmm-titleGlow {
+
+    0%,
+    100% {
+        background-position: 0% 50%
+    }
+
+    50% {
+        background-position: 100% 50%
+    }
+}
+
+.atmm-toolbar {
+    display: flex;
+    gap: 6px;
+}
+
+/* === 分類 Tabs（12 個 Tab）=== */
+.atmm-tabs {
+    display: flex;
+    gap: 3px;
+    padding: 8px 16px 0;
+    overflow-x: auto;
+    flex-shrink: 0;
+}
+
+.atmm-tabs::-webkit-scrollbar {
+    height: 0;
+}
+
+.atmm-tab {
+    box-sizing: border-box;
+    padding: 6px 10px;
+    font-size: .72rem;
+    border-radius: 8px 8px 0 0;
+    cursor: pointer;
+    border: 1px solid rgba(148, 163, 184, .1);
+    border-bottom: 2px solid transparent;
+    background: rgba(30, 41, 59, .4);
+    color: #94a3b8;
+    transition: all .25s ease;
+    font-family: inherit;
+    white-space: nowrap;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    min-width: 58px;
+    flex-shrink: 0;
+    position: relative;
+}
+
+.atmm-tab:hover {
+    color: #67e8f9;
+    background: rgba(34, 211, 238, .15);
+    border-color: rgba(34, 211, 238, .25);
+    border-bottom-color: rgba(34, 211, 238, .5);
+    transform: translateY(-2px);
+}
+
+.atmm-tab.active {
+    background: linear-gradient(180deg, rgba(34, 211, 238, .2) 0%, rgba(30, 41, 59, .9) 100%);
+    color: #ecfeff;
+    border-color: rgba(34, 211, 238, .4);
+    border-bottom: 3px solid #22d3ee;
+    box-shadow: 0 -2px 12px rgba(34, 211, 238, .25);
+    transform: translateY(-1px);
+}
+
+.atmm-tab-icon {
+    font-size: .95rem;
+    transition: transform .25s ease;
+}
+
+.atmm-tab.active .atmm-tab-icon {
+    transform: scale(1.15);
+    filter: drop-shadow(0 0 6px rgba(34, 211, 238, .6));
+}
+
+.atmm-tab-zh {
+    font-size: .65rem;
+    font-weight: 500;
+}
+
+.atmm-tab-en {
+    font-size: .55rem;
+    color: #64748b;
+}
+
+.atmm-tab-count {
+    font-size: .55rem;
+    color: #64748b;
+    transition: color .25s ease;
+}
+
+.atmm-tab.active .atmm-tab-count {
+    color: #67e8f9;
+    font-weight: 600;
+}
+
+/* === 主體區域 === */
+.atmm-body {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+    border-top: 1px solid rgba(148, 163, 184, .1);
+    min-height: 0;
+}
+
+.atmm-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    min-height: 0;
+}
+
+/* 天象特效選擇網格 */
+.atmm-grid-wrap {
+    flex: 1;
+    overflow-y: auto;
+    padding: 14px 16px;
+    min-height: 0;
+    scrollbar-width: none;
+    /* Firefox */
+    -ms-overflow-style: none;
+    /* IE/Edge */
+}
+
+.atmm-grid-wrap::-webkit-scrollbar {
+    display: none;
+    /* Chrome/Safari/Edge */
+}
+
+.atmm-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+    align-content: start;
+}
+
+/* === A-Z 索引 === */
+.atmm-az {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4px 6px;
+    gap: 1px;
+    border-left: 1px solid rgba(148, 163, 184, .08);
+    user-select: none;
+    flex-shrink: 0;
+}
+
+.atmm-az-letter {
+    font-size: .5rem;
+    color: #475569;
+    cursor: pointer;
+    padding: 1px 4px;
+    border-radius: 3px;
+    transition: all .15s;
+    line-height: 1.2;
+}
+
+.atmm-az-letter:hover {
+    color: #22d3ee;
+    background: rgba(34, 211, 238, .1);
+}
+
+.atmm-az-letter.active {
+    color: #fff;
+    background: rgba(6, 182, 212, .4);
+}
+
+/* 天象特效 Chip */
+.atmm-effect-chip {
+    position: relative;
+    padding: 10px 8px;
+    font-size: .76rem;
+    border-radius: 10px;
+    cursor: pointer;
+    border: 1px solid rgba(148, 163, 184, .12);
+    background: rgba(30, 41, 59, .5);
+    color: #cbd5e1;
+    transition: all .2s;
+    font-family: inherit;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+}
+
+.atmm-effect-chip:hover {
+    border-color: rgba(34, 211, 238, .4);
+    color: #e2e8f0;
+    background: rgba(34, 211, 238, .08);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(34, 211, 238, .15);
+}
+
+.atmm-effect-chip.selected {
+    background: rgba(34, 211, 238, .25);
+    border-color: #22d3ee;
+    color: #fff;
+    box-shadow: 0 0 14px rgba(34, 211, 238, .2);
+}
+
+.atmm-chip-zh {
+    font-size: .78rem;
+    font-weight: 600;
+}
+
+.atmm-chip-en {
+    font-size: .58rem;
+    color: #64748b;
+}
+
+.atmm-effect-chip.selected .atmm-chip-en {
+    color: rgba(255, 255, 255, .5);
+}
+
+.atmm-hot-badge {
+    position: absolute;
+    top: 2px;
+    right: 4px;
+    font-size: .6rem;
+}
+
+.atmm-empty {
+    grid-column: 1 / -1;
+    text-align: center;
+    color: #64748b;
+    padding: 40px 0;
+    font-size: .85rem;
+}
+
+/* === 控制面板（雙推桿）=== */
+.atmm-controls {
+    padding: 12px 20px;
+    border-top: 1px solid rgba(148, 163, 184, .15);
+    background: rgba(15, 23, 42, .5);
+    flex-shrink: 0;
+}
+
+.atmm-controls-row {
+    display: flex;
+    gap: 24px;
+    align-items: flex-start;
+}
+
+.atmm-slider-section {
+    flex: 1;
+}
+
+.atmm-slider-title {
+    font-size: .78rem;
+    font-weight: 600;
+    color: #e2e8f0;
+    margin-bottom: 6px;
+}
+
+.atmm-slider-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: .58rem;
+    color: #94a3b8;
+    margin-bottom: 4px;
+    padding: 0 2px;
+}
+
+.atmm-slider-label {
+    text-align: center;
+    line-height: 1.3;
+}
+
+.atmm-slider-wrap {
+    padding: 4px 0;
+}
+
+/* 推桿樣式 */
+.atmm-slider {
+    width: 100%;
+    height: 6px;
+    -webkit-appearance: none;
+    appearance: none;
+    border-radius: 3px;
+    outline: none;
+    transition: all .3s;
+    background: linear-gradient(90deg, #0e7490, #22d3ee);
+}
+
+.atmm-slider[data-inactive="true"] {
+    opacity: .35;
+    background: #475569;
+}
+
+.atmm-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #22d3ee;
+    border: 2px solid rgba(255, 255, 255, .3);
+    cursor: pointer;
+    box-shadow: 0 0 8px rgba(34, 211, 238, .4);
+    transition: all .2s;
+}
+
+.atmm-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+    box-shadow: 0 0 14px rgba(34, 211, 238, .6);
+}
+
+.atmm-slider[data-inactive="true"]::-webkit-slider-thumb {
+    background: #64748b;
+    box-shadow: none;
+    border-color: rgba(255, 255, 255, .1);
+}
+
+/* Toggle 開關 */
+.atmm-slider-toggle {
+    margin-top: 6px;
+}
+
+.atmm-toggle-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: .72rem;
+    color: #94a3b8;
+    cursor: pointer;
+}
+
+.atmm-toggle-label input[type="checkbox"] {
+    accent-color: #22d3ee;
+    width: 14px;
+    height: 14px;
+    cursor: pointer;
+}
+
+.atmm-toggle-text {
+    font-size: .7rem;
+    transition: color .2s;
+}
+
+/* === 預覽區 === */
+.atmm-preview {
+    padding: 12px 20px;
+    border-top: 1px solid rgba(148, 163, 184, .12);
+    background: rgba(15, 23, 42, .4);
+    flex-shrink: 0;
+}
+
+.atmm-preview-label {
+    font-size: .72rem;
+    color: #64748b;
+    margin-bottom: 6px;
+}
+
+.atmm-preview-text {
+    font-size: .75rem;
+    color: #e2e8f0;
+    line-height: 1.6;
+    font-family: 'Consolas', monospace;
+    word-break: break-all;
+    max-height: 60px;
+    overflow-y: auto;
+}
+
+.atmm-prompt-tag {
+    color: #67e8f9;
+}
+
+/* === Footer === */
+.atmm-footer {
+    padding: 12px 20px;
+    border-top: 1px solid rgba(148, 163, 184, .12);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(15, 23, 42, .6);
+    flex-shrink: 0;
+}
+
+.atmm-status {
+    font-size: .75rem;
+    color: #94a3b8;
+}
+
+.atmm-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.atmm-btn {
+    padding: 8px 20px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: .8rem;
+    font-weight: 600;
+    transition: all .2s;
+}
+
+.atmm-btn-cancel {
+    background: rgba(100, 116, 139, .2);
+    color: #94a3b8;
+    border: 1px solid rgba(100, 116, 139, .3);
+}
+
+.atmm-btn-cancel:hover {
+    background: rgba(100, 116, 139, .3);
+    color: #e2e8f0;
+}
+
+.atmm-btn-apply {
+    background: linear-gradient(135deg, #0891b2, #22d3ee);
+    color: #fff;
+    box-shadow: 0 0 20px rgba(34, 211, 238, .2);
+}
+
+.atmm-btn-apply:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 20px rgba(34, 211, 238, .4);
+}
+
+/* === Responsive === */
+@media (max-width: 768px) {
+    .atmm-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .atmm-controls-row {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .atmm-container {
+        height: 90vh;
+    }
+}
+
+@media (max-width: 480px) {
+    .atmm-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* === Atmosphere Magic Modal END === */

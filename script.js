@@ -71,6 +71,8 @@
         artStylePage: 1,     // v7.5 藝術風格分頁
         artistPage: 1,       // v7.5 藝術家分頁
         scenePage: 1,        // v7.6 場景分頁
+        atmospherePage: 1,   // v7.7 時間氛圍分頁
+        atmosphereAdvanced: null, // v7.7 時間氛圍魔法
         heterochromia: false, // v6.9 異色瞳模式
         spellMode: false // v7.5 咒語模式
     };
@@ -144,6 +146,7 @@
                 state.expressionAdvanced = parsed.expressionAdvanced || null;
                 state.poseAdvanced = parsed.poseAdvanced || null;
                 state.sceneAdvanced = parsed.sceneAdvanced || null;
+                state.atmosphereAdvanced = parsed.atmosphereAdvanced || null;
                 state.ageEnabled = parsed.ageEnabled !== false;
 
                 // Conflict system state restoration
@@ -1638,6 +1641,95 @@
                 return;
             }
 
+            // === v7.7 時間氛圍 Magic Modal — atmosphere section 特殊處理 ===
+            if (section.id === 'atmosphere') {
+                // 高級魔法專用按鈕
+                const atmMagicBtn = document.createElement('button');
+                atmMagicBtn.className = 'race-magic-btn';
+                atmMagicBtn.innerHTML = '<i class="fa-solid fa-wand-sparkles"></i> ' +
+                    (state.lang === 'zh' ? '⏰ 高級魔法專用' : '⏰ Advanced Magic');
+                atmMagicBtn.addEventListener('click', () => {
+                    openAtmosphereMagicModal();
+                });
+                const atmCustomToggle = header.querySelector('.btn-custom-toggle');
+                const atmBtnGroup = document.createElement('div');
+                atmBtnGroup.className = 'section-header-buttons';
+                header.insertBefore(atmBtnGroup, atmCustomToggle);
+                atmBtnGroup.appendChild(atmMagicBtn);
+                atmBtnGroup.appendChild(atmCustomToggle);
+
+                // atmosphereAdvanced 橫幅
+                if (state.atmosphereAdvanced) {
+                    const atm = state.atmosphereAdvanced;
+                    const ATM_DATA = window.PromptGen.AtmosphereMagicData;
+                    let detailParts = [];
+                    if (atm.timeOfDay && ATM_DATA) {
+                        const td = ATM_DATA.TIME_OF_DAY[atm.timeOfDay - 1];
+                        if (td) detailParts.push(`⏰ ${td.label}`);
+                    }
+                    if (atm.weather && ATM_DATA) {
+                        const wd = ATM_DATA.WEATHER_OPTIONS[atm.weather - 1];
+                        if (wd) detailParts.push(`🌤 ${wd.label}`);
+                    }
+                    if (atm.effectsZh && atm.effectsZh.length > 0) {
+                        detailParts.push(`✨ ${atm.effectsZh.join('、')}`);
+                    }
+                    if (detailParts.length > 0) {
+                        const summaryBar = document.createElement('div');
+                        summaryBar.className = 'body-advanced-summary';
+                        const summaryText = document.createElement('span');
+                        summaryText.innerHTML = `⏰ 時間氛圍魔法啟用中：${detailParts.join(' | ')}`;
+                        const editBtn = document.createElement('button');
+                        editBtn.className = 'body-summary-action';
+                        editBtn.textContent = state.lang === 'zh' ? '編輯' : 'Edit';
+                        editBtn.addEventListener('click', () => openAtmosphereMagicModal());
+                        const clearBtn = document.createElement('button');
+                        clearBtn.className = 'body-summary-action clear';
+                        clearBtn.textContent = state.lang === 'zh' ? '清除' : 'Clear';
+                        clearBtn.addEventListener('click', () => {
+                            state.atmosphereAdvanced = null;
+                            delete state.selections.atmosphere;
+                            renderTabContent();
+                            generatePrompt();
+                            saveState();
+                        });
+                        summaryBar.appendChild(summaryText);
+                        summaryBar.appendChild(editBtn);
+                        summaryBar.appendChild(clearBtn);
+                        sectionEl.appendChild(summaryBar);
+                    }
+                }
+
+                // 渲染分頁 grid
+                renderPaginatedGrid(sectionEl, section, section.data, 'atmospherePage');
+
+                // Advanced 啟用時灰化 grid
+                if (state.atmosphereAdvanced) {
+                    const tagGrid = sectionEl.querySelector('.tag-grid-paginated');
+                    if (tagGrid) tagGrid.classList.add('body-section-disabled');
+                }
+                tabContent.appendChild(sectionEl);
+
+                // Custom input
+                if (state.customInputVisible[section.id]) {
+                    const customRow = document.createElement('div');
+                    customRow.className = 'custom-input-row';
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.className = 'custom-section-input';
+                    input.placeholder = state.lang === 'zh' ? '輸入自訂氛圍...' : 'Enter custom atmosphere...';
+                    input.value = state.customInputs[section.id] || '';
+                    input.addEventListener('input', (e) => {
+                        state.customInputs[section.id] = e.target.value.trim();
+                        generatePrompt();
+                        debouncedSaveState();
+                    });
+                    customRow.appendChild(input);
+                    tabContent.appendChild(customRow);
+                }
+                return;
+            }
+
             // === v6.9 眼色色盤：跳過 eyeColorRight，由 eyeColorLeft 一併處理 ===
             if (section.id === 'eyeColorRight') return;
 
@@ -1876,6 +1968,12 @@
     }
     function openSceneMagicModal() {
         window.PromptGen.SceneMagicModal.openSceneMagicModal();
+    }
+    // ============================================
+    // Atmosphere Magic Modal — 由 modules/atmosphere-magic-modal.js 提供
+    // ============================================
+    function openAtmosphereMagicModal() {
+        window.PromptGen.AtmosphereMagicModal.openAtmosphereMagicModal();
     }
 
     // ============================================
@@ -2286,6 +2384,26 @@
                 if (gazeObj && gazeObj.value) parts.push(gazeObj.value);
                 return;
             }
+            // Skip atmosphere if atmosphereAdvanced is active
+            if (secId === 'atmosphere' && state.atmosphereAdvanced) {
+                const atm = state.atmosphereAdvanced;
+                const ATM_DATA = window.PromptGen.AtmosphereMagicData;
+                if (atm.timeOfDay && ATM_DATA) {
+                    const td = ATM_DATA.TIME_OF_DAY[atm.timeOfDay - 1];
+                    if (td) parts.push(td.value);
+                }
+                if (atm.weather && ATM_DATA) {
+                    const wd = ATM_DATA.WEATHER_OPTIONS[atm.weather - 1];
+                    if (wd) parts.push(wd.value);
+                }
+                if (atm.effects && atm.effects.length > 0 && ATM_DATA) {
+                    atm.effects.forEach(eid => {
+                        const ef = ATM_DATA.ITEMS.find(e => e.id === eid);
+                        if (ef) parts.push(ef.value);
+                    });
+                }
+                return;
+            }
             const val = state.selections[secId];
             if (val && (!Array.isArray(val) || val.length > 0)) {
                 // Handle eye colors specially
@@ -2474,6 +2592,30 @@
                 const gazeObj = POSE_DATA.GAZE.find(g => g.id === pa.gaze);
                 if (gazeObj && gazeObj.value) poseParts.push(gazeObj.value);
                 yaml += `pose: ${poseParts.join(', ')}\n`;
+                return;
+            }
+            // Skip atmosphere if atmosphereAdvanced is active (YAML)
+            if (secId === 'atmosphere' && state.atmosphereAdvanced) {
+                const atm = state.atmosphereAdvanced;
+                const ATM_DATA = window.PromptGen.AtmosphereMagicData;
+                const atmParts = [];
+                if (atm.timeOfDay && ATM_DATA) {
+                    const td = ATM_DATA.TIME_OF_DAY[atm.timeOfDay - 1];
+                    if (td) atmParts.push(td.value);
+                }
+                if (atm.weather && ATM_DATA) {
+                    const wd = ATM_DATA.WEATHER_OPTIONS[atm.weather - 1];
+                    if (wd) atmParts.push(wd.value);
+                }
+                if (atm.effects && atm.effects.length > 0 && ATM_DATA) {
+                    atm.effects.forEach(eid => {
+                        const ef = ATM_DATA.ITEMS.find(e => e.id === eid);
+                        if (ef) atmParts.push(ef.value);
+                    });
+                }
+                if (atmParts.length > 0) {
+                    yaml += `atmosphere: ${atmParts.join(', ')}\n`;
+                }
                 return;
             }
             const parts = [];
@@ -2693,6 +2835,9 @@
     });
     window.PromptGen.SceneMagicModal.setup({
         state, sfx, selectOption, generatePrompt, saveState, renderTabContent
+    });
+    window.PromptGen.AtmosphereMagicModal.setup({
+        state, sfx, ATM_DATA: window.PromptGen.AtmosphereMagicData, generatePrompt, saveState, renderTabContent
     });
     window.PromptGen.ConflictSystem.setup({
         state, sfx, CONFLICT_RULES, generatePrompt, saveState, selectOption,

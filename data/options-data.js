@@ -2702,7 +2702,7 @@ window.PromptGen.Data = (function () {
         ],
         environment: [
             { id: 'scene', title: { zh: '場景', en: 'Scene' }, data: SCENES, count: 26 },
-            { id: 'weather', title: { zh: '時間 & 天氣', en: 'Time & Weather' }, data: WEATHER },
+            { id: 'atmosphere', title: { zh: '時間氛圍', en: 'Atmosphere' }, data: WEATHER },
             { id: 'lighting', title: { zh: '光影', en: 'Lighting' }, data: LIGHTING }
         ],
         camera: [
