@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>咒語效果 Demo — 打字 + 發光測試</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0
+        }
+
+        body {
+            background: #0f0f1a;
+            color: #e2e8f0;
+            font-family: 'Segoe UI', sans-serif;
+            min-height: 100vh;
+            padding: 20px
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 1.4rem;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #c084fc, #a855f7);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent
+        }
+
+        .controls {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(168, 85, 247, 0.3);
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-bottom: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 14px
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px
+        }
+
+        .control-group label {
+            font-size: 0.8rem;
+            color: #94a3b8
+        }
+
+        .control-group .val {
+            color: #c084fc;
+            font-weight: 600;
+            font-size: 0.85rem
+        }
+
+        input[type="range"] {
+            width: 100%;
+            accent-color: #a855f7;
+            cursor: pointer
+        }
+
+        select {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 6px;
+            color: #e2e8f0;
+            padding: 6px 10px;
+            font-size: 0.85rem;
+            cursor: pointer
+        }
+
+        .demos {
+            display: flex;
+            flex-direction: column;
+            gap: 20px
+        }
+
+        .demo-box {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(168, 85, 247, 0.2);
+            border-radius: 12px;
+            overflow: visible
+        }
+
+        .demo-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 16px;
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.15), rgba(168, 85, 247, 0.08));
+            border-bottom: 1px solid rgba(168, 85, 247, 0.15);
+            border-radius: 12px 12px 0 0
+        }
+
+        .demo-header h2 {
+            font-size: 0.95rem;
+            color: #c084fc
+        }
+
+        .btn-play {
+            background: linear-gradient(135deg, #7c3aed, #a855f7);
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            padding: 6px 16px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s
+        }
+
+        .btn-play:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(168, 85, 247, 0.4)
+        }
+
+        .demo-content {
+            padding: 20px;
+            min-height: 180px;
+            direction: rtl;
+            text-align: center;
+            font-family: 'Amiri', serif;
+            font-size: 0.95rem;
+            line-height: 1.8;
+            color: #c084fc;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            overflow: visible
+        }
+
+        .clip-line {
+            display: block;
+            white-space: nowrap;
+            overflow: visible;
+            opacity: 0;
+            transform: scaleX(0);
+            transform-origin: center
+        }
+
+        .clip-line.revealed {
+            opacity: 1;
+            transform: scaleX(1)
+        }
+
+        .glow-preview {
+            margin-top: 6px;
+            text-align: center;
+            font-family: 'Amiri', serif;
+            font-size: 1.1rem;
+            color: #c084fc;
+            direction: rtl;
+            padding: 4px 0
+        }
+
+        .export-section {
+            margin-top: 24px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(168, 85, 247, 0.3);
+            border-radius: 12px;
+            padding: 16px 20px
+        }
+
+        .export-section h2 {
+            font-size: 1rem;
+            color: #c084fc;
+            margin-bottom: 10px
+        }
+
+        #export-text {
+            width: 100%;
+            min-height: 120px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: #a5f3fc;
+            font-family: 'Consolas', monospace;
+            font-size: 0.8rem;
+            padding: 12px;
+            resize: vertical
+        }
+
+        .btn-copy {
+            margin-top: 8px;
+            background: linear-gradient(135deg, #059669, #10b981);
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            padding: 8px 24px;
+            font-size: 0.85rem;
+            cursor: pointer
+        }
+
+        .btn-copy:hover {
+            transform: translateY(-1px)
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>🔮 咒語效果測試台 — Spell Effect Lab</h1>
+
+    <div class="controls">
+        <div class="control-group">
+            <label>⚡ 打字速度 <span class="val" id="speed-val">60ms</span></label>
+            <input type="range" id="ctrl-speed" min="10" max="200" value="60" step="5">
+        </div>
+        <div class="control-group">
+            <label>✨ 發光節奏</label>
+            <select id="ctrl-glow">
+                <option value="slow">慢速脈動 (3s)</option>
+                <option value="medium" selected>中速 (2s)</option>
+                <option value="fast">快速閃爍 (1s)</option>
+                <option value="none">關閉發光</option>
+            </select>
+        </div>
+        <div class="control-group">
+            <label>🕐 發光時機</label>
+            <select id="ctrl-glow-timing">
+                <option value="after" selected>全部打完後發光</option>
+                <option value="during">邊打邊發光</option>
+            </select>
+        </div>
+        <div class="control-group">
+            <label>💡 發光強度 <span class="val" id="intensity-val">100%</span></label>
+            <input type="range" id="ctrl-intensity" min="20" max="300" value="100" step="10">
+            <div class="glow-preview" id="glow-preview-text">سحر نور قوة</div>
+        </div>
+        <div class="control-group">
+            <label>📏 字體大小 <span class="val" id="size-val">0.95rem</span></label>
+            <input type="range" id="ctrl-size" min="0.7" max="1.6" value="0.95" step="0.05">
+        </div>
+    </div>
+
+    <div class="demos">
+        <div class="demo-box">
+            <div class="demo-header">
+                <h2>方案 A — 逐字顯示</h2><button class="btn-play" onclick="playA()">▶ 播放</button>
+            </div>
+            <div class="demo-content" id="demoA"></div>
+        </div>
+        <div class="demo-box">
+            <div class="demo-header">
+                <h2>方案 B — 逐詞顯示</h2><button class="btn-play" onclick="playB()">▶ 播放</button>
+            </div>
+            <div class="demo-content" id="demoB"></div>
+        </div>
+        <div class="demo-box">
+            <div class="demo-header">
+                <h2>方案 C — 逐行揭開</h2><button class="btn-play" onclick="playC()">▶ 播放</button>
+            </div>
+            <div class="demo-content" id="demoC"></div>
+        </div>
+        <div class="demo-box">
+            <div class="demo-header">
+                <h2>方案 D — 縮放逐詞 (Zoom Out Words)</h2><button class="btn-play" onclick="playD()">▶ 播放</button>
+            </div>
+            <div class="demo-content" id="demoD"
+                style="transition:font-size 0.3s ease-out;height:400px;overflow-y:auto"></div>
+        </div>
+    </div>
+
+    <div class="export-section">
+        <h2>📋 匯出設定 — 測試完後填入方案，按複製後貼給我</h2>
+        <textarea id="export-text" readonly></textarea>
+        <button class="btn-copy" onclick="copyExport()">📋 複製到剪貼簿</button>
+    </div>
+
+    <script>
+        const SAMPLE_TEXT = `الجنس؛ أنثى
+الموضوع؛ سحر نور قوة روح ظل نار
+العمر؛ امرأة شابة تبلغ من العمر ٢١ عامًا، نضج شبابي كامل، وجه ناضج مع نعومة شبابية،
+عيون واثقة، بشرة ناعمة لا تشوبها شائبة، شكل أنثوي ناضج بالكامل، أبعاد متوازنة، جسم نحيف
+متناغم، ذروة اللياقة البدنية الشابة
+العرق؛ زومبي، شاحب، غير ميت
+الوظيفة؛ ساحر، ساحر، رداء، عصا، دائرة سحرية
+تصفيفة الشعر؛ شعر طويل للغاية، شعر بطول الأرض، سحب الشعر على الأرض
+شعر حريري مستقيم، شعر عائم، شعر مبهوج بالرياح، شعر عائم لأعلى
+لون الشعر؛ شعر متعدد الألوان
+العين اليسرى؛ ذهب
+العين اليمنى؛ ذهبي
+الجودة؛ مفصلة للغاية`;
+
+        // 動態產生 CSS keyframes，模糊半徑限制最大 40px
+        const glowStyleEl = document.createElement('style');
+        document.head.appendChild(glowStyleEl);
+
+        function buildGlowCSS(intensity) {
+            const i = intensity / 100;
+            // 模糊半徑：用 Math.min 限制上限，不管強度多高都不超過 40px
+            const b1 = Math.min(6 * i, 15);
+            const b2 = Math.min(18 * i, 40);
+            const b3 = Math.min(30 * i, 40);
+            // 透明度：用 Math.min 限制最大 1
+            const a1 = Math.min(0.4 * i, 1);
+            const a2 = Math.min(1.0 * i, 1);
+            const a3 = Math.min(0.7 * i, 1);
+            // 文字顏色亮度隨強度增加
+            const brightColor = i > 1.5 ? '#f5f0ff' : i > 1 ? '#e9d5ff' : '#ddd6fe';
+
+            return `
+    @keyframes spell-glow-slow {
+        0%, 100% { text-shadow: 0 0 ${b1}px rgba(168,85,247,${a1}); color: #c084fc; }
+        50% { text-shadow: 0 0 ${b2}px rgba(168,85,247,${a2}), 0 0 ${b3}px rgba(124,58,237,${a3}); color: ${brightColor}; }
+    }
+    @keyframes spell-glow-medium {
+        0%, 100% { text-shadow: 0 0 ${b1 * 0.8}px rgba(168,85,247,${a1 * 0.9}); color: #c084fc; }
+        50% { text-shadow: 0 0 ${b2 * 0.85}px rgba(168,85,247,${a2 * 0.9}), 0 0 ${b3 * 0.85}px rgba(124,58,237,${a3 * 0.85}); color: ${brightColor}; }
+    }
+    @keyframes spell-glow-fast {
+        0%, 100% { text-shadow: 0 0 ${b1 * 0.6}px rgba(168,85,247,${a1 * 0.8}); color: #c084fc; }
+        50% { text-shadow: 0 0 ${b2 * 0.7}px rgba(168,85,247,${a2 * 0.85}), 0 0 ${b3 * 0.7}px rgba(124,58,237,${a3 * 0.7}); color: ${brightColor}; }
+    }
+    .glow-slow { animation: spell-glow-slow 3s ease-in-out infinite; }
+    .glow-medium { animation: spell-glow-medium 2s ease-in-out infinite; }
+    .glow-fast { animation: spell-glow-fast 1s ease-in-out infinite; }
+    `;
+        }
+
+        function refreshGlowCSS() {
+            glowStyleEl.textContent = buildGlowCSS(parseInt(ctrlIntensity.value));
+            // 重啟所有正在發光的元素的動畫
+            document.querySelectorAll('.glow-slow,.glow-medium,.glow-fast').forEach(el => {
+                const cls = el.className.match(/glow-(slow|medium|fast)/);
+                if (cls) {
+                    el.classList.remove(cls[0]);
+                    void el.offsetWidth;
+                    el.classList.add(cls[0]);
+                }
+            });
+        }
+
+        const ctrlSpeed = document.getElementById('ctrl-speed');
+        const ctrlGlow = document.getElementById('ctrl-glow');
+        const ctrlGlowTiming = document.getElementById('ctrl-glow-timing');
+        const ctrlIntensity = document.getElementById('ctrl-intensity');
+        const ctrlSize = document.getElementById('ctrl-size');
+
+        ctrlSpeed.addEventListener('input', () => { document.getElementById('speed-val').textContent = ctrlSpeed.value + 'ms'; updateExport(); });
+        ctrlGlow.addEventListener('change', () => {
+            updatePreview();
+            // 同步更新所有正在發光的 demo 元素
+            document.querySelectorAll('.glow-slow,.glow-medium,.glow-fast').forEach(el => applyGlowTo(el));
+            updateExport();
+        });
+        ctrlGlowTiming.addEventListener('change', updateExport);
+        ctrlIntensity.addEventListener('input', () => {
+            document.getElementById('intensity-val').textContent = ctrlIntensity.value + '%';
+            refreshGlowCSS();
+            updateExport();
+        });
+        ctrlSize.addEventListener('input', () => {
+            document.getElementById('size-val').textContent = ctrlSize.value + 'rem';
+            document.querySelectorAll('.demo-content').forEach(el => el.style.fontSize = ctrlSize.value + 'rem');
+            updateExport();
+        });
+
+        function getSettings() {
+            return { speed: parseInt(ctrlSpeed.value), glow: ctrlGlow.value, glowTiming: ctrlGlowTiming.value, intensity: parseInt(ctrlIntensity.value), fontSize: parseFloat(ctrlSize.value) };
+        }
+
+        function updatePreview() {
+            const p = document.getElementById('glow-preview-text');
+            p.classList.remove('glow-slow', 'glow-medium', 'glow-fast');
+            const g = getSettings().glow;
+            if (g !== 'none') { void p.offsetWidth; p.classList.add('glow-' + g); }
+        }
+
+        function applyGlowTo(el) {
+            el.classList.remove('glow-slow', 'glow-medium', 'glow-fast');
+            const g = getSettings().glow;
+            if (g !== 'none') { void el.offsetWidth; el.classList.add('glow-' + g); }
+        }
+
+        let activeTimers = [];
+        function clearTimers() { activeTimers.forEach(t => clearTimeout(t)); activeTimers.length = 0; }
+
+        function playA() {
+            clearTimers();
+            const el = document.getElementById('demoA');
+            const s = getSettings();
+            el.textContent = ''; el.classList.remove('glow-slow', 'glow-medium', 'glow-fast');
+            if (s.glowTiming === 'during') applyGlowTo(el);
+            const chars = [...SAMPLE_TEXT]; let i = 0;
+            function tick() {
+                if (i >= chars.length) { if (s.glowTiming === 'after') applyGlowTo(el); return; }
+                el.textContent += chars[i++];
+                activeTimers.push(setTimeout(tick, s.speed));
+            }
+            tick();
+        }
+
+        function playB() {
+            clearTimers();
+            const el = document.getElementById('demoB');
+            const s = getSettings();
+            el.textContent = ''; el.classList.remove('glow-slow', 'glow-medium', 'glow-fast');
+            if (s.glowTiming === 'during') applyGlowTo(el);
+            const tokens = SAMPLE_TEXT.split(/(\s+)/); let i = 0;
+            function tick() {
+                if (i >= tokens.length) { if (s.glowTiming === 'after') applyGlowTo(el); return; }
+                el.textContent += tokens[i];
+                const delay = tokens[i].trim() === '' ? 0 : s.speed;
+                i++;
+                activeTimers.push(setTimeout(tick, delay));
+            }
+            tick();
+        }
+
+        function playC() {
+            clearTimers();
+            const el = document.getElementById('demoC');
+            const s = getSettings();
+            el.innerHTML = ''; el.classList.remove('glow-slow', 'glow-medium', 'glow-fast');
+            const lines = SAMPLE_TEXT.split('\n');
+            const transMs = Math.max(s.speed * 10, 400);
+            lines.forEach((line, idx) => {
+                const d = document.createElement('div');
+                d.className = 'clip-line'; d.textContent = line;
+                d.style.transition = `opacity ${transMs}ms ease, transform ${transMs}ms ease`;
+                el.appendChild(d);
+                activeTimers.push(setTimeout(() => {
+                    d.classList.add('revealed');
+                    if (s.glowTiming === 'during') applyGlowTo(d);
+                }, idx * s.speed * 14));
+            });
+            activeTimers.push(setTimeout(() => {
+                if (s.glowTiming === 'after') el.querySelectorAll('.clip-line').forEach(l => applyGlowTo(l));
+            }, lines.length * s.speed * 14 + transMs + 200));
+        }
+
+        function playD() {
+            clearTimers();
+            const el = document.getElementById('demoD');
+            const s = getSettings();
+            el.textContent = ''; el.classList.remove('glow-slow', 'glow-medium', 'glow-fast');
+            if (s.glowTiming === 'during') applyGlowTo(el);
+
+            const START_SIZE = 4;    // rem — 每行起始字體
+            const MIN_SIZE = 0.8;    // rem — 最小字體
+            const SLOW_MULT = 2.5;   // 第一個詞的速度倍率（越大越慢）
+            const FAST_MULT = 0.3;   // 最快速度倍率
+
+            // 拆成行，每行再拆詞
+            const lines = SAMPLE_TEXT.split('\n');
+            let allSteps = []; // { text, isWord, isNewLine }
+
+            lines.forEach((line, li) => {
+                if (li > 0) allSteps.push({ text: '\n', isWord: false, isNewLine: true });
+                const tokens = line.split(/(\s+)/);
+                tokens.forEach(t => {
+                    allSteps.push({ text: t, isWord: t.trim() !== '', isNewLine: false });
+                });
+            });
+
+            let i = 0;
+            let lineWordCount = 0;
+            el.style.fontSize = START_SIZE + 'rem';
+
+            function tick() {
+                if (i >= allSteps.length) {
+                    // 全部打完：強制縮到最小字體
+                    el.style.fontSize = MIN_SIZE + 'rem';
+                    if (s.glowTiming === 'after') applyGlowTo(el);
+                    return;
+                }
+                const step = allSteps[i];
+
+                // 換行：重置計數器
+                if (step.isNewLine) {
+                    lineWordCount = 0;
+                    el.textContent += step.text;
+                    el.style.fontSize = START_SIZE + 'rem';
+                    i++;
+                    activeTimers.push(setTimeout(tick, 50)); // 換行短暫停頓
+                    return;
+                }
+
+                el.textContent += step.text;
+
+                if (step.isWord) {
+                    lineWordCount++;
+                    // 字體：每行從大到小
+                    const newSize = Math.max(START_SIZE / lineWordCount, MIN_SIZE);
+                    el.style.fontSize = newSize + 'rem';
+                    // 速度：每行從慢到快
+                    const speedMult = Math.max(SLOW_MULT / lineWordCount, FAST_MULT);
+                    const delay = Math.round(s.speed * speedMult);
+                    i++;
+                    activeTimers.push(setTimeout(tick, delay));
+                } else {
+                    // 空白不延遲
+                    i++;
+                    activeTimers.push(setTimeout(tick, 0));
+                }
+            }
+            tick();
+        }
+
+        function updateExport() {
+            const s = getSettings();
+            const gl = { slow: '慢速脈動 3秒', medium: '中速 2秒', fast: '快速閃爍 1秒', none: '關閉' };
+            document.getElementById('export-text').value = `我選擇的咒語效果設定：
+- 方案：[請填入 A / B / C / D]
+- 打字速度：${s.speed}ms
+- 發光節奏：${gl[s.glow]}
+- 發光強度：${s.intensity}%
+- 發光時機：${s.glowTiming === 'after' ? '全部打完後發光' : '邊打邊發光'}
+- 字體大小：${s.fontSize}rem
+
+請用以上設定實作到 script.js 和 styles.css 中。`;
+        }
+
+        function copyExport() {
+            const ta = document.getElementById('export-text');
+            ta.select();
+            navigator.clipboard.writeText(ta.value).then(() => {
+                const btn = document.querySelector('.btn-copy');
+                btn.textContent = '✅ 已複製！';
+                setTimeout(() => btn.textContent = '📋 複製到剪貼簿', 2000);
+            });
+        }
+
+        // 初始化
+        refreshGlowCSS();
+        updatePreview();
+        updateExport();
+    </script>
+</body>
+
+</html>
