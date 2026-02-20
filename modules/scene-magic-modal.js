@@ -160,7 +160,7 @@ window.PromptGen.SceneMagicModal = (function () {
             const tab = document.createElement('div');
             tab.className = 'scmm-tab' + (c.id === activeCat ? ' active' : '');
             tab.dataset.cat = c.id;
-            tab.innerHTML = `<span class="scmm-tab-label">${c.label}</span><span class="scmm-tab-count">${count}</span>`;
+            tab.innerHTML = `<span class="scmm-tab-icon">${c.icon}</span><span class="scmm-tab-zh">${c.label}</span><span class="scmm-tab-en">${c.en}</span><span class="scmm-tab-count">${count}</span>`;
             tab.addEventListener('click', () => {
                 activeCat = c.id;
                 filterLetter = null;

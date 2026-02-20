@@ -5,21 +5,21 @@
 window.PromptGen = window.PromptGen || {};
 window.PromptGen.SceneMagicData = {
     TABS: [
-        { id: 'all', label: '✨ 全部' },
-        { id: 'recent', label: '🕐 最近' },
-        { id: 'hot', label: '🔥 熱門' },
-        { id: 'daily', label: '🏫 日常空間' },
-        { id: 'nature', label: '🌳 自然風景' },
-        { id: 'water', label: '🌊 水域場景' },
-        { id: 'urban', label: '🏙️ 都市街景' },
-        { id: 'fantasy', label: '🏰 奇幻異界' },
-        { id: 'scifi', label: '🚀 科幻未來' },
-        { id: 'eastern', label: '⛩️ 東方古風' },
-        { id: 'western', label: '🏛️ 西洋古典' },
-        { id: 'event', label: '🎪 活動場所' },
-        { id: 'night', label: '🌃 夜景氛圍' },
-        { id: 'abstract', label: '✨ 抽象夢幻' },
-        { id: 'dark', label: '💀 黑暗恐怖' }
+        { id: 'all', label: '全部', en: 'All', icon: '✨' },
+        { id: 'recent', label: '最近', en: 'Recent', icon: '🕐' },
+        { id: 'hot', label: '熱門', en: 'Hot', icon: '🔥' },
+        { id: 'daily', label: '日常空間', en: 'Daily', icon: '🏫' },
+        { id: 'nature', label: '自然風景', en: 'Nature', icon: '🌳' },
+        { id: 'water', label: '水域場景', en: 'Water', icon: '🌊' },
+        { id: 'urban', label: '都市街景', en: 'Urban', icon: '🏙️' },
+        { id: 'fantasy', label: '奇幻異界', en: 'Fantasy', icon: '🏰' },
+        { id: 'scifi', label: '科幻未來', en: 'Sci-Fi', icon: '🚀' },
+        { id: 'eastern', label: '東方古風', en: 'Eastern', icon: '⛩️' },
+        { id: 'western', label: '西洋古典', en: 'Western', icon: '🏛️' },
+        { id: 'event', label: '活動場所', en: 'Event', icon: '🎪' },
+        { id: 'night', label: '夜景氛圍', en: 'Night', icon: '🌃' },
+        { id: 'abstract', label: '抽象夢幻', en: 'Abstract', icon: '✨' },
+        { id: 'dark', label: '黑暗恐怖', en: 'Dark', icon: '💀' }
     ],
 
     HOT_ITEMS: [

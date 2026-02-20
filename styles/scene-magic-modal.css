@@ -333,8 +333,8 @@
 
 .scmm-tab {
     box-sizing: border-box;
-    padding: 6px 10px;
-    font-size: .72rem;
+    padding: 7px 14px;
+    font-size: .76rem;
     border-radius: 8px 8px 0 0;
     cursor: pointer;
     border: 1px solid rgba(148, 163, 184, .1);
@@ -345,9 +345,10 @@
     font-family: inherit;
     white-space: nowrap;
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 4px;
-    min-width: 48px;
+    gap: 2px;
+    min-width: 64px;
     position: relative
 }
 
@@ -369,14 +370,30 @@
     transform: translateY(-1px)
 }
 
-.scmm-tab-label {
-    font-size: .68rem;
+.scmm-tab.active .scmm-tab-icon {
+    transform: scale(1.15);
+    filter: drop-shadow(0 0 6px rgba(34, 211, 238, .6))
+}
+
+.scmm-tab-icon {
+    font-size: .95rem;
+    transition: transform .25s ease, filter .25s ease
+}
+
+.scmm-tab-zh {
+    font-size: .65rem;
     font-weight: 500
+}
+
+.scmm-tab-en {
+    font-size: .55rem;
+    color: #64748b
 }
 
 .scmm-tab-count {
     font-size: .55rem;
     color: #64748b;
+    margin-top: 1px;
     transition: color .25s ease
 }
 
