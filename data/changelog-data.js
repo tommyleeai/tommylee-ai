@@ -7,6 +7,23 @@ window.PromptGen.Changelog = (function () {
     // Changelog Data
     const changelog = [
         {
+            version: "v7.5.1",
+            date: "2026-02-20",
+            changes: [
+                "🎨 畫質（Quality）改為可複選：可同時選取多個畫質標籤（傑作+最佳畫質+高解析度+8K 等）",
+                "🔧 新增 MULTI_SELECT_SECTIONS 機制，未來可輕鬆將其他 section 也改為複選"
+            ]
+        },
+        {
+            version: "v7.5",
+            date: "2026-02-20",
+            changes: [
+                "📐 統一所有 Magic Modal Tab 為四行垂直結構：Icon / 中文名 / 英文名 / 計數",
+                "🎨 動漫風格/藝術風格/藝術家 Magic Modal 新增高級魔法系統",
+                "📦 新增 anime-style / art-style / artist Magic Modal 搜尋 + 分類 Tab"
+            ]
+        },
+        {
             version: "v7.4.1",
             date: "2026-02-19",
             changes: [

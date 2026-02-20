@@ -74,6 +74,9 @@
         spellMode: false // v7.5 咒語模式
     };
 
+    // 可複選的 section（值為陣列而非字串）
+    const MULTI_SELECT_SECTIONS = new Set(['quality']);
+
     // All section IDs for iteration
     const ALL_SECTION_IDS = [];
     Object.values(TAB_SECTIONS).forEach(sections => {
@@ -1778,17 +1781,29 @@
     function renderTagGrid(container, section, data) {
         const grid = document.createElement('div');
         grid.className = 'tag-grid';
+        const isMulti = MULTI_SELECT_SECTIONS.has(section.id);
 
         data.forEach(option => {
             const chip = document.createElement('div');
-            chip.className = `tag-chip${state.selections[section.id] === option.value ? ' active' : ''}`;
+            let isActive;
+            if (isMulti) {
+                const arr = state.selections[section.id] || [];
+                isActive = arr.includes(option.value);
+            } else {
+                isActive = state.selections[section.id] === option.value;
+            }
+            chip.className = `tag-chip${isActive ? ' active' : ''}`;
             chip.dataset.section = section.id;
             chip.dataset.value = option.value;
             if (option.image) chip.dataset.image = option.image;
             chip.textContent = getOptionLabel(option);
 
             chip.addEventListener('click', () => {
-                selectOption(section.id, option.value, option);
+                if (isMulti) {
+                    selectMultiOption(section.id, option.value);
+                } else {
+                    selectOption(section.id, option.value, option);
+                }
             });
 
             // Preview hover
@@ -2005,6 +2020,26 @@
         }
     }
 
+    // --- Multi Select（畫質等可複選 section）---
+    function selectMultiOption(sectionId, value) {
+        if (!Array.isArray(state.selections[sectionId])) {
+            state.selections[sectionId] = [];
+        }
+        const arr = state.selections[sectionId];
+        const idx = arr.indexOf(value);
+        if (idx >= 0) {
+            arr.splice(idx, 1); // 取消選取
+        } else {
+            arr.push(value); // 加入選取
+        }
+        // 空陣列時清除
+        if (arr.length === 0) delete state.selections[sectionId];
+
+        renderTabContent();
+        updateLockedPreview();
+        generatePrompt();
+    }
+
     // --- Custom Fields ---
     function renderCustomFields() {
         customFieldsContainer.innerHTML = '';
@@ -2138,7 +2173,7 @@
                 return;
             }
             const val = state.selections[secId];
-            if (val) {
+            if (val && (!Array.isArray(val) || val.length > 0)) {
                 // Handle eye colors specially
                 if (secId === 'eyeColorLeft') {
                     const rightEye = state.selections['eyeColorRight'];
@@ -2157,7 +2192,12 @@
                     parts.push(`${val} eyes`);
                     return;
                 }
-                parts.push(val);
+                // 複選 section → 合併為逗號分隔
+                if (Array.isArray(val)) {
+                    parts.push(val.join(', '));
+                } else {
+                    parts.push(val);
+                }
             }
 
             // Custom input
@@ -2199,7 +2239,8 @@
 
         // Quality tags
         if (state.highQuality) {
-            const hasQuality = state.selections['quality'];
+            const q = state.selections['quality'];
+            const hasQuality = q && (Array.isArray(q) ? q.length > 0 : true);
             if (!hasQuality) {
                 parts.push('masterpiece, best quality');
             }
@@ -2317,7 +2358,14 @@
                 return;
             }
             const parts = [];
-            if (state.selections[secId]) parts.push(state.selections[secId]);
+            const selVal = state.selections[secId];
+            if (selVal) {
+                if (Array.isArray(selVal) && selVal.length > 0) {
+                    parts.push(selVal.join(', '));
+                } else if (!Array.isArray(selVal)) {
+                    parts.push(selVal);
+                }
+            }
             if (state.customInputs[secId]) parts.push(state.customInputs[secId]);
             // Hair Magic prompts (append to hairstyle)
             if (secId === 'hairstyle' && state.hairMagicPrompts && state.hairMagicPrompts.positive && state.hairMagicPrompts.positive.length > 0) {
@@ -2348,7 +2396,9 @@
             }
         });
 
-        if (state.highQuality && !state.selections['quality']) {
+        const yq = state.selections['quality'];
+        const yqHas = yq && (Array.isArray(yq) ? yq.length > 0 : true);
+        if (state.highQuality && !yqHas) {
             yaml += `quality: masterpiece, best quality\n`;
         }
 
