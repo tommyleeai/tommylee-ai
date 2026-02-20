@@ -70,6 +70,7 @@
         animeStylePage: 1,   // v7.5 動漫風格分頁
         artStylePage: 1,     // v7.5 藝術風格分頁
         artistPage: 1,       // v7.5 藝術家分頁
+        scenePage: 1,        // v7.6 場景分頁
         heterochromia: false, // v6.9 異色瞳模式
         spellMode: false // v7.5 咒語模式
     };
@@ -1603,8 +1604,12 @@
                     sectionEl.appendChild(summaryBar);
                 }
 
-                // 渲染分頁 grid（使用原始 SCENES 資料）
-                renderPaginatedGrid(sectionEl, section, section.data, 'scenePage');
+                // 渲染分頁 grid（使用 SceneMagicData 全部 332 項，依常用度排序）
+                const SCENE_CATEGORY_ORDER = ['daily', 'nature', 'urban', 'special', 'fantasy', 'classic', 'scifi', 'abstract', 'dark'];
+                const scAllItems = window.PromptGen.SceneMagicData ? [...window.PromptGen.SceneMagicData.ITEMS].sort((a, b) => {
+                    return SCENE_CATEGORY_ORDER.indexOf(a.category) - SCENE_CATEGORY_ORDER.indexOf(b.category);
+                }) : section.data;
+                renderPaginatedGrid(sectionEl, section, scAllItems, 'scenePage');
 
                 // Advanced 啟用時灰化 grid
                 if (state.sceneAdvanced && state.sceneAdvanced.bonusTraits && state.sceneAdvanced.bonusTraits.length > 0) {
