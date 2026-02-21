@@ -402,48 +402,72 @@ html {
     text-shadow: 0 0 12px rgba(167, 139, 250, 0.3);
 }
 
+/* dimension-selector 容器 = 與 .tab-bar 一致 */
 .dimension-selector {
     display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
+    gap: 4px;
+    padding: 6px;
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 14px;
+    border: 1px solid rgba(187, 134, 252, 0.25);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
 }
 
+/* dim-btn = 與 .tab-btn 一致 */
 .dim-btn {
     flex: 1;
-    min-width: 90px;
-    padding: 10px 12px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 10px;
-    background: rgba(255, 255, 255, 0.05);
-    color: #94a3b8;
-    font-size: 0.85rem;
+    min-width: 0;
+    padding: 12px 10px;
+    border: none;
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--text-color);
+    font-size: 0.88rem;
+    font-weight: 500;
     font-family: inherit;
+    border-radius: 10px;
     cursor: pointer;
-    transition: all 0.3s ease;
-    text-align: center;
+    transition: all 0.25s ease;
     white-space: nowrap;
+    opacity: 0.7;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
 }
 
 .dim-btn:hover {
-    background: rgba(139, 92, 246, 0.1);
-    border-color: rgba(139, 92, 246, 0.3);
-    color: #e2e8f0;
+    opacity: 1;
+    background: rgba(187, 134, 252, 0.12);
 }
 
 .dim-btn.active {
-    background: rgba(139, 92, 246, 0.2);
-    border-color: rgba(167, 139, 250, 0.5);
-    color: #e2e8f0;
-    box-shadow: 0 0 12px rgba(139, 92, 246, 0.2), inset 0 0 8px rgba(139, 92, 246, 0.1);
-    text-shadow: 0 0 6px rgba(167, 139, 250, 0.4);
+    opacity: 1;
+    background: linear-gradient(135deg, var(--accent-color), #9965f4);
+    color: #fff;
+    font-weight: 600;
+    box-shadow: 0 3px 12px rgba(187, 134, 252, 0.4);
 }
 
-/* 運命の輪盤 — 特殊脈動效果 */
+.dim-btn i {
+    font-size: 1rem;
+}
+
+/* 空格佔位（第 5 格） */
+.dim-spacer {
+    flex: 1;
+    min-width: 0;
+}
+
+/* 運命の輪盤 — 金色特殊效果 */
 .dim-btn--fate {
-    border-color: rgba(251, 191, 36, 0.2);
     color: #fbbf24;
     position: relative;
     overflow: hidden;
+}
+
+.dim-btn--fate:hover {
+    opacity: 1;
+    background: rgba(251, 191, 36, 0.12);
 }
 
 .dim-btn--fate::before {
@@ -467,11 +491,9 @@ html {
 }
 
 .dim-btn--fate.active {
-    background: rgba(251, 191, 36, 0.15);
-    border-color: rgba(251, 191, 36, 0.4);
+    background: linear-gradient(135deg, rgba(251, 191, 36, 0.3), rgba(168, 85, 247, 0.3));
     color: #fbbf24;
-    box-shadow: 0 0 16px rgba(251, 191, 36, 0.2), inset 0 0 8px rgba(251, 191, 36, 0.1);
-    text-shadow: 0 0 8px rgba(251, 191, 36, 0.4);
+    box-shadow: 0 3px 12px rgba(251, 191, 36, 0.3);
 }
 
 .dim-btn--fate.active::before {
@@ -512,7 +534,7 @@ html {
     font-style: italic;
 }
 
-/* === 召喚指令 END === */
+/* === 召喚指令 (Summoning Order) END === */
 
 .input-group {
     display: flex;
