@@ -3066,7 +3066,8 @@
 
     function triggerFateWheel() {
         // 基礎版：隨機填充各 section（不含大招動畫）
-        state.dimension = 'fate';
+        const fateOptions = ['anime', 'realistic', 'fantasy', '2.5d'];
+        state.dimension = fateOptions[Math.floor(Math.random() * fateOptions.length)];
 
         // 隨機性別
         state.gender = Math.random() > 0.5 ? 'female' : 'male';
