@@ -2811,11 +2811,11 @@
             }
         }
 
-        // 更新 tag 計數顯示
+        // 更新 tag 計數顯示（始終用 plain 格式計數，避免 YAML 格式影響）
         const tagCountEl = document.getElementById('prompt-tag-count');
         if (tagCountEl) {
-            const plainText = outputFinal.dataset.plainText || '';
-            const tagCount = plainText.split(',').filter(t => t.trim().length > 0).length;
+            const countText = generatePromptPlain();
+            const tagCount = countText.split(',').filter(t => t.trim().length > 0).length;
             tagCountEl.textContent = tagCount > 0 ? `${tagCount} tags` : '';
         }
 
@@ -2927,7 +2927,7 @@
     });
     if (window.PromptGen.FateWheelModal) {
         window.PromptGen.FateWheelModal.setup({
-            state, sfx, generatePrompt, saveState, renderTabContent
+            state, sfx, generatePrompt, generatePromptPlain, saveState, renderTabContent
         });
     }
 

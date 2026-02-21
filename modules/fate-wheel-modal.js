@@ -6,12 +6,13 @@
 window.PromptGen = window.PromptGen || {};
 window.PromptGen.FateWheelModal = (function () {
     // Dependencies injected via setup()
-    let appState, sfx, generatePrompt, saveState, renderTabContent;
+    let appState, sfx, generatePrompt, generatePromptPlain, saveState, renderTabContent;
 
     function setup(deps) {
         appState = deps.state;
         sfx = deps.sfx;
         generatePrompt = deps.generatePrompt;
+        generatePromptPlain = deps.generatePromptPlain;
         saveState = deps.saveState;
         renderTabContent = deps.renderTabContent;
     }
@@ -757,7 +758,7 @@ window.PromptGen.FateWheelModal = (function () {
 
             ws.pregenResults = results;
             ws.pregenStars = starLevel;
-            ws.pregenTotalTags = total;
+            ws.pregenTotalTags = total; // 粗估值作為 fallback，實際計數在 showStarRating 時精確計算
         }
 
         // === SPIN LOGIC ===
@@ -1008,7 +1009,99 @@ window.PromptGen.FateWheelModal = (function () {
             btn.innerHTML = '<i class="fa-solid fa-play"></i> 啟動輪盤';
             btn.classList.remove('fw-spinning');
 
-            const totalTags = ws.pregenTotalTags;
+            // 精確計算 tag 數量：此時所有格子（含中心）已揭曉，可暗中套用 state
+            let totalTags = ws.pregenTotalTags; // fallback
+            if (generatePromptPlain) {
+                try {
+                    // 儲存原始 state
+                    const savedSelections = JSON.parse(JSON.stringify(appState.selections));
+                    const savedGender = appState.gender;
+                    const savedAge = appState.age;
+                    const savedDimension = appState.dimension;
+                    const savedBodyAdv = appState.bodyAdvanced;
+                    const savedHairAdv = appState.hairAdvanced;
+                    const savedHairMagic = appState.hairMagicPrompts;
+                    const savedHetero = appState.heterochromia;
+                    const savedExprAdv = appState.expressionAdvanced;
+                    const savedPoseAdv = appState.poseAdvanced;
+                    const savedAtmAdv = appState.atmosphereAdvanced;
+                    const savedRaceAdv = appState.raceAdvanced;
+                    const savedJobAdv = appState.jobAdvanced;
+                    const savedOutfitAdv = appState.outfitAdvanced;
+                    const savedHeadwearAdv = appState.headwearAdvanced;
+                    const savedHandItemsAdv = appState.handItemsAdvanced;
+                    const savedSceneAdv = appState.sceneAdvanced;
+                    const savedCustomInputs = appState.customInputs ? JSON.parse(JSON.stringify(appState.customInputs)) : {};
+                    const savedCustomFields = appState.customFields ? JSON.parse(JSON.stringify(appState.customFields)) : [];
+
+                    // 暫時清空並套用輪盤結果
+                    appState.selections = {};
+                    appState.bodyAdvanced = null;
+                    appState.hairAdvanced = null;
+                    appState.hairMagicPrompts = null;
+                    appState.heterochromia = false;
+                    appState.expressionAdvanced = null;
+                    appState.poseAdvanced = null;
+                    appState.atmosphereAdvanced = null;
+                    appState.raceAdvanced = null;
+                    appState.jobAdvanced = null;
+                    appState.outfitAdvanced = null;
+                    appState.headwearAdvanced = null;
+                    appState.handItemsAdvanced = null;
+                    appState.sceneAdvanced = null;
+                    appState.customInputs = {};
+                    appState.customFields = [];
+
+                    for (let i = 0; i < 24; i++) {
+                        const r = ws.cells[i];
+                        if (!r || r.isNone) continue;
+                        const stateKey = r.stateKey;
+                        if (!stateKey) continue;
+                        if (r.isMulti) {
+                            appState.selections[stateKey] = r.value.split(',').map(s => s.trim());
+                        } else {
+                            appState.selections[stateKey] = r.value;
+                        }
+                    }
+
+                    // 中心格
+                    const center = ws.cells[24];
+                    if (center) {
+                        appState.gender = center.gender === '1girl' ? 'female' : 'male';
+                        appState.age = center.age;
+                        const dimMap2 = { 'anime': 'anime', 'fantasy': 'fantasy', 'sci-fi': 'realistic', 'dark fantasy': 'fantasy', 'cyberpunk': 'realistic', 'steampunk': 'fantasy' };
+                        appState.dimension = dimMap2[center.dimension] || 'anime';
+                    }
+
+                    // 計算精確 tag 數
+                    const plainText = generatePromptPlain();
+                    totalTags = plainText.split(',').filter(t => t.trim().length > 0).length;
+
+                    // 還原所有 state
+                    appState.selections = savedSelections;
+                    appState.gender = savedGender;
+                    appState.age = savedAge;
+                    appState.dimension = savedDimension;
+                    appState.bodyAdvanced = savedBodyAdv;
+                    appState.hairAdvanced = savedHairAdv;
+                    appState.hairMagicPrompts = savedHairMagic;
+                    appState.heterochromia = savedHetero;
+                    appState.expressionAdvanced = savedExprAdv;
+                    appState.poseAdvanced = savedPoseAdv;
+                    appState.atmosphereAdvanced = savedAtmAdv;
+                    appState.raceAdvanced = savedRaceAdv;
+                    appState.jobAdvanced = savedJobAdv;
+                    appState.outfitAdvanced = savedOutfitAdv;
+                    appState.headwearAdvanced = savedHeadwearAdv;
+                    appState.handItemsAdvanced = savedHandItemsAdv;
+                    appState.sceneAdvanced = savedSceneAdv;
+                    appState.customInputs = savedCustomInputs;
+                    appState.customFields = savedCustomFields;
+                } catch (e) {
+                    // fallback 使用 pregenTotalTags
+                }
+            }
+
             ws.totalTags = totalTags;
             const stars = ws.pregenStars;
 
