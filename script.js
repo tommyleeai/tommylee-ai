@@ -74,7 +74,8 @@
         atmospherePage: 1,   // v7.7 時間氛圍分頁
         atmosphereAdvanced: null, // v7.7 時間氛圍魔法
         heterochromia: false, // v6.9 異色瞳模式
-        spellMode: false // v7.5 咒語模式
+        spellMode: false, // v7.5 咒語模式
+        spellEffect: 'D' // v7.8 咒語效果樣式 (A/B/C/D/random)
     };
 
     // 可複選的 section（值為陣列而非字串）
@@ -156,6 +157,7 @@
                 state.conflictInfo = null;
                 state.conflictWarningCount = parsed.conflictWarningCount || 0;
                 state.spellMode = parsed.spellMode || false;
+                state.spellEffect = parsed.spellEffect || 'D';
 
                 inputSubject.value = parsed.inputSubject || '做一張全新的圖';
 
@@ -3311,6 +3313,8 @@
     // --- Spell Mode Settings (咒語模式：阿拉伯文翻譯) ---
     const spellToggleBtn = document.getElementById('btn-spell-toggle');
     const spellSettingToggle = document.getElementById('setting-spell-mode');
+    const spellEffectSelect = document.getElementById('setting-spell-effect');
+    const spellEffectGroup = document.getElementById('spell-effect-group');
     const outputSection = document.querySelector('.output-section');
 
     // 翻譯快取，避免重複 API 呼叫
@@ -3431,17 +3435,167 @@
         if (spellSettingToggle) {
             spellSettingToggle.checked = enabled;
         }
+        // 顯示/隱藏效果樣式下拉選單
+        if (spellEffectGroup) {
+            spellEffectGroup.style.display = enabled ? '' : 'none';
+        }
 
         // 更新 prompt 顯示 (async)
         renderSpellText();
         saveState();
     }
 
-    // 方案 D 動畫計時器（用於清除上一次動畫）
+    // 咒語動畫計時器（用於清除上一次動畫）
     let _spellAnimTimers = [];
     function _clearSpellAnim() {
         _spellAnimTimers.forEach(t => clearTimeout(t));
         _spellAnimTimers.length = 0;
+    }
+
+    // 取得當前要使用的效果（支援 random）
+    function _getSpellEffect() {
+        if (state.spellEffect === 'random') {
+            const effects = ['A', 'B', 'C', 'D'];
+            return effects[Math.floor(Math.random() * effects.length)];
+        }
+        return state.spellEffect || 'D';
+    }
+
+    // === 方案 A：逐字顯示 ===
+    function spellAnimA(arabicText) {
+        const BASE_SPEED = 40;
+        outputFinal.textContent = '';
+        outputFinal.style.fontSize = '';
+        outputSection.classList.add('spell-glow-active');
+
+        const chars = [...arabicText];
+        let i = 0;
+        function tick() {
+            if (!state.spellMode || i >= chars.length) return;
+            outputFinal.textContent += chars[i++];
+            _spellAnimTimers.push(setTimeout(tick, BASE_SPEED));
+        }
+        tick();
+
+        const scrollInterval = setInterval(() => {
+            if (!state.spellMode || i >= chars.length) { clearInterval(scrollInterval); return; }
+            outputFinal.scrollTop = outputFinal.scrollHeight;
+        }, 200);
+    }
+
+    // === 方案 B：逐詞顯示 ===
+    function spellAnimB(arabicText) {
+        const BASE_SPEED = 40;
+        outputFinal.textContent = '';
+        outputFinal.style.fontSize = '';
+        outputSection.classList.add('spell-glow-active');
+
+        const tokens = arabicText.split(/(\s+)/);
+        let i = 0;
+        function tick() {
+            if (!state.spellMode || i >= tokens.length) return;
+            outputFinal.textContent += tokens[i];
+            const delay = tokens[i].trim() === '' ? 0 : BASE_SPEED;
+            i++;
+            _spellAnimTimers.push(setTimeout(tick, delay));
+        }
+        tick();
+
+        const scrollInterval = setInterval(() => {
+            if (!state.spellMode || i >= tokens.length) { clearInterval(scrollInterval); return; }
+            outputFinal.scrollTop = outputFinal.scrollHeight;
+        }, 200);
+    }
+
+    // === 方案 C：逐行揭開 ===
+    function spellAnimC(arabicText) {
+        const BASE_SPEED = 40;
+        outputFinal.innerHTML = '';
+        outputFinal.style.fontSize = '';
+        outputSection.classList.add('spell-glow-active');
+
+        const lines = arabicText.split('\n');
+        const transMs = Math.max(BASE_SPEED * 10, 400);
+
+        lines.forEach((line, idx) => {
+            const d = document.createElement('div');
+            d.className = 'spell-line';
+            d.textContent = line;
+            d.style.transition = `opacity ${transMs}ms ease, transform ${transMs}ms ease`;
+            outputFinal.appendChild(d);
+            _spellAnimTimers.push(setTimeout(() => {
+                if (!state.spellMode) return;
+                d.classList.add('revealed');
+            }, idx * BASE_SPEED * 14));
+        });
+
+        const scrollInterval = setInterval(() => {
+            if (!state.spellMode) { clearInterval(scrollInterval); return; }
+            outputFinal.scrollTop = outputFinal.scrollHeight;
+        }, 200);
+        _spellAnimTimers.push(setTimeout(() => clearInterval(scrollInterval), lines.length * BASE_SPEED * 14 + transMs + 500));
+    }
+
+    // === 方案 D：縮放逐詞動畫 ===
+    function spellAnimD(arabicText) {
+        const START_SIZE = 4;
+        const MIN_SIZE = 0.8;
+        const BASE_SPEED = 40;
+        const SLOW_MULT = 2.5;
+        const FAST_MULT = 0.3;
+
+        const lines = arabicText.split('\n');
+        const allSteps = [];
+        lines.forEach((line, li) => {
+            if (li > 0) allSteps.push({ text: '\n', isWord: false, isNewLine: true });
+            line.split(/(\s+)/).forEach(t => {
+                allSteps.push({ text: t, isWord: t.trim() !== '', isNewLine: false });
+            });
+        });
+
+        outputFinal.textContent = '';
+        outputFinal.style.fontSize = START_SIZE + 'rem';
+        outputSection.classList.add('spell-glow-active');
+
+        let i = 0;
+        let lineWordCount = 0;
+
+        function tick() {
+            if (!state.spellMode) return;
+            if (i >= allSteps.length) {
+                outputFinal.style.fontSize = MIN_SIZE + 'rem';
+                return;
+            }
+            const step = allSteps[i];
+
+            if (step.isNewLine) {
+                lineWordCount = 0;
+                outputFinal.textContent += step.text;
+                outputFinal.style.fontSize = START_SIZE + 'rem';
+                i++;
+                _spellAnimTimers.push(setTimeout(tick, 50));
+                return;
+            }
+
+            outputFinal.textContent += step.text;
+
+            if (step.isWord) {
+                lineWordCount++;
+                outputFinal.style.fontSize = Math.max(START_SIZE / lineWordCount, MIN_SIZE) + 'rem';
+                const delay = Math.round(BASE_SPEED * Math.max(SLOW_MULT / lineWordCount, FAST_MULT));
+                i++;
+                _spellAnimTimers.push(setTimeout(tick, delay));
+            } else {
+                i++;
+                _spellAnimTimers.push(setTimeout(tick, 0));
+            }
+        }
+        tick();
+
+        const scrollInterval = setInterval(() => {
+            if (!state.spellMode || i >= allSteps.length) { clearInterval(scrollInterval); return; }
+            outputFinal.scrollTop = outputFinal.scrollHeight;
+        }, 200);
     }
 
     async function renderSpellText() {
@@ -3461,70 +3615,14 @@
             const arabicText = await translateToArabic(plainText);
             if (!state.spellMode) return; // 使用者可能已切回
 
-            // === 方案 D：縮放逐詞動畫 ===
-            const START_SIZE = 4;    // rem — 每行起始字體
-            const MIN_SIZE = 0.8;    // rem — 最小字體
-            const BASE_SPEED = 40;   // ms — 基礎打字速度
-            const SLOW_MULT = 2.5;   // 第一個詞速度倍率
-            const FAST_MULT = 0.3;   // 最快速度倍率
-
-            // 預處理：拆成步驟（行→詞）
-            const lines = arabicText.split('\n');
-            const allSteps = [];
-            lines.forEach((line, li) => {
-                if (li > 0) allSteps.push({ text: '\n', isWord: false, isNewLine: true });
-                line.split(/(\s+)/).forEach(t => {
-                    allSteps.push({ text: t, isWord: t.trim() !== '', isNewLine: false });
-                });
-            });
-
-            outputFinal.textContent = '';
-            outputFinal.style.fontSize = START_SIZE + 'rem';
-
-            // 邊打邊發光
-            outputSection.classList.add('spell-glow-active');
-
-            let i = 0;
-            let lineWordCount = 0;
-
-            function tick() {
-                if (!state.spellMode) return;
-                if (i >= allSteps.length) {
-                    // 全部打完：強制縮到最小
-                    outputFinal.style.fontSize = MIN_SIZE + 'rem';
-                    return;
-                }
-                const step = allSteps[i];
-
-                if (step.isNewLine) {
-                    lineWordCount = 0;
-                    outputFinal.textContent += step.text;
-                    outputFinal.style.fontSize = START_SIZE + 'rem';
-                    i++;
-                    _spellAnimTimers.push(setTimeout(tick, 50));
-                    return;
-                }
-
-                outputFinal.textContent += step.text;
-
-                if (step.isWord) {
-                    lineWordCount++;
-                    outputFinal.style.fontSize = Math.max(START_SIZE / lineWordCount, MIN_SIZE) + 'rem';
-                    const delay = Math.round(BASE_SPEED * Math.max(SLOW_MULT / lineWordCount, FAST_MULT));
-                    i++;
-                    _spellAnimTimers.push(setTimeout(tick, delay));
-                } else {
-                    i++;
-                    _spellAnimTimers.push(setTimeout(tick, 0));
-                }
+            // 依據設定選擇動畫方案
+            const effect = _getSpellEffect();
+            switch (effect) {
+                case 'A': spellAnimA(arabicText); break;
+                case 'B': spellAnimB(arabicText); break;
+                case 'C': spellAnimC(arabicText); break;
+                case 'D': default: spellAnimD(arabicText); break;
             }
-            tick();
-
-            // 自動捲到底部
-            const scrollInterval = setInterval(() => {
-                if (!state.spellMode || i >= allSteps.length) { clearInterval(scrollInterval); return; }
-                outputFinal.scrollTop = outputFinal.scrollHeight;
-            }, 200);
 
         } else if (plainText) {
             _clearSpellAnim();
@@ -3571,6 +3669,19 @@
     if (spellSettingToggle) {
         spellSettingToggle.addEventListener('change', () => {
             applySpellMode(spellSettingToggle.checked);
+        });
+    }
+
+    // 設定面板的效果樣式下拉選單
+    if (spellEffectSelect) {
+        spellEffectSelect.value = state.spellEffect || 'D';
+        spellEffectSelect.addEventListener('change', () => {
+            state.spellEffect = spellEffectSelect.value;
+            saveState();
+            // 如果咒語模式啟用中，重新播放動畫
+            if (state.spellMode) {
+                renderSpellText();
+            }
         });
     }
 

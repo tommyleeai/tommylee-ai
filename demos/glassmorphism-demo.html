@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>深色毛玻璃風格 Demo — Settings Panel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            /* 深色背景 + 模擬你的應用背景 */
+            background: #0a0a14;
+            background-image:
+                radial-gradient(circle at 20% 30%, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(59, 130, 246, 0.1) 0%, transparent 50%);
+            color: #e2e8f0;
+        }
+
+        /* ============================================
+           深色毛玻璃面板 (Dark Glassmorphism)
+           ============================================ */
+        .settings-panel {
+            /* 🔑 核心：半透明深色底 + 背景模糊 = 毛玻璃效果 */
+            background: rgba(15, 15, 30, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+
+            /* 圓角 + 微光邊框 */
+            border-radius: 16px;
+            border: 1px solid rgba(139, 92, 246, 0.2);
+
+            /* 陰影層次 */
+            box-shadow:
+                0 25px 50px rgba(0, 0, 0, 0.5),
+                0 0 40px rgba(139, 92, 246, 0.08),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+
+            width: 90%;
+            max-width: 600px;
+            max-height: 85vh;
+            overflow: hidden;
+            animation: panelSlideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes panelSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px) scale(0.96);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* --- Header --- */
+        .settings-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid rgba(139, 92, 246, 0.15);
+            background: rgba(139, 92, 246, 0.05);
+        }
+
+        .settings-header h2 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #e2e8f0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .settings-header h2 i {
+            color: #a78bfa;
+        }
+
+        .btn-close {
+            background: transparent;
+            border: none;
+            color: #64748b;
+            width: 36px;
+            height: 36px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.2rem;
+            border-radius: 8px;
+        }
+
+        .btn-close:hover {
+            color: #f87171;
+            background: rgba(248, 113, 113, 0.1);
+            transform: rotate(90deg);
+        }
+
+        /* --- Body (scrollable) --- */
+        .settings-body {
+            padding: 1.25rem 1.5rem;
+            max-height: 65vh;
+            overflow-y: auto;
+        }
+
+        .settings-body::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .settings-body::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .settings-body::-webkit-scrollbar-thumb {
+            background: rgba(139, 92, 246, 0.3);
+            border-radius: 3px;
+        }
+
+        .settings-body::-webkit-scrollbar-thumb:hover {
+            background: rgba(139, 92, 246, 0.5);
+        }
+
+        /* --- 分區標題 --- */
+        .settings-subtitle {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #a78bfa;
+            margin: 1.25rem 0 0.75rem;
+            padding-left: 10px;
+            border-left: 3px solid #a78bfa;
+            letter-spacing: 0.5px;
+        }
+
+        .settings-subtitle:first-child {
+            margin-top: 0;
+        }
+
+        /* --- 分隔線 --- */
+        .settings-divider {
+            border: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(139, 92, 246, 0.2), transparent);
+            margin: 1rem 0;
+        }
+
+        /* --- 設定群組 --- */
+        .setting-group {
+            margin-bottom: 0.75rem;
+            padding: 0.75rem;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: border-color 0.2s;
+        }
+
+        .setting-group:hover {
+            border-color: rgba(139, 92, 246, 0.15);
+        }
+
+        .setting-group label {
+            display: block;
+            font-size: 0.85rem;
+            color: #94a3b8;
+            margin-bottom: 0.4rem;
+            font-weight: 500;
+        }
+
+        /* 帶 toggle 的 setting-group */
+        .setting-group--toggle {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .setting-group--toggle label {
+            margin-bottom: 0;
+        }
+
+        /* --- 提示文字 --- */
+        .hint-text {
+            font-size: 0.75rem;
+            color: #8b5cf6;
+            font-style: italic;
+            margin-top: 2px;
+        }
+
+        /* --- Toggle Switch --- */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 48px;
+            height: 26px;
+            flex-shrink: 0;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #334155;
+            border-radius: 26px;
+            transition: 0.3s;
+        }
+
+        .toggle-slider::before {
+            content: '';
+            position: absolute;
+            height: 20px;
+            width: 20px;
+            bottom: 3px;
+            left: 3px;
+            background: #e2e8f0;
+            border-radius: 50%;
+            transition: 0.3s;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .toggle-switch input:checked+.toggle-slider {
+            background: #a855f7;
+            box-shadow: 0 0 12px rgba(168, 85, 247, 0.4);
+        }
+
+        .toggle-switch input:checked+.toggle-slider::before {
+            transform: translateX(22px);
+        }
+
+        /* --- 輸入框 --- */
+        .demo-input {
+            width: 100%;
+            padding: 10px 12px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: #e2e8f0;
+            font-family: inherit;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .demo-input:focus {
+            outline: none;
+            border-color: rgba(139, 92, 246, 0.5);
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .demo-input::placeholder {
+            color: #475569;
+        }
+
+        /* --- Range Slider --- */
+        input[type=range] {
+            width: 100%;
+            -webkit-appearance: none;
+            appearance: none;
+            background: transparent;
+            margin-top: 6px;
+        }
+
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 4px;
+            cursor: pointer;
+            background: rgba(139, 92, 246, 0.2);
+            border-radius: 2px;
+        }
+
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 16px;
+            width: 16px;
+            border-radius: 50%;
+            background: #a855f7;
+            cursor: pointer;
+            margin-top: -6px;
+            box-shadow: 0 0 8px rgba(168, 85, 247, 0.5);
+            transition: box-shadow 0.2s;
+        }
+
+        input[type=range]::-webkit-slider-thumb:hover {
+            box-shadow: 0 0 14px rgba(168, 85, 247, 0.7);
+        }
+
+        /* --- Select --- */
+        .demo-select {
+            width: 100%;
+            padding: 10px 12px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: #e2e8f0;
+            font-family: inherit;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        .demo-select option {
+            background: #1e1e2e;
+        }
+
+        /* --- 按鈕 --- */
+        .btn-reset {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.25);
+            color: #fca5a5;
+            padding: 6px 16px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            font-family: inherit;
+            flex-shrink: 0;
+            transition: all 0.2s;
+        }
+
+        .btn-reset:hover {
+            background: rgba(239, 68, 68, 0.2);
+            border-color: rgba(239, 68, 68, 0.4);
+        }
+
+        /* --- Footer --- */
+        .settings-footer {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid rgba(139, 92, 246, 0.15);
+            display: flex;
+            justify-content: flex-end;
+            background: rgba(139, 92, 246, 0.03);
+        }
+
+        .btn-save {
+            background: linear-gradient(135deg, #7c3aed, #a855f7);
+            border: none;
+            color: #fff;
+            padding: 10px 28px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 600;
+            font-family: inherit;
+            transition: all 0.2s;
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+            letter-spacing: 0.5px;
+        }
+
+        .btn-save:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(139, 92, 246, 0.5);
+        }
+
+        /* --- Site Row (AI 網站) --- */
+        .site-row {
+            display: grid;
+            grid-template-columns: 1fr 2fr auto;
+            gap: 8px;
+            align-items: center;
+            padding: 8px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 8px;
+            margin-bottom: 6px;
+            transition: all 0.2s;
+        }
+
+        .site-row:hover {
+            border-color: rgba(139, 92, 246, 0.2);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .btn-delete-site {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            color: #fca5a5;
+            padding: 6px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-delete-site:hover {
+            background: rgba(239, 68, 68, 0.2);
+            color: #f87171;
+        }
+
+        /* --- 比較用：舊版面板 --- */
+        .comparison {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 2rem;
+            width: 100%;
+        }
+
+        .label-tag {
+            position: absolute;
+            top: -14px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #a855f7;
+            color: white;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 4px 16px;
+            border-radius: 20px;
+            white-space: nowrap;
+            letter-spacing: 0.5px;
+        }
+
+        .panel-wrapper {
+            position: relative;
+            margin-top: 1rem;
+        }
+
+        .settings-hint {
+            color: #64748b;
+            font-size: 0.85rem;
+            margin-bottom: 0.75rem;
+            padding: 10px;
+            background: rgba(139, 92, 246, 0.06);
+            border-left: 3px solid rgba(139, 92, 246, 0.3);
+            border-radius: 0 6px 6px 0;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="comparison">
+        <div class="panel-wrapper">
+            <span class="label-tag">✨ 新：深色毛玻璃 (Dark Glassmorphism)</span>
+            <div class="settings-panel">
+                <div class="settings-header">
+                    <h2><i class="fa-solid fa-gear"></i> AI 網站設定</h2>
+                    <button class="btn-close"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                <div class="settings-body">
+                    <p class="settings-hint">設定最多 5 個 AI 繪圖網站。複製後可以快速開啟。</p>
+
+                    <!-- AI 網站清單 -->
+                    <div class="site-row">
+                        <input class="demo-input" value="Grok 速度型" readonly>
+                        <input class="demo-input" value="https://grok.com/" readonly>
+                        <button class="btn-delete-site"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                    <div class="site-row">
+                        <input class="demo-input" value="ChatGPT 乖寶型" readonly>
+                        <input class="demo-input" value="https://chatgpt.com/" readonly>
+                        <button class="btn-delete-site"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+
+                    <hr class="settings-divider">
+
+                    <h3 class="settings-subtitle">🎨 外觀設定 (Appearance)</h3>
+
+                    <!-- 背景圖片 -->
+                    <div class="setting-group">
+                        <label>背景圖片 (Ctrl+V 貼上)</label>
+                        <input class="demo-input" placeholder="Paste image URL or Ctrl+V"
+                            value="assets/background_v2.jpg">
+                    </div>
+
+                    <!-- 透明度 -->
+                    <div class="setting-group">
+                        <label>透明度 <span style="float:right;color:#a78bfa;">20%</span></label>
+                        <input type="range" min="0" max="100" value="20">
+                    </div>
+
+                    <!-- 模糊度 -->
+                    <div class="setting-group">
+                        <label>模糊度 <span style="float:right;color:#a78bfa;">2px</span></label>
+                        <input type="range" min="0" max="20" value="2">
+                    </div>
+
+                    <!-- 咒語模式 Toggle -->
+                    <div class="setting-group setting-group--toggle">
+                        <div>
+                            <label>🔮 咒語模式 (Spell Mode)</label>
+                            <small class="hint-text">將提示詞顯示為神秘符文，複製仍為正常英文</small>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+
+                    <!-- 咒語效果 -->
+                    <div class="setting-group">
+                        <label>🎭 咒語效果樣式 (Spell Effect)</label>
+                        <select class="demo-select">
+                            <option>D — 縮放逐詞 (Zoom Out) ⭐</option>
+                            <option>A — 逐字顯示 (Char by Char)</option>
+                            <option>B — 逐詞顯示 (Word by Word)</option>
+                            <option>C — 逐行揭開 (Line Reveal)</option>
+                            <option>🎲 隨機 (Random)</option>
+                        </select>
+                        <small class="hint-text">選擇咒語出現的動畫效果</small>
+                    </div>
+
+                    <hr class="settings-divider">
+
+                    <h3 class="settings-subtitle">🔊 音效設定 (Audio)</h3>
+
+                    <div class="setting-group">
+                        <label>音量 <span style="float:right;color:#a78bfa;">23%</span></label>
+                        <input type="range" min="0" max="100" value="23">
+                    </div>
+
+                    <hr class="settings-divider">
+
+                    <h3 class="settings-subtitle">⚡ 衝突偵測 (Conflict Detection)</h3>
+
+                    <div class="setting-group setting-group--toggle">
+                        <div>
+                            <label>啟用衝突警告</label>
+                            <small class="hint-text">任何分類間的衝突都會顯示警告彈窗</small>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="setting-group setting-group--toggle">
+                        <div>
+                            <label>自動處理方式</label>
+                            <small class="hint-text">未設定（每次詢問）</small>
+                        </div>
+                        <button class="btn-reset">重置</button>
+                    </div>
+
+                    <hr class="settings-divider">
+
+                    <h3 class="settings-subtitle">🔮 身材控制 (Body Magic)</h3>
+
+                    <div class="setting-group setting-group--toggle">
+                        <div>
+                            <label>啟用身材魔法系統</label>
+                            <small class="hint-text" style="color: #22c55e;">已套用 — 標準</small>
+                        </div>
+                        <button class="btn-reset">重置</button>
+                    </div>
+                </div>
+                <div class="settings-footer">
+                    <button class="btn-save">
+                        <i class="fa-solid fa-floppy-disk"></i> 儲存
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>

@@ -827,6 +827,51 @@ textarea {
     /* Chrome/Safari */
 }
 
+/* === 咒語方案 C 逐行動畫 START === */
+.spell-line {
+    display: block;
+    white-space: nowrap;
+    overflow: visible;
+    opacity: 0;
+    transform: scaleX(0);
+    transform-origin: center;
+}
+
+.spell-line.revealed {
+    opacity: 1;
+    transform: scaleX(1);
+}
+
+/* === 咒語方案 C 逐行動畫 END === */
+
+/* === 設定面板下拉選單 START === */
+.settings-select {
+    width: 100%;
+    padding: 8px 12px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 8px;
+    color: #e2e8f0;
+    font-size: 0.85rem;
+    font-family: inherit;
+    cursor: pointer;
+    transition: border-color 0.3s ease;
+    margin-top: 6px;
+}
+
+.settings-select:focus {
+    outline: none;
+    border-color: #a855f7;
+    box-shadow: 0 0 8px rgba(168, 85, 247, 0.3);
+}
+
+.settings-select option {
+    background: #1e293b;
+    color: #e2e8f0;
+}
+
+/* === 設定面板下拉選單 END === */
+
 /* === 咒語模式 Spell Mode END === */
 
 /* === 生成結果區域美化 START === */
