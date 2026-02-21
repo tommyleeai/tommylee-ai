@@ -385,6 +385,135 @@ html {
     padding-bottom: 0.5rem;
 }
 
+/* === 召喚指令 (Summoning Order) START === */
+.summoning-order {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    flex-shrink: 0;
+    margin-bottom: 0.5rem;
+}
+
+.summoning-title {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #c4b5fd;
+    letter-spacing: 0.5px;
+    text-shadow: 0 0 12px rgba(167, 139, 250, 0.3);
+}
+
+.dimension-selector {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.dim-btn {
+    flex: 1;
+    min-width: 90px;
+    padding: 10px 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.05);
+    color: #94a3b8;
+    font-size: 0.85rem;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.dim-btn:hover {
+    background: rgba(139, 92, 246, 0.1);
+    border-color: rgba(139, 92, 246, 0.3);
+    color: #e2e8f0;
+}
+
+.dim-btn.active {
+    background: rgba(139, 92, 246, 0.2);
+    border-color: rgba(167, 139, 250, 0.5);
+    color: #e2e8f0;
+    box-shadow: 0 0 12px rgba(139, 92, 246, 0.2), inset 0 0 8px rgba(139, 92, 246, 0.1);
+    text-shadow: 0 0 6px rgba(167, 139, 250, 0.4);
+}
+
+/* 運命の輪盤 — 特殊脈動效果 */
+.dim-btn--fate {
+    border-color: rgba(251, 191, 36, 0.2);
+    color: #fbbf24;
+    position: relative;
+    overflow: hidden;
+}
+
+.dim-btn--fate::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(135deg, rgba(251, 191, 36, 0.4), rgba(168, 85, 247, 0.4), rgba(251, 191, 36, 0.4));
+    background-size: 200% 200%;
+    animation: fateGlow 3s ease-in-out infinite;
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.dim-btn--fate:hover::before {
+    opacity: 1;
+}
+
+.dim-btn--fate.active {
+    background: rgba(251, 191, 36, 0.15);
+    border-color: rgba(251, 191, 36, 0.4);
+    color: #fbbf24;
+    box-shadow: 0 0 16px rgba(251, 191, 36, 0.2), inset 0 0 8px rgba(251, 191, 36, 0.1);
+    text-shadow: 0 0 8px rgba(251, 191, 36, 0.4);
+}
+
+.dim-btn--fate.active::before {
+    opacity: 1;
+}
+
+@keyframes fateGlow {
+
+    0%,
+    100% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+}
+
+.summoning-order input[type="text"] {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    padding: 0.6rem 0.75rem;
+    color: #e2e8f0;
+    font-size: 0.9rem;
+    font-family: inherit;
+    transition: all 0.3s ease;
+}
+
+.summoning-order input[type="text"]:focus {
+    outline: none;
+    border-color: rgba(139, 92, 246, 0.4);
+    box-shadow: 0 0 8px rgba(139, 92, 246, 0.15);
+}
+
+.summoning-order input[type="text"]::placeholder {
+    color: #475569;
+    font-style: italic;
+}
+
+/* === 召喚指令 END === */
+
 .input-group {
     display: flex;
     flex-direction: column;

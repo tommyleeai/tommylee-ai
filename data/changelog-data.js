@@ -7,6 +7,18 @@ window.PromptGen.Changelog = (function () {
     // Changelog Data
     const changelog = [
         {
+            version: "v7.9",
+            date: "2026-02-21",
+            changes: [
+                "🌀 新增「召喚指令」系統：5 種次元按鈕（二次元/寫實/幻想混合/2.5D/運命の輪盤）",
+                "🎲 運命の輪盤：全自動隨機角色生成，涵蓋全部 26 個 section + 6 類加分特徵",
+                "✨ 隨機組合數量達 1.10 × 10⁷⁰ 種（比宇宙原子少 10 個數量級）",
+                "🧹 每次轉動輪盤完全清除所有舊選擇（12 個 Advanced 欄位 + selections + customInputs）",
+                "🎯 必填 section（種族/髮型/服裝/表情/姿勢/場景）100% 隨機，其餘 60% 機率選填",
+                "🔮 加分特徵 70% 機率隨機產生 1-3 個 bonusTraits（種族/職業/服裝/頭飾/手持物件/場景）"
+            ]
+        },
+        {
             version: "v7.8",
             date: "2026-02-21",
             changes: [

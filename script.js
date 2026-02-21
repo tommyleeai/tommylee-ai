@@ -38,6 +38,7 @@
     // --- State ---
     const state = {
         activeTab: 'base',
+        dimension: 'anime',  // v7.9 'anime' | 'realistic' | 'fantasy' | '2.5d' | 'fate'
         gender: 'female',
         age: 21,
         selections: {},  // { sectionId: value }
@@ -92,6 +93,7 @@
     const customFieldsContainer = document.getElementById('custom-fields-container');
     const btnAddCustom = document.getElementById('btn-add-custom');
     const inputSubject = document.getElementById('input-subject');
+    const dimensionSelector = document.getElementById('dimension-selector');
 
     const inputNegative = document.getElementById('negative-prompt');
     const outputFinal = document.getElementById('final-prompt');
@@ -127,6 +129,7 @@
             try {
                 const parsed = JSON.parse(saved);
                 state.activeTab = parsed.activeTab || 'base';
+                state.dimension = parsed.dimension || 'anime';
                 state.gender = parsed.gender || 'female';
                 state.age = parsed.age || 21;
                 state.selections = parsed.selections || {};
@@ -159,7 +162,7 @@
                 state.spellMode = parsed.spellMode || false;
                 state.spellEffect = parsed.spellEffect || 'D';
 
-                inputSubject.value = parsed.inputSubject || '做一張全新的圖';
+                inputSubject.value = parsed.inputSubject || '';
 
                 inputNegative.value = parsed.inputNegative || '';
 
@@ -2309,10 +2312,13 @@
     function generatePromptPlain() {
         const parts = [];
 
+        // 次元開場宣言
+        parts.push(getDimensionPromptPrefix(state.dimension));
         if (inputSubject.value.trim()) parts.push(inputSubject.value.trim());
         // Gender
-        parts.push(state.gender === 'female' ? 'female' : 'male');
-
+        if (state.gender) {
+            parts.push(state.gender === 'female' ? 'female' : 'male');
+        }
 
         // Age
         if (state.age) {
@@ -2514,9 +2520,12 @@
     function generatePromptYAML() {
         let yaml = '';
 
-        yaml += `gender: ${state.gender === 'female' ? 'female' : 'male'}\n`;
-
-        if (inputSubject.value.trim()) yaml += `subject: ${inputSubject.value.trim()}\n`;
+        // 次元 task header
+        const dimHeader = getDimensionYAMLHeader(state.dimension);
+        yaml += `task: ${dimHeader.task}\n`;
+        yaml += `style_notes: ${dimHeader.style_notes}\n`;
+        if (inputSubject.value.trim()) yaml += `additional_instructions: ${inputSubject.value.trim()}\n`;
+        yaml += `gender: ${state.gender ? (state.gender === 'female' ? 'female' : 'male') : 'unspecified'}\n`;
 
         if (state.age) {
             const ageDesc = getAgeDescriptor(state.age, state.gender);
@@ -3013,6 +3022,185 @@
         }
     });
 
+    // --- Dimension Selector (召喚指令) ---
+    function getDimensionPromptPrefix(dim) {
+        const prefixes = {
+            anime: 'masterpiece, best quality, highly detailed anime illustration, anime coloring, cel shading,',
+            realistic: 'RAW photo, professional photography, photorealistic, 8k uhd, DSLR, high quality, film grain,',
+            fantasy: 'fantasy digital painting, semi-realistic, ethereal glow, detailed illustration, concept art,',
+            '2.5d': '2.5D art, anime character design with realistic lighting, detailed textures, blending anime and photorealism,'
+        };
+        const key = (dim === 'fate') ? ['anime', 'realistic', 'fantasy', '2.5d'][Math.floor(Math.random() * 4)] : dim;
+        return prefixes[key] || prefixes.anime;
+    }
+
+    function getDimensionYAMLHeader(dim) {
+        const headers = {
+            anime: {
+                task: 'Generate a single anime-style character illustration',
+                style_notes: 'Use classic anime coloring with cel shading. The image should look like a high-quality anime screenshot or illustration.'
+            },
+            realistic: {
+                task: 'Generate a photorealistic character portrait',
+                style_notes: 'Use professional photography style with natural lighting, DSLR quality, film grain, and realistic skin texture.'
+            },
+            fantasy: {
+                task: 'Generate a fantasy-style character illustration',
+                style_notes: 'Use semi-realistic digital painting style with ethereal glow, concept art quality, blending fantasy and realism.'
+            },
+            '2.5d': {
+                task: 'Generate a 2.5D character illustration',
+                style_notes: 'Use anime character design but with realistic lighting, detailed textures, blending anime aesthetics with photorealistic rendering.'
+            }
+        };
+        const key = (dim === 'fate') ? ['anime', 'realistic', 'fantasy', '2.5d'][Math.floor(Math.random() * 4)] : dim;
+        return headers[key] || headers.anime;
+    }
+
+    function updateDimensionUI() {
+        if (!dimensionSelector) return;
+        dimensionSelector.querySelectorAll('.dim-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.dim === state.dimension);
+        });
+    }
+
+    function triggerFateWheel() {
+        // 基礎版：隨機填充各 section（不含大招動畫）
+        state.dimension = 'fate';
+
+        // 隨機性別
+        state.gender = Math.random() > 0.5 ? 'female' : 'male';
+
+        // 隨機年齡 14-40
+        state.age = Math.floor(Math.random() * 27) + 14;
+
+        // ★ 清除所有舊選擇，避免殘留
+        state.selections = {};
+
+        // 複合欄位也清除（所有加分選項 Magic Modal）
+        state.bodyAdvanced = null;
+        state.hairAdvanced = null;
+        state.hairMagicPrompts = null;
+        state.heterochromia = false;
+        state.expressionAdvanced = null;
+        state.poseAdvanced = null;
+        state.atmosphereAdvanced = null;
+        state.raceAdvanced = null;
+        state.jobAdvanced = null;
+        state.outfitAdvanced = null;
+        state.headwearAdvanced = null;
+        state.handItemsAdvanced = null;
+        state.sceneAdvanced = null;
+        state.customInputs = {};
+        state.customInputVisible = {};
+        state.customFields = [];
+
+        // 從 TAB_SECTIONS 動態取得所有 section
+        const allSections = Object.values(TAB_SECTIONS).flat();
+
+        // 需要跳過的 section（沒有標準 data 或需特殊處理）
+        const skipTypes = new Set(['genderAge']);
+        // 多選 section
+        const multiSelectSections = new Set(['quality']);
+        // 必填 section（不跳過）
+        const mustFill = new Set(['race', 'hairstyle', 'outfit', 'expression', 'pose', 'scene']);
+
+        allSections.forEach(sectionDef => {
+            // 跳過特殊 type
+            if (skipTypes.has(sectionDef.type) || skipTypes.has(sectionDef.id)) return;
+
+            // 取得正確的 data（根據性別）
+            let data = sectionDef.data;
+            if (sectionDef.genderDependent) {
+                // 髮型、身材等 gender-dependent sections
+                if (sectionDef.id === 'hairstyle') {
+                    data = state.gender === 'female'
+                        ? Data.HAIRSTYLES_FEMALE
+                        : Data.HAIRSTYLES_MALE;
+                } else if (sectionDef.id === 'bodyType') {
+                    data = state.gender === 'female'
+                        ? Data.BODY_TYPES_FEMALE
+                        : Data.BODY_TYPES_MALE;
+                }
+            }
+
+            if (!data || data.length === 0) return;
+
+            // 決定是否填入（必填 section 100%，其他 60% 機率）
+            const shouldFill = mustFill.has(sectionDef.id) || Math.random() > 0.4;
+            if (!shouldFill) return;
+
+            if (multiSelectSections.has(sectionDef.id)) {
+                // 多選：隨機選 1-3 個
+                const count = Math.floor(Math.random() * 3) + 1;
+                const shuffled = [...data].sort(() => Math.random() - 0.5);
+                const picked = shuffled.slice(0, count).map(item =>
+                    typeof item === 'string' ? item : (item.value || item.name || item)
+                );
+                state.selections[sectionDef.id] = picked;
+            } else {
+                const item = data[Math.floor(Math.random() * data.length)];
+                state.selections[sectionDef.id] = typeof item === 'string' ? item : (item.value || item.name || item);
+            }
+        });
+
+        // ★ 隨機產生加分選項（Magic Modal bonusTraits）
+        // 輔助函式：從 BONUS_TRAITS 物件中隨機取 1-3 個特徵
+        function randomBonusTraits(bonusTraitsObj) {
+            if (!bonusTraitsObj) return null;
+            // 合併所有分類的特徵
+            const allTraits = Object.values(bonusTraitsObj).flat();
+            if (allTraits.length === 0) return null;
+            const count = Math.floor(Math.random() * 3) + 1;
+            const shuffled = [...allTraits].sort(() => Math.random() - 0.5);
+            return shuffled.slice(0, count).map(t => t.en || t.value || t);
+        }
+
+        // 各 section 30% 機率產生加分選項
+        const magicDataMap = [
+            { stateKey: 'raceAdvanced', dataPath: 'RaceMagicData' },
+            { stateKey: 'jobAdvanced', dataPath: 'JobMagicData' },
+            { stateKey: 'outfitAdvanced', dataPath: 'OutfitMagicData' },
+            { stateKey: 'headwearAdvanced', dataPath: 'HeadwearMagicData' },
+            { stateKey: 'handItemsAdvanced', dataPath: 'HandItemsMagicData' },
+            { stateKey: 'sceneAdvanced', dataPath: 'SceneMagicData' },
+        ];
+
+        magicDataMap.forEach(({ stateKey, dataPath }) => {
+            if (Math.random() > 0.7) return; // 30% 跳過
+            const magicData = window.PromptGen[dataPath];
+            if (!magicData || !magicData.BONUS_TRAITS) return;
+            const traits = randomBonusTraits(magicData.BONUS_TRAITS);
+            if (traits && traits.length > 0) {
+                state[stateKey] = { bonusTraits: traits };
+            }
+        });
+
+        updateDimensionUI();
+        renderTabContent();
+        generatePrompt();
+        saveState();
+    }
+
+    if (dimensionSelector) {
+        dimensionSelector.addEventListener('click', (e) => {
+            const btn = e.target.closest('.dim-btn');
+            if (!btn) return;
+            const dim = btn.dataset.dim;
+
+            if (dim === 'fate') {
+                triggerFateWheel();
+                return;
+            }
+
+            // Toggle: 再按一次取消
+            state.dimension = (state.dimension === dim) ? 'anime' : dim;
+            updateDimensionUI();
+            generatePrompt();
+            saveState();
+        });
+    }
+
     inputSubject.addEventListener('input', () => {
         generatePrompt();
         saveState();
@@ -3123,6 +3311,7 @@
 
     // Initialize
     loadState();
+    updateDimensionUI();
     renderTabs();
     renderTabContent();
     updateStaticText();

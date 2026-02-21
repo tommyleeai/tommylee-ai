@@ -66,7 +66,7 @@
     </script>
 
     <!-- Stylesheets -->
-    <link rel="stylesheet" href="styles.css?v=7.8">
+    <link rel="stylesheet" href="styles.css?v=7.9">
     <link rel="stylesheet" href="styles/race-magic-modal.css?v=7.4.1">
     <link rel="stylesheet" href="styles/job-magic-modal.css?v=7.4.1">
     <link rel="stylesheet" href="styles/hair-magic-modal.css?v=7.4.1">
@@ -125,7 +125,7 @@
             <header class="header">
                 <h1>
                     <img id="app-logo" src="assets/logo.png" alt="AI Studio Logo">
-                    <i class="fa-solid fa-wand-magic-sparkles"></i> 次元繪師 · 角色招喚の禁忌魔導書 <span class="version">v7.8</span>
+                    <i class="fa-solid fa-wand-magic-sparkles"></i> 次元繪師 · 角色招喚の禁忌魔導書 <span class="version">v7.9</span>
                     <div class="header-buttons">
                         <button id="btn-lang-toggle" class="btn-icon btn-icon-text active" title="語言：中文 → 按此切英文">
                             <span class="btn-icon-label">中</span>
@@ -146,10 +146,17 @@
                 </h1>
             </header>
 
-            <!-- 1. Subject -->
-            <div class="input-group">
-                <label for="input-subject">主體 (Subject)</label>
-                <input type="text" id="input-subject" value="做一張全新的圖" placeholder="例如: 1girl, cat, cyberpunk city...">
+            <!-- 1. 召喚指令 (Summoning Order) -->
+            <div class="summoning-order">
+                <label class="summoning-title">✦ 召喚指令 (Summoning Order)</label>
+                <div class="dimension-selector" id="dimension-selector">
+                    <button class="dim-btn active" data-dim="anime">🎨 二次元</button>
+                    <button class="dim-btn" data-dim="realistic">📷 寫實</button>
+                    <button class="dim-btn" data-dim="fantasy">🔮 幻想混合</button>
+                    <button class="dim-btn" data-dim="2.5d">✨ 2.5D</button>
+                    <button class="dim-btn dim-btn--fate" data-dim="fate">🌀 運命の輪盤</button>
+                </div>
+                <input type="text" id="input-subject" value="" placeholder="額外召喚指示（可不填）...">
             </div>
 
             <!-- 2. Tab Navigation -->
@@ -449,7 +456,7 @@
     <script src="modules/scene-magic-modal.js?v=7.6"></script>
     <script src="modules/atmosphere-magic-modal.js?v=7.8"></script>
     <script src="modules/conflict-system.js?v=7.4.1"></script>
-    <script src="script.js?v=7.8"></script>
+    <script src="script.js?v=7.9"></script>
 </body>
 
 </html>
