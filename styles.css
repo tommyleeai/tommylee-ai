@@ -2507,6 +2507,13 @@ input[type=range]::-webkit-slider-thumb:hover {
     font-size: 1rem;
 }
 
+/* Tab Content — section-block 間距由 gap 控制 */
+.tab-content {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
 /* Section Block */
 .section-block {
     padding: 12px;
