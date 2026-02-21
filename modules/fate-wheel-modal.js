@@ -1066,11 +1066,13 @@ window.PromptGen.FateWheelModal = (function () {
         }
 
         function handleSkipLock() {
-            // 直接確認使用（不鎖定）
+            // 跳過鎖定步驟：清除所有鎖定，套用結果，回到 idle（可再轉）
             document.querySelectorAll('.fw-cell.fw-locked').forEach(c => c.classList.remove('fw-locked'));
+            document.querySelectorAll('.fw-cell.fw-lockable').forEach(c => c.classList.remove('fw-lockable'));
             ws.locksRemaining = 3;
+            document.getElementById('fw-lockSection').classList.remove('fw-visible');
             applyResultsToMainState();
-            closeModal();
+            ws.phase = 'idle';
         }
 
         function handleConfirm() {
