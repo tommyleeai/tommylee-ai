@@ -7,6 +7,16 @@ window.PromptGen.Changelog = (function () {
     // Changelog Data
     const changelog = [
         {
+            version: "v7.9.1",
+            date: "2026-02-21",
+            changes: [
+                "🔮 新增中二喊話預覽區：50 種隨機輪播的咒語喊話，搭配紫色發光文字 + 旋轉魔法陣動畫",
+                "📐 生成咒語區塊固定高度與預覽區等高（aspect-ratio: 1/1）",
+                "🎯 運命の輪盤修復：隨機選擇維度後正確高亮對應按鈕",
+                "🔒 生成咒語區隱藏捲動條但保留滾動功能"
+            ]
+        },
+        {
             version: "v7.9",
             date: "2026-02-21",
             changes: [
