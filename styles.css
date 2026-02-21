@@ -327,6 +327,15 @@ html {
     min-height: 0;
 }
 
+/* 重置 header/h1 預設 margin，由父容器 gap 統一控制 */
+.controls-section>header {
+    margin: 0;
+}
+
+.controls-section>header h1 {
+    margin: 0;
+}
+
 /* Hide scrollbar for Chrome, Safari and Opera */
 .controls-section::-webkit-scrollbar {
     display: none;
@@ -391,7 +400,6 @@ html {
     flex-direction: column;
     gap: 0.75rem;
     flex-shrink: 0;
-    margin-bottom: 0.5rem;
 }
 
 .summoning-title {
@@ -2457,7 +2465,6 @@ input[type=range]::-webkit-slider-thumb:hover {
     grid-template-columns: repeat(6, 1fr);
     gap: 4px;
     padding: 6px;
-    margin-bottom: 16px;
     background: rgba(255, 255, 255, 0.06);
     border-radius: 14px;
     border: 1px solid rgba(187, 134, 252, 0.25);
@@ -2502,7 +2509,6 @@ input[type=range]::-webkit-slider-thumb:hover {
 
 /* Section Block */
 .section-block {
-    margin-bottom: 16px;
     padding: 12px;
     background: var(--glass-bg);
     border: 1px solid var(--glass-border);
