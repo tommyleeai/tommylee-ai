@@ -1266,30 +1266,49 @@ window.PromptGen.FateWheelModal = (function () {
                         for (let p = 0; p < 6; p++) {
                             const particle = document.createElement('div');
                             particle.className = 'fw-confirm-particle';
-                            const sx = cx + (Math.random() - 0.5) * 150;
-                            const sy = cy + (Math.random() - 0.5) * 150;
+                            // 起點：離中心較遠的隨機位置
+                            const sx = cx + (Math.random() - 0.5) * 200;
+                            const sy = cy + (Math.random() - 0.5) * 200;
                             particle.style.left = sx + 'px';
                             particle.style.top = sy + 'px';
                             const size = 8 + Math.random() * 8;
                             particle.style.width = size + 'px';
                             particle.style.height = size + 'px';
                             document.body.appendChild(particle);
+
+                            // Phase 1: 聚合到中心（120ms）
                             setTimeout(() => {
+                                particle.style.left = cx + (Math.random() - 0.5) * 30 + 'px';
+                                particle.style.top = cy + (Math.random() - 0.5) * 30 + 'px';
+                            }, p * 40 + 20);
+
+                            // Phase 2: 蓄力脈動（+300ms 停頓）
+                            setTimeout(() => {
+                                particle.classList.add('fw-charging');
+                            }, 200 + p * 40);
+
+                            // Phase 3: 加速發射！（+250ms 後爆發飛出）
+                            setTimeout(() => {
+                                particle.classList.remove('fw-charging');
+                                particle.classList.add('fw-launching');
                                 particle.style.left = tx + (Math.random() - 0.5) * 40 + 'px';
                                 particle.style.top = ty + (Math.random() - 0.5) * 20 + 'px';
                                 particle.style.opacity = '0';
                                 particle.style.transform = 'scale(0.2)';
-                            }, p * 60 + 30);
-                            setTimeout(() => { if (particle.parentNode) particle.remove(); }, 700 + p * 60);
+                            }, 500 + p * 30);
+
+                            // 清除
+                            setTimeout(() => { if (particle.parentNode) particle.remove(); }, 1100);
                         }
+                        // 命中效果（延遲配合新時序）
                         setTimeout(() => {
                             playConfirmSfx_hit(i);
                             sectionEl.classList.add('fw-section-glow');
                             setTimeout(() => sectionEl.classList.remove('fw-section-glow'), 1400);
                             spawnHitSparks(tx, ty);
-                        }, 300);
+                        }, 700);
                     }, 180);
-                }, i * 350);
+                }, i * 500);
             });
         }
 
@@ -1314,87 +1333,87 @@ window.PromptGen.FateWheelModal = (function () {
             }
         }
 
-    // === 寫入主頁 state ===
-    function applyResultsToMainState() {
-        // 清除所有舊選擇
-        appState.selections = {};
-        appState.bodyAdvanced = null;
-        appState.hairAdvanced = null;
-        appState.hairMagicPrompts = null;
-        appState.heterochromia = false;
-        appState.expressionAdvanced = null;
-        appState.poseAdvanced = null;
-        appState.atmosphereAdvanced = null;
-        appState.raceAdvanced = null;
-        appState.jobAdvanced = null;
-        appState.outfitAdvanced = null;
-        appState.headwearAdvanced = null;
-        appState.handItemsAdvanced = null;
-        appState.sceneAdvanced = null;
-        appState.customInputs = {};
-        appState.customInputVisible = {};
-        appState.customFields = [];
+        // === 寫入主頁 state ===
+        function applyResultsToMainState() {
+            // 清除所有舊選擇
+            appState.selections = {};
+            appState.bodyAdvanced = null;
+            appState.hairAdvanced = null;
+            appState.hairMagicPrompts = null;
+            appState.heterochromia = false;
+            appState.expressionAdvanced = null;
+            appState.poseAdvanced = null;
+            appState.atmosphereAdvanced = null;
+            appState.raceAdvanced = null;
+            appState.jobAdvanced = null;
+            appState.outfitAdvanced = null;
+            appState.headwearAdvanced = null;
+            appState.handItemsAdvanced = null;
+            appState.sceneAdvanced = null;
+            appState.customInputs = {};
+            appState.customInputVisible = {};
+            appState.customFields = [];
 
-        // 寫入非「無」的格子
-        for (let i = 0; i < 24; i++) {
-            const result = ws.cells[i];
-            if (!result || result.isNone) continue;
+            // 寫入非「無」的格子
+            for (let i = 0; i < 24; i++) {
+                const result = ws.cells[i];
+                if (!result || result.isNone) continue;
 
-            const stateKey = result.stateKey;
-            if (!stateKey) continue;
+                const stateKey = result.stateKey;
+                if (!stateKey) continue;
 
-            if (result.isMulti) {
-                // 品質等多選欄位 → 拆為陣列
-                appState.selections[stateKey] = result.value.split(',').map(s => s.trim());
-            } else {
-                appState.selections[stateKey] = result.value;
+                if (result.isMulti) {
+                    // 品質等多選欄位 → 拆為陣列
+                    appState.selections[stateKey] = result.value.split(',').map(s => s.trim());
+                } else {
+                    appState.selections[stateKey] = result.value;
+                }
+            }
+
+            // 中心格：性別、年齡、維度
+            const center = ws.cells[24];
+            if (center) {
+                appState.gender = center.gender === '1girl' ? 'female' : 'male';
+                appState.age = center.age;
+                // 維度映射
+                const dimMap = {
+                    'anime': 'anime',
+                    'fantasy': 'fantasy',
+                    'sci-fi': 'realistic',
+                    'dark fantasy': 'fantasy',
+                    'cyberpunk': 'realistic',
+                    'steampunk': 'fantasy'
+                };
+                appState.dimension = dimMap[center.dimension] || 'anime';
+            }
+
+            // 觸發主頁更新
+            if (renderTabContent) renderTabContent();
+            if (generatePrompt) generatePrompt();
+            if (saveState) saveState();
+        }
+
+        // === Close ===
+        function closeModal() {
+            // Clean up timers
+            if (ws.timer) clearTimeout(ws.timer);
+            if (ws.autoStopTimer) clearTimeout(ws.autoStopTimer);
+
+            // Remove keyboard handler
+            document.removeEventListener('keydown', keyHandler);
+
+            // Remove overlay with fade
+            const overlay = document.getElementById('fw-overlay');
+            if (overlay) {
+                overlay.style.opacity = '0';
+                overlay.style.transition = 'opacity 0.2s';
+                setTimeout(() => overlay.remove(), 200);
             }
         }
-
-        // 中心格：性別、年齡、維度
-        const center = ws.cells[24];
-        if (center) {
-            appState.gender = center.gender === '1girl' ? 'female' : 'male';
-            appState.age = center.age;
-            // 維度映射
-            const dimMap = {
-                'anime': 'anime',
-                'fantasy': 'fantasy',
-                'sci-fi': 'realistic',
-                'dark fantasy': 'fantasy',
-                'cyberpunk': 'realistic',
-                'steampunk': 'fantasy'
-            };
-            appState.dimension = dimMap[center.dimension] || 'anime';
-        }
-
-        // 觸發主頁更新
-        if (renderTabContent) renderTabContent();
-        if (generatePrompt) generatePrompt();
-        if (saveState) saveState();
     }
-
-    // === Close ===
-    function closeModal() {
-        // Clean up timers
-        if (ws.timer) clearTimeout(ws.timer);
-        if (ws.autoStopTimer) clearTimeout(ws.autoStopTimer);
-
-        // Remove keyboard handler
-        document.removeEventListener('keydown', keyHandler);
-
-        // Remove overlay with fade
-        const overlay = document.getElementById('fw-overlay');
-        if (overlay) {
-            overlay.style.opacity = '0';
-            overlay.style.transition = 'opacity 0.2s';
-            setTimeout(() => overlay.remove(), 200);
-        }
-    }
-}
 
     return {
-    setup,
-    openFateWheelModal
-};
-}) ();
+        setup,
+        openFateWheelModal
+    };
+})();

@@ -796,8 +796,9 @@
         0 0 40px rgba(251, 191, 36, 0.3);
     pointer-events: none;
     z-index: 9998;
-    transition: all 600ms cubic-bezier(0.22, 1, 0.36, 1);
     opacity: 1;
+    /* 蓄力階段預設 transition（聚合到中心） */
+    transition: all 300ms ease-out;
 }
 
 /* 彗星尾跡 */
@@ -837,6 +838,25 @@
         opacity: 1;
         transform: scale(1.2);
     }
+}
+
+/* 蓄力脈動：粒子聚合到中心並發亮 */
+.fw-confirm-particle.fw-charging {
+    transition: all 250ms ease-out;
+    transform: scale(1.5);
+    filter: brightness(1.8);
+    box-shadow:
+        0 0 20px rgba(251, 191, 36, 1),
+        0 0 40px rgba(168, 85, 247, 0.8),
+        0 0 60px rgba(251, 191, 36, 0.5);
+}
+
+/* 發射加速：先慢後快的加速曲線飛向目標 */
+.fw-confirm-particle.fw-launching {
+    transition: left 450ms cubic-bezier(0.55, 0, 1, 0.45),
+        top 450ms cubic-bezier(0.55, 0, 1, 0.45),
+        opacity 400ms ease-in 200ms,
+        transform 450ms ease-in;
 }
 
 /* --- 階段 A：section 華麗閃爍 glow --- */
