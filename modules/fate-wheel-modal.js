@@ -1039,12 +1039,15 @@ window.PromptGen.FateWheelModal = (function () {
         // === LOCK PHASE ===
         function showLockPhase() {
             ws.phase = 'lock';
-            ws.locksRemaining = 3;
+            // 計算已鎖定格數，正確設定剩餘數
+            const alreadyLocked = document.querySelectorAll('.fw-cell.fw-locked').length;
+            ws.locksRemaining = Math.max(0, 3 - alreadyLocked);
             document.getElementById('fw-lockSection').classList.add('fw-visible');
-            document.getElementById('fw-lockRemain').textContent = '3';
+            document.getElementById('fw-lockRemain').textContent = ws.locksRemaining;
 
+            // 所有非中心格都設為 lockable（含已鎖定的，才能點擊解鎖）
             document.querySelectorAll('.fw-cell[data-ring]').forEach(cell => {
-                if (!cell.classList.contains('fw-locked') && cell.dataset.ring !== 'center') {
+                if (cell.dataset.ring !== 'center') {
                     cell.classList.add('fw-lockable');
                 }
             });
