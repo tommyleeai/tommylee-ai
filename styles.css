@@ -388,8 +388,7 @@ html {
     font-size: 1.2rem;
     font-weight: 600;
     color: var(--secondary-color);
-    margin-top: 1rem;
-    margin-bottom: 0.5rem;
+    margin: 0;
     border-bottom: 1px solid var(--glass-border);
     padding-bottom: 0.5rem;
 }
@@ -1328,7 +1327,7 @@ input[type=range]::-webkit-slider-thumb:hover {
     border: 0;
     height: 1px;
     background: var(--glass-border);
-    margin: 1rem 0;
+    margin: 0;
 }
 
 /* === 13. 通用按鈕 & 設定面板 END === */
@@ -2498,7 +2497,8 @@ input[type=range]::-webkit-slider-thumb:hover {
 }
 
 .btn-reset-standalone {
-    margin-top: 1rem;
+    margin: 0;
+    margin-bottom: 3rem;
     padding: 8px 20px;
     font-size: 0.85rem;
     opacity: 0.7;
@@ -2513,7 +2513,6 @@ input[type=range]::-webkit-slider-thumb:hover {
 /* Tab Content — natural flow inside scrollable panel */
 .tab-content {
     padding-bottom: 1rem;
-    min-height: 1500px;
 }
 
 /* Tab Bar（6 格固定等寬） */
