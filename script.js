@@ -3437,7 +3437,7 @@
         }
         // 顯示/隱藏效果樣式下拉選單
         if (spellEffectGroup) {
-            spellEffectGroup.style.display = enabled ? '' : 'none';
+            spellEffectGroup.classList.toggle('setting-group--hidden', !enabled);
         }
 
         // 更新 prompt 顯示 (async)
@@ -3719,10 +3719,10 @@
                 const primaryData = state.gender === 'female' ? BODY_MAGIC_DATA.FEMALE_BUST : BODY_MAGIC_DATA.MALE_MUSCLE;
                 const pInfo = primaryData[state.bodyAdvanced.primary || 4];
                 bodyMagicStatus.textContent = `已套用 — ${pInfo ? pInfo.label : '自訂'}`;
-                bodyMagicStatus.style.color = '#22c55e';
+                bodyMagicStatus.className = 'hint-text status-active';
             } else {
                 bodyMagicStatus.textContent = '目前未套用';
-                bodyMagicStatus.style.color = '#a855f7';
+                bodyMagicStatus.className = 'hint-text status-inactive';
             }
         }
     }

@@ -66,7 +66,7 @@
     </script>
 
     <!-- Stylesheets -->
-    <link rel="stylesheet" href="styles.css?v=7.5.2">
+    <link rel="stylesheet" href="styles.css?v=7.8">
     <link rel="stylesheet" href="styles/race-magic-modal.css?v=7.4.1">
     <link rel="stylesheet" href="styles/job-magic-modal.css?v=7.4.1">
     <link rel="stylesheet" href="styles/hair-magic-modal.css?v=7.4.1">
@@ -77,7 +77,7 @@
     <link rel="stylesheet" href="styles/pose-magic-modal.css?v=7.5">
     <link rel="stylesheet" href="styles/style-magic-modal.css?v=7.5">
     <link rel="stylesheet" href="styles/scene-magic-modal.css?v=7.6">
-    <link rel="stylesheet" href="styles/atmosphere-magic-modal.css?v=7.7">
+    <link rel="stylesheet" href="styles/atmosphere-magic-modal.css?v=7.8">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
@@ -96,7 +96,7 @@
             <header class="header">
                 <h1>
                     <img id="app-logo" src="assets/logo.png" alt="AI Studio Logo">
-                    <i class="fa-solid fa-wand-magic-sparkles"></i> 次元繪師 · 角色招喚の禁忌魔導書 <span class="version">v7.7</span>
+                    <i class="fa-solid fa-wand-magic-sparkles"></i> 次元繪師 · 角色招喚の禁忌魔導書 <span class="version">v7.8</span>
                     <div class="header-buttons">
                         <button id="btn-lang-toggle" class="btn-icon btn-icon-text active" title="語言：中文 → 按此切英文">
                             <span class="btn-icon-label">中</span>
@@ -283,20 +283,19 @@
                 </div>
 
                 <!-- Spell Mode Toggle -->
-                <div class="setting-group" style="display: flex; justify-content: space-between; align-items: center;">
+                <div class="setting-group setting-group--toggle">
                     <div>
                         <label>🔮 咒語模式 (Spell Mode)</label>
-                        <small class="hint-text" style="color: #a855f7;">將提示詞顯示為神秘符文，複製仍為正常英文</small>
+                        <small class="hint-text">將提示詞顯示為神秘符文，複製仍為正常英文</small>
                     </div>
-                    <label class="toggle-switch" style="position: relative; width: 50px; height: 26px; flex-shrink: 0;">
-                        <input type="checkbox" id="setting-spell-mode" style="opacity:0;width:0;height:0;">
-                        <span class="toggle-slider"
-                            style="position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background:#334155;border-radius:26px;transition:0.3s;"></span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="setting-spell-mode">
+                        <span class="toggle-slider"></span>
                     </label>
                 </div>
 
                 <!-- Spell Effect Style -->
-                <div class="setting-group" id="spell-effect-group" style="display:none;">
+                <div class="setting-group setting-group--hidden" id="spell-effect-group">
                     <label>🎭 咒語效果樣式 (Spell Effect)</label>
                     <select id="setting-spell-effect" class="settings-select">
                         <option value="D">D — 縮放逐詞 (Zoom Out) ⭐</option>
@@ -305,7 +304,7 @@
                         <option value="C">C — 逐行揭開 (Line Reveal)</option>
                         <option value="random">🎲 隨機 (Random)</option>
                     </select>
-                    <small class="hint-text" style="color: #a855f7;">選擇咒語出現的動畫效果，每次變更立即預覽</small>
+                    <small class="hint-text">選擇咒語出現的動畫效果，每次變更立即預覽</small>
                 </div>
 
                 <hr class="settings-divider">
@@ -323,28 +322,24 @@
                 <h3 class="settings-subtitle">⚡ 衝突偵測 (Conflict Detection)</h3>
 
                 <!-- Conflict Warning Toggle -->
-                <div class="setting-group" style="display: flex; justify-content: space-between; align-items: center;">
+                <div class="setting-group setting-group--toggle">
                     <div>
                         <label>啟用衝突警告</label>
-                        <small class="hint-text" style="color: #a855f7;">任何分類間的衝突都會顯示警告彈窗</small>
+                        <small class="hint-text">任何分類間的衝突都會顯示警告彈窗</small>
                     </div>
-                    <label class="toggle-switch" style="position: relative; width: 50px; height: 26px; flex-shrink: 0;">
-                        <input type="checkbox" id="setting-conflict-warnings" checked
-                            style="opacity:0;width:0;height:0;">
-                        <span class="toggle-slider"
-                            style="position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background:#334155;border-radius:26px;transition:0.3s;"></span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="setting-conflict-warnings" checked>
+                        <span class="toggle-slider"></span>
                     </label>
                 </div>
 
                 <!-- Conflict Auto Mode -->
-                <div class="setting-group" style="display: flex; justify-content: space-between; align-items: center;">
+                <div class="setting-group setting-group--toggle">
                     <div>
                         <label>自動處理方式</label>
-                        <small class="hint-text" id="setting-conflict-auto-label"
-                            style="color: #a855f7;">未設定（每次詢問）</small>
+                        <small class="hint-text" id="setting-conflict-auto-label">未設定（每次詢問）</small>
                     </div>
-                    <button id="setting-conflict-reset"
-                        style="background:rgba(255,68,68,0.15);border:1px solid rgba(255,68,68,0.3);color:#ff8888;padding:6px 16px;border-radius:8px;font-size:0.8rem;cursor:pointer;font-family:inherit;flex-shrink:0;">
+                    <button id="setting-conflict-reset" class="btn-setting-reset">
                         重置
                     </button>
                 </div>
@@ -354,13 +349,12 @@
                 <h3 class="settings-subtitle">🔮 身材控制 (Body Magic)</h3>
 
                 <!-- Body Magic Toggle -->
-                <div class="setting-group" style="display: flex; justify-content: space-between; align-items: center;">
+                <div class="setting-group setting-group--toggle">
                     <div>
                         <label>啟用身材魔法系統</label>
-                        <small class="hint-text" id="setting-bodymagic-status" style="color: #a855f7;">目前未套用</small>
+                        <small class="hint-text" id="setting-bodymagic-status">目前未套用</small>
                     </div>
-                    <button id="setting-bodymagic-reset"
-                        style="background:rgba(255,68,68,0.15);border:1px solid rgba(255,68,68,0.3);color:#ff8888;padding:6px 16px;border-radius:8px;font-size:0.8rem;cursor:pointer;font-family:inherit;flex-shrink:0;">
+                    <button id="setting-bodymagic-reset" class="btn-setting-reset">
                         重置
                     </button>
                 </div>
@@ -408,7 +402,7 @@
     <script src="data/art-style-magic-data.js?v=7.5"></script>
     <script src="data/artist-magic-data.js?v=7.5"></script>
     <script src="data/scene-magic-data.js?v=7.6"></script>
-    <script src="data/atmosphere-magic-data.js?v=7.7"></script>
+    <script src="data/atmosphere-magic-data.js?v=7.8"></script>
     <script src="data/changelog-data.js?v=7.4.1"></script>
     <script src="modules/sound-manager.js?v=7.4.1"></script>
     <script src="modules/body-magic-modal.js?v=7.4.1"></script>
@@ -424,9 +418,9 @@
     <script src="modules/art-style-magic-modal.js?v=7.5"></script>
     <script src="modules/artist-magic-modal.js?v=7.5"></script>
     <script src="modules/scene-magic-modal.js?v=7.6"></script>
-    <script src="modules/atmosphere-magic-modal.js?v=7.7"></script>
+    <script src="modules/atmosphere-magic-modal.js?v=7.8"></script>
     <script src="modules/conflict-system.js?v=7.4.1"></script>
-    <script src="script.js?v=7.7"></script>
+    <script src="script.js?v=7.8"></script>
 </body>
 
 </html>

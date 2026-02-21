@@ -7,6 +7,16 @@ window.PromptGen.Changelog = (function () {
     // Changelog Data
     const changelog = [
         {
+            version: "v7.8",
+            date: "2026-02-21",
+            changes: [
+                "🎨 設定面板全面重新設計：古地圖風格 → 深色毛玻璃 (Dark Glassmorphism) 風格",
+                "🧹 清除 ~10 處 inline styles，改用語義化 CSS class",
+                "✨ 新增 500+ 行深色主題 CSS，刪除 467 行舊版古地圖 CSS",
+                "🔧 JS 中 style 操作改為 class toggle（spellEffectGroup、bodyMagicStatus）"
+            ]
+        },
+        {
             version: "v7.5.2",
             date: "2026-02-20",
             changes: [
