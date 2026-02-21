@@ -1135,6 +1135,15 @@ textarea {
     overflow-wrap: break-word;
     white-space: pre-wrap;
     overflow-y: auto;
+    scrollbar-width: none;
+    /* Firefox */
+    -ms-overflow-style: none;
+    /* IE/Edge */
+}
+
+#final-prompt::-webkit-scrollbar {
+    display: none;
+    /* Chrome/Safari */
 }
 
 #final-negative {
