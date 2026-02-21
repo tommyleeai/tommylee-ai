@@ -3165,6 +3165,14 @@
         });
     }
 
+    // 獨立運命輪盤按鈕
+    const fateWheelTrigger = document.querySelector('.fate-wheel-trigger');
+    if (fateWheelTrigger) {
+        fateWheelTrigger.addEventListener('click', () => {
+            triggerFateWheel();
+        });
+    }
+
     inputSubject.addEventListener('input', () => {
         generatePrompt();
         saveState();

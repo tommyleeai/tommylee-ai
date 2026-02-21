@@ -409,10 +409,10 @@ html {
     text-shadow: 0 0 12px rgba(167, 139, 250, 0.3);
 }
 
-/* dimension-selector 容器 = 與 .tab-bar 一致（6 格固定等寬） */
+/* dimension-selector 容器 = 4 格固定等寬 */
 .dimension-selector {
     display: grid;
-    grid-template-columns: repeat(6, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 4px;
     padding: 6px;
     background: rgba(255, 255, 255, 0.06);
@@ -421,7 +421,7 @@ html {
     box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
 }
 
-/* dim-btn = 與 .tab-btn 一致 */
+/* dim-btn = 次元選擇按鈕 */
 .dim-btn {
     min-width: 0;
     padding: 12px 10px;
@@ -459,54 +459,134 @@ html {
     font-size: 1rem;
 }
 
-/* 空格佔位（第 5 格） */
-.dim-spacer {
+/* === 運命の輪盤 獨立按鈕 START === */
+.fate-wheel-trigger {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 20px;
+    border: 1px solid rgba(251, 191, 36, 0.35);
+    border-radius: 14px;
+    background: linear-gradient(135deg, rgba(251, 191, 36, 0.12) 0%, rgba(168, 85, 247, 0.15) 50%, rgba(251, 191, 36, 0.12) 100%);
+    background-size: 200% 200%;
+    animation: fateGradientShift 4s ease-in-out infinite;
+    cursor: pointer;
+    overflow: hidden;
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    font-family: inherit;
+    box-shadow:
+        0 0 15px rgba(251, 191, 36, 0.15),
+        0 0 30px rgba(168, 85, 247, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.fate-wheel-trigger:hover {
+    transform: translateY(-2px);
+    border-color: rgba(251, 191, 36, 0.6);
+    box-shadow:
+        0 4px 20px rgba(251, 191, 36, 0.3),
+        0 0 40px rgba(168, 85, 247, 0.2),
+        0 8px 30px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.12);
+    background-size: 200% 200%;
+}
+
+.fate-wheel-trigger:active {
+    transform: translateY(0px) scale(0.99);
+}
+
+/* 流光效果 */
+.fate-wheel-shimmer {
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(90deg,
+            transparent,
+            rgba(251, 191, 36, 0.15),
+            rgba(255, 255, 255, 0.1),
+            transparent);
+    animation: fateShimmerSweep 4s ease-in-out infinite;
+    pointer-events: none;
+}
+
+/* 旋轉圖標 */
+.fate-wheel-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, rgba(251, 191, 36, 0.25), rgba(168, 85, 247, 0.25));
+    border: 1px solid rgba(251, 191, 36, 0.4);
+    flex-shrink: 0;
+    box-shadow: 0 0 12px rgba(251, 191, 36, 0.2);
+}
+
+.fate-wheel-icon i {
+    font-size: 1.25rem;
+    color: #fbbf24;
+    animation: fateIconSpin 8s linear infinite;
+    text-shadow: 0 0 8px rgba(251, 191, 36, 0.5);
+}
+
+/* 文字區域 */
+.fate-wheel-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1;
     min-width: 0;
 }
 
-/* 運命の輪盤 — 金色特殊效果 */
-.dim-btn--fate {
+.fate-wheel-title {
+    font-size: 1.05rem;
+    font-weight: 700;
     color: #fbbf24;
-    position: relative;
-    overflow: hidden;
+    letter-spacing: 1px;
+    text-shadow: 0 0 12px rgba(251, 191, 36, 0.4);
 }
 
-.dim-btn--fate:hover {
-    opacity: 1;
-    background: rgba(251, 191, 36, 0.12);
+.fate-wheel-sub {
+    font-size: 0.72rem;
+    color: rgba(196, 181, 253, 0.7);
+    font-weight: 400;
+    letter-spacing: 0.5px;
 }
 
-.dim-btn--fate::before {
-    content: '';
-    position: absolute;
-    inset: -1px;
-    border-radius: inherit;
-    padding: 1px;
-    background: linear-gradient(135deg, rgba(251, 191, 36, 0.4), rgba(168, 85, 247, 0.4), rgba(251, 191, 36, 0.4));
-    background-size: 200% 200%;
-    animation: fateGlow 3s ease-in-out infinite;
-    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    opacity: 0;
-    transition: opacity 0.3s;
+/* 星星裝飾 */
+.fate-wheel-stars {
+    font-size: 0.85rem;
+    color: rgba(251, 191, 36, 0.5);
+    letter-spacing: 4px;
+    animation: fateStarPulse 2s ease-in-out infinite;
+    flex-shrink: 0;
 }
 
-.dim-btn--fate:hover::before {
-    opacity: 1;
+/* Hover 時加強效果 */
+.fate-wheel-trigger:hover .fate-wheel-icon {
+    box-shadow: 0 0 20px rgba(251, 191, 36, 0.4);
+    border-color: rgba(251, 191, 36, 0.7);
 }
 
-.dim-btn--fate.active {
-    background: linear-gradient(135deg, rgba(251, 191, 36, 0.3), rgba(168, 85, 247, 0.3));
-    color: #fbbf24;
-    box-shadow: 0 3px 12px rgba(251, 191, 36, 0.3);
+.fate-wheel-trigger:hover .fate-wheel-icon i {
+    animation-duration: 2s;
+    text-shadow: 0 0 15px rgba(251, 191, 36, 0.8);
 }
 
-.dim-btn--fate.active::before {
-    opacity: 1;
+.fate-wheel-trigger:hover .fate-wheel-title {
+    text-shadow: 0 0 18px rgba(251, 191, 36, 0.6);
 }
 
-@keyframes fateGlow {
+.fate-wheel-trigger:hover .fate-wheel-stars {
+    color: rgba(251, 191, 36, 0.9);
+}
+
+/* 動畫 */
+@keyframes fateGradientShift {
 
     0%,
     100% {
@@ -517,6 +597,48 @@ html {
         background-position: 100% 50%;
     }
 }
+
+@keyframes fateShimmerSweep {
+    0% {
+        left: -100%;
+        opacity: 0;
+    }
+
+    40% {
+        opacity: 1;
+    }
+
+    100% {
+        left: 250%;
+        opacity: 0;
+    }
+}
+
+@keyframes fateIconSpin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes fateStarPulse {
+
+    0%,
+    100% {
+        opacity: 0.5;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 1;
+        transform: scale(1.1);
+    }
+}
+
+/* === 運命の輪盤 獨立按鈕 END === */
 
 .summoning-order input[type="text"] {
     background: rgba(255, 255, 255, 0.05);
