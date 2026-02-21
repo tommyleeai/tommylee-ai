@@ -10,6 +10,8 @@ window.PromptGen.Changelog = (function () {
             version: "v7.9.2",
             date: "2026-02-22",
             changes: [
+                "🎡 運命の輪盤按鈕重新設計：獨立全寬橫幅、金紫漸層動畫、旋轉圖標、流光 shimmer 效果",
+                "🔧 修正輪盤 tag 數量與主頁不一致的 bug（改用 generatePromptPlain 統一計算）",
                 "✨ 確認使用動畫特效：三階段魔法附著視覺回饋（脈衝波紋 → 粒子飛散 → section 閃爍）",
                 "🌀 階段 B：全頁紫色脈衝波紋從中心向外擴散",
                 "✨ 階段 C：紫金色粒子從畫面中心飛向被更改的 section 標題",
