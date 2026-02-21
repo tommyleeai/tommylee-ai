@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>運命の輪盤 v8 Demo</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         /* === ROOT & GLOBAL === */
         :root {
@@ -34,8 +35,12 @@
 
         body {
             background: var(--bg);
+            background-image:
+                radial-gradient(ellipse at 20% 50%, rgba(168, 85, 247, 0.06) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 20%, rgba(34, 211, 238, 0.04) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 80%, rgba(251, 191, 36, 0.03) 0%, transparent 40%);
             color: var(--text);
-            font-family: 'Segoe UI', system-ui, sans-serif;
+            font-family: 'Noto Sans TC', 'Segoe UI', system-ui, sans-serif;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
@@ -45,11 +50,23 @@
         }
 
         h1 {
-            font-size: 2rem;
-            background: linear-gradient(135deg, var(--gold), var(--purple));
+            font-size: 2.2rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--gold) 0%, #f59e0b 30%, var(--purple) 70%, var(--cyan) 100%);
+            background-size: 200% auto;
             -webkit-background-clip: text;
+            background-clip: text;
             -webkit-text-fill-color: transparent;
             margin-bottom: 8px;
+            animation: titleShine 4s linear infinite;
+            text-shadow: none;
+            filter: drop-shadow(0 0 20px rgba(251, 191, 36, 0.3));
+        }
+
+        @keyframes titleShine {
+            to {
+                background-position: 200% center;
+            }
         }
 
         .subtitle {
@@ -59,13 +76,15 @@
 
         /* === GAME CONTAINER === */
         .game-container {
-            background: var(--card-bg);
-            border: 1px solid var(--cell-border);
-            border-radius: 16px;
+            background: linear-gradient(145deg, rgba(18, 18, 31, 0.95), rgba(12, 12, 22, 0.98));
+            border: 1px solid rgba(168, 85, 247, 0.15);
+            border-radius: 20px;
             padding: 32px;
             max-width: 700px;
             width: 100%;
             position: relative;
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
         }
 
         /* === 5x5 GRID === */
@@ -79,18 +98,25 @@
 
         .cell {
             aspect-ratio: 1;
-            background: var(--cell-bg);
-            border: 2px solid var(--cell-border);
-            border-radius: 10px;
+            background: linear-gradient(145deg, rgba(26, 26, 46, 0.8), rgba(18, 18, 35, 0.9));
+            border: 1px solid rgba(42, 42, 74, 0.6);
+            border-radius: 12px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 4px;
+            padding: 6px;
             position: relative;
-            transition: all 0.15s ease;
+            transition: all 0.25s ease;
             cursor: default;
             overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.03);
+        }
+
+        .cell:hover:not(.empty-cell) {
+            transform: translateY(-3px) scale(1.03);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4), 0 0 15px rgba(168, 85, 247, 0.15);
+            border-color: rgba(168, 85, 247, 0.3);
         }
 
         .cell .cell-title {
@@ -102,13 +128,17 @@
         }
 
         .cell .cell-value {
-            font-size: 0.6rem;
+            font-size: 0.65rem;
             color: var(--cyan);
             text-align: center;
-            line-height: 1.2;
-            word-break: break-all;
-            max-height: 45px;
+            line-height: 1.3;
+            word-break: break-word;
             overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            max-height: 3.9em;
             opacity: 0;
             transform: scale(0.8);
             transition: opacity 0.3s, transform 0.3s;
@@ -121,18 +151,20 @@
 
         /* Cell states */
         .cell.inner-cell {
-            background: #161630;
-            border-color: #333366;
+            background: linear-gradient(145deg, rgba(22, 22, 48, 0.9), rgba(16, 16, 40, 0.95));
+            border-color: rgba(51, 51, 102, 0.5);
         }
 
         .cell.center-cell {
             background: linear-gradient(135deg, #1a1040, #2a1050);
             border-color: var(--purple);
+            box-shadow: 0 0 20px rgba(168, 85, 247, 0.2), inset 0 0 20px rgba(168, 85, 247, 0.05);
         }
 
         .cell.center-cell .cell-title {
             font-size: 0.8rem;
             color: var(--purple);
+            font-weight: 700;
         }
 
         /* Active highlight (running light) */
@@ -142,33 +174,70 @@
             background: linear-gradient(135deg, #2a2a1e, #1a1a2e);
         }
 
-        /* Revealed result */
+        /* Revealed result - filled cell */
+        .cell.result-filled {
+            border-color: rgba(168, 85, 247, 0.35);
+            background: linear-gradient(145deg, rgba(30, 20, 50, 0.9), rgba(20, 15, 40, 0.95));
+        }
+
+        /* Revealed result - empty */
+        .cell.result-none {
+            opacity: 0.45;
+        }
+
         .cell.result-none .cell-value {
-            color: var(--text-dim);
+            color: rgba(100, 116, 139, 0.6);
             font-style: italic;
         }
 
-        /* SSR Bonus */
+        /* SSR Bonus - 金色流光 */
         .cell.result-bonus {
             border-color: var(--gold) !important;
             box-shadow: 0 0 15px rgba(251, 191, 36, 0.4);
-            animation: bonusGlow 1.5s ease-in-out infinite;
+            animation: bonusGlow 2s ease-in-out infinite;
+            position: relative;
+        }
+
+        .cell.result-bonus::before {
+            content: '';
+            position: absolute;
+            inset: -1px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, transparent 30%, rgba(251, 191, 36, 0.15) 50%, transparent 70%);
+            background-size: 200% 200%;
+            animation: shimmer 2s ease-in-out infinite;
+            pointer-events: none;
         }
 
         .cell.result-bonus .cell-value {
             color: var(--gold) !important;
             font-weight: bold;
+            text-shadow: 0 0 8px rgba(251, 191, 36, 0.5);
+        }
+
+        .cell.result-bonus .cell-title {
+            color: var(--gold) !important;
         }
 
         @keyframes bonusGlow {
 
             0%,
             100% {
-                box-shadow: 0 0 10px rgba(251, 191, 36, 0.3);
+                box-shadow: 0 0 10px rgba(251, 191, 36, 0.3), inset 0 0 8px rgba(251, 191, 36, 0.05);
             }
 
             50% {
-                box-shadow: 0 0 25px rgba(251, 191, 36, 0.7), 0 0 40px rgba(251, 191, 36, 0.3);
+                box-shadow: 0 0 25px rgba(251, 191, 36, 0.6), 0 0 50px rgba(251, 191, 36, 0.2), inset 0 0 15px rgba(251, 191, 36, 0.1);
+            }
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: -200% -200%;
+            }
+
+            100% {
+                background-position: 200% 200%;
             }
         }
 
@@ -176,19 +245,22 @@
         .cell.locked {
             border-color: var(--gold) !important;
             position: relative;
+            box-shadow: 0 0 12px rgba(251, 191, 36, 0.3), inset 0 0 10px rgba(251, 191, 36, 0.05);
         }
 
         .cell.locked::after {
             content: '🔒';
             position: absolute;
-            top: 2px;
-            right: 2px;
+            top: 3px;
+            right: 3px;
             font-size: 0.6rem;
+            filter: drop-shadow(0 0 4px rgba(251, 191, 36, 0.6));
         }
 
         .cell.lockable:hover {
             border-color: var(--gold);
             cursor: pointer;
+            box-shadow: 0 0 15px rgba(251, 191, 36, 0.2);
         }
 
         /* Empty inner cells (no ring assignment) */
@@ -213,18 +285,48 @@
         }
 
         .lever-btn {
-            width: 180px;
+            width: 200px;
             height: 56px;
             background: linear-gradient(135deg, #2a1a3e, #1a2a4e);
             border: 2px solid var(--purple);
-            border-radius: 12px;
+            border-radius: 14px;
             color: var(--gold);
             font-size: 1.1rem;
             font-weight: bold;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.3s;
             position: relative;
             overflow: hidden;
+            box-shadow: 0 4px 20px rgba(168, 85, 247, 0.2);
+        }
+
+        .lever-btn::before {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, var(--purple), var(--gold), var(--cyan), var(--purple));
+            background-size: 300% 300%;
+            animation: btnBorderGlow 3s ease infinite;
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .lever-btn:hover::before {
+            opacity: 1;
+        }
+
+        @keyframes btnBorderGlow {
+
+            0%,
+            100% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
         }
 
         .lever-btn:hover {
@@ -300,12 +402,25 @@
         /* === STAR RATING === */
         .star-section {
             text-align: center;
-            padding: 16px 0;
+            padding: 20px 0;
             display: none;
         }
 
         .star-section.visible {
             display: block;
+            animation: fadeSlideUp 0.4s ease-out;
+        }
+
+        @keyframes fadeSlideUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .star-row {
@@ -316,26 +431,58 @@
         }
 
         .star {
-            font-size: 1.8rem;
-            color: #333;
+            font-size: 2rem;
+            color: rgba(50, 50, 50, 0.5);
             transition: all 0.3s;
+            filter: grayscale(1);
         }
 
         .star.lit {
             color: var(--gold);
-            text-shadow: 0 0 10px rgba(251, 191, 36, 0.8);
+            text-shadow: 0 0 12px rgba(251, 191, 36, 0.8), 0 0 30px rgba(251, 191, 36, 0.4);
+            filter: grayscale(0) drop-shadow(0 0 6px rgba(251, 191, 36, 0.6));
         }
 
         .star-title {
-            font-size: 1.5rem;
-            font-weight: bold;
-            margin: 8px 0;
+            font-size: 1.6rem;
+            font-weight: 900;
+            margin: 12px 0;
             opacity: 0;
-            transition: opacity 0.5s;
+            transition: opacity 0.5s, transform 0.5s;
+            transform: scale(0.8);
         }
 
         .star-title.visible {
             opacity: 1;
+            transform: scale(1);
+        }
+
+        /* 高星級文字漸層特效 */
+        .star-title.high-star {
+            background: linear-gradient(135deg, var(--gold), #f59e0b, var(--purple), var(--cyan));
+            background-size: 300% auto;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: starTitleShine 2s linear infinite;
+            filter: drop-shadow(0 0 15px rgba(251, 191, 36, 0.5));
+        }
+
+        .star-title.legendary-star {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b, #a855f7, #22d3ee, #fbbf24);
+            background-size: 400% auto;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: starTitleShine 1.5s linear infinite;
+            filter: drop-shadow(0 0 20px rgba(251, 191, 36, 0.6));
+            font-size: 1.8rem;
+        }
+
+        @keyframes starTitleShine {
+            to {
+                background-position: 300% center;
+            }
         }
 
         .tag-count {
@@ -565,103 +712,300 @@
             outer: [
                 {
                     id: 'race', title: '種族', avg: 3.9, bonus: true,
-                    options: ['elf, pointed ears, ethereal beauty', 'vampire, pale skin, fangs, red eyes', 'demon, horns, dark aura, tail', 'angel, halo, white wings, divine', 'human', 'dwarf, short, stocky, beard', 'orc, green skin, tusks, muscular', 'catgirl, cat ears, cat tail, playful', 'fox spirit, fox ears, fox tail, mystical', 'dragon, horns, scales, dragon wings, tail']
+                    options: [
+                        { tag: 'elf, pointed ears, ethereal beauty', display: '精靈' },
+                        { tag: 'vampire, pale skin, fangs, red eyes', display: '吸血鬼' },
+                        { tag: 'demon, horns, dark aura, tail', display: '惡魔' },
+                        { tag: 'angel, halo, white wings, divine', display: '天使' },
+                        { tag: 'human', display: '人類' },
+                        { tag: 'dwarf, short, stocky, beard', display: '矮人' },
+                        { tag: 'orc, green skin, tusks, muscular', display: '獸人' },
+                        { tag: 'catgirl, cat ears, cat tail, playful', display: '貓娘' },
+                        { tag: 'fox spirit, fox ears, fox tail, mystical', display: '狐仙' },
+                        { tag: 'dragon, horns, scales, dragon wings, tail', display: '龍人' }
+                    ]
                 },
                 {
                     id: 'job', title: '職業', avg: 3.0, bonus: true,
-                    options: ['knight, armor, sword', 'mage, robes, magical staff', 'assassin, dark cloak, dagger', 'priest, holy robes, staff', 'archer, bow, quiver', 'samurai, katana, hakama', 'pirate, captain coat, cutlass', 'alchemist, goggles, potions', 'necromancer, dark magic, skeleton', 'paladin, holy armor, divine sword']
+                    options: [
+                        { tag: 'knight, armor, sword', display: '騎士' },
+                        { tag: 'mage, robes, magical staff', display: '魔法師' },
+                        { tag: 'assassin, dark cloak, dagger', display: '刺客' },
+                        { tag: 'priest, holy robes, staff', display: '牧師' },
+                        { tag: 'archer, bow, quiver', display: '弓箭手' },
+                        { tag: 'samurai, katana, hakama', display: '武士' },
+                        { tag: 'pirate, captain coat, cutlass', display: '海盜' },
+                        { tag: 'alchemist, goggles, potions', display: '煉金術士' },
+                        { tag: 'necromancer, dark magic, skeleton', display: '死靈法師' },
+                        { tag: 'paladin, holy armor, divine sword', display: '聖騎士' }
+                    ]
                 },
                 {
                     id: 'hairstyle', title: '髮型', avg: 1.0, bonus: true,
-                    options: ['long hair', 'short hair', 'twin tails', 'ponytail', 'braid', 'bob cut', 'wavy hair', 'straight hair', 'messy hair', 'side ponytail']
+                    options: [
+                        { tag: 'long hair', display: '長髮' },
+                        { tag: 'short hair', display: '短髮' },
+                        { tag: 'twin tails', display: '雙馬尾' },
+                        { tag: 'ponytail', display: '馬尾' },
+                        { tag: 'braid', display: '辮子' },
+                        { tag: 'bob cut', display: '鮑伯頭' },
+                        { tag: 'wavy hair', display: '波浪捲' },
+                        { tag: 'straight hair', display: '直髮' },
+                        { tag: 'messy hair', display: '亂髮' },
+                        { tag: 'side ponytail', display: '側馬尾' }
+                    ]
                 },
                 {
                     id: 'bodyType', title: '身材', avg: 1.3,
-                    options: ['slim body', 'athletic body', 'petite body', 'muscular body', 'tall body', 'curvy body', 'slender body', 'average body']
+                    options: [
+                        { tag: 'slim body', display: '纖細' },
+                        { tag: 'athletic body', display: '健美' },
+                        { tag: 'petite body', display: '嬌小' },
+                        { tag: 'muscular body', display: '筋肉' },
+                        { tag: 'tall body', display: '高大' },
+                        { tag: 'curvy body', display: '豐腴' },
+                        { tag: 'slender body', display: '修長' },
+                        { tag: 'average body', display: '標準' }
+                    ]
                 },
                 {
                     id: 'hairColor', title: '髮色', avg: 1.0,
-                    options: ['blonde hair', 'silver hair', 'black hair', 'red hair', 'blue hair', 'pink hair', 'white hair', 'brown hair', 'green hair', 'purple hair', 'gradient hair']
+                    options: [
+                        { tag: 'blonde hair', display: '金髮' },
+                        { tag: 'silver hair', display: '銀髮' },
+                        { tag: 'black hair', display: '黑髮' },
+                        { tag: 'red hair', display: '紅髮' },
+                        { tag: 'blue hair', display: '藍髮' },
+                        { tag: 'pink hair', display: '粉髮' },
+                        { tag: 'white hair', display: '白髮' },
+                        { tag: 'brown hair', display: '棕髮' },
+                        { tag: 'green hair', display: '綠髮' },
+                        { tag: 'purple hair', display: '紫髮' },
+                        { tag: 'gradient hair', display: '漸層髮' }
+                    ]
                 },
                 {
                     id: 'eyeColor', title: '眼色', avg: 1.0,
-                    options: ['blue eyes', 'red eyes', 'green eyes', 'golden eyes', 'purple eyes', 'heterochromia', 'silver eyes']
+                    options: [
+                        { tag: 'blue eyes', display: '藍眼' },
+                        { tag: 'red eyes', display: '紅眼' },
+                        { tag: 'green eyes', display: '綠眼' },
+                        { tag: 'golden eyes', display: '金眼' },
+                        { tag: 'purple eyes', display: '紫眼' },
+                        { tag: 'heterochromia', display: '異色瞳' },
+                        { tag: 'silver eyes', display: '銀眼' }
+                    ]
                 },
                 {
                     id: 'outfit', title: '服裝', avg: 2.7, bonus: true,
-                    options: ['school uniform, sailor collar', 'gothic lolita dress, frills', 'kimono, obi, traditional', 'armor, plate armor', 'maid outfit, apron', 'wedding dress, white gown', 'casual clothes, t-shirt, jeans', 'military uniform, medals', 'chinese dress, cheongsam', 'cyberpunk outfit, neon accents']
+                    options: [
+                        { tag: 'school uniform, sailor collar', display: '水手服' },
+                        { tag: 'gothic lolita dress, frills', display: '哥德蘿莉' },
+                        { tag: 'kimono, obi, traditional', display: '和服' },
+                        { tag: 'armor, plate armor', display: '盔甲' },
+                        { tag: 'maid outfit, apron', display: '女僕裝' },
+                        { tag: 'wedding dress, white gown', display: '婚紗' },
+                        { tag: 'casual clothes, t-shirt, jeans', display: '便服' },
+                        { tag: 'military uniform, medals', display: '軍裝' },
+                        { tag: 'chinese dress, cheongsam', display: '旗袍' },
+                        { tag: 'cyberpunk outfit, neon accents', display: '賽博龐克' }
+                    ]
                 },
                 {
                     id: 'headwear', title: '頭飾', avg: 2.6, bonus: true,
-                    options: ['crown, tiara', 'witch hat, pointed', 'hair ribbon, bow', 'flower crown, floral', 'cat ears headband', 'horns, demon horns', 'beret, cute hat', 'maid headband, lace']
+                    options: [
+                        { tag: 'crown, tiara', display: '皇冠' },
+                        { tag: 'witch hat, pointed', display: '巫師帽' },
+                        { tag: 'hair ribbon, bow', display: '髮帶' },
+                        { tag: 'flower crown, floral', display: '花冠' },
+                        { tag: 'cat ears headband', display: '貓耳' },
+                        { tag: 'horns, demon horns', display: '角飾' },
+                        { tag: 'beret, cute hat', display: '貝雷帽' },
+                        { tag: 'maid headband, lace', display: '蕾絲頭飾' }
+                    ]
                 },
                 {
                     id: 'expression', title: '表情', avg: 2.9,
-                    options: ['warm smile, kind expression, gentle eyes', 'yandere smile, unsettling smile, crazy eyes', 'cold stare, indifferent gaze, detached', 'blushing, red cheeks, embarrassed', 'crying, tears streaming, sad', 'wide eyes, surprised, shocked', 'smirking, confident, smug', 'expressionless, blank face, poker face']
+                    options: [
+                        { tag: 'warm smile, kind expression, gentle eyes', display: '溫柔微笑' },
+                        { tag: 'yandere smile, unsettling smile, crazy eyes', display: '病嬌笑容' },
+                        { tag: 'cold stare, indifferent gaze, detached', display: '冷漠凝視' },
+                        { tag: 'blushing, red cheeks, embarrassed', display: '害羞臉紅' },
+                        { tag: 'crying, tears streaming, sad', display: '流淚哭泣' },
+                        { tag: 'wide eyes, surprised, shocked', display: '驚訝震撼' },
+                        { tag: 'smirking, confident, smug', display: '自信壞笑' },
+                        { tag: 'expressionless, blank face, poker face', display: '面無表情' }
+                    ]
                 },
                 {
                     id: 'mood', title: '心情', avg: 2.2,
-                    options: ['happy, joyful', 'confident, smug', 'shy, blushing', 'angry, furious', 'sad, crying, tears', 'excited, energetic', 'calm', 'romantic, love', 'lonely, alone']
+                    options: [
+                        { tag: 'happy, joyful', display: '開心' },
+                        { tag: 'confident, smug', display: '自信' },
+                        { tag: 'shy, blushing', display: '害羞' },
+                        { tag: 'angry, furious', display: '憤怒' },
+                        { tag: 'sad, crying, tears', display: '悲傷' },
+                        { tag: 'excited, energetic', display: '興奮' },
+                        { tag: 'calm', display: '平靜' },
+                        { tag: 'romantic, love', display: '浪漫' },
+                        { tag: 'lonely, alone', display: '孤獨' }
+                    ]
                 },
                 {
                     id: 'pose', title: '姿勢', avg: 3.2,
-                    options: ['standing, front view, upright posture', 'sitting cross-legged, indian style, lotus position', 'holding weapon, battle ready, combat stance with weapon', 'running, sprinting, running pose, dynamic movement', 'arms crossed, crossed arms, standing with folded arms', 'looking over shoulder, turning to look back, glance behind', 'hands on hips, confident standing pose', 'sitting on throne, royal seat, king on throne']
+                    options: [
+                        { tag: 'standing, front view, upright posture', display: '站立正面' },
+                        { tag: 'sitting cross-legged, indian style, lotus position', display: '盤腿而坐' },
+                        { tag: 'holding weapon, battle ready, combat stance with weapon', display: '持武戰姿' },
+                        { tag: 'running, sprinting, running pose, dynamic movement', display: '奔跑衝刺' },
+                        { tag: 'arms crossed, crossed arms, standing with folded arms', display: '雙手交叉' },
+                        { tag: 'looking over shoulder, turning to look back, glance behind', display: '回眸一望' },
+                        { tag: 'hands on hips, confident standing pose', display: '叉腰站立' },
+                        { tag: 'sitting on throne, royal seat, king on throne', display: '端坐王座' }
+                    ]
                 },
                 {
                     id: 'atmosphere', title: '氛圍', avg: 1.7,
-                    options: ['sunny, clear sky', 'heavy rain, storm', 'snowing, winter', 'foggy, mist', 'lightning, thunder', 'sunset, golden hour', 'midnight, moon', 'dawn, sunrise']
+                    options: [
+                        { tag: 'sunny, clear sky', display: '晴空萬里' },
+                        { tag: 'heavy rain, storm', display: '暴風雨' },
+                        { tag: 'snowing, winter', display: '飄雪冬景' },
+                        { tag: 'foggy, mist', display: '迷霧瀰漫' },
+                        { tag: 'lightning, thunder', display: '雷電交加' },
+                        { tag: 'sunset, golden hour', display: '金色夕陽' },
+                        { tag: 'midnight, moon', display: '月夜深邃' },
+                        { tag: 'dawn, sunrise', display: '破曉晨光' }
+                    ]
                 },
                 {
                     id: 'lighting', title: '光影', avg: 1.0,
-                    options: ['natural light', 'cinematic lighting', 'volumetric lighting', 'rim lighting', 'backlighting', 'neon lights', 'soft lighting']
+                    options: [
+                        { tag: 'natural light', display: '自然光' },
+                        { tag: 'cinematic lighting', display: '電影光' },
+                        { tag: 'volumetric lighting', display: '體積光' },
+                        { tag: 'rim lighting', display: '輪廓光' },
+                        { tag: 'backlighting', display: '逆光' },
+                        { tag: 'neon lights', display: '霓虹光' },
+                        { tag: 'soft lighting', display: '柔光' }
+                    ]
                 },
                 {
                     id: 'focalLength', title: '焦段', avg: 1.0,
-                    options: ['standard lens', 'wide angle', 'telephoto', 'medium telephoto', 'ultra wide angle']
+                    options: [
+                        { tag: 'standard lens', display: '標準鏡頭' },
+                        { tag: 'wide angle', display: '廣角' },
+                        { tag: 'telephoto', display: '長焦' },
+                        { tag: 'medium telephoto', display: '中長焦' },
+                        { tag: 'ultra wide angle', display: '超廣角' }
+                    ]
                 },
                 {
                     id: 'lensEffect', title: '鏡效', avg: 1.1,
-                    options: ['depth of field, bokeh', 'motion blur', 'lens flare', 'film grain', 'sharp focus', 'chromatic aberration']
+                    options: [
+                        { tag: 'depth of field, bokeh', display: '景深散景' },
+                        { tag: 'motion blur', display: '動態模糊' },
+                        { tag: 'lens flare', display: '鏡頭光暈' },
+                        { tag: 'film grain', display: '膠片顆粒' },
+                        { tag: 'sharp focus', display: '銳利對焦' },
+                        { tag: 'chromatic aberration', display: '色差效果' }
+                    ]
                 },
                 {
                     id: 'quality', title: '品質', avg: 1.3,
-                    options: ['masterpiece', 'masterpiece, best quality', 'masterpiece, highres', 'best quality, 8k', 'masterpiece, best quality, highres']
+                    options: [
+                        { tag: 'masterpiece', display: '傑作' },
+                        { tag: 'masterpiece, best quality', display: '傑作+精品' },
+                        { tag: 'masterpiece, highres', display: '傑作+高解析' },
+                        { tag: 'best quality, 8k', display: '精品 8K' },
+                        { tag: 'masterpiece, best quality, highres', display: '傑作+精品+高解析' }
+                    ]
                 }
             ],
             // 內圈 8 格（逆時針路徑: A→H→G→F→E→D→C→B）
-            // 序列對應 INNER_PATH: [1,1]→[2,1]→[3,1]→[3,2]→[3,3]→[2,3]→[1,3]→[1,2]
             inner: [
                 {
                     id: 'animeStyle', title: '動漫風',  // A = [1,1]
-                    options: ['studio ghibli style, by hayao miyazaki', 'by makoto shinkai', 'kyoto animation style', 'ufotable style', 'by koyoharu gotouge, demon slayer style']
+                    options: [
+                        { tag: 'studio ghibli style, by hayao miyazaki', display: '吉卜力風' },
+                        { tag: 'by makoto shinkai', display: '新海誠風' },
+                        { tag: 'kyoto animation style', display: '京阿尼風' },
+                        { tag: 'ufotable style', display: '飛碟社風' },
+                        { tag: 'by koyoharu gotouge, demon slayer style', display: '鬼滅風' }
+                    ]
                 },
                 {
                     id: 'handItems', title: '手持', bonus: true,  // H = [2,1]
-                    options: ['sword, holding weapon', 'magic staff, glowing orb', 'book, reading', 'umbrella, holding umbrella', 'guitar, playing music', 'dual swords, glowing blade, flame sword', 'bow and arrow, quiver', 'gun, pistol, revolver']
+                    options: [
+                        { tag: 'sword, holding weapon', display: '持劍' },
+                        { tag: 'magic staff, glowing orb', display: '法杖' },
+                        { tag: 'book, reading', display: '書本' },
+                        { tag: 'umbrella, holding umbrella', display: '撐傘' },
+                        { tag: 'guitar, playing music', display: '吉他' },
+                        { tag: 'dual swords, glowing blade, flame sword', display: '雙刀' },
+                        { tag: 'bow and arrow, quiver', display: '弓箭' },
+                        { tag: 'gun, pistol, revolver', display: '手槍' }
+                    ]
                 },
                 {
                     id: 'aperture', title: '光圈',  // G = [3,1]
-                    options: ['large aperture, f/1.8, shallow depth of field, bokeh', 'medium aperture, f/8', 'small aperture, f/16, deep depth of field']
+                    options: [
+                        { tag: 'large aperture, f/1.8, shallow depth of field, bokeh', display: '大光圈 f/1.8' },
+                        { tag: 'medium aperture, f/8', display: '中光圈 f/8' },
+                        { tag: 'small aperture, f/16, deep depth of field', display: '小光圈 f/16' }
+                    ]
                 },
                 {
                     id: 'cameraAngle', title: '角度',  // F = [3,2]
-                    options: ['eye level', 'from above, high angle', 'from below, low angle', 'from side, profile', 'dynamic angle', 'from behind, back view']
+                    options: [
+                        { tag: 'eye level', display: '平視' },
+                        { tag: 'from above, high angle', display: '俯角' },
+                        { tag: 'from below, low angle', display: '仰角' },
+                        { tag: 'from side, profile', display: '側面' },
+                        { tag: 'dynamic angle', display: '動態角度' },
+                        { tag: 'from behind, back view', display: '背面' }
+                    ]
                 },
                 {
                     id: 'scene', title: '場景',  // E = [3,3]
-                    options: ['cherry blossom, school, sunset', 'magical forest, glowing plants', 'city street, neon lights, night', 'castle, fantasy', 'post-apocalyptic ruins', 'beach, ocean, sunset']
+                    options: [
+                        { tag: 'cherry blossom, school, sunset', display: '櫻花校園' },
+                        { tag: 'magical forest, glowing plants', display: '魔法森林' },
+                        { tag: 'city street, neon lights, night', display: '霓虹夜街' },
+                        { tag: 'castle, fantasy', display: '奇幻城堡' },
+                        { tag: 'post-apocalyptic ruins', display: '廢墟末世' },
+                        { tag: 'beach, ocean, sunset', display: '黃昏海灘' }
+                    ]
                 },
                 {
                     id: 'shotSize', title: '鏡頭',  // D = [2,3]
-                    options: ['cowboy shot', 'full shot', 'close-up', 'medium close-up shot', 'extreme close-up']
+                    options: [
+                        { tag: 'cowboy shot', display: '牛仔鏡頭' },
+                        { tag: 'full shot', display: '全身鏡頭' },
+                        { tag: 'close-up', display: '特寫' },
+                        { tag: 'medium close-up shot', display: '中特寫' },
+                        { tag: 'extreme close-up', display: '超特寫' }
+                    ]
                 },
                 {
                     id: 'artist', title: '畫家',  // C = [1,3]
-                    options: ['by greg rutkowski', 'by wlop', 'by artgerm', 'by ilya kuvshinov', 'by alphonse mucha']
+                    options: [
+                        { tag: 'by greg rutkowski', display: 'Rutkowski' },
+                        { tag: 'by wlop', display: 'WLOP' },
+                        { tag: 'by artgerm', display: 'Artgerm' },
+                        { tag: 'by ilya kuvshinov', display: 'Kuvshinov' },
+                        { tag: 'by alphonse mucha', display: 'Mucha' }
+                    ]
                 },
                 {
                     id: 'artStyle', title: '藝術風',  // B = [1,2]
-                    options: ['realistic, photorealistic', 'watercolor medium, soft edges', 'oil painting style, thick impasto', 'cyberpunk style, neon lights', 'pixel art, 16-bit', 'ink wash painting, sumi-e']
+                    options: [
+                        { tag: 'realistic, photorealistic', display: '寫實風' },
+                        { tag: 'watercolor medium, soft edges', display: '水彩風' },
+                        { tag: 'oil painting style, thick impasto', display: '油畫風' },
+                        { tag: 'cyberpunk style, neon lights', display: '賽博龐克' },
+                        { tag: 'pixel art, 16-bit', display: '像素風' },
+                        { tag: 'ink wash painting, sumi-e', display: '水墨風' }
+                    ]
                 }
             ],
             // 中心
@@ -751,8 +1095,9 @@
                 const opt = sec.options[Math.floor(Math.random() * sec.options.length)];
                 return {
                     id: sec.id, title: sec.title,
-                    value: opt,
-                    tagCount: opt.split(',').length,
+                    value: opt.tag,
+                    display: opt.display,
+                    tagCount: opt.tag.split(',').length,
                     isNone: false, isBonus: false,
                     bonus: !!sec.bonus
                 };
@@ -992,7 +1337,7 @@
                         valEl.textContent = '—';
                         valEl.classList.remove('revealed');
                     }
-                    cell.classList.remove('result-none', 'result-bonus');
+                    cell.classList.remove('result-none', 'result-bonus', 'result-filled');
                 }
             });
 
@@ -1006,7 +1351,7 @@
                         valEl.textContent = '—';
                         valEl.classList.remove('revealed');
                     }
-                    cell.classList.remove('result-none', 'result-bonus');
+                    cell.classList.remove('result-none', 'result-bonus', 'result-filled');
                 }
             });
 
@@ -1185,8 +1530,9 @@
                     valEl.textContent = '無';
                     cell.classList.add('result-none');
                 } else {
-                    const displayVal = result.value.split(',').slice(0, 2).map(s => s.trim()).join(', ');
-                    valEl.textContent = result.isBonus ? '🌟 ' + displayVal : displayVal;
+                    const displayText = result.display || result.value.split(',').slice(0, 2).map(s => s.trim()).join(', ');
+                    valEl.textContent = result.isBonus ? '🌟 ' + displayText : displayText;
+                    cell.classList.add('result-filled');
                     if (result.isBonus) {
                         cell.classList.add('result-bonus');
                         playBonus();
@@ -1273,6 +1619,12 @@
                     const titleEl = document.getElementById('starTitle');
                     titleEl.textContent = `${stars}★ ${titles[stars]}`;
                     titleEl.style.color = colors[stars];
+                    titleEl.className = 'star-title';
+                    if (stars >= 8) {
+                        titleEl.classList.add('legendary-star');
+                    } else if (stars >= 6) {
+                        titleEl.classList.add('high-star');
+                    }
                     titleEl.classList.add('visible');
 
                     // Play star sound
