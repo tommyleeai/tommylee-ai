@@ -402,9 +402,10 @@ html {
     text-shadow: 0 0 12px rgba(167, 139, 250, 0.3);
 }
 
-/* dimension-selector 容器 = 與 .tab-bar 一致 */
+/* dimension-selector 容器 = 與 .tab-bar 一致（6 格固定等寬） */
 .dimension-selector {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
     gap: 4px;
     padding: 6px;
     background: rgba(255, 255, 255, 0.06);
@@ -415,7 +416,6 @@ html {
 
 /* dim-btn = 與 .tab-btn 一致 */
 .dim-btn {
-    flex: 1;
     min-width: 0;
     padding: 12px 10px;
     border: none;
@@ -454,7 +454,6 @@ html {
 
 /* 空格佔位（第 5 格） */
 .dim-spacer {
-    flex: 1;
     min-width: 0;
 }
 
@@ -2452,21 +2451,20 @@ input[type=range]::-webkit-slider-thumb:hover {
     min-height: 1500px;
 }
 
-/* Tab Bar */
+/* Tab Bar（6 格固定等寬） */
 .tab-bar {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
     gap: 4px;
     padding: 6px;
     margin-bottom: 16px;
     background: rgba(255, 255, 255, 0.06);
     border-radius: 14px;
     border: 1px solid rgba(187, 134, 252, 0.25);
-    overflow-x: auto;
     box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
 }
 
 .tab-btn {
-    flex: 1;
     min-width: 0;
     padding: 12px 10px;
     border: none;
