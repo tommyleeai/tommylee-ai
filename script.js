@@ -250,7 +250,7 @@
                         ? (state.lang === 'zh' ? '♀ 女性' : '♀ Female')
                         : (state.lang === 'zh' ? '♂ 男性' : '♂ Male');
                     btn.addEventListener('click', () => {
-                        state.gender = g;
+                        state.gender = (state.gender === g) ? '' : g;
                         delete state.selections['hairstyle'];
                         delete state.selections['bodyType'];
                         renderTabContent();
