@@ -441,6 +441,64 @@ window.PromptGen.FateWheelModal = (function () {
             }
         });
 
+        // === Konami Code 秘密指令 ===
+        const KONAMI_SEQUENCE = [
+            'ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown',
+            'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight',
+            'KeyB', 'KeyA'
+        ];
+        let konamiProgress = 0;
+
+        function activateKonami() {
+            ws.konamiActive = true;
+            konamiProgress = 0;
+
+            // 音效：神秘解鎖音
+            if (sfx && sfx.initialized && !sfx.isMuted) {
+                if (sfx.ctx.state === 'suspended') sfx.ctx.resume();
+                const t = sfx.ctx.currentTime;
+                const mg = sfx.masterGain;
+                // 上行琶音（C5 → E5 → G5 → C6）
+                [523, 659, 784, 1047].forEach((f, i) => {
+                    const o = sfx.ctx.createOscillator();
+                    const g = sfx.ctx.createGain();
+                    o.type = 'triangle';
+                    o.frequency.setValueAtTime(f, t + i * 0.08);
+                    g.gain.setValueAtTime(0.2, t + i * 0.08);
+                    g.gain.exponentialRampToValueAtTime(0.001, t + i * 0.08 + 0.3);
+                    o.connect(g); g.connect(mg);
+                    o.start(t + i * 0.08); o.stop(t + i * 0.08 + 0.3);
+                });
+                // 最後一個加強音
+                const o2 = sfx.ctx.createOscillator();
+                const g2 = sfx.ctx.createGain();
+                o2.type = 'sine';
+                o2.frequency.setValueAtTime(1047, t + 0.35);
+                g2.gain.setValueAtTime(0.3, t + 0.35);
+                g2.gain.exponentialRampToValueAtTime(0.001, t + 0.9);
+                o2.connect(g2); g2.connect(mg);
+                o2.start(t + 0.35); o2.stop(t + 0.9);
+            }
+
+            // 視覺回饋：短暫金色閃光 + 文字提示
+            const overlay = document.getElementById('fw-overlay');
+            if (overlay) {
+                const hint = document.createElement('div');
+                hint.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);' +
+                    'font-size:28px;font-weight:900;color:#fbbf24;text-shadow:0 0 20px #fbbf24,0 0 40px #a855f7;' +
+                    'pointer-events:none;z-index:100000;opacity:0;transition:opacity 0.3s;font-family:monospace;';
+                hint.textContent = '★ SECRET MODE ★';
+                document.body.appendChild(hint);
+                requestAnimationFrame(() => {
+                    hint.style.opacity = '1';
+                    setTimeout(() => {
+                        hint.style.opacity = '0';
+                        setTimeout(() => hint.remove(), 400);
+                    }, 1200);
+                });
+            }
+        }
+
         // Keyboard handler
         function keyHandler(e) {
             // 星級動畫播放中禁止任何按鍵操作
@@ -448,6 +506,18 @@ window.PromptGen.FateWheelModal = (function () {
                 e.preventDefault();
                 return;
             }
+
+            // Konami Code 序列偵測
+            if (e.code === KONAMI_SEQUENCE[konamiProgress]) {
+                konamiProgress++;
+                if (konamiProgress === KONAMI_SEQUENCE.length) {
+                    activateKonami();
+                }
+            } else {
+                // 允許重新開始（如果按的是序列第一個）
+                konamiProgress = (e.code === KONAMI_SEQUENCE[0]) ? 1 : 0;
+            }
+
             if (e.code === 'Space') {
                 e.preventDefault();
                 handleLever();
@@ -605,6 +675,9 @@ window.PromptGen.FateWheelModal = (function () {
 
         // === Star Roll ===
         function rollStars(lockedTagBoost) {
+            // Konami Code 秘密模式：保證 10 星
+            if (ws.konamiActive) return 10;
+
             const roll = Math.random() * 100;
             let boost = Math.min(lockedTagBoost * 0.5, 15);
             let cumulative = 0;
@@ -1398,6 +1471,10 @@ window.PromptGen.FateWheelModal = (function () {
             // Clean up timers
             if (ws.timer) clearTimeout(ws.timer);
             if (ws.autoStopTimer) clearTimeout(ws.autoStopTimer);
+
+            // 重置 Konami Code 秘密模式
+            ws.konamiActive = false;
+            konamiProgress = 0;
 
             // Remove keyboard handler
             document.removeEventListener('keydown', keyHandler);
