@@ -1,0 +1,1470 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>運命の輪盤 v8 Demo</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        /* === ROOT & GLOBAL === */
+        :root {
+            --bg: #0a0a12;
+            --card-bg: #12121f;
+            --cell-bg: #1a1a2e;
+            --cell-border: #2a2a4a;
+            --gold: #fbbf24;
+            --gold-dim: rgba(251, 191, 36, 0.3);
+            --purple: #a855f7;
+            --cyan: #22d3ee;
+            --green: #10b981;
+            --red: #ef4444;
+            --text: #e2e8f0;
+            --text-dim: #64748b;
+            --glow-gold: 0 0 20px rgba(251, 191, 36, 0.6);
+            --glow-purple: 0 0 20px rgba(168, 85, 247, 0.6);
+            --glow-cyan: 0 0 20px rgba(34, 211, 238, 0.6);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        h1 {
+            font-size: 2rem;
+            background: linear-gradient(135deg, var(--gold), var(--purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: var(--text-dim);
+            margin-bottom: 24px;
+        }
+
+        /* === GAME CONTAINER === */
+        .game-container {
+            background: var(--card-bg);
+            border: 1px solid var(--cell-border);
+            border-radius: 16px;
+            padding: 32px;
+            max-width: 700px;
+            width: 100%;
+            position: relative;
+        }
+
+        /* === 5x5 GRID === */
+        .grid-5x5 {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            grid-template-rows: repeat(5, 1fr);
+            gap: 6px;
+            margin-bottom: 24px;
+        }
+
+        .cell {
+            aspect-ratio: 1;
+            background: var(--cell-bg);
+            border: 2px solid var(--cell-border);
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 4px;
+            position: relative;
+            transition: all 0.15s ease;
+            cursor: default;
+            overflow: hidden;
+        }
+
+        .cell .cell-title {
+            font-size: 0.65rem;
+            color: var(--text-dim);
+            text-align: center;
+            line-height: 1.2;
+            margin-bottom: 2px;
+        }
+
+        .cell .cell-value {
+            font-size: 0.6rem;
+            color: var(--cyan);
+            text-align: center;
+            line-height: 1.2;
+            word-break: break-all;
+            max-height: 45px;
+            overflow: hidden;
+            opacity: 0;
+            transform: scale(0.8);
+            transition: opacity 0.3s, transform 0.3s;
+        }
+
+        .cell .cell-value.revealed {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        /* Cell states */
+        .cell.inner-cell {
+            background: #161630;
+            border-color: #333366;
+        }
+
+        .cell.center-cell {
+            background: linear-gradient(135deg, #1a1040, #2a1050);
+            border-color: var(--purple);
+        }
+
+        .cell.center-cell .cell-title {
+            font-size: 0.8rem;
+            color: var(--purple);
+        }
+
+        /* Active highlight (running light) */
+        .cell.highlight {
+            border-color: var(--gold);
+            box-shadow: var(--glow-gold), inset 0 0 15px rgba(251, 191, 36, 0.15);
+            background: linear-gradient(135deg, #2a2a1e, #1a1a2e);
+        }
+
+        /* Revealed result */
+        .cell.result-none .cell-value {
+            color: var(--text-dim);
+            font-style: italic;
+        }
+
+        /* SSR Bonus */
+        .cell.result-bonus {
+            border-color: var(--gold) !important;
+            box-shadow: 0 0 15px rgba(251, 191, 36, 0.4);
+            animation: bonusGlow 1.5s ease-in-out infinite;
+        }
+
+        .cell.result-bonus .cell-value {
+            color: var(--gold) !important;
+            font-weight: bold;
+        }
+
+        @keyframes bonusGlow {
+
+            0%,
+            100% {
+                box-shadow: 0 0 10px rgba(251, 191, 36, 0.3);
+            }
+
+            50% {
+                box-shadow: 0 0 25px rgba(251, 191, 36, 0.7), 0 0 40px rgba(251, 191, 36, 0.3);
+            }
+        }
+
+        /* Locked cell */
+        .cell.locked {
+            border-color: var(--gold) !important;
+            position: relative;
+        }
+
+        .cell.locked::after {
+            content: '🔒';
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            font-size: 0.6rem;
+        }
+
+        .cell.lockable:hover {
+            border-color: var(--gold);
+            cursor: pointer;
+        }
+
+        /* Empty inner cells (no ring assignment) */
+        .cell.empty-cell {
+            background: transparent;
+            border-color: transparent;
+        }
+
+        /* === CONTROLS === */
+        .controls {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .lever-container {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .lever-btn {
+            width: 180px;
+            height: 56px;
+            background: linear-gradient(135deg, #2a1a3e, #1a2a4e);
+            border: 2px solid var(--purple);
+            border-radius: 12px;
+            color: var(--gold);
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .lever-btn:hover {
+            border-color: var(--gold);
+            box-shadow: var(--glow-gold);
+            transform: translateY(-2px);
+        }
+
+        .lever-btn:active {
+            transform: translateY(0);
+        }
+
+        .lever-btn.spinning {
+            background: linear-gradient(135deg, #3a1a1e, #4a1a2e);
+            border-color: var(--red);
+            animation: leverPulse 0.8s ease-in-out infinite;
+        }
+
+        @keyframes leverPulse {
+
+            0%,
+            100% {
+                box-shadow: 0 0 10px rgba(239, 68, 68, 0.3);
+            }
+
+            50% {
+                box-shadow: 0 0 25px rgba(239, 68, 68, 0.6);
+            }
+        }
+
+        .phase-indicator {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .phase-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--cell-border);
+            transition: all 0.3s;
+        }
+
+        .phase-dot.active {
+            background: var(--gold);
+            box-shadow: var(--glow-gold);
+        }
+
+        .phase-dot.done {
+            background: var(--green);
+        }
+
+        .phase-label {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+        }
+
+        .hint {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            text-align: center;
+        }
+
+        .hint kbd {
+            background: #2a2a3e;
+            padding: 2px 6px;
+            border-radius: 4px;
+            border: 1px solid var(--cell-border);
+            font-family: inherit;
+        }
+
+        /* === STAR RATING === */
+        .star-section {
+            text-align: center;
+            padding: 16px 0;
+            display: none;
+        }
+
+        .star-section.visible {
+            display: block;
+        }
+
+        .star-row {
+            display: flex;
+            justify-content: center;
+            gap: 4px;
+            margin: 12px 0;
+        }
+
+        .star {
+            font-size: 1.8rem;
+            color: #333;
+            transition: all 0.3s;
+        }
+
+        .star.lit {
+            color: var(--gold);
+            text-shadow: 0 0 10px rgba(251, 191, 36, 0.8);
+        }
+
+        .star-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 8px 0;
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+
+        .star-title.visible {
+            opacity: 1;
+        }
+
+        .tag-count {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+        }
+
+        /* === LOCK PHASE === */
+        .lock-section {
+            text-align: center;
+            padding: 16px 0;
+            border-top: 1px solid var(--cell-border);
+            display: none;
+        }
+
+        .lock-section.visible {
+            display: block;
+        }
+
+        .lock-info {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            margin-bottom: 12px;
+        }
+
+        .lock-count {
+            color: var(--gold);
+            font-weight: bold;
+        }
+
+        .lock-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .lock-actions button {
+            padding: 10px 24px;
+            border-radius: 8px;
+            border: 1px solid var(--cell-border);
+            background: var(--cell-bg);
+            color: var(--text);
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .lock-actions button:hover {
+            border-color: var(--gold);
+            box-shadow: var(--glow-gold);
+        }
+
+        .lock-actions .btn-confirm {
+            background: linear-gradient(135deg, #1a3a2e, #0a2a1e);
+            border-color: var(--green);
+        }
+
+        .lock-actions .btn-respin {
+            background: linear-gradient(135deg, #2a1a3e, #1a2a4e);
+            border-color: var(--purple);
+        }
+
+        /* === FULL-SCREEN EFFECTS === */
+        .flash-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.1s;
+        }
+
+        /* === REWARD ANIMATIONS === */
+        @keyframes starBounce {
+            0% {
+                transform: scale(0);
+                opacity: 0;
+            }
+
+            60% {
+                transform: scale(1.3);
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        @keyframes rainbowBg {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        .reward-10 .game-container {
+            animation: shake10 0.5s ease-in-out;
+            border-color: var(--gold);
+            box-shadow: 0 0 40px rgba(251, 191, 36, 0.5), 0 0 80px rgba(168, 85, 247, 0.3);
+        }
+
+        @keyframes shake10 {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            20% {
+                transform: translateX(-5px) rotate(-1deg);
+            }
+
+            40% {
+                transform: translateX(5px) rotate(1deg);
+            }
+
+            60% {
+                transform: translateX(-3px) rotate(-0.5deg);
+            }
+
+            80% {
+                transform: translateX(3px) rotate(0.5deg);
+            }
+        }
+
+        /* Particle container */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 999;
+        }
+
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            animation: particleFall linear forwards;
+        }
+
+        @keyframes particleFall {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>☸ 運命の輪盤 v8</h1>
+    <p class="subtitle">5×5 矩陣轉盤遊戲 — Demo</p>
+
+    <div class="game-container" id="gameContainer">
+        <!-- 5x5 Grid -->
+        <div class="grid-5x5" id="grid"></div>
+
+        <!-- Phase Indicators -->
+        <div class="controls">
+            <div class="phase-indicator">
+                <div class="phase-dot" id="phase1Dot"></div>
+                <span class="phase-label">外圈</span>
+                <div class="phase-dot" id="phase2Dot"></div>
+                <span class="phase-label">內圈</span>
+                <div class="phase-dot" id="phase3Dot"></div>
+                <span class="phase-label">中心</span>
+            </div>
+
+            <div class="lever-container">
+                <button class="lever-btn" id="leverBtn" onclick="handleLever()">
+                    <i class="fa-solid fa-play"></i> 啟動輪盤
+                </button>
+            </div>
+            <div class="hint">按 <kbd>Space</kbd> 或點按鈕停止轉盤</div>
+        </div>
+
+        <!-- Star Rating -->
+        <div class="star-section" id="starSection">
+            <div class="tag-count" id="tagCount"></div>
+            <div class="star-row" id="starRow"></div>
+            <div class="star-title" id="starTitle"></div>
+        </div>
+
+        <!-- Lock Phase -->
+        <div class="lock-section" id="lockSection">
+            <div class="lock-info">
+                選擇最多 <span class="lock-count">3</span> 格鎖定（剩餘 <span id="lockRemain">3</span> 格）
+            </div>
+            <div class="lock-actions">
+                <button onclick="skipLock()">跳過鎖定</button>
+                <button class="btn-confirm" onclick="confirmResult()">
+                    <i class="fa-solid fa-check"></i> 確認使用
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Particle container for 10-star reward -->
+    <div class="particles" id="particles"></div>
+    <!-- Flash overlay -->
+    <div class="flash-overlay" id="flashOverlay"></div>
+
+    <script>
+        // === GAME DATA ===
+        const SECTIONS = {
+            // 外圈 16 格（順時針，從左上角開始）
+            outer: [
+                {
+                    id: 'race', title: '種族', avg: 3.9, bonus: true,
+                    options: ['elf, pointed ears, ethereal beauty', 'vampire, pale skin, fangs, red eyes', 'demon, horns, dark aura, tail', 'angel, halo, white wings, divine', 'human', 'dwarf, short, stocky, beard', 'orc, green skin, tusks, muscular', 'catgirl, cat ears, cat tail, playful', 'fox spirit, fox ears, fox tail, mystical', 'dragon, horns, scales, dragon wings, tail']
+                },
+                {
+                    id: 'job', title: '職業', avg: 3.0, bonus: true,
+                    options: ['knight, armor, sword', 'mage, robes, magical staff', 'assassin, dark cloak, dagger', 'priest, holy robes, staff', 'archer, bow, quiver', 'samurai, katana, hakama', 'pirate, captain coat, cutlass', 'alchemist, goggles, potions', 'necromancer, dark magic, skeleton', 'paladin, holy armor, divine sword']
+                },
+                {
+                    id: 'hairstyle', title: '髮型', avg: 1.0, bonus: true,
+                    options: ['long hair', 'short hair', 'twin tails', 'ponytail', 'braid', 'bob cut', 'wavy hair', 'straight hair', 'messy hair', 'side ponytail']
+                },
+                {
+                    id: 'bodyType', title: '身材', avg: 1.3,
+                    options: ['slim body', 'athletic body', 'petite body', 'muscular body', 'tall body', 'curvy body', 'slender body', 'average body']
+                },
+                {
+                    id: 'hairColor', title: '髮色', avg: 1.0,
+                    options: ['blonde hair', 'silver hair', 'black hair', 'red hair', 'blue hair', 'pink hair', 'white hair', 'brown hair', 'green hair', 'purple hair', 'gradient hair']
+                },
+                {
+                    id: 'eyeColor', title: '眼色', avg: 1.0,
+                    options: ['blue eyes', 'red eyes', 'green eyes', 'golden eyes', 'purple eyes', 'heterochromia', 'silver eyes']
+                },
+                {
+                    id: 'outfit', title: '服裝', avg: 2.7, bonus: true,
+                    options: ['school uniform, sailor collar', 'gothic lolita dress, frills', 'kimono, obi, traditional', 'armor, plate armor', 'maid outfit, apron', 'wedding dress, white gown', 'casual clothes, t-shirt, jeans', 'military uniform, medals', 'chinese dress, cheongsam', 'cyberpunk outfit, neon accents']
+                },
+                {
+                    id: 'headwear', title: '頭飾', avg: 2.6, bonus: true,
+                    options: ['crown, tiara', 'witch hat, pointed', 'hair ribbon, bow', 'flower crown, floral', 'cat ears headband', 'horns, demon horns', 'beret, cute hat', 'maid headband, lace']
+                },
+                {
+                    id: 'expression', title: '表情', avg: 2.9,
+                    options: ['warm smile, kind expression, gentle eyes', 'yandere smile, unsettling smile, crazy eyes', 'cold stare, indifferent gaze, detached', 'blushing, red cheeks, embarrassed', 'crying, tears streaming, sad', 'wide eyes, surprised, shocked', 'smirking, confident, smug', 'expressionless, blank face, poker face']
+                },
+                {
+                    id: 'mood', title: '心情', avg: 2.2,
+                    options: ['happy, joyful', 'confident, smug', 'shy, blushing', 'angry, furious', 'sad, crying, tears', 'excited, energetic', 'calm', 'romantic, love', 'lonely, alone']
+                },
+                {
+                    id: 'pose', title: '姿勢', avg: 3.2,
+                    options: ['standing, front view, upright posture', 'sitting cross-legged, indian style, lotus position', 'holding weapon, battle ready, combat stance with weapon', 'running, sprinting, running pose, dynamic movement', 'arms crossed, crossed arms, standing with folded arms', 'looking over shoulder, turning to look back, glance behind', 'hands on hips, confident standing pose', 'sitting on throne, royal seat, king on throne']
+                },
+                {
+                    id: 'atmosphere', title: '氛圍', avg: 1.7,
+                    options: ['sunny, clear sky', 'heavy rain, storm', 'snowing, winter', 'foggy, mist', 'lightning, thunder', 'sunset, golden hour', 'midnight, moon', 'dawn, sunrise']
+                },
+                {
+                    id: 'lighting', title: '光影', avg: 1.0,
+                    options: ['natural light', 'cinematic lighting', 'volumetric lighting', 'rim lighting', 'backlighting', 'neon lights', 'soft lighting']
+                },
+                {
+                    id: 'focalLength', title: '焦段', avg: 1.0,
+                    options: ['standard lens', 'wide angle', 'telephoto', 'medium telephoto', 'ultra wide angle']
+                },
+                {
+                    id: 'lensEffect', title: '鏡效', avg: 1.1,
+                    options: ['depth of field, bokeh', 'motion blur', 'lens flare', 'film grain', 'sharp focus', 'chromatic aberration']
+                },
+                {
+                    id: 'quality', title: '品質', avg: 1.3,
+                    options: ['masterpiece', 'masterpiece, best quality', 'masterpiece, highres', 'best quality, 8k', 'masterpiece, best quality, highres']
+                }
+            ],
+            // 內圈 8 格（逆時針路徑: A→H→G→F→E→D→C→B）
+            // 序列對應 INNER_PATH: [1,1]→[2,1]→[3,1]→[3,2]→[3,3]→[2,3]→[1,3]→[1,2]
+            inner: [
+                {
+                    id: 'animeStyle', title: '動漫風',  // A = [1,1]
+                    options: ['studio ghibli style, by hayao miyazaki', 'by makoto shinkai', 'kyoto animation style', 'ufotable style', 'by koyoharu gotouge, demon slayer style']
+                },
+                {
+                    id: 'handItems', title: '手持', bonus: true,  // H = [2,1]
+                    options: ['sword, holding weapon', 'magic staff, glowing orb', 'book, reading', 'umbrella, holding umbrella', 'guitar, playing music', 'dual swords, glowing blade, flame sword', 'bow and arrow, quiver', 'gun, pistol, revolver']
+                },
+                {
+                    id: 'aperture', title: '光圈',  // G = [3,1]
+                    options: ['large aperture, f/1.8, shallow depth of field, bokeh', 'medium aperture, f/8', 'small aperture, f/16, deep depth of field']
+                },
+                {
+                    id: 'cameraAngle', title: '角度',  // F = [3,2]
+                    options: ['eye level', 'from above, high angle', 'from below, low angle', 'from side, profile', 'dynamic angle', 'from behind, back view']
+                },
+                {
+                    id: 'scene', title: '場景',  // E = [3,3]
+                    options: ['cherry blossom, school, sunset', 'magical forest, glowing plants', 'city street, neon lights, night', 'castle, fantasy', 'post-apocalyptic ruins', 'beach, ocean, sunset']
+                },
+                {
+                    id: 'shotSize', title: '鏡頭',  // D = [2,3]
+                    options: ['cowboy shot', 'full shot', 'close-up', 'medium close-up shot', 'extreme close-up']
+                },
+                {
+                    id: 'artist', title: '畫家',  // C = [1,3]
+                    options: ['by greg rutkowski', 'by wlop', 'by artgerm', 'by ilya kuvshinov', 'by alphonse mucha']
+                },
+                {
+                    id: 'artStyle', title: '藝術風',  // B = [1,2]
+                    options: ['realistic, photorealistic', 'watercolor medium, soft edges', 'oil painting style, thick impasto', 'cyberpunk style, neon lights', 'pixel art, 16-bit', 'ink wash painting, sumi-e']
+                }
+            ],
+            // 中心
+            center: { id: 'gender', title: '性別' }
+        };
+
+        // Grid position mapping: [row, col] for each ring cell
+        // Outer ring (16 cells, clockwise from top-left)
+        const OUTER_PATH = [
+            [0, 0], [0, 1], [0, 2], [0, 3], [0, 4],  // top row: 1-5
+            [1, 4], [2, 4], [3, 4],              // right col: 6-8
+            [4, 4], [4, 3], [4, 2], [4, 1], [4, 0],  // bottom row: 9-13
+            [3, 0], [2, 0], [1, 0]               // left col: 14-16
+        ];
+
+        // Inner ring (8 cells, counter-clockwise from top-left of inner 3x3)
+        const INNER_PATH = [
+            [1, 1], [2, 1], [3, 1],  // left col: A, H, G
+            [3, 2], [3, 3],        // bottom: F, E
+            [2, 3], [1, 3],        // right col: D, C
+            [1, 2]               // top: B
+        ];
+
+        const CENTER_POS = [2, 2];
+
+        const NONE_RATE = 0.20;
+        const BONUS_RATE = 0.10;
+        const BONUS_EXTRA_TAGS = 5;
+
+        const GENDERS = ['1girl', '1boy'];
+        const DIMENSIONS = ['anime', 'fantasy', 'sci-fi', 'dark fantasy', 'cyberpunk', 'steampunk'];
+
+        // === GAME STATE ===
+        let state = {
+            phase: 'idle',
+            cells: new Array(25).fill(null),
+            currentLight: 0,
+            speed: 50,
+            timer: null,
+            locksRemaining: 3,
+            totalTags: 0,
+            autoStopTimer: null,
+            pregenResults: null,  // 預生成的格子結果
+            pregenStars: 0,       // 預抽的星等
+            pregenTotalTags: 0    // 預計算的 tag 總數
+        };
+
+        // === 預生成結果（先抽星 → 再調整 None/Bonus 數量） ===
+        function pregenerateResults() {
+            const allSections = [...SECTIONS.outer, ...SECTIONS.inner]; // 24 格
+            const allPaths = [...OUTER_PATH, ...INNER_PATH];
+
+            // Step 0: 偵測鎖定格，計算保底 tags
+            let lockedTags = 0;
+            const lockedIndices = new Set();
+            allPaths.forEach((pos, i) => {
+                const cell = document.getElementById(`cell-${pos[0]}-${pos[1]}`);
+                if (cell && cell.classList.contains('locked') && state.cells[i]) {
+                    lockedTags += state.cells[i].tagCount || 0;
+                    lockedIndices.add(i);
+                }
+            });
+
+            // Step 1: 抽星（鎖定 tags 提升機率）
+            const starLevel = rollStars(lockedTags);
+
+            const TAG_RANGES = [
+                null,
+                [10, 21],   // 1★ 凡人
+                [22, 26],   // 2★ 見習生
+                [27, 31],   // 3★ 冒險者
+                [32, 36],   // 4★ 勇者
+                [37, 41],   // 5★ 精英
+                [42, 46],   // 6★ 英雄
+                [47, 52],   // 7★ 傳說
+                [53, 58],   // 8★ 神話
+                [59, 66],   // 9★ 創世
+                [67, 85]    // 10★ 次元之神
+            ];
+            const [targetMin, targetMax] = TAG_RANGES[starLevel];
+
+            // Step 2: 生成結果（鎖定格保留，其餘重新 roll）
+            let results = allSections.map((sec, i) => {
+                if (lockedIndices.has(i)) {
+                    return { ...state.cells[i] }; // 保留鎖定格原始結果
+                }
+                const opt = sec.options[Math.floor(Math.random() * sec.options.length)];
+                return {
+                    id: sec.id, title: sec.title,
+                    value: opt,
+                    tagCount: opt.split(',').length,
+                    isNone: false, isBonus: false,
+                    bonus: !!sec.bonus
+                };
+            });
+
+            // +1 for center
+            let total = results.reduce((s, r) => s + r.tagCount, 0) + 1;
+
+            // Step 3: tag 太多 → 隨機把「未鎖定」格子設為「無」
+            if (total > targetMax) {
+                const shuffled = [...Array(24).keys()]
+                    .filter(i => !lockedIndices.has(i))
+                    .sort(() => Math.random() - 0.5);
+                for (const idx of shuffled) {
+                    if (total <= targetMax) break;
+                    total -= results[idx].tagCount;
+                    results[idx].value = '無';
+                    results[idx].isNone = true;
+                    results[idx].tagCount = 0;
+                }
+            }
+
+            // Step 4: tag 太少 → 對「未鎖定」bonus 格加分
+            if (total < targetMin) {
+                const eligible = results
+                    .map((r, i) => ({ r, i }))
+                    .filter(x => !lockedIndices.has(x.i) && !x.r.isNone && x.r.bonus)
+                    .sort(() => Math.random() - 0.5);
+                for (const { r, i } of eligible) {
+                    if (total >= targetMin) break;
+                    results[i].isBonus = true;
+                    results[i].tagCount += BONUS_EXTRA_TAGS;
+                    total += BONUS_EXTRA_TAGS;
+                }
+            }
+
+            state.pregenResults = results;
+            state.pregenStars = starLevel;
+            state.pregenTotalTags = total;
+        }
+
+        // === SOUND ENGINE ===
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        let audioCtx;
+        function initAudio() {
+            if (!audioCtx) audioCtx = new AudioCtx();
+        }
+
+        function playTick(pitch = 800) {
+            initAudio();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'sine';
+            osc.frequency.value = pitch;
+            gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.08);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.08);
+        }
+
+        function playReveal() {
+            initAudio();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(400, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(800, audioCtx.currentTime + 0.2);
+            gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.3);
+        }
+
+        function playBonus() {
+            initAudio();
+            [523.25, 659.25, 783.99, 1046.5].forEach((freq, i) => {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sine';
+                osc.frequency.value = freq;
+                const t = audioCtx.currentTime + i * 0.08;
+                gain.gain.setValueAtTime(0.15, t);
+                gain.gain.exponentialRampToValueAtTime(0.001, t + 0.4);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(t);
+                osc.stop(t + 0.4);
+            });
+        }
+
+        function playStarSound(stars) {
+            initAudio();
+            const baseFreqs = [261.63, 293.66, 329.63, 349.23, 392.00, 440.00, 493.88, 523.25, 587.33, 659.25];
+            for (let i = 0; i < stars; i++) {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = stars >= 8 ? 'sine' : 'triangle';
+                osc.frequency.value = baseFreqs[i];
+                const t = audioCtx.currentTime + i * 0.15;
+                gain.gain.setValueAtTime(0.12, t);
+                gain.gain.exponentialRampToValueAtTime(0.001, t + 0.5);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(t);
+                osc.stop(t + 0.5);
+            }
+            // Chord at end
+            if (stars >= 7) {
+                const t = audioCtx.currentTime + stars * 0.15;
+                [523.25, 659.25, 783.99].forEach(freq => {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.value = freq;
+                    gain.gain.setValueAtTime(0.15, t);
+                    gain.gain.exponentialRampToValueAtTime(0.001, t + 1.5);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start(t);
+                    osc.stop(t + 1.5);
+                });
+            }
+        }
+
+        function playVictory() {
+            initAudio();
+            // Epic victory fanfare for 10 stars
+            const melody = [523.25, 659.25, 783.99, 1046.5, 783.99, 1046.5, 1318.5];
+            melody.forEach((freq, i) => {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sine';
+                osc.frequency.value = freq;
+                const t = audioCtx.currentTime + i * 0.12;
+                gain.gain.setValueAtTime(0.18, t);
+                gain.gain.exponentialRampToValueAtTime(0.001, t + 0.6);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(t);
+                osc.stop(t + 0.6);
+            });
+            // Final chord
+            const t = audioCtx.currentTime + melody.length * 0.12;
+            [523.25, 659.25, 783.99, 1046.5, 1318.5].forEach(freq => {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sine';
+                osc.frequency.value = freq;
+                gain.gain.setValueAtTime(0.2, t);
+                gain.gain.exponentialRampToValueAtTime(0.001, t + 2.5);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(t);
+                osc.stop(t + 2.5);
+            });
+        }
+
+        // === GRID INITIALIZATION ===
+        function buildGrid() {
+            const grid = document.getElementById('grid');
+            grid.innerHTML = '';
+            for (let r = 0; r < 5; r++) {
+                for (let c = 0; c < 5; c++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'cell';
+                    cell.id = `cell-${r}-${c}`;
+
+                    // Determine cell type
+                    const outerIdx = OUTER_PATH.findIndex(p => p[0] === r && p[1] === c);
+                    const innerIdx = INNER_PATH.findIndex(p => p[0] === r && p[1] === c);
+                    const isCenter = r === 2 && c === 2;
+
+                    if (isCenter) {
+                        cell.classList.add('center-cell');
+                        cell.innerHTML = `<div class="cell-title">★ 性別</div><div class="cell-value" id="centerValue">?</div>`;
+                        cell.dataset.ring = 'center';
+                    } else if (outerIdx >= 0) {
+                        const sec = SECTIONS.outer[outerIdx];
+                        cell.innerHTML = `<div class="cell-title">${sec.title}</div><div class="cell-value" id="val-${sec.id}">—</div>`;
+                        cell.dataset.ring = 'outer';
+                        cell.dataset.idx = outerIdx;
+                    } else if (innerIdx >= 0) {
+                        cell.classList.add('inner-cell');
+                        const sec = SECTIONS.inner[innerIdx];
+                        cell.innerHTML = `<div class="cell-title">${sec.title}</div><div class="cell-value" id="val-${sec.id}">—</div>`;
+                        cell.dataset.ring = 'inner';
+                        cell.dataset.idx = innerIdx;
+                    }
+
+                    cell.addEventListener('click', () => handleCellClick(r, c));
+                    grid.appendChild(cell);
+                }
+            }
+        }
+
+        // === SPINNING LOGIC ===
+        function handleLever() {
+            initAudio();
+            const btn = document.getElementById('leverBtn');
+
+            switch (state.phase) {
+                case 'idle':
+                case 'stars':
+                case 'lock':
+                    startOuterSpin();
+                    break;
+                case 'spinning-outer':
+                    stopOuterSpin();
+                    break;
+                case 'spinning-inner':
+                    stopInnerSpin();
+                    break;
+            }
+        }
+
+        function startOuterSpin() {
+            state.phase = 'spinning-outer';
+            state.currentLight = 0;
+            state.speed = 30;
+
+            const btn = document.getElementById('leverBtn');
+            btn.innerHTML = '<i class="fa-solid fa-stop"></i> 停止！';
+            btn.classList.add('spinning');
+            document.getElementById('phase1Dot').classList.add('active');
+
+            // Clear non-locked outer cells
+            OUTER_PATH.forEach((pos, i) => {
+                const cell = document.getElementById(`cell-${pos[0]}-${pos[1]}`);
+                if (!cell.classList.contains('locked')) {
+                    const sec = SECTIONS.outer[i];
+                    const valEl = document.getElementById(`val-${sec.id}`);
+                    if (valEl) {
+                        valEl.textContent = '—';
+                        valEl.classList.remove('revealed');
+                    }
+                    cell.classList.remove('result-none', 'result-bonus');
+                }
+            });
+
+            // Clear non-locked inner cells
+            INNER_PATH.forEach((pos, i) => {
+                const cell = document.getElementById(`cell-${pos[0]}-${pos[1]}`);
+                if (!cell.classList.contains('locked')) {
+                    const sec = SECTIONS.inner[i];
+                    const valEl = document.getElementById(`val-${sec.id}`);
+                    if (valEl) {
+                        valEl.textContent = '—';
+                        valEl.classList.remove('revealed');
+                    }
+                    cell.classList.remove('result-none', 'result-bonus');
+                }
+            });
+
+            // Clear center
+            const centerVal = document.getElementById('centerValue');
+            if (centerVal) { centerVal.textContent = '?'; centerVal.classList.remove('revealed'); }
+
+            // Hide star section and lock section
+            document.getElementById('starSection').classList.remove('visible');
+            document.getElementById('starTitle').classList.remove('visible');
+            document.getElementById('lockSection').classList.remove('visible');
+
+            // Reset phase dots
+            ['phase1Dot', 'phase2Dot', 'phase3Dot'].forEach(id => {
+                document.getElementById(id).classList.remove('active', 'done');
+            });
+
+            // 預生成所有格子結果（基於權重抽星）
+            pregenerateResults();
+
+            runOuterLight();
+
+            // 2 秒後自動停止
+            state.autoStopTimer = setTimeout(() => {
+                if (state.phase === 'spinning-outer') stopOuterSpin();
+            }, 2000);
+        }
+
+        function runOuterLight() {
+            if (state.phase !== 'spinning-outer' && state.phase !== 'stopping-outer') return;
+
+            // Clear previous highlights
+            OUTER_PATH.forEach(pos => {
+                const cell = document.getElementById(`cell-${pos[0]}-${pos[1]}`);
+                cell.classList.remove('highlight');
+            });
+
+            // Highlight current
+            const pos = OUTER_PATH[state.currentLight];
+            const cell = document.getElementById(`cell-${pos[0]}-${pos[1]}`);
+            cell.classList.add('highlight');
+
+            playTick(600 + state.currentLight * 30);
+
+            state.currentLight = (state.currentLight + 1) % 16;
+
+            if (state.phase === 'stopping-outer') {
+                state.speed += 40; // Decelerate (快速減速)
+                if (state.speed > 350) {
+                    // Stopped
+                    finishOuterSpin();
+                    return;
+                }
+            }
+
+            state.timer = setTimeout(runOuterLight, state.speed);
+        }
+
+        function stopOuterSpin() {
+            if (state.autoStopTimer) { clearTimeout(state.autoStopTimer); state.autoStopTimer = null; }
+            state.phase = 'stopping-outer';
+            const btn = document.getElementById('leverBtn');
+            btn.innerHTML = '<i class="fa-solid fa-hourglass"></i> 減速中...';
+            btn.classList.remove('spinning');
+        }
+
+        function finishOuterSpin() {
+            state.phase = 'revealing-outer';
+            clearTimeout(state.timer);
+            OUTER_PATH.forEach(pos => {
+                document.getElementById(`cell-${pos[0]}-${pos[1]}`).classList.remove('highlight');
+            });
+            document.getElementById('phase1Dot').classList.remove('active');
+            document.getElementById('phase1Dot').classList.add('done');
+
+            // Reveal outer results one by one
+            revealRingResults('outer', OUTER_PATH, SECTIONS.outer, () => {
+                // After outer reveal, start inner automatically
+                setTimeout(() => startInnerSpin(), 600);
+            });
+        }
+
+        function startInnerSpin() {
+            state.phase = 'spinning-inner';
+            state.currentLight = 0;
+            state.speed = 30;
+
+            const btn = document.getElementById('leverBtn');
+            btn.innerHTML = '<i class="fa-solid fa-stop"></i> 停止！';
+            btn.classList.add('spinning');
+            document.getElementById('phase2Dot').classList.add('active');
+
+            runInnerLight();
+
+            // 2 秒後自動停止
+            state.autoStopTimer = setTimeout(() => {
+                if (state.phase === 'spinning-inner') stopInnerSpin();
+            }, 2000);
+        }
+
+        function runInnerLight() {
+            if (state.phase !== 'spinning-inner' && state.phase !== 'stopping-inner') return;
+
+            INNER_PATH.forEach(pos => {
+                document.getElementById(`cell-${pos[0]}-${pos[1]}`).classList.remove('highlight');
+            });
+
+            const pos = INNER_PATH[state.currentLight];
+            document.getElementById(`cell-${pos[0]}-${pos[1]}`).classList.add('highlight');
+
+            playTick(800 + state.currentLight * 40);
+
+            // Inner is counter-clockwise: still iterate 0→7 but the PATH is already defined CCW
+            state.currentLight = (state.currentLight + 1) % 8;
+
+            if (state.phase === 'stopping-inner') {
+                state.speed += 50; // 快速減速
+                if (state.speed > 350) {
+                    finishInnerSpin();
+                    return;
+                }
+            }
+
+            state.timer = setTimeout(runInnerLight, state.speed);
+        }
+
+        function stopInnerSpin() {
+            if (state.autoStopTimer) { clearTimeout(state.autoStopTimer); state.autoStopTimer = null; }
+            state.phase = 'stopping-inner';
+            const btn = document.getElementById('leverBtn');
+            btn.innerHTML = '<i class="fa-solid fa-hourglass"></i> 減速中...';
+            btn.classList.remove('spinning');
+        }
+
+        function finishInnerSpin() {
+            state.phase = 'revealing-inner';
+            clearTimeout(state.timer);
+            INNER_PATH.forEach(pos => {
+                document.getElementById(`cell-${pos[0]}-${pos[1]}`).classList.remove('highlight');
+            });
+            document.getElementById('phase2Dot').classList.remove('active');
+            document.getElementById('phase2Dot').classList.add('done');
+
+            revealRingResults('inner', INNER_PATH, SECTIONS.inner, () => {
+                setTimeout(() => revealCenter(), 500);
+            });
+        }
+
+        // === REVEAL RESULTS ===
+        function revealRingResults(ring, path, sections, onComplete) {
+            let i = 0;
+            function revealNext() {
+                if (i >= path.length) {
+                    if (onComplete) onComplete();
+                    return;
+                }
+
+                const pos = path[i];
+                const cell = document.getElementById(`cell-${pos[0]}-${pos[1]}`);
+                const pregenIdx = i + (ring === 'inner' ? 16 : 0);
+
+                // Skip locked cells
+                if (cell.classList.contains('locked')) {
+                    i++;
+                    revealNext();
+                    return;
+                }
+
+                // 使用預生成的結果
+                const result = state.pregenResults[pregenIdx];
+                state.cells[pregenIdx] = { ...result, ring };
+
+                // Update UI
+                const valEl = document.getElementById(`val-${result.id}`);
+                if (result.isNone) {
+                    valEl.textContent = '無';
+                    cell.classList.add('result-none');
+                } else {
+                    const displayVal = result.value.split(',').slice(0, 2).map(s => s.trim()).join(', ');
+                    valEl.textContent = result.isBonus ? '🌟 ' + displayVal : displayVal;
+                    if (result.isBonus) {
+                        cell.classList.add('result-bonus');
+                        playBonus();
+                    }
+                }
+                valEl.classList.add('revealed');
+                playReveal();
+
+                i++;
+                setTimeout(revealNext, 75);
+            }
+            revealNext();
+        }
+
+        function revealCenter() {
+            state.phase = 'center';
+            document.getElementById('phase3Dot').classList.add('active');
+
+            const cell = document.getElementById(`cell-${CENTER_POS[0]}-${CENTER_POS[1]}`);
+            const valEl = document.getElementById('centerValue');
+
+            // Random gender, age, dimension
+            const gender = GENDERS[Math.floor(Math.random() * GENDERS.length)];
+            const age = Math.floor(Math.random() * 27) + 14; // 14-40
+            const dim = DIMENSIONS[Math.floor(Math.random() * DIMENSIONS.length)];
+            const centerValue = `${gender}, ${age}歲, ${dim}`;
+            const centerTags = 3; // always 3
+
+            valEl.textContent = `${gender === '1girl' ? '♀' : '♂'} ${age}歲`;
+            valEl.classList.add('revealed');
+
+            state.cells[24] = { id: 'gender', value: centerValue, tagCount: centerTags, ring: 'center' };
+
+            // Flash effect
+            cell.style.boxShadow = '0 0 30px rgba(168, 85, 247, 0.8)';
+            setTimeout(() => { cell.style.boxShadow = ''; }, 500);
+
+            document.getElementById('phase3Dot').classList.remove('active');
+            document.getElementById('phase3Dot').classList.add('done');
+            playReveal();
+
+            // Calculate stars
+            setTimeout(showStarRating, 800);
+        }
+
+        // === STAR RATING ===
+        function showStarRating() {
+            state.phase = 'stars';
+            const btn = document.getElementById('leverBtn');
+            btn.innerHTML = '<i class="fa-solid fa-play"></i> 啟動輪盤';
+            btn.classList.remove('spinning');
+
+            // 使用預生成的星等和 tag 數
+            const totalTags = state.pregenTotalTags;
+            state.totalTags = totalTags;
+            const stars = state.pregenStars;
+
+            const titles = ['', '凡人', '見習生', '冒險者', '勇者', '精英', '英雄', '傳說', '神話', '創世', '次元之神'];
+            const colors = ['', '#64748b', '#94a3b8', '#10b981', '#22d3ee', '#3b82f6', '#8b5cf6', '#f59e0b', '#ef4444', '#ec4899', '#fbbf24'];
+
+            // Show section
+            const section = document.getElementById('starSection');
+            section.classList.add('visible');
+
+            document.getElementById('tagCount').textContent = `${totalTags} tags`;
+
+            // Build star row
+            const starRow = document.getElementById('starRow');
+            starRow.innerHTML = '';
+            for (let i = 0; i < 10; i++) {
+                const star = document.createElement('span');
+                star.className = 'star';
+                star.textContent = '★';
+                starRow.appendChild(star);
+            }
+
+            // Animate stars one by one
+            const starEls = starRow.querySelectorAll('.star');
+            let count = 0;
+            const starInterval = setInterval(() => {
+                if (count >= stars) {
+                    clearInterval(starInterval);
+                    // Show title
+                    const titleEl = document.getElementById('starTitle');
+                    titleEl.textContent = `${stars}★ ${titles[stars]}`;
+                    titleEl.style.color = colors[stars];
+                    titleEl.classList.add('visible');
+
+                    // Play star sound
+                    playStarSound(stars);
+
+                    // Reward animations
+                    if (stars >= 10) {
+                        setTimeout(() => {
+                            playVictory();
+                            triggerReward10();
+                        }, 500);
+                    } else if (stars >= 7) {
+                        triggerRewardHigh(stars);
+                    }
+
+                    // Show lock section after delay
+                    setTimeout(() => showLockPhase(), stars >= 10 ? 3000 : 1500);
+                    return;
+                }
+                starEls[count].classList.add('lit');
+                starEls[count].style.animation = `starBounce 0.3s ease forwards`;
+                playTick(400 + count * 60);
+                count++;
+            }, 200);
+        }
+
+        // === 星等權重抽取 ===
+        // 目標機率: 10★=1%, 9★=3%, 8★=6%, 7★=10%, 6★=15%, 5★=20%, 4★=11.25%, 3★=11.25%, 2★=11.25%, 1★=11.25%
+        const STAR_WEIGHTS = [0, 11.25, 11.25, 11.25, 11.25, 20, 15, 10, 6, 3, 1];
+        function rollStars(lockedTagBoost = 0) {
+            const roll = Math.random() * 100;
+            // 每個鎖定 tag 將隨機數上壓 0.3%，跳過低星區間 → 微幅提升高星機率
+            const adjustedRoll = Math.min(100, roll + lockedTagBoost * 0.3);
+            let cumulative = 0;
+            for (let i = 1; i <= 10; i++) {
+                cumulative += STAR_WEIGHTS[i];
+                if (adjustedRoll < cumulative) return i;
+            }
+            return 10;
+        }
+
+        // === REWARD ANIMATIONS ===
+        function triggerRewardHigh(stars) {
+            const overlay = document.getElementById('flashOverlay');
+            overlay.style.background = stars >= 9
+                ? 'linear-gradient(135deg, rgba(168, 85, 247, 0.3), rgba(251, 191, 36, 0.3))'
+                : 'rgba(251, 191, 36, 0.15)';
+            overlay.style.opacity = '1';
+            setTimeout(() => { overlay.style.opacity = '0'; }, 600);
+
+            // Particles
+            spawnParticles(stars * 5, ['#fbbf24', '#a855f7', '#22d3ee']);
+        }
+
+        function triggerReward10() {
+            // Epic: rainbow flash + screen shake + particles
+            document.body.classList.add('reward-10');
+            setTimeout(() => document.body.classList.remove('reward-10'), 2000);
+
+            const overlay = document.getElementById('flashOverlay');
+            overlay.style.background = 'linear-gradient(135deg, rgba(251,191,36,0.4), rgba(168,85,247,0.4), rgba(34,211,238,0.4))';
+            overlay.style.backgroundSize = '200% 200%';
+            overlay.style.animation = 'rainbowBg 1s ease infinite';
+            overlay.style.opacity = '1';
+            setTimeout(() => {
+                overlay.style.opacity = '0';
+                overlay.style.animation = '';
+            }, 2000);
+
+            // Massive particles
+            spawnParticles(80, ['#fbbf24', '#a855f7', '#22d3ee', '#ef4444', '#10b981', '#f59e0b']);
+
+            // Screen shake
+            const container = document.getElementById('gameContainer');
+            container.style.animation = 'shake10 0.5s ease-in-out';
+            setTimeout(() => { container.style.animation = ''; }, 500);
+        }
+
+        function spawnParticles(count, colors) {
+            const container = document.getElementById('particles');
+            for (let i = 0; i < count; i++) {
+                const p = document.createElement('div');
+                p.className = 'particle';
+                const size = Math.random() * 8 + 4;
+                const x = Math.random() * window.innerWidth;
+                const dur = Math.random() * 2 + 1;
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                p.style.cssText = `
+            width: ${size}px; height: ${size}px;
+            left: ${x}px; top: -10px;
+            background: ${color};
+            animation-duration: ${dur}s;
+            animation-delay: ${Math.random() * 0.5}s;
+        `;
+                container.appendChild(p);
+                setTimeout(() => p.remove(), (dur + 0.5) * 1000);
+            }
+        }
+
+        // === LOCK PHASE ===
+        function showLockPhase() {
+            state.phase = 'lock';
+            state.locksRemaining = 3;
+            document.getElementById('lockSection').classList.add('visible');
+            document.getElementById('lockRemain').textContent = '3';
+
+            // Make cells clickable for locking
+            document.querySelectorAll('.cell[data-ring]').forEach(cell => {
+                if (!cell.classList.contains('locked') && cell.dataset.ring !== 'center') {
+                    cell.classList.add('lockable');
+                }
+            });
+        }
+
+        function handleCellClick(r, c) {
+            if (state.phase !== 'lock') return;
+            const cell = document.getElementById(`cell-${r}-${c}`);
+            if (!cell.classList.contains('lockable')) return;
+            if (cell.classList.contains('locked')) {
+                // Unlock
+                cell.classList.remove('locked');
+                state.locksRemaining++;
+            } else if (state.locksRemaining > 0) {
+                // Lock
+                cell.classList.add('locked');
+                state.locksRemaining--;
+                playTick(1000);
+            }
+            document.getElementById('lockRemain').textContent = state.locksRemaining;
+        }
+
+        function skipLock() {
+            if (!confirm('確定不鎖定嗎？所有選項將重新隨機！')) return;
+            // Remove all locks
+            document.querySelectorAll('.cell.locked').forEach(cell => cell.classList.remove('locked'));
+            state.locksRemaining = 3;
+            enterIdle();
+        }
+
+        function respin() {
+            // Keep locked cells, reset everything else
+            document.querySelectorAll('.cell.lockable').forEach(c => c.classList.remove('lockable'));
+            document.getElementById('lockSection').classList.remove('visible');
+            document.getElementById('starSection').classList.remove('visible');
+            document.getElementById('starTitle').classList.remove('visible');
+            ['phase1Dot', 'phase2Dot', 'phase3Dot'].forEach(id => {
+                document.getElementById(id).classList.remove('active', 'done');
+            });
+            state.phase = 'idle';
+            // Clear non-locked inner cells
+            INNER_PATH.forEach((pos, i) => {
+                const cell = document.getElementById(`cell-${pos[0]}-${pos[1]}`);
+                if (!cell.classList.contains('locked')) {
+                    const sec = SECTIONS.inner[i];
+                    const valEl = document.getElementById(`val-${sec.id}`);
+                    if (valEl) { valEl.textContent = '—'; valEl.classList.remove('revealed'); }
+                    cell.classList.remove('result-none', 'result-bonus');
+                }
+            });
+            // Clear center
+            const cv = document.getElementById('centerValue');
+            cv.textContent = '?';
+            cv.classList.remove('revealed');
+        }
+
+        function confirmResult() {
+            alert('✅ 結果已確認！在正式版中，這些選項會寫入 state 並生成 prompt。\n\n共 ' + state.totalTags + ' tags');
+            enterIdle();
+        }
+
+        function enterIdle() {
+            document.querySelectorAll('.cell.lockable').forEach(c => c.classList.remove('lockable'));
+            document.getElementById('lockSection').classList.remove('visible');
+            document.getElementById('starSection').classList.remove('visible');
+            document.getElementById('starTitle').classList.remove('visible');
+            ['phase1Dot', 'phase2Dot', 'phase3Dot'].forEach(id => {
+                document.getElementById(id).classList.remove('active', 'done');
+            });
+            state.phase = 'idle';
+        }
+
+        // === KEYBOARD ===
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space') {
+                e.preventDefault();
+                handleLever();
+            }
+        });
+
+        // === INIT ===
+        buildGrid();
+    </script>
+</body>
+
+</html>
