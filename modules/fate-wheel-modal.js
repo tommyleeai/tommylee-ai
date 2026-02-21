@@ -1093,234 +1093,308 @@ window.PromptGen.FateWheelModal = (function () {
         }
 
         // ============================================
-        // 確認使用 — 三階段動畫
+        // 確認使用 — 華麗三階段動畫 + 音效
         // ============================================
 
         // stateKey → 所屬 tab 對映
         const STATE_KEY_TO_TAB = {
-            // base
             race: 'base', job: 'base', hairstyle: 'base', bodyType: 'base',
-            // appearance
             hairColor: 'appearance', eyeColorLeft: 'appearance', eyeColorRight: 'appearance',
             outfit: 'appearance', headwear: 'appearance', handItem: 'appearance', handItems: 'appearance',
-            // action
             expression: 'action', mood: 'action', pose: 'action',
-            // style
             animeStyle: 'style', artStyle: 'style', artist: 'style', quality: 'style',
-            // environment
             scene: 'environment', atmosphere: 'environment', lighting: 'environment',
-            // camera
             cameraAngle: 'camera', shotSize: 'camera', focalLength: 'camera',
             aperture: 'camera', lensEffect: 'camera'
         };
 
         function playConfirmAnimation(changedKeys) {
-            // 階段 B：脈衝波紋（立即開始）
             playPulseWave();
-
-            // 階段 C+A：延遲 400ms 後粒子飛散 + glow
-            setTimeout(() => {
-                flyParticlesToSections(changedKeys);
-            }, 400);
+            playCenterFlash();
+            playBurstStars();
+            playConfirmSfx_pulse();
+            setTimeout(() => flyParticlesToSections(changedKeys), 600);
         }
 
-        // --- 階段 B：全頁紫色脈衝波紋 ---
         function playPulseWave() {
-            const wave = document.createElement('div');
-            wave.className = 'fw-pulse-wave';
-            document.body.appendChild(wave);
-            wave.addEventListener('animationend', () => wave.remove());
-            // 安全回收（如果 animationend 沒觸發）
-            setTimeout(() => { if (wave.parentNode) wave.remove(); }, 1000);
+            const wave1 = document.createElement('div');
+            wave1.className = 'fw-pulse-wave';
+            document.body.appendChild(wave1);
+            wave1.addEventListener('animationend', () => wave1.remove());
+            setTimeout(() => { if (wave1.parentNode) wave1.remove(); }, 1200);
+            const wave2 = document.createElement('div');
+            wave2.className = 'fw-pulse-wave-2';
+            document.body.appendChild(wave2);
+            wave2.addEventListener('animationend', () => wave2.remove());
+            setTimeout(() => { if (wave2.parentNode) wave2.remove(); }, 1200);
         }
 
-        // --- 階段 C+A：粒子飛散 → section glow + 自動滑頁 ---
+        function playCenterFlash() {
+            const flash = document.createElement('div');
+            flash.className = 'fw-center-flash';
+            document.body.appendChild(flash);
+            flash.addEventListener('animationend', () => flash.remove());
+            setTimeout(() => { if (flash.parentNode) flash.remove(); }, 700);
+        }
+
+        function playBurstStars() {
+            const cx = window.innerWidth / 2;
+            const cy = window.innerHeight / 2;
+            for (let i = 0; i < 12; i++) {
+                const star = document.createElement('div');
+                star.className = 'fw-burst-star';
+                const angle = (Math.PI * 2 * i / 12) + (Math.random() - 0.5) * 0.5;
+                const dist = 80 + Math.random() * 120;
+                star.style.left = cx + 'px';
+                star.style.top = cy + 'px';
+                document.body.appendChild(star);
+                setTimeout(() => {
+                    star.style.transition = `all ${500 + Math.random() * 300}ms cubic-bezier(0.22,1,0.36,1)`;
+                    star.style.left = (cx + Math.cos(angle) * dist) + 'px';
+                    star.style.top = (cy + Math.sin(angle) * dist) + 'px';
+                }, 30 + i * 20);
+                setTimeout(() => { if (star.parentNode) star.remove(); }, 1000);
+            }
+        }
+
+        function playConfirmSfx_pulse() {
+            if (!sfx || !sfx.initialized) { if (sfx) sfx.init(); else return; }
+            if (sfx.isMuted) return;
+            if (sfx.ctx.state === 'suspended') sfx.ctx.resume();
+            const t = sfx.ctx.currentTime;
+            const mg = sfx.masterGain;
+            // 低頻衝擊
+            const o1 = sfx.ctx.createOscillator();
+            const g1 = sfx.ctx.createGain();
+            o1.type = 'sine';
+            o1.frequency.setValueAtTime(80, t);
+            o1.frequency.exponentialRampToValueAtTime(40, t + 0.8);
+            g1.gain.setValueAtTime(0.4, t);
+            g1.gain.exponentialRampToValueAtTime(0.001, t + 0.8);
+            o1.connect(g1); g1.connect(mg);
+            o1.start(t); o1.stop(t + 0.8);
+            // 魔法和弦
+            [311.1, 369.99, 466.16].forEach((f, i) => {
+                const o = sfx.ctx.createOscillator();
+                const g = sfx.ctx.createGain();
+                o.type = 'sine';
+                o.frequency.setValueAtTime(f, t + 0.1);
+                o.frequency.exponentialRampToValueAtTime(f * 1.5, t + 0.6);
+                g.gain.setValueAtTime(0, t);
+                g.gain.linearRampToValueAtTime(0.12, t + 0.15);
+                g.gain.exponentialRampToValueAtTime(0.001, t + 0.7);
+                o.connect(g); g.connect(mg);
+                o.start(t + i * 0.05); o.stop(t + 0.7);
+            });
+            // Shimmer
+            const bsz = sfx.ctx.sampleRate * 0.3;
+            const buf = sfx.ctx.createBuffer(1, bsz, sfx.ctx.sampleRate);
+            const d = buf.getChannelData(0);
+            for (let i = 0; i < bsz; i++) d[i] = Math.random() * 2 - 1;
+            const ns = sfx.ctx.createBufferSource();
+            ns.buffer = buf;
+            const fl = sfx.ctx.createBiquadFilter();
+            fl.type = 'highpass';
+            fl.frequency.setValueAtTime(4000, t);
+            fl.frequency.exponentialRampToValueAtTime(8000, t + 0.2);
+            const ng = sfx.ctx.createGain();
+            ng.gain.setValueAtTime(0.08, t);
+            ng.gain.exponentialRampToValueAtTime(0.001, t + 0.3);
+            ns.connect(fl); fl.connect(ng); ng.connect(mg);
+            ns.start(t);
+        }
+
+        function playConfirmSfx_hit(index) {
+            if (!sfx || !sfx.initialized || sfx.isMuted) return;
+            if (sfx.ctx.state === 'suspended') sfx.ctx.resume();
+            const t = sfx.ctx.currentTime;
+            const mg = sfx.masterGain;
+            const bf = 800 + index * 150;
+            const o = sfx.ctx.createOscillator();
+            const g = sfx.ctx.createGain();
+            o.type = 'sine';
+            o.frequency.setValueAtTime(bf, t);
+            o.frequency.exponentialRampToValueAtTime(bf * 1.2, t + 0.05);
+            g.gain.setValueAtTime(0.25, t);
+            g.gain.exponentialRampToValueAtTime(0.001, t + 0.15);
+            o.connect(g); g.connect(mg);
+            o.start(t); o.stop(t + 0.15);
+            const o2 = sfx.ctx.createOscillator();
+            const g2 = sfx.ctx.createGain();
+            o2.type = 'sine';
+            o2.frequency.setValueAtTime(bf * 2, t);
+            g2.gain.setValueAtTime(0.08, t);
+            g2.gain.exponentialRampToValueAtTime(0.001, t + 0.1);
+            o2.connect(g2); g2.connect(mg);
+            o2.start(t); o2.stop(t + 0.1);
+        }
+
         function flyParticlesToSections(changedKeys) {
-            // 找當前 tab 裡被修改的 section
             const currentTab = appState.activeTab;
             const tabContent = document.getElementById('tab-content');
             if (!tabContent) return;
-
-            // 收集屬於當前 tab 且被修改的 stateKey
             const keysInTab = [];
             changedKeys.forEach(key => {
-                if (STATE_KEY_TO_TAB[key] === currentTab) {
-                    keysInTab.push(key);
-                }
+                if (STATE_KEY_TO_TAB[key] === currentTab) keysInTab.push(key);
             });
-
             if (keysInTab.length === 0) return;
-
-            // 取得 tab-content 的 scrollable 父元素
-            const scrollContainer = tabContent.closest('.tab-content-wrapper') || tabContent.parentElement;
-
-            // 取得所有 section-block 及其 section id
             const allSections = tabContent.querySelectorAll('.section-block');
-            // TAB_SECTIONS 中 section 的 id 順序
             const tabSectionDefs = window.PromptGen.Data.TAB_SECTIONS[currentTab] || [];
-
-            // 建立 sectionId → DOM element 映射
             const sectionMap = {};
             tabSectionDefs.forEach((def, idx) => {
-                if (allSections[idx]) {
-                    sectionMap[def.id] = allSections[idx];
-                }
+                if (allSections[idx]) sectionMap[def.id] = allSections[idx];
             });
-
-            // 過濾出需要動畫的 section（按 TAB_SECTIONS 順序）
             const targetSections = [];
             tabSectionDefs.forEach(def => {
-                // 特殊映射：handItem → handItems
-                const matchKeys = keysInTab.filter(k =>
-                    k === def.id ||
-                    (k === 'handItem' && def.id === 'handItems') ||
-                    (k === 'handItems' && def.id === 'handItems')
+                const matched = keysInTab.some(k =>
+                    k === def.id || (k === 'handItem' && def.id === 'handItems')
                 );
-                if (matchKeys.length > 0 && sectionMap[def.id]) {
-                    targetSections.push(sectionMap[def.id]);
-                }
+                if (matched && sectionMap[def.id]) targetSections.push(sectionMap[def.id]);
             });
-
             if (targetSections.length === 0) return;
-
-            // 起點：視窗中心
             const cx = window.innerWidth / 2;
             const cy = window.innerHeight / 2;
 
-            // 依序對每個 section 播放動畫
             targetSections.forEach((sectionEl, i) => {
-                const delay = i * 250; // 每個 section 間隔 250ms
-
                 setTimeout(() => {
-                    // 自動滑頁到 section（絲滑）
                     sectionEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-
-                    // 等滑頁完成後再發射粒子
                     setTimeout(() => {
                         const titleEl = sectionEl.querySelector('.section-block-title') || sectionEl;
                         const rect = titleEl.getBoundingClientRect();
                         const tx = rect.left + rect.width / 2;
                         const ty = rect.top + rect.height / 2;
-
-                        // 發射 4 個粒子
-                        const particleCount = 4;
-                        for (let p = 0; p < particleCount; p++) {
+                        for (let p = 0; p < 6; p++) {
                             const particle = document.createElement('div');
-                            particle.className = 'fw-confirm-particle fw-particle-trail';
-                            // 起點：隨機偏移中心
-                            const sx = cx + (Math.random() - 0.5) * 100;
-                            const sy = cy + (Math.random() - 0.5) * 100;
+                            particle.className = 'fw-confirm-particle';
+                            const sx = cx + (Math.random() - 0.5) * 150;
+                            const sy = cy + (Math.random() - 0.5) * 150;
                             particle.style.left = sx + 'px';
                             particle.style.top = sy + 'px';
+                            const size = 8 + Math.random() * 8;
+                            particle.style.width = size + 'px';
+                            particle.style.height = size + 'px';
                             document.body.appendChild(particle);
-
-                            // 延遲每個粒子 50ms
                             setTimeout(() => {
-                                particle.style.left = tx + (Math.random() - 0.5) * 20 + 'px';
-                                particle.style.top = ty + (Math.random() - 0.5) * 10 + 'px';
+                                particle.style.left = tx + (Math.random() - 0.5) * 40 + 'px';
+                                particle.style.top = ty + (Math.random() - 0.5) * 20 + 'px';
                                 particle.style.opacity = '0';
-                                particle.style.transform = 'scale(0.3)';
-                            }, p * 50 + 30);
-
-                            // 粒子到達後移除
-                            setTimeout(() => {
-                                if (particle.parentNode) particle.remove();
-                            }, 600 + p * 50);
+                                particle.style.transform = 'scale(0.2)';
+                            }, p * 60 + 30);
+                            setTimeout(() => { if (particle.parentNode) particle.remove(); }, 700 + p * 60);
                         }
-
-                        // 粒子到達時 section 閃爍
                         setTimeout(() => {
+                            playConfirmSfx_hit(i);
                             sectionEl.classList.add('fw-section-glow');
-                            setTimeout(() => {
-                                sectionEl.classList.remove('fw-section-glow');
-                            }, 900);
-                        }, 250);
-                    }, 150); // 等滑頁有基本位移
-                }, delay);
+                            setTimeout(() => sectionEl.classList.remove('fw-section-glow'), 1400);
+                            spawnHitSparks(tx, ty);
+                        }, 300);
+                    }, 180);
+                }, i * 350);
             });
         }
 
-        // === 寫入主頁 state ===
-        function applyResultsToMainState() {
-            // 清除所有舊選擇
-            appState.selections = {};
-            appState.bodyAdvanced = null;
-            appState.hairAdvanced = null;
-            appState.hairMagicPrompts = null;
-            appState.heterochromia = false;
-            appState.expressionAdvanced = null;
-            appState.poseAdvanced = null;
-            appState.atmosphereAdvanced = null;
-            appState.raceAdvanced = null;
-            appState.jobAdvanced = null;
-            appState.outfitAdvanced = null;
-            appState.headwearAdvanced = null;
-            appState.handItemsAdvanced = null;
-            appState.sceneAdvanced = null;
-            appState.customInputs = {};
-            appState.customInputVisible = {};
-            appState.customFields = [];
-
-            // 寫入非「無」的格子
-            for (let i = 0; i < 24; i++) {
-                const result = ws.cells[i];
-                if (!result || result.isNone) continue;
-
-                const stateKey = result.stateKey;
-                if (!stateKey) continue;
-
-                if (result.isMulti) {
-                    // 品質等多選欄位 → 拆為陣列
-                    appState.selections[stateKey] = result.value.split(',').map(s => s.trim());
-                } else {
-                    appState.selections[stateKey] = result.value;
-                }
-            }
-
-            // 中心格：性別、年齡、維度
-            const center = ws.cells[24];
-            if (center) {
-                appState.gender = center.gender === '1girl' ? 'female' : 'male';
-                appState.age = center.age;
-                // 維度映射
-                const dimMap = {
-                    'anime': 'anime',
-                    'fantasy': 'fantasy',
-                    'sci-fi': 'realistic',
-                    'dark fantasy': 'fantasy',
-                    'cyberpunk': 'realistic',
-                    'steampunk': 'fantasy'
-                };
-                appState.dimension = dimMap[center.dimension] || 'anime';
-            }
-
-            // 觸發主頁更新
-            if (renderTabContent) renderTabContent();
-            if (generatePrompt) generatePrompt();
-            if (saveState) saveState();
-        }
-
-        // === Close ===
-        function closeModal() {
-            // Clean up timers
-            if (ws.timer) clearTimeout(ws.timer);
-            if (ws.autoStopTimer) clearTimeout(ws.autoStopTimer);
-
-            // Remove keyboard handler
-            document.removeEventListener('keydown', keyHandler);
-
-            // Remove overlay with fade
-            const overlay = document.getElementById('fw-overlay');
-            if (overlay) {
-                overlay.style.opacity = '0';
-                overlay.style.transition = 'opacity 0.2s';
-                setTimeout(() => overlay.remove(), 200);
+        function spawnHitSparks(x, y) {
+            const colors = ['#fbbf24', '#a855f7', '#22d3ee', '#fff', '#f59e0b'];
+            for (let i = 0; i < 8; i++) {
+                const spark = document.createElement('div');
+                spark.className = 'fw-hit-spark';
+                spark.style.background = colors[Math.floor(Math.random() * colors.length)];
+                spark.style.boxShadow = '0 0 6px ' + spark.style.background;
+                spark.style.left = x + 'px';
+                spark.style.top = y + 'px';
+                document.body.appendChild(spark);
+                const angle = (Math.PI * 2 * i / 8) + (Math.random() - 0.5) * 0.8;
+                const dist = 20 + Math.random() * 40;
+                setTimeout(() => {
+                    spark.style.transition = 'all 350ms ease-out';
+                    spark.style.left = (x + Math.cos(angle) * dist) + 'px';
+                    spark.style.top = (y + Math.sin(angle) * dist) + 'px';
+                }, 20);
+                setTimeout(() => { if (spark.parentNode) spark.remove(); }, 500);
             }
         }
+
+    // === 寫入主頁 state ===
+    function applyResultsToMainState() {
+        // 清除所有舊選擇
+        appState.selections = {};
+        appState.bodyAdvanced = null;
+        appState.hairAdvanced = null;
+        appState.hairMagicPrompts = null;
+        appState.heterochromia = false;
+        appState.expressionAdvanced = null;
+        appState.poseAdvanced = null;
+        appState.atmosphereAdvanced = null;
+        appState.raceAdvanced = null;
+        appState.jobAdvanced = null;
+        appState.outfitAdvanced = null;
+        appState.headwearAdvanced = null;
+        appState.handItemsAdvanced = null;
+        appState.sceneAdvanced = null;
+        appState.customInputs = {};
+        appState.customInputVisible = {};
+        appState.customFields = [];
+
+        // 寫入非「無」的格子
+        for (let i = 0; i < 24; i++) {
+            const result = ws.cells[i];
+            if (!result || result.isNone) continue;
+
+            const stateKey = result.stateKey;
+            if (!stateKey) continue;
+
+            if (result.isMulti) {
+                // 品質等多選欄位 → 拆為陣列
+                appState.selections[stateKey] = result.value.split(',').map(s => s.trim());
+            } else {
+                appState.selections[stateKey] = result.value;
+            }
+        }
+
+        // 中心格：性別、年齡、維度
+        const center = ws.cells[24];
+        if (center) {
+            appState.gender = center.gender === '1girl' ? 'female' : 'male';
+            appState.age = center.age;
+            // 維度映射
+            const dimMap = {
+                'anime': 'anime',
+                'fantasy': 'fantasy',
+                'sci-fi': 'realistic',
+                'dark fantasy': 'fantasy',
+                'cyberpunk': 'realistic',
+                'steampunk': 'fantasy'
+            };
+            appState.dimension = dimMap[center.dimension] || 'anime';
+        }
+
+        // 觸發主頁更新
+        if (renderTabContent) renderTabContent();
+        if (generatePrompt) generatePrompt();
+        if (saveState) saveState();
     }
 
+    // === Close ===
+    function closeModal() {
+        // Clean up timers
+        if (ws.timer) clearTimeout(ws.timer);
+        if (ws.autoStopTimer) clearTimeout(ws.autoStopTimer);
+
+        // Remove keyboard handler
+        document.removeEventListener('keydown', keyHandler);
+
+        // Remove overlay with fade
+        const overlay = document.getElementById('fw-overlay');
+        if (overlay) {
+            overlay.style.opacity = '0';
+            overlay.style.transition = 'opacity 0.2s';
+            setTimeout(() => overlay.remove(), 200);
+        }
+    }
+}
+
     return {
-        setup,
-        openFateWheelModal
-    };
-})();
+    setup,
+    openFateWheelModal
+};
+}) ();
