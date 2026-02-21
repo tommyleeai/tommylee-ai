@@ -659,4 +659,108 @@
     box-shadow: 0 0 40px rgba(251, 191, 36, 0.5), 0 0 80px rgba(168, 85, 247, 0.3);
 }
 
+/* === Confirm Animation START === */
+
+/* 階段 B：全頁紫色脈衝波紋 */
+.fw-pulse-wave {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: 120vmax;
+    height: 120vmax;
+    transform: translate(-50%, -50%) scale(0);
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(168, 85, 247, 0.35) 0%, rgba(168, 85, 247, 0.15) 40%, transparent 70%);
+    pointer-events: none;
+    z-index: 9999;
+    animation: fwPulseExpand 700ms ease-out forwards;
+}
+
+@keyframes fwPulseExpand {
+    0% {
+        transform: translate(-50%, -50%) scale(0);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 0;
+    }
+}
+
+/* 階段 C：粒子飛行到 section */
+.fw-confirm-particle {
+    position: fixed;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #fbbf24 30%, #a855f7 100%);
+    box-shadow: 0 0 10px rgba(251, 191, 36, 0.7), 0 0 20px rgba(168, 85, 247, 0.4);
+    pointer-events: none;
+    z-index: 9998;
+    transition: all 500ms cubic-bezier(0.22, 1, 0.36, 1);
+    opacity: 1;
+}
+
+.fw-confirm-particle.fw-particle-trail::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: inherit;
+    filter: blur(4px);
+    opacity: 0.5;
+}
+
+/* 階段 A：section 閃爍 glow */
+.fw-section-glow {
+    animation: fwSectionGlowPulse 800ms ease-out forwards !important;
+    position: relative;
+    z-index: 1;
+}
+
+.fw-section-glow::before {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, rgba(168, 85, 247, 0.2), rgba(251, 191, 36, 0.15));
+    z-index: -1;
+    animation: fwGlowFade 800ms ease-out forwards;
+    pointer-events: none;
+}
+
+@keyframes fwSectionGlowPulse {
+    0% {
+        box-shadow: 0 0 0 rgba(168, 85, 247, 0);
+    }
+
+    30% {
+        box-shadow: 0 0 25px rgba(168, 85, 247, 0.5), 0 0 50px rgba(251, 191, 36, 0.2);
+    }
+
+    100% {
+        box-shadow: 0 0 0 rgba(168, 85, 247, 0);
+    }
+}
+
+@keyframes fwGlowFade {
+    0% {
+        opacity: 0;
+    }
+
+    30% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+/* === Confirm Animation END === */
+
 /* === Fate Wheel Modal END === */

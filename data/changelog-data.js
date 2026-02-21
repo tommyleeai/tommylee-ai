@@ -7,6 +7,16 @@ window.PromptGen.Changelog = (function () {
     // Changelog Data
     const changelog = [
         {
+            version: "v7.9.2",
+            date: "2026-02-22",
+            changes: [
+                "✨ 確認使用動畫特效：三階段魔法附著視覺回饋（脈衝波紋 → 粒子飛散 → section 閃爍）",
+                "🌀 階段 B：全頁紫色脈衝波紋從中心向外擴散",
+                "✨ 階段 C：紫金色粒子從畫面中心飛向被更改的 section 標題",
+                "💜 階段 A：粒子到達後 section 閃紫色 glow + 自動絲滑滑頁"
+            ]
+        },
+        {
             version: "v7.9.1",
             date: "2026-02-21",
             changes: [

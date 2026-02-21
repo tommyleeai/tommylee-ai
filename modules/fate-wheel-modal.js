@@ -1079,8 +1079,165 @@ window.PromptGen.FateWheelModal = (function () {
         }
 
         function handleConfirm() {
+            // 收集被更改的 stateKeys
+            const changedKeys = new Set();
+            for (let i = 0; i < 24; i++) {
+                const result = ws.cells[i];
+                if (!result || result.isNone) continue;
+                if (result.stateKey) changedKeys.add(result.stateKey);
+            }
             applyResultsToMainState();
             closeModal();
+            // 延遲 250ms 等 modal 淡出完成後開始動畫
+            setTimeout(() => playConfirmAnimation(changedKeys), 250);
+        }
+
+        // ============================================
+        // 確認使用 — 三階段動畫
+        // ============================================
+
+        // stateKey → 所屬 tab 對映
+        const STATE_KEY_TO_TAB = {
+            // base
+            race: 'base', job: 'base', hairstyle: 'base', bodyType: 'base',
+            // appearance
+            hairColor: 'appearance', eyeColorLeft: 'appearance', eyeColorRight: 'appearance',
+            outfit: 'appearance', headwear: 'appearance', handItem: 'appearance', handItems: 'appearance',
+            // action
+            expression: 'action', mood: 'action', pose: 'action',
+            // style
+            animeStyle: 'style', artStyle: 'style', artist: 'style', quality: 'style',
+            // environment
+            scene: 'environment', atmosphere: 'environment', lighting: 'environment',
+            // camera
+            cameraAngle: 'camera', shotSize: 'camera', focalLength: 'camera',
+            aperture: 'camera', lensEffect: 'camera'
+        };
+
+        function playConfirmAnimation(changedKeys) {
+            // 階段 B：脈衝波紋（立即開始）
+            playPulseWave();
+
+            // 階段 C+A：延遲 400ms 後粒子飛散 + glow
+            setTimeout(() => {
+                flyParticlesToSections(changedKeys);
+            }, 400);
+        }
+
+        // --- 階段 B：全頁紫色脈衝波紋 ---
+        function playPulseWave() {
+            const wave = document.createElement('div');
+            wave.className = 'fw-pulse-wave';
+            document.body.appendChild(wave);
+            wave.addEventListener('animationend', () => wave.remove());
+            // 安全回收（如果 animationend 沒觸發）
+            setTimeout(() => { if (wave.parentNode) wave.remove(); }, 1000);
+        }
+
+        // --- 階段 C+A：粒子飛散 → section glow + 自動滑頁 ---
+        function flyParticlesToSections(changedKeys) {
+            // 找當前 tab 裡被修改的 section
+            const currentTab = appState.activeTab;
+            const tabContent = document.getElementById('tab-content');
+            if (!tabContent) return;
+
+            // 收集屬於當前 tab 且被修改的 stateKey
+            const keysInTab = [];
+            changedKeys.forEach(key => {
+                if (STATE_KEY_TO_TAB[key] === currentTab) {
+                    keysInTab.push(key);
+                }
+            });
+
+            if (keysInTab.length === 0) return;
+
+            // 取得 tab-content 的 scrollable 父元素
+            const scrollContainer = tabContent.closest('.tab-content-wrapper') || tabContent.parentElement;
+
+            // 取得所有 section-block 及其 section id
+            const allSections = tabContent.querySelectorAll('.section-block');
+            // TAB_SECTIONS 中 section 的 id 順序
+            const tabSectionDefs = window.PromptGen.Data.TAB_SECTIONS[currentTab] || [];
+
+            // 建立 sectionId → DOM element 映射
+            const sectionMap = {};
+            tabSectionDefs.forEach((def, idx) => {
+                if (allSections[idx]) {
+                    sectionMap[def.id] = allSections[idx];
+                }
+            });
+
+            // 過濾出需要動畫的 section（按 TAB_SECTIONS 順序）
+            const targetSections = [];
+            tabSectionDefs.forEach(def => {
+                // 特殊映射：handItem → handItems
+                const matchKeys = keysInTab.filter(k =>
+                    k === def.id ||
+                    (k === 'handItem' && def.id === 'handItems') ||
+                    (k === 'handItems' && def.id === 'handItems')
+                );
+                if (matchKeys.length > 0 && sectionMap[def.id]) {
+                    targetSections.push(sectionMap[def.id]);
+                }
+            });
+
+            if (targetSections.length === 0) return;
+
+            // 起點：視窗中心
+            const cx = window.innerWidth / 2;
+            const cy = window.innerHeight / 2;
+
+            // 依序對每個 section 播放動畫
+            targetSections.forEach((sectionEl, i) => {
+                const delay = i * 250; // 每個 section 間隔 250ms
+
+                setTimeout(() => {
+                    // 自動滑頁到 section（絲滑）
+                    sectionEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+                    // 等滑頁完成後再發射粒子
+                    setTimeout(() => {
+                        const titleEl = sectionEl.querySelector('.section-block-title') || sectionEl;
+                        const rect = titleEl.getBoundingClientRect();
+                        const tx = rect.left + rect.width / 2;
+                        const ty = rect.top + rect.height / 2;
+
+                        // 發射 4 個粒子
+                        const particleCount = 4;
+                        for (let p = 0; p < particleCount; p++) {
+                            const particle = document.createElement('div');
+                            particle.className = 'fw-confirm-particle fw-particle-trail';
+                            // 起點：隨機偏移中心
+                            const sx = cx + (Math.random() - 0.5) * 100;
+                            const sy = cy + (Math.random() - 0.5) * 100;
+                            particle.style.left = sx + 'px';
+                            particle.style.top = sy + 'px';
+                            document.body.appendChild(particle);
+
+                            // 延遲每個粒子 50ms
+                            setTimeout(() => {
+                                particle.style.left = tx + (Math.random() - 0.5) * 20 + 'px';
+                                particle.style.top = ty + (Math.random() - 0.5) * 10 + 'px';
+                                particle.style.opacity = '0';
+                                particle.style.transform = 'scale(0.3)';
+                            }, p * 50 + 30);
+
+                            // 粒子到達後移除
+                            setTimeout(() => {
+                                if (particle.parentNode) particle.remove();
+                            }, 600 + p * 50);
+                        }
+
+                        // 粒子到達時 section 閃爍
+                        setTimeout(() => {
+                            sectionEl.classList.add('fw-section-glow');
+                            setTimeout(() => {
+                                sectionEl.classList.remove('fw-section-glow');
+                            }, 900);
+                        }, 250);
+                    }, 150); // 等滑頁有基本位移
+                }, delay);
+            });
         }
 
         // === 寫入主頁 state ===
