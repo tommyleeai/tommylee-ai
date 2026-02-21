@@ -1,0 +1,662 @@
+/* === Fate Wheel Modal START === */
+/* 命運之輪 — Modal Overlay 版 */
+
+/* --- Overlay --- */
+.fate-wheel-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    background: rgba(0, 0, 0, 0.85);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow-y: auto;
+    padding: 20px;
+    animation: fwFadeIn 0.3s ease;
+}
+
+@keyframes fwFadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+/* --- Close Button --- */
+.fw-close-btn {
+    position: absolute;
+    top: 16px;
+    right: 24px;
+    background: none;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    color: #94a3b8;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.fw-close-btn:hover {
+    color: #ef4444;
+    border-color: #ef4444;
+    background: rgba(239, 68, 68, 0.1);
+    transform: rotate(90deg);
+}
+
+/* --- Title --- */
+.fw-title {
+    font-size: 2.2rem;
+    font-weight: 900;
+    background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 30%, #a855f7 70%, #22d3ee 100%);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 4px;
+    animation: fwTitleShine 4s linear infinite;
+    filter: drop-shadow(0 0 20px rgba(251, 191, 36, 0.3));
+    text-align: center;
+    font-family: 'Noto Sans TC', 'Inter', system-ui, sans-serif;
+}
+
+@keyframes fwTitleShine {
+    to {
+        background-position: 200% center;
+    }
+}
+
+.fw-subtitle {
+    color: #64748b;
+    margin-bottom: 12px;
+    text-align: center;
+    font-size: 0.85rem;
+}
+
+/* --- Game Container --- */
+.fw-game-container {
+    background: linear-gradient(145deg, rgba(18, 18, 31, 0.95), rgba(12, 12, 22, 0.98));
+    border: 1px solid rgba(168, 85, 247, 0.15);
+    border-radius: 20px;
+    padding: 32px;
+    max-width: 700px;
+    width: 100%;
+    position: relative;
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(10px);
+}
+
+/* --- 5x5 Grid --- */
+.fw-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    grid-template-rows: repeat(5, 1fr);
+    gap: 8px;
+}
+
+/* --- Cells --- */
+.fw-cell {
+    aspect-ratio: 1;
+    background: linear-gradient(145deg, rgba(26, 26, 46, 0.8), rgba(18, 18, 35, 0.9));
+    border: 1px solid rgba(42, 42, 74, 0.6);
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 6px;
+    position: relative;
+    transition: all 0.25s ease;
+    cursor: default;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.03);
+}
+
+.fw-cell:hover:not(.fw-empty-cell) {
+    transform: translateY(-3px) scale(1.03);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4), 0 0 15px rgba(168, 85, 247, 0.15);
+    border-color: rgba(168, 85, 247, 0.3);
+}
+
+.fw-cell .fw-cell-title {
+    font-size: 0.6rem;
+    color: #94a3b8;
+    margin-bottom: 2px;
+    text-align: center;
+    letter-spacing: 1px;
+}
+
+.fw-cell .fw-cell-value {
+    font-size: 0.65rem;
+    color: #22d3ee;
+    text-align: center;
+    line-height: 1.3;
+    word-break: break-word;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    max-height: 3.9em;
+    opacity: 0;
+    transform: scale(0.8);
+    transition: opacity 0.3s, transform 0.3s;
+}
+
+.fw-cell .fw-cell-value.fw-revealed {
+    opacity: 1;
+    transform: scale(1);
+}
+
+/* Cell states */
+.fw-empty-cell {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+}
+
+.fw-inner-cell {
+    background: linear-gradient(145deg, rgba(30, 30, 55, 0.9), rgba(20, 20, 40, 0.95));
+    border-color: rgba(34, 211, 238, 0.2);
+}
+
+.fw-center-cell {
+    background: linear-gradient(135deg, #1a1040, #2a1050);
+    border-color: #a855f7;
+    box-shadow: 0 0 20px rgba(168, 85, 247, 0.2), inset 0 0 20px rgba(168, 85, 247, 0.05);
+}
+
+.fw-center-cell .fw-cell-title {
+    font-weight: 700;
+}
+
+/* Highlight */
+.fw-cell.fw-highlight {
+    border-color: #fbbf24;
+    box-shadow: 0 0 20px rgba(251, 191, 36, 0.5), inset 0 0 10px rgba(251, 191, 36, 0.1);
+    background: linear-gradient(145deg, rgba(50, 40, 20, 0.9), rgba(40, 30, 15, 0.9));
+}
+
+/* Result states */
+.fw-cell.fw-result-filled {
+    border-color: rgba(168, 85, 247, 0.3);
+    box-shadow: 0 2px 12px rgba(168, 85, 247, 0.15);
+}
+
+.fw-cell.fw-result-none {
+    opacity: 0.45;
+}
+
+.fw-cell.fw-result-bonus {
+    border-color: #fbbf24 !important;
+    box-shadow: 0 0 15px rgba(251, 191, 36, 0.4);
+    animation: fwBonusGlow 2s ease-in-out infinite;
+    position: relative;
+}
+
+.fw-cell.fw-result-bonus::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, transparent 30%, rgba(251, 191, 36, 0.15) 50%, transparent 70%);
+    background-size: 200% 200%;
+    animation: fwShimmer 2s ease-in-out infinite;
+    pointer-events: none;
+}
+
+.fw-cell.fw-result-bonus .fw-cell-value {
+    color: #fbbf24;
+    text-shadow: 0 0 8px rgba(251, 191, 36, 0.4);
+}
+
+.fw-cell.fw-result-bonus .fw-cell-title {
+    color: #fbbf24;
+}
+
+@keyframes fwBonusGlow {
+
+    0%,
+    100% {
+        box-shadow: 0 0 15px rgba(251, 191, 36, 0.3);
+    }
+
+    50% {
+        box-shadow: 0 0 30px rgba(251, 191, 36, 0.6), 0 0 60px rgba(251, 191, 36, 0.2);
+    }
+}
+
+@keyframes fwShimmer {
+    0% {
+        background-position: -100% -100%;
+    }
+
+    100% {
+        background-position: 200% 200%;
+    }
+}
+
+/* Lock states */
+.fw-cell.fw-locked {
+    box-shadow: 0 0 12px rgba(251, 191, 36, 0.3), inset 0 0 8px rgba(251, 191, 36, 0.1);
+}
+
+.fw-cell.fw-locked::after {
+    content: '🔒';
+    position: absolute;
+    top: 3px;
+    right: 3px;
+    font-size: 0.6rem;
+    filter: drop-shadow(0 0 4px rgba(251, 191, 36, 0.6));
+}
+
+.fw-cell.fw-lockable {
+    cursor: pointer;
+}
+
+.fw-cell.fw-lockable:hover {
+    box-shadow: 0 0 15px rgba(251, 191, 36, 0.3);
+}
+
+/* --- Controls --- */
+.fw-controls {
+    text-align: center;
+    margin-top: 16px;
+}
+
+.fw-phase-indicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.fw-phase-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #1e293b;
+    border: 2px solid #475569;
+    transition: all 0.3s;
+}
+
+.fw-phase-dot.fw-active {
+    background: #fbbf24;
+    border-color: #fbbf24;
+    box-shadow: 0 0 10px rgba(251, 191, 36, 0.5);
+    animation: fwPulse 1s ease-in-out infinite;
+}
+
+.fw-phase-dot.fw-done {
+    background: #10b981;
+    border-color: #10b981;
+    box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+}
+
+@keyframes fwPulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.3);
+    }
+}
+
+.fw-phase-label {
+    font-size: 0.7rem;
+    color: #64748b;
+}
+
+/* Lever Button */
+.fw-lever-btn {
+    width: 200px;
+    height: 56px;
+    background: linear-gradient(135deg, #2a1a3e, #1a2a4e);
+    border: 2px solid #a855f7;
+    border-radius: 14px;
+    color: #fbbf24;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(168, 85, 247, 0.2);
+    font-family: 'Noto Sans TC', 'Inter', system-ui, sans-serif;
+}
+
+.fw-lever-btn::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #a855f7, #fbbf24, #22d3ee, #a855f7);
+    background-size: 300% 300%;
+    animation: fwBtnGlow 3s ease infinite;
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.fw-lever-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 25px rgba(168, 85, 247, 0.3);
+}
+
+.fw-lever-btn:hover::before {
+    opacity: 1;
+}
+
+.fw-lever-btn.fw-spinning {
+    animation: fwBtnPulse 0.5s ease-in-out infinite alternate;
+}
+
+@keyframes fwBtnGlow {
+
+    0%,
+    100% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+}
+
+@keyframes fwBtnPulse {
+    from {
+        box-shadow: 0 0 15px rgba(251, 191, 36, 0.3);
+    }
+
+    to {
+        box-shadow: 0 0 25px rgba(251, 191, 36, 0.6);
+    }
+}
+
+.fw-hint {
+    color: #475569;
+    font-size: 0.7rem;
+    margin-top: 8px;
+}
+
+.fw-hint kbd {
+    background: #1e293b;
+    padding: 2px 6px;
+    border-radius: 4px;
+    border: 1px solid #334155;
+}
+
+/* --- Star Rating --- */
+.fw-star-section {
+    text-align: center;
+    padding: 20px 0;
+    display: none;
+}
+
+.fw-star-section.fw-visible {
+    display: block;
+    animation: fwFadeSlideUp 0.4s ease-out;
+}
+
+@keyframes fwFadeSlideUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fw-tag-count {
+    font-size: 0.8rem;
+    color: #64748b;
+    margin-bottom: 8px;
+}
+
+.fw-star-row {
+    font-size: 2rem;
+    margin: 10px 0;
+    display: flex;
+    justify-content: center;
+    gap: 4px;
+}
+
+.fw-star {
+    color: #1e293b;
+    transition: all 0.3s;
+    filter: grayscale(100%);
+}
+
+.fw-star.fw-lit {
+    color: #fbbf24;
+    filter: none;
+    text-shadow: 0 0 10px rgba(251, 191, 36, 0.5), 0 0 20px rgba(251, 191, 36, 0.3);
+    filter: drop-shadow(0 0 6px rgba(251, 191, 36, 0.4));
+}
+
+.fw-star-title {
+    font-size: 1.5rem;
+    font-weight: 900;
+    display: none;
+    font-family: 'Noto Sans TC', 'Inter', system-ui, sans-serif;
+}
+
+.fw-star-title.fw-visible {
+    display: block;
+    animation: fwFadeSlideUp 0.3s ease-out;
+}
+
+.fw-star-title.fw-high-star {
+    background: linear-gradient(135deg, #fbbf24, #f59e0b, #a855f7, #22d3ee);
+    background-size: 300% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: fwStarShine 2s linear infinite;
+    filter: drop-shadow(0 0 15px rgba(251, 191, 36, 0.5));
+}
+
+.fw-star-title.fw-legendary-star {
+    background: linear-gradient(135deg, #fbbf24, #f59e0b, #a855f7, #22d3ee, #fbbf24);
+    background-size: 400% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: fwStarShine 1.5s linear infinite;
+    filter: drop-shadow(0 0 20px rgba(251, 191, 36, 0.6));
+}
+
+@keyframes fwStarShine {
+    to {
+        background-position: 200% center;
+    }
+}
+
+@keyframes fwStarBounce {
+    0% {
+        transform: scale(0);
+        opacity: 0;
+    }
+
+    60% {
+        transform: scale(1.3);
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* --- Lock Section --- */
+.fw-lock-section {
+    text-align: center;
+    padding: 16px 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    margin-top: 12px;
+    display: none;
+}
+
+.fw-lock-section.fw-visible {
+    display: block;
+    animation: fwFadeSlideUp 0.4s ease-out;
+}
+
+.fw-lock-info {
+    color: #94a3b8;
+    font-size: 0.85rem;
+    margin-bottom: 12px;
+}
+
+.fw-lock-count {
+    color: #fbbf24;
+    font-weight: bold;
+}
+
+.fw-lock-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
+
+.fw-lock-actions button {
+    padding: 10px 24px;
+    border-radius: 10px;
+    border: 1px solid;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-size: 0.9rem;
+    font-family: 'Noto Sans TC', 'Inter', system-ui, sans-serif;
+}
+
+.fw-lock-actions .fw-btn-skip {
+    background: linear-gradient(135deg, rgba(30, 30, 50, 0.9), rgba(20, 20, 40, 0.9));
+    border-color: #64748b;
+    color: #94a3b8;
+}
+
+.fw-lock-actions .fw-btn-skip:hover {
+    border-color: #94a3b8;
+    color: #e2e8f0;
+}
+
+.fw-lock-actions .fw-btn-confirm {
+    background: linear-gradient(135deg, #1a3a2e, #0a2a1e);
+    border-color: #10b981;
+    color: #10b981;
+}
+
+.fw-lock-actions .fw-btn-confirm:hover {
+    background: linear-gradient(135deg, #1a4a3e, #0a3a2e);
+    box-shadow: 0 0 15px rgba(16, 185, 129, 0.3);
+}
+
+.fw-lock-actions .fw-btn-respin {
+    background: linear-gradient(135deg, #2a1a3e, #1a2a4e);
+    border-color: #a855f7;
+    color: #a855f7;
+}
+
+.fw-lock-actions .fw-btn-respin:hover {
+    box-shadow: 0 0 15px rgba(168, 85, 247, 0.3);
+}
+
+/* --- Effects --- */
+.fw-flash-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    z-index: 10001;
+    opacity: 0;
+    transition: opacity 0.1s;
+}
+
+.fw-particles {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 10002;
+}
+
+.fw-particle {
+    position: absolute;
+    border-radius: 50%;
+    animation: fwParticleFall linear forwards;
+}
+
+@keyframes fwParticleFall {
+    0% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateY(100vh) rotate(720deg);
+        opacity: 0;
+    }
+}
+
+@keyframes fwRainbowBg {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    100% {
+        background-position: 100% 50%;
+    }
+}
+
+@keyframes fwShake {
+
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+
+    20% {
+        transform: translateX(-5px) rotate(-1deg);
+    }
+
+    40% {
+        transform: translateX(5px) rotate(1deg);
+    }
+
+    60% {
+        transform: translateX(-3px) rotate(-0.5deg);
+    }
+
+    80% {
+        transform: translateX(3px) rotate(0.5deg);
+    }
+}
+
+/* Reward */
+.fw-reward-10 .fw-game-container {
+    border-color: #fbbf24;
+    box-shadow: 0 0 40px rgba(251, 191, 36, 0.5), 0 0 80px rgba(168, 85, 247, 0.3);
+}
+
+/* === Fate Wheel Modal END === */

@@ -2925,6 +2925,11 @@
         RACES, JOBS, OUTFITS, BODY_TYPES_FEMALE, BODY_TYPES_MALE,
         HAIRSTYLES_FEMALE, HAIRSTYLES_MALE
     });
+    if (window.PromptGen.FateWheelModal) {
+        window.PromptGen.FateWheelModal.setup({
+            state, sfx, generatePrompt, saveState, renderTabContent
+        });
+    }
 
 
 
@@ -3135,122 +3140,10 @@
     }
 
     function triggerFateWheel() {
-        // 基礎版：隨機填充各 section（不含大招動畫）
-        const fateOptions = ['anime', 'realistic', 'fantasy', '2.5d'];
-        state.dimension = fateOptions[Math.floor(Math.random() * fateOptions.length)];
-
-        // 隨機性別
-        state.gender = Math.random() > 0.5 ? 'female' : 'male';
-
-        // 隨機年齡 14-40
-        state.age = Math.floor(Math.random() * 27) + 14;
-
-        // ★ 清除所有舊選擇，避免殘留
-        state.selections = {};
-
-        // 複合欄位也清除（所有加分選項 Magic Modal）
-        state.bodyAdvanced = null;
-        state.hairAdvanced = null;
-        state.hairMagicPrompts = null;
-        state.heterochromia = false;
-        state.expressionAdvanced = null;
-        state.poseAdvanced = null;
-        state.atmosphereAdvanced = null;
-        state.raceAdvanced = null;
-        state.jobAdvanced = null;
-        state.outfitAdvanced = null;
-        state.headwearAdvanced = null;
-        state.handItemsAdvanced = null;
-        state.sceneAdvanced = null;
-        state.customInputs = {};
-        state.customInputVisible = {};
-        state.customFields = [];
-
-        // 從 TAB_SECTIONS 動態取得所有 section
-        const allSections = Object.values(TAB_SECTIONS).flat();
-
-        // 需要跳過的 section（沒有標準 data 或需特殊處理）
-        const skipTypes = new Set(['genderAge']);
-        // 多選 section
-        const multiSelectSections = new Set(['quality']);
-        // 必填 section（不跳過）
-        const mustFill = new Set(['race', 'hairstyle', 'outfit', 'expression', 'pose', 'scene']);
-
-        allSections.forEach(sectionDef => {
-            // 跳過特殊 type
-            if (skipTypes.has(sectionDef.type) || skipTypes.has(sectionDef.id)) return;
-
-            // 取得正確的 data（根據性別）
-            let data = sectionDef.data;
-            if (sectionDef.genderDependent) {
-                // 髮型、身材等 gender-dependent sections
-                if (sectionDef.id === 'hairstyle') {
-                    data = state.gender === 'female'
-                        ? Data.HAIRSTYLES_FEMALE
-                        : Data.HAIRSTYLES_MALE;
-                } else if (sectionDef.id === 'bodyType') {
-                    data = state.gender === 'female'
-                        ? Data.BODY_TYPES_FEMALE
-                        : Data.BODY_TYPES_MALE;
-                }
-            }
-
-            if (!data || data.length === 0) return;
-
-            // 決定是否填入（必填 section 100%，其他 60% 機率）
-            const shouldFill = mustFill.has(sectionDef.id) || Math.random() > 0.4;
-            if (!shouldFill) return;
-
-            if (multiSelectSections.has(sectionDef.id)) {
-                // 多選：隨機選 1-3 個
-                const count = Math.floor(Math.random() * 3) + 1;
-                const shuffled = [...data].sort(() => Math.random() - 0.5);
-                const picked = shuffled.slice(0, count).map(item =>
-                    typeof item === 'string' ? item : (item.value || item.name || item)
-                );
-                state.selections[sectionDef.id] = picked;
-            } else {
-                const item = data[Math.floor(Math.random() * data.length)];
-                state.selections[sectionDef.id] = typeof item === 'string' ? item : (item.value || item.name || item);
-            }
-        });
-
-        // ★ 隨機產生加分選項（Magic Modal bonusTraits）
-        // 輔助函式：從 BONUS_TRAITS 物件中隨機取 1-3 個特徵
-        function randomBonusTraits(bonusTraitsObj) {
-            if (!bonusTraitsObj) return null;
-            // 合併所有分類的特徵
-            const allTraits = Object.values(bonusTraitsObj).flat();
-            if (allTraits.length === 0) return null;
-            const count = Math.floor(Math.random() * 3) + 1;
-            const shuffled = [...allTraits].sort(() => Math.random() - 0.5);
-            return shuffled.slice(0, count).map(t => t.en || t.value || t);
+        // v8.0 — 開啟命運之輪 Modal（完整轉盤體驗）
+        if (window.PromptGen.FateWheelModal) {
+            window.PromptGen.FateWheelModal.openFateWheelModal();
         }
-
-        // 各 section 30% 機率產生加分選項
-        const magicDataMap = [
-            { stateKey: 'raceAdvanced', dataPath: 'RaceMagicData' },
-            { stateKey: 'jobAdvanced', dataPath: 'JobMagicData' },
-            { stateKey: 'outfitAdvanced', dataPath: 'OutfitMagicData' },
-            { stateKey: 'headwearAdvanced', dataPath: 'HeadwearMagicData' },
-            { stateKey: 'handItemsAdvanced', dataPath: 'HandItemsMagicData' },
-            { stateKey: 'sceneAdvanced', dataPath: 'SceneMagicData' },
-        ];
-
-        magicDataMap.forEach(({ stateKey, dataPath }) => {
-            if (Math.random() > 0.7) return; // 30% 跳過
-            const magicData = window.PromptGen[dataPath];
-            if (!magicData || !magicData.BONUS_TRAITS) return;
-            const traits = randomBonusTraits(magicData.BONUS_TRAITS);
-            if (traits && traits.length > 0) {
-                state[stateKey] = { bonusTraits: traits };
-            }
-        });
-
-        updateDimensionUI();
-        renderTabContent();
-        generatePrompt();
-        saveState();
     }
 
     if (dimensionSelector) {
