@@ -436,19 +436,24 @@ window.PromptGen.FateWheelModal = (function () {
 
         // Overlay click to close (only when idle)
         overlay.addEventListener('click', (e) => {
-            if (e.target === overlay && (ws.phase === 'idle' || ws.phase === 'lock' || ws.phase === 'stars')) {
+            if (e.target === overlay && (ws.phase === 'idle' || ws.phase === 'lock')) {
                 closeModal();
             }
         });
 
         // Keyboard handler
         function keyHandler(e) {
+            // 星級動畫播放中禁止任何按鍵操作
+            if (ws.phase === 'stars' || ws.phase === 'center' || ws.phase === 'revealing-outer' || ws.phase === 'revealing-inner') {
+                e.preventDefault();
+                return;
+            }
             if (e.code === 'Space') {
                 e.preventDefault();
                 handleLever();
             }
             if (e.code === 'Escape') {
-                if (ws.phase === 'idle' || ws.phase === 'lock' || ws.phase === 'stars') {
+                if (ws.phase === 'idle' || ws.phase === 'lock') {
                     closeModal();
                 }
             }
@@ -685,9 +690,10 @@ window.PromptGen.FateWheelModal = (function () {
         // === SPIN LOGIC ===
         function handleLever() {
             initAudio();
+            // 星級動畫播放中不可操作
+            if (ws.phase === 'stars' || ws.phase === 'center' || ws.phase === 'revealing-outer' || ws.phase === 'revealing-inner') return;
             switch (ws.phase) {
                 case 'idle':
-                case 'stars':
                 case 'lock':
                     startOuterSpin();
                     break;
@@ -768,7 +774,7 @@ window.PromptGen.FateWheelModal = (function () {
             ws.currentLight = (ws.currentLight + 1) % 16;
 
             if (ws.phase === 'stopping-outer') {
-                ws.speed += 40;
+                ws.speed = Math.round(ws.speed * 1.15);
                 if (ws.speed > 350) { finishOuterSpin(); return; }
             }
             ws.timer = setTimeout(runOuterLight, ws.speed);
@@ -827,7 +833,7 @@ window.PromptGen.FateWheelModal = (function () {
             ws.currentLight = (ws.currentLight + 1) % 8;
 
             if (ws.phase === 'stopping-inner') {
-                ws.speed += 50;
+                ws.speed = Math.round(ws.speed * 1.18);
                 if (ws.speed > 350) { finishInnerSpin(); return; }
             }
             ws.timer = setTimeout(runInnerLight, ws.speed);
