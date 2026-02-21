@@ -804,31 +804,7 @@ textarea {
     border-radius: 8px;
 }
 
-#preview-placeholder {
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    color: rgba(255, 255, 255, 0.3);
-    font-size: 1rem;
-    text-align: center;
-    padding: 2rem;
-}
-
-#preview-placeholder.active {
-    display: flex;
-}
-
-#preview-placeholder i {
-    font-size: 2rem;
-    opacity: 0.5;
-}
-
-#preview-placeholder .preview-hint {
-    font-size: 0.8rem;
-    opacity: 0.5;
-}
+/* #preview-placeholder — 已遷移至「中二喊話預覽區」區塊 */
 
 #preview-content {
     display: none;
@@ -1396,41 +1372,112 @@ input[type=range]::-webkit-slider-thumb:hover {
     justify-content: center;
 }
 
+/* === 中二喊話預覽區 START === */
 #preview-placeholder {
-    /* position: absolute; Removed absolute */
-    /* top: 0; */
-    /* left: 0; */
     width: 100%;
     aspect-ratio: 1 / 1;
-    /* Match image box ratio */
     display: none;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 0.8rem;
-    color: #666;
-    text-align: center;
-    padding: 2rem;
+    position: relative;
+    overflow: hidden;
 }
 
 #preview-placeholder.active {
     display: flex;
 }
 
-#preview-placeholder i {
-    font-size: 3rem;
-    opacity: 0.3;
+/* 魔法陣背景裝飾 */
+#preview-placeholder::before {
+    content: '';
+    position: absolute;
+    width: 70%;
+    height: 70%;
+    border: 1px solid rgba(187, 134, 252, 0.08);
+    border-radius: 50%;
+    animation: incantation-rotate 60s linear infinite;
 }
 
-#preview-placeholder p {
-    margin: 0;
+#preview-placeholder::after {
+    content: '';
+    position: absolute;
+    width: 50%;
+    height: 50%;
+    border: 1px dashed rgba(187, 134, 252, 0.06);
+    border-radius: 50%;
+    animation: incantation-rotate 45s linear infinite reverse;
+}
+
+@keyframes incantation-rotate {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* 喊話顯示容器 */
+.incantation-display {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1.5rem;
+}
+
+/* 喊話文字 */
+.incantation-text {
+    text-align: center;
+    line-height: 2.2;
     font-size: 0.95rem;
+    letter-spacing: 0.08em;
+    color: rgba(187, 134, 252, 0.7);
+    text-shadow:
+        0 0 10px rgba(187, 134, 252, 0.3),
+        0 0 20px rgba(187, 134, 252, 0.15);
+    opacity: 0;
+    transition: opacity 1.2s ease-in-out;
+    font-style: italic;
 }
 
-#preview-placeholder .preview-hint {
-    font-size: 0.85rem;
-    opacity: 0.6;
+.incantation-text.visible {
+    opacity: 1;
 }
+
+.incantation-text .incantation-line {
+    display: block;
+    margin: 0;
+}
+
+/* 最後一行強調 */
+.incantation-text .incantation-line:last-child {
+    font-size: 1.15em;
+    font-weight: 700;
+    font-style: normal;
+    color: rgba(187, 134, 252, 0.95);
+    text-shadow:
+        0 0 15px rgba(187, 134, 252, 0.5),
+        0 0 30px rgba(187, 134, 252, 0.25),
+        0 0 45px rgba(187, 134, 252, 0.1);
+    letter-spacing: 0.15em;
+    margin-top: 0.3em;
+}
+
+/* 裝飾分隔線 */
+.incantation-text .incantation-line.incantation-separator {
+    font-size: 0.7em;
+    opacity: 0.4;
+    letter-spacing: 0.5em;
+    margin: 0.2em 0;
+}
+
+/* === 中二喊話預覽區 END === */
 
 #preview-content {
     /* position: absolute; Removed absolute */

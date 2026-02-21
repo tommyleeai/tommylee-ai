@@ -109,6 +109,74 @@
     const previewImageBox = document.getElementById('preview-image-box');
     const previewLabel = document.getElementById('preview-label');
 
+    // --- 中二喊話輪播管理器 ---
+    const IncantationManager = (() => {
+        const textEl = document.querySelector('.incantation-text');
+        let timer = null;
+        let lastIndex = -1;
+        const INTERVAL = 8000; // 8 秒輪播
+        const FADE_DURATION = 1200; // 與 CSS transition 同步
+
+        function getRandomIndex() {
+            if (typeof INCANTATIONS === 'undefined' || INCANTATIONS.length === 0) return 0;
+            let idx;
+            do {
+                idx = Math.floor(Math.random() * INCANTATIONS.length);
+            } while (idx === lastIndex && INCANTATIONS.length > 1);
+            lastIndex = idx;
+            return idx;
+        }
+
+        function renderIncantation(lines) {
+            if (!textEl) return;
+            textEl.innerHTML = lines.map((line, i) => {
+                // 在倒數第二行前加裝飾分隔線
+                const isLast = i === lines.length - 1;
+                const addSep = isLast && lines.length > 2;
+                let html = '';
+                if (addSep) {
+                    html += '<span class="incantation-line incantation-separator">✦ ✦ ✦</span>';
+                }
+                html += `<span class="incantation-line">${line}</span>`;
+                return html;
+            }).join('');
+        }
+
+        function showRandom() {
+            if (!textEl || typeof INCANTATIONS === 'undefined') return;
+            // 淡出
+            textEl.classList.remove('visible');
+            setTimeout(() => {
+                const idx = getRandomIndex();
+                renderIncantation(INCANTATIONS[idx]);
+                // 淡入
+                textEl.classList.add('visible');
+            }, FADE_DURATION);
+        }
+
+        function start() {
+            if (!textEl || typeof INCANTATIONS === 'undefined') return;
+            // 立刻顯示一句（無需等 fade out）
+            const idx = getRandomIndex();
+            renderIncantation(INCANTATIONS[idx]);
+            // 下一幀加 visible 確保動畫觸發
+            requestAnimationFrame(() => textEl.classList.add('visible'));
+            // 啟動定時輪播
+            stop();
+            timer = setInterval(showRandom, INTERVAL);
+        }
+
+        function stop() {
+            if (timer) {
+                clearInterval(timer);
+                timer = null;
+            }
+            if (textEl) textEl.classList.remove('visible');
+        }
+
+        return { start, stop };
+    })();
+
     // --- Persistence ---
     function saveState() {
         const stateToSave = {
@@ -2771,6 +2839,7 @@
             previewLabel.textContent = labelText;
             previewPlaceholder.style.display = 'none';
             previewContent.style.display = 'block';
+            IncantationManager.stop();
         }
     }
 
@@ -2778,6 +2847,7 @@
         previewPlaceholder.style.display = 'flex';
         previewContent.style.display = 'none';
         previewImageBox.style.backgroundImage = 'none';
+        IncantationManager.start();
     }
 
     function updateLockedPreview() {
@@ -3319,6 +3389,7 @@
     renderCustomFields();
     generatePrompt();
     updateToggleButtons(); // 初始化 toggle 按鈕狀態
+    IncantationManager.start(); // 啟動中二喊話輪播
 
     // Global Click Listener for UI Sounds (Delegation)
     document.addEventListener('click', (e) => {
