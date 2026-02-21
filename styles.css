@@ -1130,10 +1130,11 @@ textarea {
 #final-prompt {
     width: 100%;
     box-sizing: border-box;
-    min-height: 250px;
+    aspect-ratio: 1 / 1;
     word-wrap: break-word;
     overflow-wrap: break-word;
     white-space: pre-wrap;
+    overflow-y: auto;
 }
 
 #final-negative {
