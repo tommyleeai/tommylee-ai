@@ -7,6 +7,17 @@ window.PromptGen.Changelog = (function () {
     // Changelog Data
     const changelog = [
         {
+            version: "v8.3",
+            date: "2026-02-22",
+            changes: [
+                "🔮 某處藏著一個秘密...試試看你能不能找到通往「禁忌領域」的鑰匙 🗝️",
+                "🎵 秘密入口加入魔法水晶鈴音效 + 白光閃爍進度回饋",
+                "🎯 Advanced Magic / Edit 按鈕自動偵測 Super Mode 並導向對應 Modal",
+                "🔧 修正招喚指令中與攝影 tab 衝突的提示詞（移除強制 portrait / film grain）",
+                "📝 額外招喚指示 placeholder 更新為主題風格文字"
+            ]
+        },
+        {
             version: "v8.2",
             date: "2026-02-22",
             changes: [
