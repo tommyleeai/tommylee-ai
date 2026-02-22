@@ -451,16 +451,16 @@
                     }
                 }
 
-                // ★ raceAdvanced 橫幅：顯示加分特徵
-                if (state.raceAdvanced && state.raceAdvanced.bonusTraits && state.raceAdvanced.bonusTraits.length > 0) {
+                // ★ raceAdvanced 橫幅：顯示魔法啟用資訊
+                if (state.raceAdvanced) {
                     const ra = state.raceAdvanced;
-                    const traitNames = ra.bonusTraitsZh ? ra.bonusTraitsZh.join('、') : ra.bonusTraits.join(', ');
+                    const traitNames = (ra.bonusTraitsZh && ra.bonusTraitsZh.length) ? ra.bonusTraitsZh.join('、') : (ra.bonusTraits && ra.bonusTraits.length ? ra.bonusTraits.join(', ') : '');
                     const raceName = ra.selectedRace ? `${ra.selectedRace.label} ${ra.selectedRace.en}` : '';
 
                     const summaryBar = document.createElement('div');
                     summaryBar.className = 'body-advanced-summary';
                     const summaryText = document.createElement('span');
-                    summaryText.innerHTML = `🔮 ${state.lang === 'zh' ? '種族魔法啟用中' : 'Race Magic Active'}：${raceName} / 🏷️ ${traitNames}`;
+                    summaryText.innerHTML = `🔮 ${state.lang === 'zh' ? '種族魔法啟用中' : 'Race Magic Active'}：${raceName}${traitNames ? ' / 🏷️ ' + traitNames : ''}`;
 
                     const editBtn = document.createElement('button');
                     editBtn.className = 'body-summary-action';
@@ -487,7 +487,7 @@
                 renderPaginatedRaceGrid(sectionEl, section, RACES);
 
                 // If raceAdvanced active, add disabled overlay（與髮型/身材一致）
-                if (state.raceAdvanced && state.raceAdvanced.bonusTraits && state.raceAdvanced.bonusTraits.length > 0) {
+                if (state.raceAdvanced) {
                     const tagGrid = sectionEl.querySelector('.tag-grid-paginated');
                     if (tagGrid) tagGrid.classList.add('body-section-disabled');
                 }
@@ -565,16 +565,16 @@
                     }
                 }
 
-                // ★ jobAdvanced 橫幅：顯示加分特徵
-                if (state.jobAdvanced && state.jobAdvanced.bonusTraits && state.jobAdvanced.bonusTraits.length > 0) {
+                // ★ jobAdvanced 橫幅：顯示魔法啟用資訊
+                if (state.jobAdvanced) {
                     const ja = state.jobAdvanced;
-                    const traitNames = ja.bonusTraitsZh ? ja.bonusTraitsZh.join('、') : ja.bonusTraits.join(', ');
+                    const traitNames = (ja.bonusTraitsZh && ja.bonusTraitsZh.length) ? ja.bonusTraitsZh.join('、') : (ja.bonusTraits && ja.bonusTraits.length ? ja.bonusTraits.join(', ') : '');
                     const jobName = ja.selectedJob ? `${ja.selectedJob.label} ${ja.selectedJob.en}` : '';
 
                     const summaryBar = document.createElement('div');
                     summaryBar.className = 'body-advanced-summary';
                     const summaryText = document.createElement('span');
-                    summaryText.innerHTML = `🔮 ${state.lang === 'zh' ? '職業魔法啟用中' : 'Job Magic Active'}：${jobName} / 🏷️ ${traitNames}`;
+                    summaryText.innerHTML = `🔮 ${state.lang === 'zh' ? '職業魔法啟用中' : 'Job Magic Active'}：${jobName}${traitNames ? ' / 🏷️ ' + traitNames : ''}`;
 
                     const editBtn = document.createElement('button');
                     editBtn.className = 'body-summary-action';
@@ -601,7 +601,7 @@
                 renderPaginatedGrid(sectionEl, section, JOBS, 'jobPage');
 
                 // If jobAdvanced active, add disabled overlay（與髮型/身材一致）
-                if (state.jobAdvanced && state.jobAdvanced.bonusTraits && state.jobAdvanced.bonusTraits.length > 0) {
+                if (state.jobAdvanced) {
                     const tagGrid = sectionEl.querySelector('.tag-grid-paginated');
                     if (tagGrid) tagGrid.classList.add('body-section-disabled');
                 }
