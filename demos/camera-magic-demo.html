@@ -1,0 +1,1269 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📸 Camera Magic Modal Demo</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+TC:wght@400;500;700&display=swap"
+        rel="stylesheet">
+    <style>
+        /* === Root & Reset === */
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-card: #141420;
+            --bg-section: #1a1a2e;
+            --accent-cyan: #22d3ee;
+            --accent-purple: #a855f7;
+            --accent-blue: #6366f1;
+            --accent-pink: #ec4899;
+            --accent-gold: #fbbf24;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --glass-bg: rgba(20, 20, 32, 0.85);
+            --glass-border: rgba(139, 92, 246, 0.25);
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', 'Noto Sans TC', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* === Demo Page Layout === */
+        .demo-page {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        .demo-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .demo-header h1 {
+            font-size: 2rem;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+        }
+
+        .demo-header p {
+            color: var(--text-secondary);
+            font-size: .9rem;
+        }
+
+        .demo-trigger-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 32px;
+            font-size: 1rem;
+            font-weight: 700;
+            border: none;
+            border-radius: 14px;
+            cursor: pointer;
+            color: #fff;
+            background: linear-gradient(135deg, #6366f1, #a855f7, #ec4899);
+            box-shadow: 0 0 30px rgba(139, 92, 246, .4);
+            transition: all .3s;
+            margin-top: 20px;
+        }
+
+        .demo-trigger-btn:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 0 50px rgba(139, 92, 246, .6);
+        }
+
+        .demo-output {
+            margin-top: 30px;
+            background: var(--bg-section);
+            border: 1px solid var(--glass-border);
+            border-radius: 14px;
+            padding: 20px;
+            min-height: 80px;
+        }
+
+        .demo-output-label {
+            font-size: .75rem;
+            color: var(--accent-cyan);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .demo-output-text {
+            font-family: 'Fira Code', monospace;
+            font-size: .85rem;
+            color: var(--text-primary);
+            line-height: 1.7;
+            word-break: break-all;
+        }
+
+        .demo-output-text .highlight {
+            color: var(--accent-gold);
+            font-weight: 600;
+        }
+
+        .demo-output-text .bonus {
+            color: var(--accent-cyan);
+        }
+
+        /* === Modal Overlay === */
+        .cmm-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 10000;
+            background: rgba(0, 0, 0, .88);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: cmm-fadeIn .4s ease;
+            backdrop-filter: blur(6px);
+        }
+
+        .cmm-overlay.closing {
+            animation: cmm-fadeOut .3s ease forwards;
+        }
+
+        /* === Particles === */
+        .cmm-particles {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 0;
+        }
+
+        .cmm-particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            animation: cmm-float 6s ease-in-out infinite;
+        }
+
+        /* === Magic Circle === */
+        .cmm-magic-circle {
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            border: 1px solid rgba(99, 102, 241, .15);
+            animation: cmm-rotate 20s linear infinite;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .cmm-magic-circle::before {
+            content: '✦ CAMERA ✦ MAGIC ✦ LENS ✦ ANGLE ✦';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            letter-spacing: 18px;
+            color: rgba(139, 92, 246, .2);
+        }
+
+        /* === Container === */
+        .cmm-container {
+            position: relative;
+            z-index: 2;
+            width: 92vw;
+            max-width: 860px;
+            height: 72vh;
+            max-height: 680px;
+            display: flex;
+            flex-direction: column;
+            background: linear-gradient(135deg, rgba(15, 15, 30, .97), rgba(25, 15, 40, .97));
+            border: 1px solid rgba(139, 92, 246, .3);
+            border-radius: 20px;
+            box-shadow: 0 0 80px rgba(99, 102, 241, .2), 0 0 40px rgba(139, 92, 246, .15);
+            overflow: hidden;
+            animation: cmm-slideUp .5s cubic-bezier(.16, 1, .3, 1);
+        }
+
+        /* === Flash === */
+        .cmm-flash {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle, rgba(139, 92, 246, .4) 0%, transparent 70%);
+            z-index: 1;
+            pointer-events: none;
+            animation: cmm-flashPulse .6s ease-out forwards;
+        }
+
+        /* === Header === */
+        .cmm-header {
+            padding: 16px 20px 0;
+            flex-shrink: 0;
+        }
+
+        .cmm-title-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .cmm-title {
+            font-size: 1.3rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .cmm-toolbar {
+            display: flex;
+            gap: 8px;
+        }
+
+        .cmm-toolbar button {
+            background: rgba(139, 92, 246, .15);
+            border: 1px solid rgba(139, 92, 246, .3);
+            color: var(--text-primary);
+            border-radius: 8px;
+            padding: 6px 10px;
+            cursor: pointer;
+            font-size: .8rem;
+            transition: all .2s;
+        }
+
+        .cmm-toolbar button:hover {
+            background: rgba(139, 92, 246, .3);
+            transform: scale(1.05);
+        }
+
+        /* === Search === */
+        .cmm-search-row {
+            position: relative;
+            margin-bottom: 8px;
+        }
+
+        .cmm-search-row input {
+            width: 100%;
+            padding: 10px 14px 10px 36px;
+            background: rgba(30, 30, 50, .8);
+            border: 1px solid rgba(139, 92, 246, .2);
+            border-radius: 10px;
+            color: var(--text-primary);
+            font-size: .85rem;
+            outline: none;
+            transition: border-color .2s;
+        }
+
+        .cmm-search-row input:focus {
+            border-color: var(--accent-purple);
+            box-shadow: 0 0 15px rgba(139, 92, 246, .2);
+        }
+
+        .cmm-search-row i {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+            font-size: .85rem;
+        }
+
+        /* === Tabs === */
+        .cmm-tabs {
+            display: flex;
+            gap: 3px;
+            padding: 0 20px;
+            overflow-x: auto;
+            flex-shrink: 0;
+            scrollbar-width: none;
+        }
+
+        .cmm-tabs::-webkit-scrollbar {
+            display: none;
+        }
+
+        .cmm-tab {
+            padding: 7px 12px;
+            font-size: .72rem;
+            border-radius: 8px 8px 0 0;
+            cursor: pointer;
+            white-space: nowrap;
+            color: var(--text-secondary);
+            background: rgba(30, 30, 50, .5);
+            border: 1px solid transparent;
+            border-bottom: none;
+            transition: all .2s;
+            flex-shrink: 0;
+        }
+
+        .cmm-tab:hover {
+            color: var(--text-primary);
+            background: rgba(139, 92, 246, .1);
+        }
+
+        .cmm-tab.active {
+            color: var(--accent-cyan);
+            background: rgba(139, 92, 246, .15);
+            border-color: rgba(139, 92, 246, .3);
+            font-weight: 600;
+        }
+
+        /* === Body === */
+        .cmm-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px 20px;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(139, 92, 246, .3) transparent;
+        }
+
+        .cmm-body::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .cmm-body::-webkit-scrollbar-thumb {
+            background: rgba(139, 92, 246, .3);
+            border-radius: 3px;
+        }
+
+        /* === Grid === */
+        .cmm-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 8px;
+        }
+
+        /* === Chip === */
+        .cmm-chip {
+            padding: 9px 11px;
+            font-size: .73rem;
+            border-radius: 10px;
+            cursor: pointer;
+            background: rgba(30, 30, 50, .6);
+            border: 1px solid rgba(100, 100, 150, .2);
+            color: var(--text-secondary);
+            transition: all .25s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cmm-chip::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(99, 102, 241, .08), rgba(139, 92, 246, .08));
+            opacity: 0;
+            transition: opacity .25s;
+        }
+
+        .cmm-chip:hover {
+            border-color: rgba(139, 92, 246, .4);
+            color: var(--text-primary);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(99, 102, 241, .15);
+        }
+
+        .cmm-chip:hover::before {
+            opacity: 1;
+        }
+
+        .cmm-chip.selected {
+            background: linear-gradient(135deg, rgba(99, 102, 241, .25), rgba(139, 92, 246, .2));
+            border-color: var(--accent-purple);
+            color: #fff;
+            box-shadow: 0 0 20px rgba(139, 92, 246, .25);
+        }
+
+        .cmm-chip.selected::after {
+            content: '✓';
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: .7rem;
+            color: var(--accent-cyan);
+            font-weight: 700;
+        }
+
+        .cmm-chip-icon {
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+
+        .cmm-chip-text {
+            display: flex;
+            flex-direction: column;
+            gap: 1px;
+            z-index: 1;
+        }
+
+        .cmm-chip-zh {
+            font-weight: 600;
+            font-size: .75rem;
+        }
+
+        .cmm-chip-en {
+            font-size: .62rem;
+            opacity: .6;
+        }
+
+        /* === Bonus Panel === */
+        .cmm-bonus {
+            flex-shrink: 0;
+            padding: 10px 20px;
+            border-top: 1px solid rgba(139, 92, 246, .2);
+            background: rgba(20, 15, 30, .6);
+            max-height: 0;
+            overflow: hidden;
+            opacity: 0;
+            transition: all .4s ease;
+        }
+
+        .cmm-bonus.visible {
+            max-height: 180px;
+            opacity: 1;
+            padding: 14px 20px;
+        }
+
+        .cmm-bonus-title {
+            font-size: .75rem;
+            color: var(--accent-gold);
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .cmm-bonus-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .cmm-bonus-tag {
+            padding: 5px 10px;
+            font-size: .7rem;
+            border-radius: 20px;
+            cursor: pointer;
+            background: rgba(251, 191, 36, .08);
+            border: 1px solid rgba(251, 191, 36, .2);
+            color: rgba(251, 191, 36, .8);
+            transition: all .2s;
+        }
+
+        .cmm-bonus-tag:hover {
+            background: rgba(251, 191, 36, .15);
+            border-color: rgba(251, 191, 36, .4);
+            color: var(--accent-gold);
+        }
+
+        .cmm-bonus-tag.selected {
+            background: rgba(251, 191, 36, .2);
+            border-color: var(--accent-gold);
+            color: var(--accent-gold);
+            font-weight: 600;
+            box-shadow: 0 0 12px rgba(251, 191, 36, .2);
+        }
+
+        /* === Empty State === */
+        .cmm-empty {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-secondary);
+            font-size: .85rem;
+        }
+
+        /* === Footer === */
+        .cmm-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 20px;
+            border-top: 1px solid rgba(139, 92, 246, .15);
+            background: rgba(10, 10, 20, .5);
+            flex-shrink: 0;
+        }
+
+        .cmm-footer-status {
+            font-size: .75rem;
+            color: var(--text-secondary);
+        }
+
+        .cmm-footer-status .count {
+            color: var(--accent-cyan);
+            font-weight: 700;
+        }
+
+        .cmm-footer-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .cmm-btn {
+            padding: 8px 20px;
+            font-size: .8rem;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            border: none;
+            transition: all .2s;
+        }
+
+        .cmm-btn-cancel {
+            background: rgba(100, 100, 150, .2);
+            color: var(--text-secondary);
+            border: 1px solid rgba(100, 100, 150, .2);
+        }
+
+        .cmm-btn-cancel:hover {
+            background: rgba(100, 100, 150, .3);
+            color: var(--text-primary);
+        }
+
+        .cmm-btn-apply {
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            color: #fff;
+            box-shadow: 0 0 20px rgba(99, 102, 241, .3);
+        }
+
+        .cmm-btn-apply:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 0 30px rgba(99, 102, 241, .5);
+        }
+
+        .cmm-btn-clear {
+            background: rgba(239, 68, 68, .12);
+            color: #f87171;
+            border: 1px solid rgba(239, 68, 68, .2);
+        }
+
+        .cmm-btn-clear:hover {
+            background: rgba(239, 68, 68, .2);
+        }
+
+        /* === Dice overlay === */
+        .cmm-dice-overlay {
+            position: absolute;
+            inset: 0;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, .7);
+            z-index: 99;
+            border-radius: 20px;
+        }
+
+        .cmm-dice-overlay.active {
+            display: flex;
+        }
+
+        .cmm-dice-icon {
+            font-size: 4rem;
+            animation: cmm-diceRoll .8s ease-in-out;
+        }
+
+        /* === Animations === */
+        @keyframes cmm-fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes cmm-fadeOut {
+            from {
+                opacity: 1;
+            }
+
+            to {
+                opacity: 0;
+            }
+        }
+
+        @keyframes cmm-slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px) scale(.95);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        @keyframes cmm-flashPulse {
+            0% {
+                opacity: .6;
+            }
+
+            100% {
+                opacity: 0;
+            }
+        }
+
+        @keyframes cmm-rotate {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes cmm-float {
+
+            0%,
+            100% {
+                transform: translateY(0) translateX(0);
+                opacity: .3;
+            }
+
+            50% {
+                transform: translateY(-100px) translateX(30px);
+                opacity: .8;
+            }
+        }
+
+        @keyframes cmm-diceRoll {
+            0% {
+                transform: rotate(0deg) scale(1);
+            }
+
+            25% {
+                transform: rotate(180deg) scale(1.3);
+            }
+
+            50% {
+                transform: rotate(360deg) scale(1);
+            }
+
+            75% {
+                transform: rotate(540deg) scale(1.2);
+            }
+
+            100% {
+                transform: rotate(720deg) scale(1);
+            }
+        }
+
+        @keyframes cmm-chipPop {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.08);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        /* === Summary bar (on demo page) === */
+        .demo-summary {
+            margin-top: 16px;
+            padding: 14px 18px;
+            background: linear-gradient(135deg, rgba(99, 102, 241, .1), rgba(139, 92, 246, .08));
+            border: 1px solid rgba(139, 92, 246, .3);
+            border-radius: 12px;
+            display: none;
+        }
+
+        .demo-summary.visible {
+            display: block;
+        }
+
+        .demo-summary-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .demo-summary-title {
+            font-size: .85rem;
+            font-weight: 700;
+            color: var(--accent-cyan);
+        }
+
+        .demo-summary-clear {
+            font-size: .72rem;
+            padding: 4px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            border: 1px solid rgba(239, 68, 68, .3);
+            background: rgba(239, 68, 68, .1);
+            color: #f87171;
+            transition: all .2s;
+        }
+
+        .demo-summary-clear:hover {
+            background: rgba(239, 68, 68, .2);
+        }
+
+        .demo-summary-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .demo-summary-tag {
+            padding: 4px 10px;
+            font-size: .7rem;
+            border-radius: 16px;
+            font-weight: 600;
+        }
+
+        .demo-summary-tag.main {
+            background: rgba(139, 92, 246, .2);
+            border: 1px solid var(--accent-purple);
+            color: var(--accent-purple);
+        }
+
+        .demo-summary-tag.bonus {
+            background: rgba(251, 191, 36, .12);
+            border: 1px solid rgba(251, 191, 36, .3);
+            color: var(--accent-gold);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="demo-page">
+        <div class="demo-header">
+            <h1>📸 Camera Magic Modal — Demo</h1>
+            <p>基於 camera-work-prompt-guide.md 的進階運鏡選擇器</p>
+            <button class="demo-trigger-btn" onclick="openCameraModal()">
+                <i class="fa-solid fa-wand-sparkles"></i>
+                📸 開啟運鏡魔法
+            </button>
+        </div>
+
+        <div class="demo-summary" id="demoSummary">
+            <div class="demo-summary-header">
+                <span class="demo-summary-title">📸 運鏡魔法啟用中</span>
+                <button class="demo-summary-clear" onclick="clearAll()">清除</button>
+            </div>
+            <div class="demo-summary-tags" id="demoSummaryTags"></div>
+        </div>
+
+        <div class="demo-output">
+            <div class="demo-output-label">⚡ Generated Camera Prompt</div>
+            <div class="demo-output-text" id="outputText">
+                <span style="color: var(--text-secondary)">點擊上方按鈕，選擇運鏡技巧…</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ================================================
+        // Camera Magic Data（萃取自 camera-work-prompt-guide.md）
+        // ================================================
+        const CAMERA_DATA = {
+            TABS: [
+                { id: 'all', label: '全部', en: 'All', icon: '✨' },
+                { id: 'recent', label: '最近', en: 'Recent', icon: '🕐' },
+                { id: 'hot', label: '熱門', en: 'Hot', icon: '🔥' },
+                { id: 'distance', label: '鏡頭距離', en: 'Distance', icon: '📏' },
+                { id: 'vAngle', label: '垂直角度', en: 'V-Angle', icon: '📐' },
+                { id: 'hAngle', label: '水平角度', en: 'H-Angle', icon: '🔄' },
+                { id: 'movement', label: '鏡頭運動', en: 'Movement', icon: '🎥' },
+                { id: 'lens', label: '鏡頭焦距', en: 'Lens', icon: '🔭' },
+                { id: 'dof', label: '景深對焦', en: 'DOF', icon: '🎯' },
+                { id: 'composition', label: '構圖技巧', en: 'Compose', icon: '🖼️' }
+            ],
+
+            HOT_ITEMS: [
+                'cu', 'ms', 'fs', 'low_angle', 'birdeye', 'three_quarter', 'dutch',
+                'tracking', 'lens_85', 'shallow_dof', 'rule_thirds', 'frame_in_frame',
+                'mcu', 'ews', 'profile', 'dolly_in', 'lens_50', 'bokeh', 'pov', 'cowboy'
+            ],
+
+            ITEMS: [
+                // ══════════════════════════════════════
+                // 📏 鏡頭距離 (distance) — 9 items
+                // ══════════════════════════════════════
+                { id: 'ecu', label: '大特寫', en: 'Extreme Close-Up', value: 'extreme close-up, macro detail, partial face visible', category: 'distance', icon: '🔬' },
+                { id: 'cu', label: '特寫', en: 'Close-Up', value: 'close-up portrait, head and shoulders framing', category: 'distance', icon: '👤' },
+                { id: 'mcu', label: '中特寫', en: 'Medium Close-Up', value: 'medium close-up, framed from chest up, bust shot', category: 'distance', icon: '👕' },
+                { id: 'ms', label: '中景', en: 'Medium Shot', value: 'medium shot, waist-up shot, hands visible', category: 'distance', icon: '🧍' },
+                { id: 'mls', label: '中遠景', en: 'Medium Long Shot', value: 'medium long shot, framed from knees up, American shot', category: 'distance', icon: '🚶' },
+                { id: 'cowboy', label: '牛仔鏡頭', en: 'Cowboy Shot', value: 'cowboy shot, mid-thigh framing', category: 'distance', icon: '🤠' },
+                { id: 'fs', label: '全身鏡頭', en: 'Full Shot', value: 'full body shot, head to toe, feet visible', category: 'distance', icon: '🧍‍♂️' },
+                { id: 'ws', label: '遠景', en: 'Wide Shot', value: 'wide shot, character is small in the frame, environment-dominant composition', category: 'distance', icon: '🏞️' },
+                { id: 'ews', label: '大遠景', en: 'Extreme Wide Shot', value: 'extreme wide shot, tiny figure in vast landscape, dwarfed by the environment', category: 'distance', icon: '🌍' },
+
+                // ══════════════════════════════════════
+                // 📐 垂直角度 (vAngle) — 6 items
+                // ══════════════════════════════════════
+                { id: 'eye_level', label: '平視', en: 'Eye-Level', value: 'eye-level shot, neutral angle', category: 'vAngle', icon: '👁️' },
+                { id: 'low_angle', label: '仰角', en: 'Low Angle', value: 'dramatic low angle shot, looking up at, shot from below', category: 'vAngle', icon: '⬆️' },
+                { id: 'high_angle', label: '俯角', en: 'High Angle', value: 'high angle shot, looking down at, shot from above', category: 'vAngle', icon: '⬇️' },
+                { id: 'birdeye', label: '鳥瞰', en: "Bird's-Eye View", value: "bird's-eye view, overhead shot, top-down view, aerial view", category: 'vAngle', icon: '🦅' },
+                { id: 'wormseye', label: '蟲視', en: "Worm's-Eye View", value: "worm's-eye view, ultra low angle, looking straight up", category: 'vAngle', icon: '🐛' },
+                { id: 'ground_level', label: '地面視角', en: 'Ground-Level', value: 'ground-level shot, camera on the ground', category: 'vAngle', icon: '🌿' },
+
+                // ══════════════════════════════════════
+                // 🔄 水平角度 (hAngle) — 7 items
+                // ══════════════════════════════════════
+                { id: 'front_view', label: '正面', en: 'Front View', value: 'front view, facing the camera, looking at viewer', category: 'hAngle', icon: '🎯' },
+                { id: 'three_quarter', label: '四分之三角', en: 'Three-Quarter', value: 'three-quarter view, face turned about 30-45 degrees', category: 'hAngle', icon: '↗️' },
+                { id: 'profile', label: '側面', en: 'Profile View', value: 'profile view, perfect profile, showing one eye only', category: 'hAngle', icon: '👤' },
+                { id: 'back_view', label: '背面', en: 'Back View', value: 'back view, from behind, face not shown, facing away from camera', category: 'hAngle', icon: '🔙' },
+                { id: 'dutch', label: '荷蘭角', en: 'Dutch Angle', value: 'Dutch angle, strongly tilted about 20-30 degrees, canted angle', category: 'hAngle', icon: '📐' },
+                { id: 'ots', label: '過肩鏡頭', en: 'Over-the-Shoulder', value: 'over-the-shoulder shot, shallow depth of field focusing on the distant subject', category: 'hAngle', icon: '🙋' },
+                { id: 'pov', label: '第一人稱', en: 'POV Shot', value: "POV shot, first-person perspective, character's hands visible", category: 'hAngle', icon: '🎮' },
+
+                // ══════════════════════════════════════
+                // 🎥 鏡頭運動 (movement) — 8 items
+                // ══════════════════════════════════════
+                { id: 'dolly_in', label: '推進', en: 'Dolly-In', value: 'dolly-in, push-in, camera moving toward subject, shallow depth of field', category: 'movement', icon: '➡️' },
+                { id: 'dolly_out', label: '拉遠', en: 'Dolly-Out', value: 'dolly-out, pull-back, reveal shot, character small in frame', category: 'movement', icon: '⬅️' },
+                { id: 'orbit', label: '環繞', en: 'Orbit Shot', value: 'orbit shot, camera orbiting around, slight motion blur in background', category: 'movement', icon: '🔄' },
+                { id: 'crane', label: '起重機', en: 'Crane Shot', value: 'crane shot, sweeping overhead, camera rising above', category: 'movement', icon: '🏗️' },
+                { id: 'handheld', label: '手持', en: 'Handheld', value: 'handheld camera, documentary style, film grain, slightly off-center framing', category: 'movement', icon: '✋' },
+                { id: 'tracking', label: '追蹤', en: 'Tracking Shot', value: 'tracking shot, camera following subject, motion blur in background, subject sharp', category: 'movement', icon: '🏃' },
+                { id: 'whip_pan', label: '甩鏡', en: 'Whip Pan', value: 'whip pan, speed blur, swish pan', category: 'movement', icon: '💨' },
+                { id: 'pan_tilt', label: '搖鏡/傾斜', en: 'Pan & Tilt', value: 'panning shot, panoramic composition', category: 'movement', icon: '↔️' },
+
+                // ══════════════════════════════════════
+                // 🔭 鏡頭焦距 (lens) — 8 items
+                // ══════════════════════════════════════
+                { id: 'lens_fisheye', label: '魚眼 8-16mm', en: 'Fisheye', value: 'fisheye lens, 180 degrees, barrel distortion', category: 'lens', icon: '🐟' },
+                { id: 'lens_14', label: '超廣角 14-24mm', en: 'Ultra-Wide', value: '14mm ultra-wide angle lens, strong perspective, exaggerated space', category: 'lens', icon: '🌐' },
+                { id: 'lens_35', label: '廣角 24-35mm', en: 'Wide Angle', value: '35mm wide-angle lens, natural but wide, street photography', category: 'lens', icon: '📸' },
+                { id: 'lens_50', label: '標準 50mm', en: 'Nifty Fifty', value: '50mm lens, closest to human eye, natural perspective', category: 'lens', icon: '👁️' },
+                { id: 'lens_85', label: '人像 85mm', en: '85mm Portrait', value: '85mm portrait lens, beautiful face compression, creamy bokeh', category: 'lens', icon: '🖼️' },
+                { id: 'lens_135', label: '中望遠 135mm', en: '135mm Tele', value: '135mm lens, beautiful compression, strong bokeh', category: 'lens', icon: '🔭' },
+                { id: 'lens_200', label: '望遠 200mm+', en: '200mm Telephoto', value: '200mm telephoto lens, extreme compression, tunnel effect', category: 'lens', icon: '🔬' },
+                { id: 'lens_macro', label: '微距', en: 'Macro', value: 'macro lens, 1:1 macro, extreme detail, paper-thin depth of field', category: 'lens', icon: '🔍' },
+
+                // ══════════════════════════════════════
+                // 🎯 景深對焦 (dof) — 8 items
+                // ══════════════════════════════════════
+                { id: 'shallow_dof', label: '淺景深', en: 'Shallow DOF', value: 'shallow depth of field, bokeh, f/1.8', category: 'dof', icon: '🌸' },
+                { id: 'ultra_shallow', label: '極淺景深', en: 'Ultra Shallow', value: 'paper-thin depth of field, only eyes in focus, f/1.2', category: 'dof', icon: '💫' },
+                { id: 'deep_focus', label: '深景深', en: 'Deep Focus', value: 'deep focus, everything sharp, f/11', category: 'dof', icon: '🔭' },
+                { id: 'tilt_shift', label: '移軸', en: 'Tilt-Shift', value: 'tilt-shift, miniature effect, selective blur', category: 'dof', icon: '🏠' },
+                { id: 'soft_focus', label: '柔焦', en: 'Soft Focus', value: 'soft focus, dreamy blur, romantic atmosphere', category: 'dof', icon: '☁️' },
+                { id: 'bokeh', label: '散景光點', en: 'Bokeh Lights', value: 'bokeh lights, hexagonal bokeh, creamy bokeh', category: 'dof', icon: '✨' },
+                { id: 'fg_blur', label: '前景虛化', en: 'Foreground Blur', value: 'foreground blur, shooting through foreground elements, layered depth', category: 'dof', icon: '🌿' },
+                { id: 'center_focus', label: '中央對焦', en: 'Center Focus', value: 'center-focused, radial blur around edges', category: 'dof', icon: '🎯' },
+
+                // ══════════════════════════════════════
+                // 🖼️ 構圖技巧 (composition) — 8 items
+                // ══════════════════════════════════════
+                { id: 'rule_thirds', label: '三分法', en: 'Rule of Thirds', value: 'rule of thirds, subject at third intersection', category: 'composition', icon: '#️⃣' },
+                { id: 'centered', label: '中心構圖', en: 'Centered', value: 'centered composition, symmetrical framing', category: 'composition', icon: '⊕' },
+                { id: 'leading_lines', label: '引導線', en: 'Leading Lines', value: 'leading lines, converging lines guiding the eye', category: 'composition', icon: '↗️' },
+                { id: 'frame_in_frame', label: '框中框', en: 'Frame in Frame', value: 'natural framing, framed by doorway, window framing subject', category: 'composition', icon: '🪟' },
+                { id: 'negative_space', label: '負空間', en: 'Negative Space', value: 'negative space, minimalist composition, large empty area', category: 'composition', icon: '⬜' },
+                { id: 'golden_ratio', label: '黃金比例', en: 'Golden Ratio', value: 'golden ratio composition, fibonacci framing', category: 'composition', icon: '🐚' },
+                { id: 'diagonal', label: '對角線', en: 'Diagonal', value: 'diagonal composition, dynamic diagonal lines', category: 'composition', icon: '↙️' },
+                { id: 'layered', label: '前中後景', en: 'Layered', value: 'layered composition: foreground, midground, background, depth layers', category: 'composition', icon: '📊' }
+            ],
+
+            BONUS_TRAITS: {
+                distance: [
+                    { icon: '🌫️', zh: '大氣透視', en: 'atmospheric haze, aerial perspective' },
+                    { icon: '🌿', zh: '前景物件', en: 'foreground elements adding depth' },
+                    { icon: '📐', zh: '分層構圖', en: 'layered composition: foreground / midground / background' },
+                    { icon: '🔍', zh: '主體佔比控制', en: 'character occupying 60% of frame height' },
+                    { icon: '👣', zh: '腳部可見', en: 'feet visible, standing on surface' },
+                    { icon: '🏔️', zh: '環境渺小感', en: 'dwarfed by the environment, insignificant against backdrop' }
+                ],
+                vAngle: [
+                    { icon: '🎭', zh: '戲劇性透視', en: 'dramatic perspective, foreshortening' },
+                    { icon: '👑', zh: '威嚴感', en: 'imposing, powerful, dominant' },
+                    { icon: '🕊️', zh: '脆弱感', en: 'vulnerable, small, isolated' },
+                    { icon: '📷', zh: '監控視角', en: 'surveillance camera perspective' },
+                    { icon: '🦸', zh: '英雄感', en: 'heroic, monumental, impressive' },
+                    { icon: '🌌', zh: '全知視角', en: 'omniscient perspective, god view' }
+                ],
+                hAngle: [
+                    { icon: '😊', zh: '自然表情', en: 'natural expression, candid feeling' },
+                    { icon: '🗡️', zh: '面對敵人', en: 'facing the enemy, confrontation' },
+                    { icon: '🎨', zh: '輪廓強調', en: 'silhouette profile, contour lines' },
+                    { icon: '🚶', zh: '走向未知', en: 'walking into the unknown, away from camera' },
+                    { icon: '💫', zh: '不安感', en: 'disorienting, chaotic energy' },
+                    { icon: '🎮', zh: '沉浸感', en: 'immersive, first-person experience' }
+                ],
+                movement: [
+                    { icon: '💨', zh: '背景動態模糊', en: 'motion blur in background' },
+                    { icon: '🎬', zh: '電影感', en: 'cinematic, dynamic perspective' },
+                    { icon: '📰', zh: '紀實感', en: 'documentary feel, raw footage' },
+                    { icon: '🌀', zh: '旋轉動感', en: 'rotational energy, spinning feel' },
+                    { icon: '⚡', zh: '速度感', en: 'sense of speed, fast movement' },
+                    { icon: '🔍', zh: '揭示效果', en: 'reveal effect, uncovering the scene' }
+                ],
+                lens: [
+                    { icon: '🌸', zh: '奶油散景', en: 'creamy bokeh, smooth background blur' },
+                    { icon: '📐', zh: '透視誇大', en: 'exaggerated perspective, strong convergence' },
+                    { icon: '🗜️', zh: '背景壓縮', en: 'compressed background, stacked layers' },
+                    { icon: '🔮', zh: '桶狀變形', en: 'barrel distortion, curved lines' },
+                    { icon: '👁️', zh: '人眼自然感', en: 'natural human eye perspective' },
+                    { icon: '🏔️', zh: '空間層次', en: 'spatial depth, dimensional layering' }
+                ],
+                dof: [
+                    { icon: '💎', zh: '六角形散景', en: 'hexagonal bokeh shapes' },
+                    { icon: '🌈', zh: '光圈星芒', en: 'starburst from small aperture, f/16' },
+                    { icon: '🧸', zh: '模型感', en: 'miniature model effect, toy-like' },
+                    { icon: '💭', zh: '夢幻朦朧', en: 'dreamy, ethereal, romantic haze' },
+                    { icon: '🎪', zh: '散景光暈', en: 'bokeh circles of confusion, light orbs' },
+                    { icon: '📸', zh: '銳利全域', en: 'tack sharp throughout, hyper-focused' }
+                ],
+                composition: [
+                    { icon: '➡️', zh: '視線引導', en: 'eye guided through the frame' },
+                    { icon: '⚖️', zh: '視覺平衡', en: 'visual balance, harmonious weight' },
+                    { icon: '🎭', zh: '張力感', en: 'visual tension, dynamic energy' },
+                    { icon: '🌀', zh: '螺旋構圖', en: 'golden spiral, fibonacci curve' },
+                    { icon: '🪞', zh: '對稱美學', en: 'perfect symmetry, mirror composition' },
+                    { icon: '📍', zh: '焦點突出', en: 'clear focal point, visual hierarchy' }
+                ]
+            }
+        };
+
+        // ================================================
+        // State
+        // ================================================
+        let selectedItem = null;
+        let selectedBonuses = new Map();
+        let activeTab = 'all';
+        let searchQuery = '';
+        let recentIds = JSON.parse(localStorage.getItem('cmm_recent') || '[]');
+
+        // ================================================
+        // Open Modal
+        // ================================================
+        function openCameraModal() {
+            const overlay = document.createElement('div');
+            overlay.className = 'cmm-overlay';
+            overlay.id = 'cameraModal';
+            overlay.innerHTML = `
+            <div class="cmm-flash"></div>
+            <div class="cmm-magic-circle"></div>
+            <div class="cmm-particles" id="cmmParticles"></div>
+            <div class="cmm-container">
+                <div class="cmm-dice-overlay" id="cmmDice">
+                    <span class="cmm-dice-icon">🎲</span>
+                </div>
+                <div class="cmm-header">
+                    <div class="cmm-title-row">
+                        <div class="cmm-title">📸 高級魔法・運鏡大全</div>
+                        <div class="cmm-toolbar">
+                            <button onclick="randomPick()" title="隨機選取"><i class="fa-solid fa-dice"></i> 隨機</button>
+                            <button onclick="clearSelection()" title="清空"><i class="fa-solid fa-eraser"></i></button>
+                        </div>
+                    </div>
+                    <div class="cmm-search-row">
+                        <i class="fa-solid fa-search"></i>
+                        <input type="text" placeholder="搜尋運鏡 Search camera work..." oninput="onSearch(this.value)">
+                    </div>
+                </div>
+                <div class="cmm-tabs" id="cmmTabs"></div>
+                <div class="cmm-body" id="cmmBody"></div>
+                <div class="cmm-bonus" id="cmmBonus">
+                    <div class="cmm-bonus-title">⭐ 點選增加運鏡特徵 —</div>
+                    <div class="cmm-bonus-tags" id="cmmBonusTags"></div>
+                </div>
+                <div class="cmm-footer">
+                    <div class="cmm-footer-status">
+                        已選：<span class="count" id="cmmCount">0</span> 項
+                    </div>
+                    <div class="cmm-footer-actions">
+                        <button class="cmm-btn cmm-btn-cancel" onclick="closeModal()">取消</button>
+                        <button class="cmm-btn cmm-btn-apply" onclick="applySelection()">✨ 套用</button>
+                    </div>
+                </div>
+            </div>
+        `;
+            document.body.appendChild(overlay);
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay) closeModal();
+            });
+            spawnParticles();
+            renderTabs();
+            renderGrid();
+        }
+
+        // ================================================
+        // Close Modal
+        // ================================================
+        function closeModal() {
+            const overlay = document.getElementById('cameraModal');
+            if (!overlay) return;
+            overlay.classList.add('closing');
+            setTimeout(() => overlay.remove(), 300);
+        }
+
+        // ================================================
+        // Particles
+        // ================================================
+        function spawnParticles() {
+            const container = document.getElementById('cmmParticles');
+            if (!container) return;
+            const colors = ['#22d3ee', '#a855f7', '#6366f1', '#ec4899', '#fbbf24', '#fff'];
+            for (let i = 0; i < 30; i++) {
+                const p = document.createElement('div');
+                p.className = 'cmm-particle';
+                p.style.left = Math.random() * 100 + '%';
+                p.style.top = Math.random() * 100 + '%';
+                p.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                p.style.animationDelay = Math.random() * 6 + 's';
+                p.style.animationDuration = (4 + Math.random() * 4) + 's';
+                p.style.width = p.style.height = (2 + Math.random() * 4) + 'px';
+                container.appendChild(p);
+            }
+        }
+
+        // ================================================
+        // Tabs
+        // ================================================
+        function renderTabs() {
+            const container = document.getElementById('cmmTabs');
+            if (!container) return;
+            container.innerHTML = CAMERA_DATA.TABS.map(t =>
+                `<div class="cmm-tab ${t.id === activeTab ? 'active' : ''}" onclick="switchTab('${t.id}')">
+                ${t.icon} ${t.label}
+            </div>`
+            ).join('');
+        }
+
+        function switchTab(tabId) {
+            activeTab = tabId;
+            renderTabs();
+            renderGrid();
+        }
+
+        // ================================================
+        // Search
+        // ================================================
+        function onSearch(q) {
+            searchQuery = q.trim().toLowerCase();
+            renderGrid();
+        }
+
+        // ================================================
+        // Get filtered items
+        // ================================================
+        function getFilteredItems() {
+            let items = CAMERA_DATA.ITEMS;
+
+            if (activeTab === 'recent') {
+                items = recentIds.map(id => items.find(i => i.id === id)).filter(Boolean);
+            } else if (activeTab === 'hot') {
+                items = CAMERA_DATA.HOT_ITEMS.map(id => items.find(i => i.id === id)).filter(Boolean);
+            } else if (activeTab !== 'all') {
+                items = items.filter(i => i.category === activeTab);
+            }
+
+            if (searchQuery) {
+                items = items.filter(i =>
+                    i.label.includes(searchQuery) ||
+                    i.en.toLowerCase().includes(searchQuery) ||
+                    i.value.toLowerCase().includes(searchQuery)
+                );
+            }
+
+            return items;
+        }
+
+        // ================================================
+        // Render Grid
+        // ================================================
+        function renderGrid() {
+            const body = document.getElementById('cmmBody');
+            if (!body) return;
+            const items = getFilteredItems();
+
+            if (items.length === 0) {
+                body.innerHTML = '<div class="cmm-empty">🔍 沒有找到符合的運鏡技巧</div>';
+                return;
+            }
+
+            body.innerHTML = `<div class="cmm-grid">
+            ${items.map(item => `
+                <div class="cmm-chip ${selectedItem && selectedItem.id === item.id ? 'selected' : ''}"
+                     onclick="selectItem('${item.id}')">
+                    <span class="cmm-chip-icon">${item.icon}</span>
+                    <div class="cmm-chip-text">
+                        <span class="cmm-chip-zh">${item.label}</span>
+                        <span class="cmm-chip-en">${item.en}</span>
+                    </div>
+                </div>
+            `).join('')}
+        </div>`;
+        }
+
+        // ================================================
+        // Select Item
+        // ================================================
+        function selectItem(id) {
+            const item = CAMERA_DATA.ITEMS.find(i => i.id === id);
+            if (!item) return;
+
+            if (selectedItem && selectedItem.id === id) {
+                selectedItem = null;
+                selectedBonuses.clear();
+                hideBonus();
+            } else {
+                selectedItem = item;
+                selectedBonuses.clear();
+                showBonus(item.category);
+            }
+
+            renderGrid();
+            updateCount();
+        }
+
+        // ================================================
+        // Bonus Panel
+        // ================================================
+        function showBonus(category) {
+            const panel = document.getElementById('cmmBonus');
+            const container = document.getElementById('cmmBonusTags');
+            if (!panel || !container) return;
+
+            const traits = CAMERA_DATA.BONUS_TRAITS[category] || [];
+            if (traits.length === 0) { hideBonus(); return; }
+
+            container.innerHTML = traits.map(t =>
+                `<span class="cmm-bonus-tag ${selectedBonuses.has(t.en) ? 'selected' : ''}"
+                   onclick="toggleBonus('${t.en.replace(/'/g, "\\'")}', '${t.zh}')">
+                ${t.icon} ${t.zh}
+            </span>`
+            ).join('');
+
+            panel.classList.add('visible');
+        }
+
+        function hideBonus() {
+            const panel = document.getElementById('cmmBonus');
+            if (panel) panel.classList.remove('visible');
+        }
+
+        function toggleBonus(en, zh) {
+            if (selectedBonuses.has(en)) {
+                selectedBonuses.delete(en);
+            } else {
+                selectedBonuses.set(en, zh);
+            }
+            if (selectedItem) showBonus(selectedItem.category);
+            updateCount();
+        }
+
+        // ================================================
+        // Count
+        // ================================================
+        function updateCount() {
+            const el = document.getElementById('cmmCount');
+            if (el) el.textContent = (selectedItem ? 1 : 0) + selectedBonuses.size;
+        }
+
+        // ================================================
+        // Random Pick
+        // ================================================
+        function randomPick() {
+            const dice = document.getElementById('cmmDice');
+            if (dice) {
+                dice.classList.add('active');
+                setTimeout(() => {
+                    dice.classList.remove('active');
+                    const items = CAMERA_DATA.ITEMS;
+                    const rand = items[Math.floor(Math.random() * items.length)];
+                    selectItem(rand.id);
+                    // 自動選一個bonus
+                    const traits = CAMERA_DATA.BONUS_TRAITS[rand.category] || [];
+                    if (traits.length > 0) {
+                        const randTrait = traits[Math.floor(Math.random() * traits.length)];
+                        if (!selectedBonuses.has(randTrait.en)) {
+                            toggleBonus(randTrait.en, randTrait.zh);
+                        }
+                    }
+                }, 800);
+            }
+        }
+
+        // ================================================
+        // Clear
+        // ================================================
+        function clearSelection() {
+            selectedItem = null;
+            selectedBonuses.clear();
+            hideBonus();
+            renderGrid();
+            updateCount();
+        }
+
+        // ================================================
+        // Apply
+        // ================================================
+        function applySelection() {
+            if (!selectedItem) {
+                closeModal();
+                return;
+            }
+
+            // 儲存到 recent
+            recentIds = [selectedItem.id, ...recentIds.filter(id => id !== selectedItem.id)].slice(0, 15);
+            localStorage.setItem('cmm_recent', JSON.stringify(recentIds));
+
+            // 更新 demo output
+            const outputEl = document.getElementById('outputText');
+            let prompt = `<span class="highlight">${selectedItem.value}</span>`;
+            const bonusArr = [...selectedBonuses.keys()];
+            if (bonusArr.length > 0) {
+                prompt += ', ' + bonusArr.map(b => `<span class="bonus">${b}</span>`).join(', ');
+            }
+            outputEl.innerHTML = prompt;
+
+            // 更新 summary bar
+            const summary = document.getElementById('demoSummary');
+            const tagsEl = document.getElementById('demoSummaryTags');
+            summary.classList.add('visible');
+            let tags = `<span class="demo-summary-tag main">${selectedItem.icon} ${selectedItem.label} ${selectedItem.en}</span>`;
+            selectedBonuses.forEach((zh, en) => {
+                tags += `<span class="demo-summary-tag bonus">✨ ${zh}</span>`;
+            });
+            tagsEl.innerHTML = tags;
+
+            closeModal();
+        }
+
+        // ================================================
+        // Clear All (from demo page)
+        // ================================================
+        function clearAll() {
+            selectedItem = null;
+            selectedBonuses.clear();
+            document.getElementById('demoSummary').classList.remove('visible');
+            document.getElementById('outputText').innerHTML =
+                '<span style="color: var(--text-secondary)">點擊上方按鈕，選擇運鏡技巧…</span>';
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>次元繪師 · 角色招喚の禁忌魔導書 | AI 繪圖提示詞產生器</title>
+
+    <!-- SEO Meta -->
+    <meta name="description"
+        content="最強 AI 繪圖角色提示詞產生器 — 支援種族、職業、髮型、身材等 200+ 選項，搭配高級魔法系統，一鍵產出高品質 Stable Diffusion / Midjourney / NovelAI prompt。">
+    <meta name="keywords"
+        content="AI繪圖, prompt generator, 提示詞產生器, Stable Diffusion, Midjourney, NovelAI, 角色生成, AI art, 次元繪師">
+    <meta name="author" content="Tommy Lee">
+    <link rel="canonical" href="https://tommylee.ai/">
+    <meta name="google-site-verification" content="sNuaUFCSv_IoZ97TMGUpr1a60EK3AFE7RIlWuV7lT9s" />
+
+    <!-- Open Graph (Facebook / LINE / Discord) -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="次元繪師 · 角色招喚の禁忌魔導書">
+    <meta property="og:description" content="最強 AI 繪圖角色提示詞產生器 — 200+ 選項，高級魔法系統，一鍵產出高品質 prompt">
+    <meta property="og:url" content="https://tommylee.ai/">
+    <meta property="og:image" content="https://tommylee.ai/assets/og-preview.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:site_name" content="次元繪師">
+    <meta property="og:locale" content="zh_TW">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="次元繪師 · 角色招喚の禁忌魔導書">
+    <meta name="twitter:description" content="最強 AI 繪圖角色提示詞產生器 — 200+ 選項，一鍵產出高品質 prompt">
+    <meta name="twitter:image" content="https://tommylee.ai/assets/og-preview.png">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="assets/logo.png">
+    <link rel="apple-touch-icon" href="assets/logo.png">
+
+    <!-- Amiri 阿拉伯字型 (咒語模式用) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&display=swap"
+        rel="stylesheet">
+
+    <!-- Schema.org JSON-LD -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "次元繪師 · 角色招喚の禁忌魔導書",
+        "url": "https://tommylee.ai/",
+        "description": "AI 繪圖角色提示詞產生器，支援種族、職業、髮型、身材等 200+ 選項",
+        "applicationCategory": "DesignApplication",
+        "operatingSystem": "Web Browser",
+        "author": {
+            "@type": "Person",
+            "name": "Tommy Lee"
+        },
+        "inLanguage": "zh-Hant",
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+        }
+    }
+    </script>
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="styles.css?v=8.2">
+    <link rel="stylesheet" href="styles/about-modal.css?v=8.1">
+    <link rel="stylesheet" href="styles/magic-modal-base.css?v=8.2">
+    <link rel="stylesheet" href="styles/hair-magic-modal.css?v=7.4.1">
+    <link rel="stylesheet" href="styles/expression-magic-modal.css?v=7.4.1">
+    <link rel="stylesheet" href="styles/pose-magic-modal.css?v=7.5">
+    <link rel="stylesheet" href="styles/atmosphere-magic-modal.css?v=7.8">
+    <link rel="stylesheet" href="styles/fate-wheel-modal.css?v=8.0">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+
+<body>
+    <!-- === 行動設備偵測遮罩 START === -->
+    <div id="mobile-block-overlay" style="display:none; position:fixed; inset:0; z-index:99999;
+        background:linear-gradient(135deg,#0a0a1a 0%,#1a0a2e 50%,#0a0a1a 100%);
+        color:#e2e8f0; font-family:'Inter',sans-serif; text-align:center;
+        justify-content:center; align-items:center; flex-direction:column; padding:2rem;">
+        <div style="font-size:4rem; margin-bottom:1rem;">🖥️</div>
+        <h1 style="font-size:1.5rem; color:#a78bfa; margin:0 0 1rem 0;">僅支援電腦版</h1>
+        <p style="font-size:1rem; color:#94a3b8; max-width:320px; line-height:1.6; margin:0 0 1.5rem 0;">
+            本工具目前僅針對電腦瀏覽器進行優化。<br>
+            請使用電腦開啟以獲得最佳體驗。
+        </p>
+        <p style="font-size:0.8rem; color:#64748b;">
+            Desktop browsers only. Mobile version coming soon.
+        </p>
+    </div>
+    <script>
+        (function () {
+            var ua = navigator.userAgent;
+            var isMobile = /iPhone|iPod|Android.*Mobile/i.test(ua);
+            var isTablet = /iPad/i.test(ua) ||
+                (navigator.maxTouchPoints > 1 && /Macintosh/i.test(ua) && !window.MSStream);
+            if (isMobile || isTablet) {
+                var el = document.getElementById('mobile-block-overlay');
+                el.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+            }
+        })();
+    </script>
+    <!-- === 行動設備偵測遮罩 END === -->
+    <div class="custom-bg"></div>
+    <div class="background-globes">
+        <div class="globe globe-1"></div>
+        <div class="globe globe-2"></div>
+        <div class="globe globe-3"></div>
+    </div>
+
+    <main class="main-content">
+        <!-- Left Column: Controls -->
+        <section class="controls-section">
+            <header class="header">
+                <h1>
+                    <img id="app-logo" src="assets/logo.png" alt="AI Studio Logo">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i> 次元繪師 · 角色招喚の禁忌魔導書 <span class="version">v8.2</span>
+                    <div class="header-buttons">
+                        <button id="btn-lang-toggle" class="btn-icon btn-icon-text active" title="語言：中文 → 按此切英文">
+                            <span class="btn-icon-label">中</span>
+                        </button>
+                        <button id="btn-format-toggle" class="btn-icon active" title="格式：YAML → 按此切純文字">
+                            <i class="fa-solid fa-code"></i>
+                        </button>
+                        <button id="btn-settings" class="btn-icon" title="Settings">
+                            <i class="fa-solid fa-gear"></i>
+                        </button>
+                        <button id="btn-sound-toggle" class="btn-icon" title="Toggle Sound">
+                            <i class="fa-solid fa-volume-high"></i>
+                        </button>
+                        <button id="btn-history" class="btn-icon" title="Version History">
+                            <i class="fa-solid fa-clock-rotate-left"></i>
+                        </button>
+                        <button id="btn-about" class="btn-icon" title="關於本站">
+                            <i class="fa-solid fa-book-open"></i>
+                        </button>
+                    </div>
+                </h1>
+            </header>
+
+            <!-- 1. 召喚指令 (Summoning Order) -->
+            <div class="summoning-order">
+                <label class="summoning-title">✦ 召喚指令 (Summoning Order)</label>
+                <div class="dimension-selector" id="dimension-selector">
+                    <button class="dim-btn active" data-dim="anime"><i class="fa-solid fa-paintbrush"></i> 二次元</button>
+                    <button class="dim-btn" data-dim="realistic"><i class="fa-solid fa-camera"></i> 寫實</button>
+                    <button class="dim-btn" data-dim="fantasy"><i class="fa-solid fa-hat-wizard"></i> 幻想混合</button>
+                    <button class="dim-btn" data-dim="2.5d"><i class="fa-solid fa-cube"></i> 2.5D</button>
+                </div>
+                <button class="fate-wheel-trigger" data-dim="fate">
+                    <span class="fate-wheel-shimmer"></span>
+                    <span class="fate-wheel-icon"><i class="fa-solid fa-dharmachakra"></i></span>
+                    <span class="fate-wheel-text">
+                        <span class="fate-wheel-title">運命の輪盤</span>
+                        <span class="fate-wheel-sub">Wheel of Fortune — 讓命運決定一切</span>
+                    </span>
+                    <span class="fate-wheel-stars">✦ ✦ ✦</span>
+                </button>
+                <input type="text" id="input-subject" value="" placeholder="額外召喚指示（可不填）...">
+            </div>
+
+            <!-- 2. Tab Navigation -->
+            <div class="tab-toolbar">
+                <div id="tab-bar" class="tab-bar">
+                    <!-- Tabs injected by JS -->
+                </div>
+            </div>
+
+            <!-- 3. Tab Content (scrollable) -->
+            <div id="tab-content" class="tab-content">
+                <!-- Sections injected by JS -->
+            </div>
+
+            <!-- 4. Custom Fields -->
+            <div class="section-title">自訂欄位 (Custom Fields)</div>
+            <div id="custom-fields-container">
+                <!-- Dynamic fields will be added here -->
+            </div>
+            <button id="btn-add-custom" class="btn btn-secondary btn-sm"><i class="fa-solid fa-plus"></i>
+                新增自訂欄位</button>
+
+            <!-- 5. Negative Prompt -->
+            <label for="negative-prompt" class="section-title">負面提示詞 (Negative Prompt)</label>
+            <textarea id="negative-prompt" class="small-textarea"
+                placeholder="ugly, blurry, low quality, deformed..."></textarea>
+
+            <!-- 6. Reset Button -->
+            <button id="btn-reset" class="btn btn-secondary btn-sm btn-reset-standalone"><i
+                    class="fa-solid fa-rotate-left"></i> 重置</button>
+
+            <!-- Legacy (hidden) -->
+            <div id="categories-container" style="display:none;"></div>
+        </section>
+
+        <!-- Right Column: Output -->
+        <section class="output-section">
+            <div class="sticky-output">
+                <!-- Preview Container -->
+                <div class="preview-container">
+                    <h3><i class="fa-solid fa-image"></i> 預覽 (Preview)</h3>
+                    <div id="preview-wrapper">
+                        <div id="preview-placeholder" class="active">
+                            <div id="incantation-display" class="incantation-display">
+                                <div class="incantation-text"></div>
+                            </div>
+                        </div>
+                        <div id="preview-content">
+                            <div id="preview-image-box"></div>
+                            <p id="preview-label"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 語言/格式已移至標題列 toggle 按鈕，保留隱藏 radio 以相容 JS -->
+                <div style="display:none">
+                    <input type="radio" name="lang" value="en">
+                    <input type="radio" name="lang" value="zh" checked>
+                    <input type="radio" name="format" value="plain">
+                    <input type="radio" name="format" value="yaml" checked>
+                </div>
+
+                <!-- === 生成結果區域 START === -->
+                <div class="prompt-section-header">
+                    <div class="prompt-section-icon">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    </div>
+                    <div class="prompt-section-text">
+                        <h2>您的招喚魔法已生成，大聲唸出來吧</h2>
+                        <span class="prompt-section-sub">Generated Prompt</span>
+                    </div>
+                    <div class="prompt-tag-count" id="prompt-tag-count"></div>
+                    <button class="spell-mode-toggle" id="btn-spell-toggle" title="咒語模式 / 可讀模式">
+                        <i class="fa-solid fa-wand-sparkles"></i>
+                        <span>🔮</span>
+                    </button>
+                </div>
+                <div class="output-container">
+                    <div id="final-prompt" class="output-display" contenteditable="false"
+                        data-placeholder="您的提示詞將顯示於此..."></div>
+                    <button id="btn-copy" class="btn btn-primary btn-block"><i class="fa-regular fa-copy"></i> 複製
+                        (Copy)</button>
+                </div>
+
+                <div class="prompt-section-header negative-header">
+                    <div class="prompt-section-icon negative-icon">
+                        <i class="fa-solid fa-shield-halved"></i>
+                    </div>
+                    <div class="prompt-section-text">
+                        <h2>負面提示詞</h2>
+                        <span class="prompt-section-sub">Negative Prompt</span>
+                    </div>
+                </div>
+                <div class="output-container negative-output-container">
+                    <textarea id="final-negative" readonly placeholder="負面提示詞..."></textarea>
+                    <button id="btn-copy-negative" class="btn btn-secondary btn-sm"><i class="fa-regular fa-copy"></i>
+                        複製 (Copy Negative)</button>
+                </div>
+                <!-- === 生成結果區域 END === -->
+            </div>
+        </section>
+    </main>
+    </div>
+
+    <!-- Mascot -->
+    <div id="mascot-wrapper">
+        <img src="assets/mascot.png" alt="AI Mascot" id="mascot-image">
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="modal-overlay">
+        <div class="settings-panel">
+            <div class="settings-header">
+                <h2><i class="fa-solid fa-gear"></i> <span data-i18n="settings-title">AI 網站設定</span></h2>
+                <button class="btn-close" id="btn-close-settings">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="settings-body">
+                <p class="settings-hint" data-i18n="settings-hint">設定最多 5 個 AI 繪圖網站。複製後可以快速開啟。</p>
+                <div id="ai-sites-list"></div>
+                <button id="btn-add-site" class="btn-add-site">
+                    <i class="fa-solid fa-plus"></i> <span data-i18n="add-website">新增網站</span>
+                </button>
+
+                <hr class="settings-divider">
+
+                <h3 class="settings-subtitle" data-i18n="appearance-title">外觀設定 (Appearance)</h3>
+
+                <!-- Background Image Input -->
+                <div class="setting-group">
+                    <label data-i18n="bg-image-label">背景圖片 (Ctrl+V 貼上)</label>
+                    <div class="input-with-action">
+                        <div class="url-input-container">
+                            <input type="text" id="bg-url-input" placeholder="Paste image URL or Ctrl+V">
+                            <button id="btn-upload-bg" class="btn-upload-site" title="Upload Image">
+                                <i class="fa-solid fa-upload"></i>
+                            </button>
+                            <input type="file" id="bg-file-input" accept="image/*" style="display: none;">
+                        </div>
+                        <small class="hint-text" id="paste-hint" data-i18n="paste-hint">點擊輸入框並按下 Ctrl+V
+                            元件可直接貼上，或點擊右側按鈕上傳圖片</small>
+                    </div>
+                </div>
+
+                <!-- Opacity Slider -->
+                <div class="setting-group">
+                    <label><span data-i18n="opacity-label">透明度</span> <span id="opacity-value">20%</span></label>
+                    <input type="range" id="bg-opacity-slider" min="0" max="100" value="20">
+                </div>
+
+                <!-- Blur Slider -->
+                <div class="setting-group">
+                    <label><span data-i18n="blur-label">模糊度</span> <span id="blur-value">2px</span></label>
+                    <input type="range" id="bg-blur-slider" min="0" max="20" value="2">
+                </div>
+
+                <!-- Spell Mode Toggle -->
+                <div class="setting-group setting-group--toggle">
+                    <div>
+                        <label>🔮 咒語模式 (Spell Mode)</label>
+                        <small class="hint-text">將提示詞顯示為神秘符文，複製仍為正常英文</small>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="setting-spell-mode">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+
+                <!-- Spell Effect Style -->
+                <div class="setting-group setting-group--hidden" id="spell-effect-group">
+                    <label>🎭 咒語效果樣式 (Spell Effect)</label>
+                    <select id="setting-spell-effect" class="settings-select">
+                        <option value="D">D — 縮放逐詞 (Zoom Out) ⭐</option>
+                        <option value="A">A — 逐字顯示 (Char by Char)</option>
+                        <option value="B">B — 逐詞顯示 (Word by Word)</option>
+                        <option value="C">C — 逐行揭開 (Line Reveal)</option>
+                        <option value="random">🎲 隨機 (Random)</option>
+                    </select>
+                    <small class="hint-text">選擇咒語出現的動畫效果，每次變更立即預覽</small>
+                </div>
+
+                <hr class="settings-divider">
+
+                <h3 class="settings-subtitle" data-i18n="audio-title">音效設定 (Audio)</h3>
+
+                <!-- Volume Slider -->
+                <div class="setting-group">
+                    <label><span data-i18n="volume-label">音量</span> <span id="volume-value">23%</span></label>
+                    <input type="range" id="volume-slider" min="0" max="100" value="23">
+                </div>
+
+                <hr class="settings-divider">
+
+                <h3 class="settings-subtitle">⚡ 衝突偵測 (Conflict Detection)</h3>
+
+                <!-- Conflict Warning Toggle -->
+                <div class="setting-group setting-group--toggle">
+                    <div>
+                        <label>啟用衝突警告</label>
+                        <small class="hint-text">任何分類間的衝突都會顯示警告彈窗</small>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="setting-conflict-warnings" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+
+                <!-- Conflict Auto Mode -->
+                <div class="setting-group setting-group--toggle">
+                    <div>
+                        <label>自動處理方式</label>
+                        <small class="hint-text" id="setting-conflict-auto-label">未設定（每次詢問）</small>
+                    </div>
+                    <button id="setting-conflict-reset" class="btn-setting-reset">
+                        重置
+                    </button>
+                </div>
+
+                <hr class="settings-divider">
+
+                <h3 class="settings-subtitle">🔮 身材控制 (Body Magic)</h3>
+
+                <!-- Body Magic Toggle -->
+                <div class="setting-group setting-group--toggle">
+                    <div>
+                        <label>啟用身材魔法系統</label>
+                        <small class="hint-text" id="setting-bodymagic-status">目前未套用</small>
+                    </div>
+                    <button id="setting-bodymagic-reset" class="btn-setting-reset">
+                        重置
+                    </button>
+                </div>
+            </div>
+            <div class="settings-footer">
+                <button id="btn-save-settings" class="btn-save">
+                    <i class="fa-solid fa-floppy-disk"></i> <span data-i18n="save">儲存</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Changelog Modal -->
+    <div id="changelog-modal" class="modal-overlay">
+        <div class="settings-panel">
+            <div class="settings-header">
+                <h2><i class="fa-solid fa-clock-rotate-left"></i> 版本歷史 (Version History)</h2>
+                <button class="btn-close" id="btn-close-changelog">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="settings-body" id="changelog-body">
+                <!-- Content injected by script.js -->
+            </div>
+        </div>
+    </div>
+
+    <!-- About Origin Modal -->
+    <div id="about-modal" class="modal-overlay">
+        <div class="settings-panel about-panel">
+            <div class="settings-header about-header">
+                <h2><i class="fa-solid fa-book-open"></i> 起源 · Origin</h2>
+                <button class="btn-close" id="btn-close-about">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="settings-body about-body">
+                <div class="about-hero">
+                    <div class="about-hero-icon">📖</div>
+                    <h3 class="about-hero-title">寫在前面</h3>
+                    <p class="about-hero-sub">一個人 × 一個 AI × 不到 10 天</p>
+                </div>
+
+                <div class="about-content">
+                    <p>我原本只是在測試各大生成式 AI 的做圖能力，寫著寫著發現一些問題，或者說是不方便的地方，每次要重新輸入一些提示詞，或是今天忘了這明天忘了那，總之就是 100 個不方便。</p>
+
+                    <p>後來剛好朋友教我使用了 <strong class="about-highlight">Antigravity</strong>，一邊玩一邊學，反正都要選個主題來玩，就選了 AI
+                        生成圖片的提示詞來玩，然後就<strong class="about-highlight">一發不可收拾</strong>。</p>
+
+                    <p>我和 AI 為了這個網站簡直是沒日沒夜，一堆想法和 AI 討論，討論後就測試，測試完就將功能放上網頁。</p>
+
+                    <div class="about-stats">
+                        <div class="about-stat-card">
+                            <div class="about-stat-number" data-target="45000">0</div>
+                            <div class="about-stat-label">行程式碼</div>
+                            <div class="about-stat-sub">我一個字都沒寫，全部是 AI 自己寫的</div>
+                        </div>
+                        <div class="about-stat-card">
+                            <div class="about-stat-number" data-target="10">&lt;10</div>
+                            <div class="about-stat-label">天完成</div>
+                            <div class="about-stat-sub">短短不到 10 天的時間</div>
+                        </div>
+                    </div>
+
+                    <div class="about-highlight-box">
+                        <div class="about-highlight-label">✦ 總組合數</div>
+                        <div class="about-combo-number">≈ 1.10 × 10<sup>70</sup></div>
+                        <div class="about-combo-full">
+                            11,000,000,000,000,000,000,000,000,000,000,000,<br>000,000,000,000,000,000,000,000,000,000,000
+                            種</div>
+                        <p class="about-combo-note">這比宇宙中的原子數量（約 10<sup>80</sup>）只少了 10 個數量級
+                            😅<br>每次按下運命的輪盤，幾乎不可能出現重複的角色組合！</p>
+                    </div>
+
+                    <p>在過去也根本不敢想藉由一個人的人力來完成，而現在卻做到了。</p>
+
+                    <p>不得不感嘆現在 AI 進步的速度，這個實驗性的網站還有很多功能和想法我還沒做出來，下一個網站要做什麼我也還在思考，現在不是做不做得出來的問題，而是<strong
+                            class="about-highlight">要做什麼的問題了</strong>～</p>
+                </div>
+
+                <div class="about-footer-info">
+                    <p>Made with 💜 by <strong>Tommy Lee</strong> × <strong>AI</strong></p>
+                    <p class="about-footer-url">tommylee.ai</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Site Picker Popup -->
+    <div id="site-picker" class="site-picker-popup">
+        <div class="site-picker-header" data-i18n="choose-website">選擇 AI 網站</div>
+        <div id="site-picker-list"></div>
+    </div>
+
+    <!-- v6.1 模組拆分：資料模組 + 邏輯模組 + 樣式表 -->
+    <script src="data/options-data.js?v=7.4.1"></script>
+    <script src="data/body-magic-data.js?v=7.4.1"></script>
+    <script src="data/hair-magic-data.js?v=7.4.1"></script>
+    <script src="data/race-magic-data.js?v=7.4.1"></script>
+    <script src="data/job-magic-data.js?v=7.4.1"></script>
+    <script src="data/outfit-magic-data.js?v=7.4.1"></script>
+    <script src="data/headwear-magic-data.js?v=7.4.1"></script>
+    <script src="data/hand-items-magic-data.js?v=7.4.1"></script>
+    <script src="data/expression-magic-data.js?v=7.4.1"></script>
+    <script src="data/pose-magic-data.js?v=7.5"></script>
+    <script src="data/anime-style-magic-data.js?v=7.5"></script>
+    <script src="data/art-style-magic-data.js?v=7.5"></script>
+    <script src="data/artist-magic-data.js?v=7.5"></script>
+    <script src="data/scene-magic-data.js?v=7.6"></script>
+    <script src="data/atmosphere-magic-data.js?v=7.8"></script>
+    <script src="data/incantations-data.js?v=7.9"></script>
+    <script src="data/changelog-data.js?v=7.4.1"></script>
+    <script src="modules/sound-manager.js?v=7.4.1"></script>
+    <script src="modules/magic-modal-base.js?v=8.2"></script>
+    <script src="modules/body-magic-modal.js?v=7.4.1"></script>
+    <script src="modules/race-magic-modal.js?v=7.4.1"></script>
+    <script src="modules/job-magic-modal.js?v=7.4.1"></script>
+    <script src="modules/hair-magic-modal.js?v=7.4.1"></script>
+    <script src="modules/outfit-magic-modal.js?v=7.4.1"></script>
+    <script src="modules/headwear-magic-modal.js?v=7.4.1"></script>
+    <script src="modules/hand-items-magic-modal.js?v=7.4.1"></script>
+    <script src="modules/expression-magic-modal.js?v=7.4.1"></script>
+    <script src="modules/pose-magic-modal.js?v=7.5"></script>
+    <script src="modules/anime-style-magic-modal.js?v=7.5"></script>
+    <script src="modules/art-style-magic-modal.js?v=7.5"></script>
+    <script src="modules/artist-magic-modal.js?v=7.5"></script>
+    <script src="modules/scene-magic-modal.js?v=7.6"></script>
+    <script src="modules/atmosphere-magic-modal.js?v=7.8"></script>
+    <script src="modules/fate-wheel-modal.js?v=8.0"></script>
+    <script src="modules/conflict-system.js?v=7.4.1"></script>
+    <script src="script.js?v=8.2"></script>
+</body>
+
+</html>

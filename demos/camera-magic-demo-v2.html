@@ -1,0 +1,1324 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📸 Camera Magic Modal Demo v2 — Slider Edition</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+TC:wght@400;500;700&display=swap"
+        rel="stylesheet">
+    <style>
+        /* === Reset & Root === */
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-card: #141420;
+            --bg-section: #1a1a2e;
+            --accent-cyan: #22d3ee;
+            --accent-purple: #a855f7;
+            --accent-blue: #6366f1;
+            --accent-pink: #ec4899;
+            --accent-gold: #fbbf24;
+            --accent-green: #34d399;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --glass-border: rgba(139, 92, 246, 0.25);
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', 'Noto Sans TC', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+
+        /* === Demo Page === */
+        .demo-page {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        .demo-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .demo-header h1 {
+            font-size: 2rem;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 6px;
+        }
+
+        .demo-header p {
+            color: var(--text-secondary);
+            font-size: .85rem;
+        }
+
+        .demo-trigger-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 32px;
+            font-size: 1rem;
+            font-weight: 700;
+            border: none;
+            border-radius: 14px;
+            cursor: pointer;
+            color: #fff;
+            background: linear-gradient(135deg, #6366f1, #a855f7, #ec4899);
+            box-shadow: 0 0 30px rgba(139, 92, 246, .4);
+            transition: all .3s;
+            margin-top: 20px;
+        }
+
+        .demo-trigger-btn:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 0 50px rgba(139, 92, 246, .6);
+        }
+
+        .demo-output {
+            margin-top: 24px;
+            background: var(--bg-section);
+            border: 1px solid var(--glass-border);
+            border-radius: 14px;
+            padding: 18px;
+        }
+
+        .demo-output-label {
+            font-size: .72rem;
+            color: var(--accent-cyan);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .demo-output-text {
+            font-family: 'Fira Code', monospace;
+            font-size: .82rem;
+            color: var(--text-primary);
+            line-height: 1.7;
+            word-break: break-all;
+        }
+
+        .demo-output-text .tag-slider {
+            color: var(--accent-gold);
+            font-weight: 600;
+        }
+
+        .demo-output-text .tag-chip {
+            color: var(--accent-cyan);
+        }
+
+        .demo-output-text .tag-bonus {
+            color: var(--accent-green);
+        }
+
+        /* === Modal === */
+        .cmm-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 10000;
+            background: rgba(0, 0, 0, .88);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: cmm-fadeIn .4s ease;
+            backdrop-filter: blur(6px);
+        }
+
+        .cmm-overlay.closing {
+            animation: cmm-fadeOut .3s ease forwards;
+        }
+
+        .cmm-particles {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 0;
+        }
+
+        .cmm-particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            animation: cmm-float 6s ease-in-out infinite;
+        }
+
+        .cmm-magic-circle {
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            border: 1px solid rgba(99, 102, 241, .12);
+            animation: cmm-rotate 25s linear infinite;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .cmm-flash {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle, rgba(139, 92, 246, .35) 0%, transparent 70%);
+            z-index: 1;
+            pointer-events: none;
+            animation: cmm-flashPulse .6s ease-out forwards;
+        }
+
+        .cmm-container {
+            position: relative;
+            z-index: 2;
+            width: 94vw;
+            max-width: 880px;
+            height: 90vh;
+            max-height: 900px;
+            display: flex;
+            flex-direction: column;
+            background: linear-gradient(135deg, rgba(15, 15, 30, .97), rgba(25, 15, 40, .97));
+            border: 1px solid rgba(139, 92, 246, .3);
+            border-radius: 20px;
+            box-shadow: 0 0 80px rgba(99, 102, 241, .2);
+            overflow: hidden;
+            animation: cmm-slideUp .5s cubic-bezier(.16, 1, .3, 1);
+        }
+
+        /* === Header === */
+        .cmm-header {
+            padding: 14px 20px 0;
+            flex-shrink: 0;
+        }
+
+        .cmm-title-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .cmm-title {
+            font-size: 1.25rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .cmm-toolbar {
+            display: flex;
+            gap: 8px;
+        }
+
+        .cmm-toolbar button {
+            background: rgba(139, 92, 246, .15);
+            border: 1px solid rgba(139, 92, 246, .3);
+            color: var(--text-primary);
+            border-radius: 8px;
+            padding: 5px 9px;
+            cursor: pointer;
+            font-size: .78rem;
+            transition: all .2s;
+        }
+
+        .cmm-toolbar button:hover {
+            background: rgba(139, 92, 246, .3);
+        }
+
+        /* === Body (scrollable) === */
+        .cmm-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px 20px 16px;
+            scrollbar-width: none;
+        }
+
+        .cmm-body::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* === Section divider === */
+        .cmm-section {
+            margin-bottom: 18px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid rgba(139, 92, 246, .1);
+        }
+
+        .cmm-section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        .cmm-section-title {
+            font-size: .78rem;
+            font-weight: 700;
+            color: var(--accent-purple);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .cmm-section-title .pro-tag {
+            font-size: .6rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+            background: rgba(139, 92, 246, .15);
+            color: var(--accent-cyan);
+            font-weight: 600;
+            letter-spacing: .5px;
+        }
+
+        /* === Slider Group === */
+        .cmm-slider-group {
+            margin-bottom: 10px;
+            padding: 8px 14px;
+            border-radius: 12px;
+            background: rgba(20, 16, 36, .4);
+            border: 1px solid transparent;
+            transition: all .3s;
+        }
+
+        .cmm-slider-group.active {
+            border-color: rgba(139, 92, 246, .25);
+            background: rgba(30, 20, 50, .5);
+            box-shadow: 0 0 20px rgba(99, 102, 241, .06);
+        }
+
+        .cmm-slider-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2px;
+        }
+
+        .cmm-slider-label {
+            font-size: .78rem;
+            font-weight: 700;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: color .3s;
+        }
+
+        .cmm-slider-group.active .cmm-slider-label {
+            color: var(--text-primary);
+        }
+
+        .cmm-slider-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .cmm-slider-value {
+            font-size: .7rem;
+            color: var(--accent-gold);
+            font-weight: 600;
+            text-align: right;
+        }
+
+        .cmm-slider-reset {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 1px solid rgba(239, 68, 68, .3);
+            background: rgba(239, 68, 68, .1);
+            color: #f87171;
+            font-size: .6rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all .2s;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .cmm-slider-group.active .cmm-slider-reset {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .cmm-slider-reset:hover {
+            background: rgba(239, 68, 68, .25);
+            border-color: #f87171;
+        }
+
+        .cmm-slider-desc {
+            font-size: .72rem;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+            min-height: 16px;
+            transition: all .3s;
+        }
+
+        .cmm-slider-desc .fun {
+            color: var(--accent-pink);
+            font-weight: 600;
+        }
+
+        .cmm-slider-desc .pro {
+            color: var(--text-secondary);
+            font-size: .63rem;
+            opacity: .6;
+            margin-left: 4px;
+        }
+
+        /* === Range slider styling === */
+        .cmm-slider-track {
+            position: relative;
+            width: 100%;
+            height: 36px;
+            display: flex;
+            align-items: center;
+        }
+
+        .cmm-slider-track input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: linear-gradient(90deg, rgba(99, 102, 241, .2), rgba(139, 92, 246, .2));
+            outline: none;
+            cursor: pointer;
+            position: relative;
+            z-index: 2;
+            transition: background .3s;
+        }
+
+        .cmm-slider-group.active .cmm-slider-track input[type="range"] {
+            background: linear-gradient(90deg, rgba(99, 102, 241, .4), rgba(139, 92, 246, .4));
+        }
+
+        .cmm-slider-track input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            box-shadow: 0 0 16px rgba(139, 92, 246, .5), 0 0 6px rgba(0, 0, 0, .4);
+            border: 2.5px solid rgba(255, 255, 255, .35);
+            cursor: pointer;
+            transition: transform .15s, box-shadow .15s;
+        }
+
+        .cmm-slider-track input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.15);
+            box-shadow: 0 0 28px rgba(139, 92, 246, .7), 0 0 8px rgba(0, 0, 0, .3);
+        }
+
+        .cmm-slider-track input[type="range"]::-webkit-slider-thumb:active {
+            transform: scale(1.25);
+            box-shadow: 0 0 35px rgba(139, 92, 246, .85), 0 0 10px rgba(0, 0, 0, .25);
+        }
+
+        .cmm-slider-track input[type="range"]::-moz-range-thumb {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 2.5px solid rgba(255, 255, 255, .35);
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            box-shadow: 0 0 16px rgba(139, 92, 246, .5);
+            cursor: pointer;
+        }
+
+        /* Inactive slider: dim thumb */
+        .cmm-slider-group:not(.active) .cmm-slider-track input[type="range"]::-webkit-slider-thumb {
+            background: rgba(100, 100, 140, .4);
+            box-shadow: none;
+            border-color: rgba(255, 255, 255, .1);
+        }
+
+        .cmm-slider-group:not(.active) .cmm-slider-track input[type="range"]::-moz-range-thumb {
+            background: rgba(100, 100, 140, .4);
+            box-shadow: none;
+            border-color: rgba(255, 255, 255, .1);
+        }
+
+        .cmm-slider-endpoints {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 0px;
+        }
+
+        .cmm-slider-endpoints .ep {
+            font-size: .62rem;
+            color: var(--text-secondary);
+            opacity: .5;
+            cursor: pointer;
+            padding: 2px 6px;
+            border-radius: 4px;
+            transition: all .2s;
+            user-select: none;
+        }
+
+        .cmm-slider-endpoints .ep:hover {
+            opacity: 1;
+            color: var(--accent-cyan);
+            background: rgba(34, 211, 238, .08);
+        }
+
+        /* Slider stop indicators */
+        .cmm-slider-stops {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 14px;
+            z-index: 1;
+            transform: translateY(-50%);
+        }
+
+        .cmm-slider-stop {
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, .12);
+        }
+
+        /* === Chip Grid (for discrete options) === */
+        .cmm-chip-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 7px;
+        }
+
+        .cmm-chip {
+            padding: 8px 10px;
+            font-size: .72rem;
+            border-radius: 9px;
+            cursor: pointer;
+            background: rgba(30, 30, 50, .6);
+            border: 1px solid rgba(100, 100, 150, .2);
+            color: var(--text-secondary);
+            transition: all .25s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cmm-chip:hover {
+            border-color: rgba(139, 92, 246, .4);
+            color: var(--text-primary);
+            transform: translateY(-1px);
+        }
+
+        .cmm-chip.selected {
+            background: linear-gradient(135deg, rgba(99, 102, 241, .25), rgba(139, 92, 246, .2));
+            border-color: var(--accent-purple);
+            color: #fff;
+            box-shadow: 0 0 16px rgba(139, 92, 246, .2);
+        }
+
+        .cmm-chip.selected::after {
+            content: '✓';
+            position: absolute;
+            right: 7px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: .65rem;
+            color: var(--accent-cyan);
+            font-weight: 700;
+        }
+
+        .cmm-chip-icon {
+            font-size: .95rem;
+            flex-shrink: 0;
+        }
+
+        .cmm-chip-text {
+            display: flex;
+            flex-direction: column;
+            gap: 1px;
+        }
+
+        .cmm-chip-zh {
+            font-weight: 600;
+            font-size: .72rem;
+        }
+
+        .cmm-chip-en {
+            font-size: .58rem;
+            opacity: .55;
+        }
+
+        .cmm-chip-fun {
+            font-size: .6rem;
+            color: var(--accent-pink);
+            opacity: .8;
+            margin-top: 1px;
+        }
+
+        /* === Bonus Panel === */
+        .cmm-bonus {
+            flex-shrink: 0;
+            padding: 0 20px;
+            border-top: 1px solid rgba(139, 92, 246, .15);
+            background: rgba(20, 15, 30, .5);
+            max-height: 0;
+            overflow: hidden;
+            opacity: 0;
+            transition: all .4s ease;
+        }
+
+        .cmm-bonus.visible {
+            max-height: 140px;
+            opacity: 1;
+            padding: 12px 20px;
+        }
+
+        .cmm-bonus-title {
+            font-size: .72rem;
+            color: var(--accent-gold);
+            margin-bottom: 7px;
+            font-weight: 600;
+        }
+
+        .cmm-bonus-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+
+        .cmm-bonus-tag {
+            padding: 4px 9px;
+            font-size: .67rem;
+            border-radius: 16px;
+            cursor: pointer;
+            background: rgba(52, 211, 153, .06);
+            border: 1px solid rgba(52, 211, 153, .2);
+            color: rgba(52, 211, 153, .8);
+            transition: all .2s;
+        }
+
+        .cmm-bonus-tag:hover {
+            background: rgba(52, 211, 153, .12);
+            border-color: rgba(52, 211, 153, .4);
+        }
+
+        .cmm-bonus-tag.selected {
+            background: rgba(52, 211, 153, .18);
+            border-color: var(--accent-green);
+            color: var(--accent-green);
+            font-weight: 600;
+            box-shadow: 0 0 10px rgba(52, 211, 153, .15);
+        }
+
+        /* === Footer === */
+        .cmm-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 20px;
+            border-top: 1px solid rgba(139, 92, 246, .12);
+            background: rgba(10, 10, 20, .5);
+            flex-shrink: 0;
+        }
+
+        .cmm-footer-status {
+            font-size: .72rem;
+            color: var(--text-secondary);
+        }
+
+        .cmm-footer-status .count {
+            color: var(--accent-cyan);
+            font-weight: 700;
+        }
+
+        .cmm-footer-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .cmm-btn {
+            padding: 7px 18px;
+            font-size: .78rem;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            border: none;
+            transition: all .2s;
+        }
+
+        .cmm-btn-cancel {
+            background: rgba(100, 100, 150, .2);
+            color: var(--text-secondary);
+            border: 1px solid rgba(100, 100, 150, .2);
+        }
+
+        .cmm-btn-cancel:hover {
+            background: rgba(100, 100, 150, .3);
+            color: var(--text-primary);
+        }
+
+        .cmm-btn-apply {
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            color: #fff;
+            box-shadow: 0 0 20px rgba(99, 102, 241, .3);
+        }
+
+        .cmm-btn-apply:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 0 30px rgba(99, 102, 241, .5);
+        }
+
+        /* === Live Preview Bar === */
+        .cmm-preview {
+            flex-shrink: 0;
+            padding: 8px 20px;
+            background: rgba(10, 10, 20, .7);
+            border-top: 1px solid rgba(139, 92, 246, .1);
+        }
+
+        .cmm-preview-label {
+            font-size: .6rem;
+            color: var(--accent-cyan);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 3px;
+        }
+
+        .cmm-preview-text {
+            font-family: 'Fira Code', monospace;
+            font-size: .68rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            max-height: 36px;
+            overflow: hidden;
+        }
+
+        /* === Summary on demo page === */
+        .demo-summary {
+            margin-top: 14px;
+            padding: 12px 16px;
+            background: linear-gradient(135deg, rgba(99, 102, 241, .08), rgba(139, 92, 246, .06));
+            border: 1px solid rgba(139, 92, 246, .25);
+            border-radius: 12px;
+            display: none;
+        }
+
+        .demo-summary.visible {
+            display: block;
+        }
+
+        .demo-summary-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .demo-summary-title {
+            font-size: .82rem;
+            font-weight: 700;
+            color: var(--accent-cyan);
+        }
+
+        .demo-summary-clear {
+            font-size: .7rem;
+            padding: 3px 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            border: 1px solid rgba(239, 68, 68, .3);
+            background: rgba(239, 68, 68, .1);
+            color: #f87171;
+        }
+
+        .demo-summary-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+
+        .demo-summary-tag {
+            padding: 3px 9px;
+            font-size: .68rem;
+            border-radius: 14px;
+            font-weight: 600;
+        }
+
+        .demo-summary-tag.slider-tag {
+            background: rgba(251, 191, 36, .12);
+            border: 1px solid rgba(251, 191, 36, .3);
+            color: var(--accent-gold);
+        }
+
+        .demo-summary-tag.chip-tag {
+            background: rgba(34, 211, 238, .1);
+            border: 1px solid rgba(34, 211, 238, .3);
+            color: var(--accent-cyan);
+        }
+
+        .demo-summary-tag.bonus-tag {
+            background: rgba(52, 211, 153, .1);
+            border: 1px solid rgba(52, 211, 153, .3);
+            color: var(--accent-green);
+        }
+
+        /* === Animations === */
+        @keyframes cmm-fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes cmm-fadeOut {
+            from {
+                opacity: 1;
+            }
+
+            to {
+                opacity: 0;
+            }
+        }
+
+        @keyframes cmm-slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px) scale(.95);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        @keyframes cmm-flashPulse {
+            0% {
+                opacity: .6;
+            }
+
+            100% {
+                opacity: 0;
+            }
+        }
+
+        @keyframes cmm-rotate {
+            from {
+                transform: rotate(0);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes cmm-float {
+
+            0%,
+            100% {
+                transform: translateY(0) translateX(0);
+                opacity: .3;
+            }
+
+            50% {
+                transform: translateY(-80px) translateX(20px);
+                opacity: .7;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="demo-page">
+        <div class="demo-header">
+            <h1>📸 Camera Magic Modal v2 — Slider Edition</h1>
+            <p>推桿 + 格子混合式運鏡選擇器 ・ 中二風說明 × 專業術語</p>
+            <button class="demo-trigger-btn" onclick="openModal()">
+                <i class="fa-solid fa-wand-sparkles"></i> 📸 開啟運鏡魔法
+            </button>
+        </div>
+        <div class="demo-summary" id="demoSummary">
+            <div class="demo-summary-header">
+                <span class="demo-summary-title">📸 運鏡魔法啟用中</span>
+                <button class="demo-summary-clear" onclick="clearAll()">清除全部</button>
+            </div>
+            <div class="demo-summary-tags" id="demoSummaryTags"></div>
+        </div>
+        <div class="demo-output">
+            <div class="demo-output-label">⚡ Generated Camera Prompt</div>
+            <div class="demo-output-text" id="outputText">
+                <span style="color: var(--text-secondary)">點擊上方按鈕，選擇運鏡技巧…</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ═══════════════════════════════════════════
+        // 📸 Camera Magic Data v2 — Slider + Chips
+        // ═══════════════════════════════════════════
+
+        const SLIDERS = {
+            distance: {
+                icon: '📏', label: '鏡頭距離', labelEn: 'Shot Distance',
+                stops: [
+                    { zh: '大特寫', en: 'ECU', fun: '只看到眼睛在燃燒 🔥', prompt: 'extreme close-up, macro detail, partial face filling the frame' },
+                    { zh: '特寫', en: 'Close-Up', fun: '看清你眼中的決意', prompt: 'close-up portrait, head and shoulders framing' },
+                    { zh: '中特寫', en: 'Medium CU', fun: '展現上半身的氣場', prompt: 'medium close-up, bust shot, chest up framing' },
+                    { zh: '中景', en: 'Medium', fun: '標準對話距離，剛好看到雙手', prompt: 'medium shot, waist-up, conversational framing' },
+                    { zh: '牛仔鏡頭', en: 'Cowboy', fun: '西部決鬥！手要摸到槍套的距離 🤠', prompt: 'cowboy shot, mid-thigh framing, gunslinger pose' },
+                    { zh: '全身', en: 'Full Shot', fun: '從頭到腳，完整展現你的戰鬥姿態', prompt: 'full body shot, head to toe visible, feet on ground' },
+                    { zh: '遠景', en: 'Wide', fun: '人物變小，世界開始接管畫面 🌄', prompt: 'wide shot, figure small in frame, environment-dominant' },
+                    { zh: '大遠景', en: 'Extreme Wide', fun: '渺小如螞蟻，被世界吞噬的感覺', prompt: 'extreme wide shot, tiny figure in vast landscape, dwarfed by environment' }
+                ]
+            },
+            vAngle: {
+                icon: '📐', label: '垂直角度', labelEn: 'Vertical Angle',
+                stops: [
+                    { zh: '蟲視', en: "Worm's Eye", fun: '匍匐在地仰望巨人！連鞋底都看得到 🐛', prompt: "worm's-eye view, ultra low angle, looking straight up, dramatic foreshortening" },
+                    { zh: '低角度', en: 'Low Angle', fun: '仰望英雄的崇拜視角 🦸', prompt: 'dramatic low angle shot, looking up at, imposing perspective' },
+                    { zh: '平視', en: 'Eye Level', fun: '平起平坐，最自然的對話角度', prompt: 'eye-level shot, natural neutral angle' },
+                    { zh: '高角度', en: 'High Angle', fun: '從上方俯視，掌控一切的支配感 👑', prompt: 'high angle shot, looking down at, diminishing perspective' },
+                    { zh: '鳥瞰', en: "Bird's Eye", fun: '如同神明俯瞰眾生，萬物盡收眼底', prompt: "bird's-eye view, top-down aerial view, overhead perspective" }
+                ]
+            },
+            lens: {
+                icon: '🔭', label: '鏡頭焦距', labelEn: 'Focal Length',
+                stops: [
+                    { zh: '魚眼 8mm', en: 'Fisheye', fun: '扭曲世界的魔眼！180°全視界 🐟', prompt: 'fisheye lens, extreme barrel distortion, 180 degree view' },
+                    { zh: '超廣角 14mm', en: 'Ultra-Wide', fun: '把整個世界硬塞進一張畫裡', prompt: '14mm ultra-wide angle, exaggerated perspective, vast space' },
+                    { zh: '廣角 35mm', en: 'Wide 35mm', fun: '街頭攝影師的秘密武器 📸', prompt: '35mm wide-angle lens, natural but wide perspective' },
+                    { zh: '標準 50mm', en: 'Nifty Fifty', fun: '最接近你肉眼看到的真實世界 👁️', prompt: '50mm standard lens, natural human eye perspective' },
+                    { zh: '人像 85mm', en: '85mm Portrait', fun: '人像攝影之王 👑 奶油般的散景', prompt: '85mm portrait lens, beautiful face compression, creamy bokeh' },
+                    { zh: '中望遠 135mm', en: '135mm Tele', fun: '進階人像殺手，背景融化消失', prompt: '135mm telephoto, strong background compression, dreamy bokeh' },
+                    { zh: '望遠 200mm+', en: '200mm+', fun: '狙擊手的視角 🎯 隧道般的壓縮感', prompt: '200mm telephoto lens, extreme compression, tunnel effect, stacked layers' },
+                    { zh: '微距', en: 'Macro 1:1', fun: '放大到能看見毛孔與灰塵的世界 🔬', prompt: 'macro lens, 1:1 magnification, extreme detail, paper-thin depth of field' }
+                ]
+            },
+            dof: {
+                icon: '🎯', label: '景深控制', labelEn: 'Depth of Field',
+                stops: [
+                    { zh: 'f/1.2 極淺', en: 'f/1.2', fun: '只有瞳孔是清楚的，夢幻到犯規 ✨', prompt: 'f/1.2 aperture, paper-thin depth of field, only eyes in focus' },
+                    { zh: 'f/1.8 淺景深', en: 'f/1.8', fun: '主角清楚，背景化為迷幻光點 🌸', prompt: 'f/1.8, shallow depth of field, beautiful bokeh, subject isolation' },
+                    { zh: 'f/2.8 柔和', en: 'f/2.8', fun: '柔和的背景虛化，舒適的人像感', prompt: 'f/2.8, moderate shallow DOF, gentle background blur' },
+                    { zh: 'f/5.6 均衡', en: 'f/5.6', fun: '小團體都能拍清楚的萬用光圈', prompt: 'f/5.6, moderate depth of field, small group in focus' },
+                    { zh: 'f/8 銳利', en: 'f/8', fun: '風景攝影的黃金光圈 🏔️', prompt: 'f/8, sharp throughout, optimal sharpness, landscape photography' },
+                    { zh: 'f/16 全域清晰', en: 'f/16', fun: '從鼻尖到天邊，全！部！銳！利！', prompt: 'f/16, deep focus, everything razor sharp from near to far' }
+                ]
+            }
+        };
+
+        const CHIP_SECTIONS = [
+            {
+                icon: '🔄', label: '水平角度', labelEn: 'Horizontal Angle',
+                items: [
+                    { id: 'front', zh: '正面', en: 'Front View', fun: '直視鏡頭的壓迫感', prompt: 'front view, facing camera, looking at viewer' },
+                    { id: 'three_quarter', zh: '3/4 側臉', en: 'Three-Quarter', fun: '最經典的角度，臉部超立體 💎', prompt: 'three-quarter view, face turned 30-45 degrees' },
+                    { id: 'profile', zh: '完全側面', en: 'Profile', fun: '硬幣上的王者輪廓', prompt: 'profile view, perfect side angle, one eye visible' },
+                    { id: 'back', zh: '背影', en: 'Back View', fun: '走向未知的孤獨背影 🚶', prompt: 'back view, from behind, face not shown, walking away' },
+                    { id: 'dutch', zh: '荷蘭角', en: 'Dutch Angle', fun: '歪斜的世界！不安感爆表 😵‍💫', prompt: 'Dutch angle, tilted 20-30 degrees, canted disorienting' },
+                    { id: 'ots', zh: '過肩', en: 'Over-the-Shoulder', fun: '偷窺別人對話的視角', prompt: 'over-the-shoulder shot, foreground shoulder blurred' },
+                    { id: 'pov', zh: '第一人稱', en: 'POV', fun: '你就是主角！看到自己的手 🎮', prompt: "POV shot, first-person perspective, character's hands visible" }
+                ]
+            },
+            {
+                icon: '🎥', label: '鏡頭運動', labelEn: 'Camera Movement',
+                items: [
+                    { id: 'dolly_in', zh: '推進', en: 'Dolly-In', fun: '逼近真相的緊張感', prompt: 'dolly-in, push-in, camera moving toward, shallow DOF' },
+                    { id: 'dolly_out', zh: '拉遠', en: 'Dolly-Out', fun: '揭露全局的震撼退場 🌌', prompt: 'dolly-out, pull-back, reveal shot, environment expanding' },
+                    { id: 'orbit', zh: '環繞', en: 'Orbit', fun: '繞著主角轉的英雄時刻 💫', prompt: 'orbit shot, camera circling around, dynamic perspective' },
+                    { id: 'crane', zh: '起重機', en: 'Crane', fun: '由低升高的史詩級運鏡 🏗️', prompt: 'crane shot, sweeping overhead, camera rising dramatically' },
+                    { id: 'handheld', zh: '手持晃動', en: 'Handheld', fun: '紀錄片般的生猛真實感 📰', prompt: 'handheld camera, slight shake, documentary style, film grain' },
+                    { id: 'tracking', zh: '追蹤', en: 'Tracking', fun: '緊跟主角奔跑的速度感 🏃', prompt: 'tracking shot, following subject, background motion blur' },
+                    { id: 'whip_pan', zh: '甩鏡', en: 'Whip Pan', fun: '極速甩頭！畫面全部模糊 💨', prompt: 'whip pan, speed blur, swish pan, extreme motion' }
+                ]
+            },
+            {
+                icon: '🖼️', label: '構圖技巧', labelEn: 'Composition',
+                items: [
+                    { id: 'thirds', zh: '三分法', en: 'Rule of Thirds', fun: '把主角放在交叉點上', prompt: 'rule of thirds, subject at intersection point' },
+                    { id: 'centered', zh: '中心構圖', en: 'Centered', fun: '完美對稱的強迫症快感 ⊕', prompt: 'centered composition, symmetrical framing' },
+                    { id: 'leading', zh: '引導線', en: 'Leading Lines', fun: '道路和河流帶著視線走', prompt: 'leading lines, converging lines guiding the eye' },
+                    { id: 'frame', zh: '框中框', en: 'Frame in Frame', fun: '透過門窗偷看的窺探感 🪟', prompt: 'natural framing, framed by doorway or arch' },
+                    { id: 'negative', zh: '負空間', en: 'Negative Space', fun: '大片留白，孤獨美學', prompt: 'negative space, minimalist composition, vast emptiness' },
+                    { id: 'golden', zh: '黃金比例', en: 'Golden Ratio', fun: '文藝復興大師的構圖密碼 🐚', prompt: 'golden ratio composition, fibonacci spiral framing' },
+                    { id: 'layered', zh: '前中後景', en: 'Layered', fun: '三層景深，立體到像能走進去', prompt: 'layered composition: foreground, midground, background' }
+                ]
+            }
+        ];
+
+        const BONUS_TRAITS = [
+            { icon: '💨', zh: '背景動態模糊', en: 'motion blur in background, streaked environment' },
+            { icon: '🌫️', zh: '大氣透視層次', en: 'atmospheric haze, aerial perspective, depth layers' },
+            { icon: '🎬', zh: '電影感調色', en: 'cinematic color grading, film look' },
+            { icon: '✨', zh: '奶油散景光點', en: 'creamy bokeh, beautiful light orbs in background' },
+            { icon: '🗜️', zh: '背景壓縮效果', en: 'compressed background, stacked visual layers' },
+            { icon: '📐', zh: '透視誇張感', en: 'exaggerated perspective, strong convergence lines' },
+            { icon: '🌿', zh: '前景元素', en: 'foreground elements adding depth, shooting through' },
+            { icon: '⚡', zh: '速度感線條', en: 'speed lines, dynamic energy, sense of fast movement' }
+        ];
+
+        // ═══════════════════════════════════════════
+        // State
+        // ═══════════════════════════════════════════
+        let sliderValues = { distance: 3, vAngle: 2, lens: 4, dof: 1 };
+        let sliderEnabled = { distance: false, vAngle: false, lens: false, dof: false };
+        let selectedChips = new Set();
+        let selectedBonuses = new Set();
+
+        // ═══════════════════════════════════════════
+        // Open Modal
+        // ═══════════════════════════════════════════
+        function openModal() {
+            const overlay = document.createElement('div');
+            overlay.className = 'cmm-overlay';
+            overlay.id = 'cameraModal';
+            overlay.innerHTML = `
+        <div class="cmm-flash"></div>
+        <div class="cmm-magic-circle"></div>
+        <div class="cmm-particles" id="cmmParticles"></div>
+        <div class="cmm-container">
+            <div class="cmm-header">
+                <div class="cmm-title-row">
+                    <div class="cmm-title">📸 高級魔法・運鏡大全</div>
+                    <div class="cmm-toolbar">
+                        <button onclick="randomAll()" title="隨機組合"><i class="fa-solid fa-dice"></i> 隨機</button>
+                        <button onclick="resetAll()" title="全部重設"><i class="fa-solid fa-eraser"></i></button>
+                    </div>
+                </div>
+            </div>
+            <div class="cmm-body" id="cmmBody"></div>
+            <div class="cmm-bonus" id="cmmBonus">
+                <div class="cmm-bonus-title">⭐ 追加特效修飾詞</div>
+                <div class="cmm-bonus-tags" id="cmmBonusTags"></div>
+            </div>
+            <div class="cmm-preview">
+                <div class="cmm-preview-label">⚡ 即時預覽 Prompt</div>
+                <div class="cmm-preview-text" id="cmmPreview">移動推桿或點選格子...</div>
+            </div>
+            <div class="cmm-footer">
+                <div class="cmm-footer-status">已選：<span class="count" id="cmmCount">0</span> 項</div>
+                <div class="cmm-footer-actions">
+                    <button class="cmm-btn cmm-btn-cancel" onclick="closeModal()">取消</button>
+                    <button class="cmm-btn cmm-btn-apply" onclick="applyAll()">✨ 套用</button>
+                </div>
+            </div>
+        </div>
+    `;
+            document.body.appendChild(overlay);
+            overlay.addEventListener('click', e => { if (e.target === overlay) closeModal(); });
+            spawnParticles();
+            renderBody();
+            renderBonus();
+            updatePreview();
+        }
+
+        function closeModal() {
+            const o = document.getElementById('cameraModal');
+            if (!o) return;
+            o.classList.add('closing');
+            setTimeout(() => o.remove(), 300);
+        }
+
+        function spawnParticles() {
+            const c = document.getElementById('cmmParticles');
+            if (!c) return;
+            const colors = ['#22d3ee', '#a855f7', '#6366f1', '#ec4899', '#fbbf24'];
+            for (let i = 0; i < 25; i++) {
+                const p = document.createElement('div');
+                p.className = 'cmm-particle';
+                p.style.left = Math.random() * 100 + '%';
+                p.style.top = Math.random() * 100 + '%';
+                p.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                p.style.animationDelay = Math.random() * 6 + 's';
+                p.style.animationDuration = (4 + Math.random() * 4) + 's';
+                p.style.width = p.style.height = (2 + Math.random() * 3) + 'px';
+                c.appendChild(p);
+            }
+        }
+
+        // ═══════════════════════════════════════════
+        // Render Body
+        // ═══════════════════════════════════════════
+        function renderBody() {
+            const body = document.getElementById('cmmBody');
+            if (!body) return;
+            let html = '';
+
+            // === Slider sections ===
+            html += '<div class="cmm-section"><div class="cmm-section-title">🎚️ 推桿控制區 <span class="pro-tag">滑動即啟用</span></div>';
+            for (const [key, slider] of Object.entries(SLIDERS)) {
+                const val = sliderValues[key];
+                const enabled = sliderEnabled[key];
+                const stop = slider.stops[val];
+                const max = slider.stops.length - 1;
+                html += `
+            <div class="cmm-slider-group ${enabled ? 'active' : ''}" id="sg-${key}">
+                <div class="cmm-slider-header">
+                    <span class="cmm-slider-label">
+                        ${slider.icon} ${slider.label}
+                        <span style="font-size:.6rem;opacity:.5;">${slider.labelEn}</span>
+                    </span>
+                    <div class="cmm-slider-status">
+                        <span class="cmm-slider-value">${enabled ? stop.zh + ' (' + stop.en + ')' : '拖動啟用 →'}</span>
+                        <button class="cmm-slider-reset" onclick="event.stopPropagation(); disableSlider('${key}')" title="關閉此推桿">✕</button>
+                    </div>
+                </div>
+                <div class="cmm-slider-desc" id="desc-${key}">
+                    ${enabled ? '<span class="fun">' + stop.fun + '</span><span class="pro"> — ' + stop.prompt + '</span>' : '<span style="opacity:.35;">↔ 拖動推桿即可啟用</span>'}
+                </div>
+                <div class="cmm-slider-track">
+                    <div class="cmm-slider-stops">${slider.stops.map(() => '<div class="cmm-slider-stop"></div>').join('')}</div>
+                    <input type="range" min="0" max="${max}" value="${val}" step="1"
+                        oninput="onSlide('${key}', this.value)"
+                        onmousedown="autoEnable('${key}')"
+                        ontouchstart="autoEnable('${key}')">
+                </div>
+                <div class="cmm-slider-endpoints">
+                    <span class="ep" onclick="jumpSlider('${key}', 0)">${slider.stops[0].zh}</span>
+                    <span class="ep" onclick="jumpSlider('${key}', ${max})">${slider.stops[max].zh}</span>
+                </div>
+            </div>
+        `;
+            }
+            html += '</div>';
+
+            // === Chip sections ===
+            for (const section of CHIP_SECTIONS) {
+                html += `<div class="cmm-section"><div class="cmm-section-title">${section.icon} ${section.label} <span style="font-size:.62rem;color:var(--text-secondary);margin-left:4px;">${section.labelEn}</span></div>`;
+                html += '<div class="cmm-chip-grid">';
+                for (const item of section.items) {
+                    const sel = selectedChips.has(item.id);
+                    html += `
+                <div class="cmm-chip ${sel ? 'selected' : ''}" onclick="toggleChip('${item.id}')">
+                    <div class="cmm-chip-text">
+                        <span class="cmm-chip-zh">${item.zh}</span>
+                        <span class="cmm-chip-en">${item.en}</span>
+                        <span class="cmm-chip-fun">${item.fun}</span>
+                    </div>
+                </div>
+            `;
+                }
+                html += '</div></div>';
+            }
+
+            body.innerHTML = html;
+        }
+
+        // ═══════════════════════════════════════════
+        // Slider logic
+        // ═══════════════════════════════════════════
+        function autoEnable(key) {
+            if (!sliderEnabled[key]) {
+                sliderEnabled[key] = true;
+                // Activate visual state without full re-render (smoother)
+                const group = document.getElementById(`sg-${key}`);
+                if (group) group.classList.add('active');
+                const resetBtn = group?.querySelector('.cmm-slider-reset');
+                if (resetBtn) { resetBtn.style.opacity = '1'; resetBtn.style.pointerEvents = 'auto'; }
+                // Show current value
+                const slider = SLIDERS[key];
+                const stop = slider.stops[sliderValues[key]];
+                const desc = document.getElementById(`desc-${key}`);
+                if (desc) desc.innerHTML = `<span class="fun">${stop.fun}</span><span class="pro"> — ${stop.prompt}</span>`;
+                const valEl = group?.querySelector('.cmm-slider-value');
+                if (valEl) valEl.textContent = stop.zh + ' (' + stop.en + ')';
+                updatePreview();
+            }
+        }
+
+        function disableSlider(key) {
+            sliderEnabled[key] = false;
+            renderBody();
+            updatePreview();
+        }
+
+        function jumpSlider(key, pos) {
+            sliderEnabled[key] = true;
+            sliderValues[key] = pos;
+            renderBody();
+            updatePreview();
+        }
+
+        function onSlide(key, val) {
+            sliderValues[key] = parseInt(val);
+            sliderEnabled[key] = true;  // 滑動自動啟用
+            // Update description + value display inline (no full re-render for smoothness)
+            const slider = SLIDERS[key];
+            const stop = slider.stops[val];
+            const desc = document.getElementById(`desc-${key}`);
+            if (desc) desc.innerHTML = `<span class="fun">${stop.fun}</span><span class="pro"> — ${stop.prompt}</span>`;
+            // Update header value
+            const group = document.getElementById(`sg-${key}`);
+            if (group) group.classList.add('active');
+            const valEl = group?.querySelector('.cmm-slider-value');
+            if (valEl) valEl.textContent = stop.zh + ' (' + stop.en + ')';
+            updatePreview();
+        }
+
+        // ═══════════════════════════════════════════
+        // Chip logic
+        // ═══════════════════════════════════════════
+        function toggleChip(id) {
+            if (selectedChips.has(id)) selectedChips.delete(id);
+            else selectedChips.add(id);
+            renderBody();
+            updatePreview();
+        }
+
+        // ═══════════════════════════════════════════
+        // Bonus
+        // ═══════════════════════════════════════════
+        function renderBonus() {
+            const panel = document.getElementById('cmmBonus');
+            const container = document.getElementById('cmmBonusTags');
+            if (!panel || !container) return;
+            container.innerHTML = BONUS_TRAITS.map(t =>
+                `<span class="cmm-bonus-tag ${selectedBonuses.has(t.en) ? 'selected' : ''}"
+               onclick="toggleBonus('${t.en.replace(/'/g, "\\'")}')">
+            ${t.icon} ${t.zh}
+        </span>`
+            ).join('');
+            panel.classList.add('visible');
+        }
+
+        function toggleBonus(en) {
+            if (selectedBonuses.has(en)) selectedBonuses.delete(en);
+            else selectedBonuses.add(en);
+            renderBonus();
+            updatePreview();
+        }
+
+        // ═══════════════════════════════════════════
+        // Preview
+        // ═══════════════════════════════════════════
+        function buildPromptParts() {
+            const parts = [];
+            // Sliders
+            for (const [key, slider] of Object.entries(SLIDERS)) {
+                if (!sliderEnabled[key]) continue;
+                parts.push({ text: slider.stops[sliderValues[key]].prompt, type: 'slider' });
+            }
+            // Chips
+            const allChipItems = CHIP_SECTIONS.flatMap(s => s.items);
+            for (const id of selectedChips) {
+                const item = allChipItems.find(i => i.id === id);
+                if (item) parts.push({ text: item.prompt, type: 'chip' });
+            }
+            // Bonus
+            for (const en of selectedBonuses) {
+                parts.push({ text: en, type: 'bonus' });
+            }
+            return parts;
+        }
+
+        function updatePreview() {
+            const el = document.getElementById('cmmPreview');
+            const countEl = document.getElementById('cmmCount');
+            const parts = buildPromptParts();
+            if (countEl) countEl.textContent = parts.length;
+            if (el) {
+                el.innerHTML = parts.length > 0
+                    ? parts.map(p => p.text).join(', ')
+                    : '移動推桿或點選格子...';
+            }
+        }
+
+        // ═══════════════════════════════════════════
+        // Random
+        // ═══════════════════════════════════════════
+        function randomAll() {
+            for (const key of Object.keys(SLIDERS)) {
+                sliderEnabled[key] = Math.random() > 0.3;
+                sliderValues[key] = Math.floor(Math.random() * SLIDERS[key].stops.length);
+            }
+            selectedChips.clear();
+            for (const section of CHIP_SECTIONS) {
+                if (Math.random() > 0.4) {
+                    const item = section.items[Math.floor(Math.random() * section.items.length)];
+                    selectedChips.add(item.id);
+                }
+            }
+            selectedBonuses.clear();
+            const numBonus = Math.floor(Math.random() * 3);
+            for (let i = 0; i < numBonus; i++) {
+                const t = BONUS_TRAITS[Math.floor(Math.random() * BONUS_TRAITS.length)];
+                selectedBonuses.add(t.en);
+            }
+            renderBody();
+            renderBonus();
+            updatePreview();
+        }
+
+        function resetAll() {
+            sliderValues = { distance: 3, vAngle: 2, lens: 4, dof: 1 };
+            sliderEnabled = { distance: false, vAngle: false, lens: false, dof: false };
+            selectedChips.clear();
+            selectedBonuses.clear();
+            renderBody();
+            renderBonus();
+            updatePreview();
+        }
+
+        // ═══════════════════════════════════════════
+        // Apply
+        // ═══════════════════════════════════════════
+        function applyAll() {
+            const parts = buildPromptParts();
+            if (parts.length === 0) { closeModal(); return; }
+
+            // Output
+            const out = document.getElementById('outputText');
+            out.innerHTML = parts.map(p => {
+                const cls = p.type === 'slider' ? 'tag-slider' : p.type === 'chip' ? 'tag-chip' : 'tag-bonus';
+                return `<span class="${cls}">${p.text}</span>`;
+            }).join('<span style="color:var(--text-secondary)">, </span>');
+
+            // Summary
+            const summary = document.getElementById('demoSummary');
+            const tags = document.getElementById('demoSummaryTags');
+            summary.classList.add('visible');
+
+            let tagHtml = '';
+            for (const [key, slider] of Object.entries(SLIDERS)) {
+                if (!sliderEnabled[key]) continue;
+                const s = slider.stops[sliderValues[key]];
+                tagHtml += `<span class="demo-summary-tag slider-tag">${slider.icon} ${s.zh} ${s.en}</span>`;
+            }
+            const allChipItems = CHIP_SECTIONS.flatMap(s => s.items);
+            for (const id of selectedChips) {
+                const item = allChipItems.find(i => i.id === id);
+                if (item) tagHtml += `<span class="demo-summary-tag chip-tag">${item.zh} ${item.en}</span>`;
+            }
+            for (const en of selectedBonuses) {
+                const t = BONUS_TRAITS.find(b => b.en === en);
+                if (t) tagHtml += `<span class="demo-summary-tag bonus-tag">${t.icon} ${t.zh}</span>`;
+            }
+            tags.innerHTML = tagHtml;
+
+            closeModal();
+        }
+
+        function clearAll() {
+            resetAll();
+            document.getElementById('demoSummary').classList.remove('visible');
+            document.getElementById('outputText').innerHTML = '<span style="color:var(--text-secondary)">點擊上方按鈕，選擇運鏡技巧…</span>';
+        }
+    </script>
+</body>
+
+</html>
