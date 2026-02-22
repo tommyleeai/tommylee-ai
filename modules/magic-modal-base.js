@@ -413,10 +413,16 @@ window.PromptGen.MagicModalBase = (function () {
             }
         }
 
-        renderGrid();
+        renderGrid(true);
 
-        // 如果有預存的選取，顯示 bonus
+        // 如果有預存的選取，顯示 bonus 並自動滾動到已選 item
         if (selectedItem && hasBonus) renderBonus(selectedItem);
+        if (selectedItem) {
+            setTimeout(() => {
+                const selectedEl = document.querySelector('.mm-chip.selected');
+                if (selectedEl) selectedEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 100);
+        }
 
         // === Close ===
         function closeModal() {
@@ -490,7 +496,7 @@ window.PromptGen.MagicModalBase = (function () {
         }
 
         // === renderGrid ===
-        function renderGrid() {
+        function renderGrid(skipScrollReset) {
             const grid = document.getElementById('mm-grid');
             const filtered = getFilteredItems();
             const recent = getRecent(config.recentKey);
@@ -547,7 +553,7 @@ window.PromptGen.MagicModalBase = (function () {
                 grid.appendChild(chip);
             });
 
-            document.getElementById('mm-grid-wrap').scrollTop = 0;
+            if (!skipScrollReset) document.getElementById('mm-grid-wrap').scrollTop = 0;
         }
 
         // === renderBonus ===

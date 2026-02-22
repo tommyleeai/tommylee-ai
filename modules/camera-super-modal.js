@@ -216,6 +216,20 @@ window.PromptGen.CameraSuperModal = (function () {
         selectedBonuses = new Set();
     }
 
+    // 嘗試從 state.cameraAdvanced._superState 還原先前的設定
+    function restoreState() {
+        const adv = deps.state?.cameraAdvanced;
+        if (adv?.superMode && adv._superState) {
+            const s = adv._superState;
+            sliderValues = { ...s.sliderValues };
+            sliderEnabled = { ...s.sliderEnabled };
+            selectedChips = new Set(s.selectedChips);
+            selectedBonuses = new Set(s.selectedBonuses);
+        } else {
+            resetState();
+        }
+    }
+
     // ═══════════════════════════════════════════
     // CSS 注入（只注入一次）
     // ═══════════════════════════════════════════
@@ -873,7 +887,13 @@ window.PromptGen.CameraSuperModal = (function () {
             bonusTraits: promptTexts,
             bonusTraitsZh: zhLabels,
             selectedCamera: { label: '⚡ Super Mode', en: 'Super Mode' },
-            superMode: true
+            superMode: true,
+            _superState: {
+                sliderValues: { ...sliderValues },
+                sliderEnabled: { ...sliderEnabled },
+                selectedChips: [...selectedChips],
+                selectedBonuses: [...selectedBonuses]
+            }
         };
         state.selections.cameraAngle = promptTexts[0]; // 主選項
 
@@ -895,7 +915,7 @@ window.PromptGen.CameraSuperModal = (function () {
     // ═══════════════════════════════════════════
     function open() {
         injectCSS();
-        resetState();
+        restoreState();
 
         const overlay = document.createElement('div');
         overlay.className = 'csm-overlay';
