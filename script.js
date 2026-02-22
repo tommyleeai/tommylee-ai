@@ -72,6 +72,7 @@
         artStylePage: 1,     // v7.5 藝術風格分頁
         artistPage: 1,       // v7.5 藝術家分頁
         scenePage: 1,        // v7.6 場景分頁
+        cameraAnglePage: 1,  // v8.3 攝影角度分頁
         atmospherePage: 1,   // v7.7 時間氛圍分頁
         atmosphereAdvanced: null, // v7.7 時間氛圍魔法
         heterochromia: false, // v6.9 異色瞳模式
@@ -218,6 +219,7 @@
                 state.expressionAdvanced = parsed.expressionAdvanced || null;
                 state.poseAdvanced = parsed.poseAdvanced || null;
                 state.sceneAdvanced = parsed.sceneAdvanced || null;
+                state.cameraAdvanced = parsed.cameraAdvanced || null;
                 state.atmosphereAdvanced = parsed.atmosphereAdvanced || null;
                 state.ageEnabled = parsed.ageEnabled !== false;
 
@@ -1732,6 +1734,96 @@
                     if (tagGrid) tagGrid.classList.add('body-section-disabled');
                 }
                 tabContent.appendChild(sectionEl);
+                return;
+            }
+
+            // === v8.3 攝影 Magic Modal — cameraAngle section 特殊處理 ===
+            if (section.id === 'cameraAngle') {
+                // 高級魔法專用按鈕
+                const cameraMagicBtn = document.createElement('button');
+                cameraMagicBtn.className = 'race-magic-btn';
+                cameraMagicBtn.innerHTML = '<i class="fa-solid fa-wand-sparkles"></i> ' +
+                    (state.lang === 'zh' ? '📸 高級魔法專用' : '📸 Advanced Magic');
+                cameraMagicBtn.addEventListener('click', () => {
+                    openCameraMagicModal();
+                });
+                const caCustomToggle = header.querySelector('.btn-custom-toggle');
+                const caBtnGroup = document.createElement('div');
+                caBtnGroup.className = 'section-header-buttons';
+                header.insertBefore(caBtnGroup, caCustomToggle);
+                caBtnGroup.appendChild(cameraMagicBtn);
+                caBtnGroup.appendChild(caCustomToggle);
+
+                // 已選運鏡 badge
+                if (state.selections.cameraAngle) {
+                    const caData = window.PromptGen.CameraMagicData;
+                    const caObj = caData ? caData.ITEMS.find(s => s.value === state.selections.cameraAngle) : null;
+                    const caLabel = caObj ? `${caObj.icon} ${state.lang === 'zh' ? caObj.label : caObj.en}` : state.selections.cameraAngle;
+                    const badge = document.createElement('span');
+                    badge.className = 'selected-race-badge';
+                    badge.innerHTML = `✓ ${caLabel} <span class="badge-x" title="${state.lang === 'zh' ? '取消選擇' : 'Deselect'}">✕</span>`;
+                    badge.querySelector('.badge-x').addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        delete state.selections.cameraAngle;
+                        delete state.cameraAdvanced;
+                        renderTabContent();
+                        generatePrompt();
+                        saveState();
+                    });
+                    const titleEl2 = header.querySelector('.section-block-title');
+                    const titleWrapper = document.createElement('div');
+                    titleWrapper.className = 'section-title-with-badge';
+                    titleEl2.parentNode.insertBefore(titleWrapper, titleEl2);
+                    titleWrapper.appendChild(titleEl2);
+                    titleWrapper.appendChild(badge);
+                }
+
+                // ★ cameraAdvanced 橫幅：顯示加分特徵
+                if (state.cameraAdvanced && state.cameraAdvanced.bonusTraits && state.cameraAdvanced.bonusTraits.length > 0) {
+                    const ca = state.cameraAdvanced;
+                    const traitNames = ca.bonusTraitsZh ? ca.bonusTraitsZh.join('、') : ca.bonusTraits.join(', ');
+                    const cameraName = ca.selectedCamera ? `${ca.selectedCamera.label} ${ca.selectedCamera.en}` : '';
+
+                    const summaryBar = document.createElement('div');
+                    summaryBar.className = 'body-advanced-summary';
+                    const summaryText = document.createElement('span');
+                    summaryText.innerHTML = `📸 ${state.lang === 'zh' ? '運鏡魔法啟用中' : 'Camera Magic Active'}：${cameraName} / 🏷️ ${traitNames}`;
+
+                    const editBtn = document.createElement('button');
+                    editBtn.className = 'body-summary-action';
+                    editBtn.textContent = state.lang === 'zh' ? '編輯' : 'Edit';
+                    editBtn.addEventListener('click', () => openCameraMagicModal());
+
+                    const clearBtn = document.createElement('button');
+                    clearBtn.className = 'body-summary-action clear';
+                    clearBtn.textContent = state.lang === 'zh' ? '清除' : 'Clear';
+                    clearBtn.addEventListener('click', () => {
+                        state.cameraAdvanced = null;
+                        delete state.selections.cameraAngle;
+                        renderTabContent();
+                        generatePrompt();
+                        saveState();
+                    });
+
+                    summaryBar.appendChild(summaryText);
+                    summaryBar.appendChild(editBtn);
+                    summaryBar.appendChild(clearBtn);
+                    sectionEl.appendChild(summaryBar);
+                }
+
+                // 渲染分頁 grid（使用 CameraMagicData 全部 54 項）
+                const CAMERA_CATEGORY_ORDER = ['distance', 'vAngle', 'hAngle', 'movement', 'lens', 'dof', 'composition'];
+                const caAllItems = window.PromptGen.CameraMagicData ? [...window.PromptGen.CameraMagicData.ITEMS].sort((a, b) => {
+                    return CAMERA_CATEGORY_ORDER.indexOf(a.category) - CAMERA_CATEGORY_ORDER.indexOf(b.category);
+                }) : section.data;
+                renderPaginatedGrid(sectionEl, section, caAllItems, 'cameraAnglePage');
+
+                // Advanced 啟用時灰化 grid
+                if (state.cameraAdvanced && state.cameraAdvanced.bonusTraits && state.cameraAdvanced.bonusTraits.length > 0) {
+                    const tagGrid = sectionEl.querySelector('.tag-grid-paginated');
+                    if (tagGrid) tagGrid.classList.add('body-section-disabled');
+                }
+                tabContent.appendChild(sectionEl);
 
                 // Custom input
                 if (state.customInputVisible[section.id]) {
@@ -1740,7 +1832,7 @@
                     const input = document.createElement('input');
                     input.type = 'text';
                     input.className = 'custom-section-input';
-                    input.placeholder = state.lang === 'zh' ? '輸入自訂場景...' : 'Enter custom scene...';
+                    input.placeholder = state.lang === 'zh' ? '輸入自訂運鏡角度...' : 'Enter custom camera angle...';
                     input.value = state.customInputs[section.id] || '';
                     input.addEventListener('input', (e) => {
                         state.customInputs[section.id] = e.target.value.trim();
@@ -2126,6 +2218,12 @@
     }
     function openSceneMagicModal() {
         window.PromptGen.SceneMagicModal.openSceneMagicModal();
+    }
+    // ============================================
+    // Camera Magic Modal — 由 modules/camera-magic-modal.js 提供
+    // ============================================
+    function openCameraMagicModal() {
+        window.PromptGen.CameraMagicModal.openCameraMagicModal();
     }
     // ============================================
     // Atmosphere Magic Modal — 由 modules/atmosphere-magic-modal.js 提供
@@ -2633,6 +2731,11 @@
             if (secId === 'scene' && state.sceneAdvanced && state.sceneAdvanced.bonusTraits && state.sceneAdvanced.bonusTraits.length > 0) {
                 state.sceneAdvanced.bonusTraits.forEach(trait => parts.push(trait));
             }
+
+            // ★ cameraAdvanced bonusTraits（附加在 cameraAngle section 後）
+            if (secId === 'cameraAngle' && state.cameraAdvanced && state.cameraAdvanced.bonusTraits && state.cameraAdvanced.bonusTraits.length > 0) {
+                state.cameraAdvanced.bonusTraits.forEach(trait => parts.push(trait));
+            }
         });
 
         // Quality tags
@@ -3001,6 +3104,12 @@
     });
     window.PromptGen.SceneMagicModal.setup({
         state, sfx, selectOption, generatePrompt, saveState, renderTabContent
+    });
+    window.PromptGen.CameraMagicModal.setup({
+        state, sfx, selectOption, generatePrompt, saveState, renderTabContent
+    });
+    window.PromptGen.CameraSuperModal.setup({
+        state, sfx, generatePrompt, saveState, renderTabContent
     });
     window.PromptGen.AtmosphereMagicModal.setup({
         state, sfx, ATM_DATA: window.PromptGen.AtmosphereMagicData, generatePrompt, saveState, renderTabContent
