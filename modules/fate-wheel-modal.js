@@ -1520,6 +1520,25 @@ window.PromptGen.FateWheelModal = (function () {
             appState.customInputVisible = {};
             appState.customFields = [];
 
+            // === 輔助：用 Fate Wheel tag 查找 RACES/JOBS 的正確 value ===
+            const Data = window.PromptGen && window.PromptGen.Data;
+            const mainRaces = Data ? Data.RACES : [];
+            const mainJobs = Data ? Data.JOBS : [];
+
+            function findMainValue(tag, list) {
+                if (!list || !list.length) return tag;
+                // 先嘗試精確匹配
+                const exact = list.find(item => item.value === tag);
+                if (exact) return exact.value;
+                // 模糊匹配：比較第一個 tag 關鍵字
+                const tagFirst = tag.split(',')[0].trim().toLowerCase();
+                const fuzzy = list.find(item => {
+                    const itemFirst = item.value.split(',')[0].trim().toLowerCase();
+                    return itemFirst === tagFirst;
+                });
+                return fuzzy ? fuzzy.value : tag;
+            }
+
             // 寫入非「無」的格子
             for (let i = 0; i < 24; i++) {
                 const result = ws.cells[i];
@@ -1532,7 +1551,14 @@ window.PromptGen.FateWheelModal = (function () {
                     // 品質等多選欄位 → 拆為陣列
                     appState.selections[stateKey] = result.value.split(',').map(s => s.trim());
                 } else {
-                    appState.selections[stateKey] = result.value;
+                    // race/job 特殊處理：查找主頁 RACES/JOBS 的正確 value
+                    if (stateKey === 'race') {
+                        appState.selections[stateKey] = findMainValue(result.value, mainRaces);
+                    } else if (stateKey === 'job') {
+                        appState.selections[stateKey] = findMainValue(result.value, mainJobs);
+                    } else {
+                        appState.selections[stateKey] = result.value;
+                    }
                 }
             }
 
