@@ -261,7 +261,8 @@ window.PromptGen.CameraSuperModal = (function () {
     display: inline-flex; align-items: center; gap: 4px;
     padding: 2px 8px; border-radius: 8px; font-size: .6rem; font-weight: 800;
     background: linear-gradient(135deg, #fbbf24, #f97316);
-    color: #000; letter-spacing: 1px; margin-left: 8px;
+    -webkit-background-clip: padding-box; background-clip: padding-box;
+    -webkit-text-fill-color: #000; color: #000; letter-spacing: 1px; margin-left: 8px;
     animation: csm-pulse 2s ease-in-out infinite;
 }
 .csm-toolbar button {
@@ -402,6 +403,23 @@ window.PromptGen.CameraSuperModal = (function () {
 @keyframes csm-rotate { from { transform: translate(-50%,-50%) rotate(0deg); } to { transform: translate(-50%,-50%) rotate(360deg); } }
 @keyframes csm-float { 0%,100% { transform: translateY(0) translateX(0); opacity: .3; } 50% { transform: translateY(-80px) translateX(20px); opacity: .7; } }
 @keyframes csm-pulse { 0%,100% { opacity: 1; } 50% { opacity: .7; } }
+/* === Conflict Toast === */
+.csm-conflict-toast {
+    position: fixed; top: 60px; left: 50%; transform: translateX(-50%) translateY(-20px);
+    z-index: 10010; padding: 10px 20px; border-radius: 12px;
+    background: rgba(239, 68, 68, .92); backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 100, 100, .5);
+    color: #fff; font-size: .78rem; font-weight: 700;
+    box-shadow: 0 8px 30px rgba(239, 68, 68, .4);
+    opacity: 0; pointer-events: none;
+    transition: opacity .3s, transform .3s;
+    max-width: 90vw; text-align: center;
+}
+.csm-conflict-toast.visible { opacity: 1; transform: translateX(-50%) translateY(0); pointer-events: auto; }
+.csm-chip.conflict { border-color: rgba(239, 68, 68, .6) !important; box-shadow: 0 0 12px rgba(239, 68, 68, .2); }
+.csm-bonus-tag.conflict { border-color: rgba(239, 68, 68, .6) !important; box-shadow: 0 0 8px rgba(239, 68, 68, .2); }
+.csm-slider-group.conflict { border-color: rgba(239, 68, 68, .4) !important; box-shadow: 0 0 15px rgba(239, 68, 68, .1); }
+@keyframes csm-conflictFlash { 0% { box-shadow: 0 0 0 rgba(239,68,68,0); } 50% { box-shadow: 0 0 20px rgba(239,68,68,.3); } 100% { box-shadow: 0 0 0 rgba(239,68,68,0); } }
 /* === Camera Super Modal END === */
         `;
         document.head.appendChild(style);
@@ -606,6 +624,124 @@ window.PromptGen.CameraSuperModal = (function () {
         const valEl = group?.querySelector('.csm-slider-value');
         if (valEl) valEl.textContent = stop.zh + ' (' + stop.en + ')';
         updatePreview();
+        checkAndShowConflicts();
+    }
+
+    // ═══════════════════════════════════════════
+    // ⚠️ 自選衝突即時檢查
+    // ═══════════════════════════════════════════
+    let conflictToastTimer = null;
+
+    function getActiveSliderMap() {
+        const map = {};
+        for (const key of Object.keys(SLIDERS)) {
+            if (sliderEnabled[key]) map[key] = sliderValues[key];
+        }
+        return map;
+    }
+
+    function checkAndShowConflicts() {
+        const activeSliders = getActiveSliderMap();
+        const conflicts = [];
+
+        // 清除之前的衝突高亮
+        document.querySelectorAll('.csm-chip.conflict, .csm-bonus-tag.conflict, .csm-slider-group.conflict')
+            .forEach(el => el.classList.remove('conflict'));
+
+        // 1. Chip × Chip 衝突
+        for (const rule of CAMERA_CONFLICTS) {
+            if (rule.type === 'chip_chip') {
+                if (selectedChips.has(rule.a) && selectedChips.has(rule.b)) {
+                    conflicts.push(rule.msg);
+                    // 高亮衝突 chips
+                    document.querySelector(`[data-chip-id="${rule.a}"]`)?.classList.add('conflict');
+                    document.querySelector(`[data-chip-id="${rule.b}"]`)?.classList.add('conflict');
+                }
+            }
+        }
+
+        // 2. Slider × Chip 衝突
+        for (const rule of CAMERA_CONFLICTS) {
+            if (rule.type === 'slider_chip') {
+                if (activeSliders[rule.slider] === rule.value && selectedChips.has(rule.chip)) {
+                    conflicts.push(rule.msg);
+                    document.querySelector(`[data-chip-id="${rule.chip}"]`)?.classList.add('conflict');
+                    document.getElementById(`csm-sg-${rule.slider}`)?.classList.add('conflict');
+                }
+            }
+        }
+
+        // 3. Slider × Slider 衝突
+        for (const rule of CAMERA_CONFLICTS) {
+            if (rule.type === 'slider_slider') {
+                if (sliderEnabled[rule.sliderA] && sliderEnabled[rule.sliderB]
+                    && sliderValues[rule.sliderA] === rule.valueA
+                    && sliderValues[rule.sliderB] >= rule.minB) {
+                    conflicts.push(rule.msg);
+                    document.getElementById(`csm-sg-${rule.sliderA}`)?.classList.add('conflict');
+                    document.getElementById(`csm-sg-${rule.sliderB}`)?.classList.add('conflict');
+                }
+            }
+        }
+
+        // 4. Slider × Bonus 衝突
+        for (const rule of CAMERA_CONFLICTS) {
+            if (rule.type === 'slider_bonus') {
+                if (!selectedBonuses.has(rule.bonusEn)) continue;
+                const sv = activeSliders[rule.slider];
+                if (sv === undefined) continue;
+                let hit = false;
+                if (rule.value !== undefined && sv === rule.value) hit = true;
+                if (rule.values && rule.values.includes(sv)) hit = true;
+                if (hit) {
+                    conflicts.push(rule.msg);
+                    document.getElementById(`csm-sg-${rule.slider}`)?.classList.add('conflict');
+                    document.querySelector(`[data-bonus-en="${CSS.escape(rule.bonusEn)}"]`)?.classList.add('conflict');
+                }
+            }
+        }
+
+        if (conflicts.length > 0) {
+            showConflictToastCSM(conflicts);
+            playConflictBeep();
+        } else {
+            hideConflictToast();
+        }
+    }
+
+    function showConflictToastCSM(conflicts) {
+        let toast = document.getElementById('csmConflictToast');
+        if (!toast) {
+            toast = document.createElement('div');
+            toast.id = 'csmConflictToast';
+            toast.className = 'csm-conflict-toast';
+            document.body.appendChild(toast);
+        }
+        toast.innerHTML = `⚠️ ${conflicts.join(' │ ')}`;
+        toast.classList.add('visible');
+        if (conflictToastTimer) clearTimeout(conflictToastTimer);
+        conflictToastTimer = setTimeout(() => hideConflictToast(), 4000);
+    }
+
+    function hideConflictToast() {
+        const toast = document.getElementById('csmConflictToast');
+        if (toast) toast.classList.remove('visible');
+    }
+
+    function playConflictBeep() {
+        try {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = ctx.createOscillator();
+            const g = ctx.createGain();
+            osc.connect(g).connect(ctx.destination);
+            osc.type = 'square';
+            osc.frequency.setValueAtTime(440, ctx.currentTime);
+            osc.frequency.setValueAtTime(330, ctx.currentTime + 0.08);
+            g.gain.setValueAtTime(0.06, ctx.currentTime);
+            g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15);
+            osc.start(ctx.currentTime);
+            osc.stop(ctx.currentTime + 0.15);
+        } catch (e) { }
     }
 
     // ═══════════════════════════════════════════
@@ -616,6 +752,7 @@ window.PromptGen.CameraSuperModal = (function () {
         else selectedChips.add(id);
         renderBody();
         updatePreview();
+        checkAndShowConflicts();
     }
 
     function toggleBonus(en) {
@@ -623,6 +760,7 @@ window.PromptGen.CameraSuperModal = (function () {
         else selectedBonuses.add(en);
         renderBonus();
         updatePreview();
+        checkAndShowConflicts();
     }
 
     // ═══════════════════════════════════════════
@@ -738,6 +876,9 @@ window.PromptGen.CameraSuperModal = (function () {
             superMode: true
         };
         state.selections.cameraAngle = promptTexts[0]; // 主選項
+
+        // 清除被覆蓋的 sub-section 選取
+        ['shotSize', 'focalLength', 'aperture', 'lensEffect'].forEach(k => delete state.selections[k]);
 
         closeModal();
 

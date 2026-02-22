@@ -36,23 +36,66 @@ window.PromptGen.KonamiSuperModal = (function () {
     // === 每次正確按鍵的微閃光提示 ===
     function flashHint(overlayEl, progress) {
         const flash = document.createElement('div');
+        const p2 = progress * progress; // 指數曲線：前期暗、後期爆亮
         flash.style.cssText = `
             position: fixed; inset: 0; z-index: 100000;
             background: radial-gradient(circle at center,
-                rgba(139, 92, 246, ${0.05 + progress * 0.08}) 0%,
-                transparent 70%);
+                rgba(255, 255, 255, ${0.05 + p2 * 0.85}) 0%,
+                rgba(255, 255, 255, ${0.02 + p2 * 0.45}) 35%,
+                rgba(200, 180, 255, ${0.01 + p2 * 0.25}) 60%,
+                transparent 85%);
             pointer-events: none;
             animation: konami-hint-flash .4s ease-out forwards;
         `;
         document.body.appendChild(flash);
         setTimeout(() => flash.remove(), 400);
 
+        // 🔮 魔法水晶鈴音效
+        try {
+            if (!flashHint._ctx) {
+                flashHint._ctx = new (window.AudioContext || window.webkitAudioContext)();
+                flashHint._lastTime = 0;
+            }
+            const ctx = flashHint._ctx;
+            if (ctx.state === 'suspended') ctx.resume();
+            const t = ctx.currentTime;
+            const delta = flashHint._lastTime ? (t - flashHint._lastTime) : 0.4;
+            flashHint._lastTime = t;
+
+            const idx = Math.min(Math.round(progress * 9), 9);
+            // C 大調上行，最後一鍵跳高八度
+            const scale = [523, 587, 659, 698, 784, 880, 988, 1047, 1175, 1568];
+            const freq = scale[idx];
+            // 快打 → 短音(0.08s)，慢打 → 長音(0.3s)
+            const dur = Math.max(0.08, Math.min(delta * 0.8, 0.3));
+
+            // 主音 — 清脆 sine
+            const osc = ctx.createOscillator();
+            const g = ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.value = freq;
+            g.gain.setValueAtTime(0.18, t);
+            g.gain.exponentialRampToValueAtTime(0.001, t + dur + 0.1);
+            osc.connect(g); g.connect(ctx.destination);
+            osc.start(t); osc.stop(t + dur + 0.1);
+
+            // 泛音 — 高兩個八度的微弱 shimmer
+            const osc2 = ctx.createOscillator();
+            const g2 = ctx.createGain();
+            osc2.type = 'sine';
+            osc2.frequency.value = freq * 4;
+            g2.gain.setValueAtTime(0.03 + progress * 0.02, t);
+            g2.gain.exponentialRampToValueAtTime(0.001, t + dur * 0.5);
+            osc2.connect(g2); g2.connect(ctx.destination);
+            osc2.start(t); osc2.stop(t + dur);
+        } catch (e) { /* 靜默失敗 */ }
+
         // 隨進度增加，在 overlay 四周加上微光
         if (overlayEl) {
             const container = overlayEl.querySelector('[class*="-container"]');
             if (container) {
-                const glow = Math.min(progress * 3, 20);
-                container.style.boxShadow = `0 0 ${glow}px rgba(251, 191, 36, ${progress * 0.15})`;
+                const glow = Math.min(progress * 8, 40);
+                container.style.boxShadow = `0 0 ${glow}px rgba(255, 255, 255, ${progress * 0.4})`;
             }
         }
     }

@@ -3317,6 +3317,33 @@ input[type=range]::-webkit-slider-thumb:hover {
 
 /* === 25. Body Magic 進階體型 END === */
 
+/* === 運鏡魔法覆蓋禁用樣式 START === */
+.section-disabled-by-magic {
+    opacity: 0.35;
+    pointer-events: none;
+    filter: grayscale(0.8);
+    position: relative;
+}
+
+.section-disabled-by-magic::after {
+    content: '📸 已由運鏡魔法覆蓋';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(139, 92, 246, 0.85);
+    color: #fff;
+    padding: 6px 16px;
+    border-radius: 8px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    pointer-events: none;
+    z-index: 5;
+    white-space: nowrap;
+}
+
+/* === 運鏡魔法覆蓋禁用樣式 END === */
+
 /* === 26. 衝突偵測 Modal START === */
 /* v6.1 從 conflict-system.js 外移 */
 

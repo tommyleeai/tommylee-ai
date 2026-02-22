@@ -60,6 +60,8 @@ window.PromptGen.CameraMagicModal = (function () {
                         bonusTraits: bonusEn,
                         bonusTraitsZh: bonusZh
                     };
+                    // 清除被覆蓋的 sub-section 選取
+                    ['shotSize', 'focalLength', 'aperture', 'lensEffect'].forEach(k => delete state.selections[k]);
                     generatePrompt();
                     saveState();
                     renderTabContent();

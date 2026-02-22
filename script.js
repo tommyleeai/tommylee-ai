@@ -282,6 +282,13 @@
         sections.forEach(section => {
             const sectionEl = document.createElement('div');
             sectionEl.className = 'section-block';
+            sectionEl.dataset.sectionId = section.id;
+
+            // === 運鏡魔法啟用時，禁用鏡頭/焦段/光圈/鏡頭效果 ===
+            const CAMERA_SUB_SECTIONS = ['shotSize', 'focalLength', 'aperture', 'lensEffect'];
+            if (CAMERA_SUB_SECTIONS.includes(section.id) && state.cameraAdvanced && state.cameraAdvanced.bonusTraits && state.cameraAdvanced.bonusTraits.length > 0) {
+                sectionEl.classList.add('section-disabled-by-magic');
+            }
 
             // Section header with title + custom button
             const header = document.createElement('div');
@@ -1745,7 +1752,11 @@
                 cameraMagicBtn.innerHTML = '<i class="fa-solid fa-wand-sparkles"></i> ' +
                     (state.lang === 'zh' ? '📸 高級魔法專用' : '📸 Advanced Magic');
                 cameraMagicBtn.addEventListener('click', () => {
-                    openCameraMagicModal();
+                    if (state.cameraAdvanced && state.cameraAdvanced.superMode) {
+                        window.PromptGen.CameraSuperModal.open();
+                    } else {
+                        openCameraMagicModal();
+                    }
                 });
                 const caCustomToggle = header.querySelector('.btn-custom-toggle');
                 const caBtnGroup = document.createElement('div');
@@ -1792,7 +1803,13 @@
                     const editBtn = document.createElement('button');
                     editBtn.className = 'body-summary-action';
                     editBtn.textContent = state.lang === 'zh' ? '編輯' : 'Edit';
-                    editBtn.addEventListener('click', () => openCameraMagicModal());
+                    editBtn.addEventListener('click', () => {
+                        if (state.cameraAdvanced && state.cameraAdvanced.superMode) {
+                            window.PromptGen.CameraSuperModal.open();
+                        } else {
+                            openCameraMagicModal();
+                        }
+                    });
 
                     const clearBtn = document.createElement('button');
                     clearBtn.className = 'body-summary-action clear';
@@ -2663,6 +2680,19 @@
                 }
                 return;
             }
+            // Skip cameraAngle if cameraAdvanced (Super Modal) is active
+            if (secId === 'cameraAngle' && state.cameraAdvanced && state.cameraAdvanced.superMode) {
+                // Super Modal 已套用 → 直接輸出所有 prompt 文字
+                if (state.cameraAdvanced.bonusTraits && state.cameraAdvanced.bonusTraits.length > 0) {
+                    state.cameraAdvanced.bonusTraits.forEach(trait => parts.push(trait));
+                }
+                return;
+            }
+            // Skip camera sub-sections when cameraAdvanced is active (already covered by magic modal)
+            const CAMERA_SUB_SECS = ['shotSize', 'focalLength', 'aperture', 'lensEffect'];
+            if (CAMERA_SUB_SECS.includes(secId) && state.cameraAdvanced && state.cameraAdvanced.bonusTraits && state.cameraAdvanced.bonusTraits.length > 0) {
+                return;
+            }
             const val = state.selections[secId];
             if (val && (!Array.isArray(val) || val.length > 0)) {
                 // Handle eye colors specially
@@ -2883,6 +2913,18 @@
                 if (atmParts.length > 0) {
                     yaml += `atmosphere: ${atmParts.join(', ')}\n`;
                 }
+                return;
+            }
+            // Skip cameraAngle if cameraAdvanced (Super Modal) is active (YAML)
+            if (secId === 'cameraAngle' && state.cameraAdvanced && state.cameraAdvanced.superMode) {
+                if (state.cameraAdvanced.bonusTraits && state.cameraAdvanced.bonusTraits.length > 0) {
+                    yaml += `camera_angle: ${state.cameraAdvanced.bonusTraits.join(', ')}\n`;
+                }
+                return;
+            }
+            // Skip camera sub-sections when cameraAdvanced is active (YAML)
+            const CAMERA_SUB_SECS_Y = ['shotSize', 'focalLength', 'aperture', 'lensEffect'];
+            if (CAMERA_SUB_SECS_Y.includes(secId) && state.cameraAdvanced && state.cameraAdvanced.bonusTraits && state.cameraAdvanced.bonusTraits.length > 0) {
                 return;
             }
             const parts = [];
@@ -3340,7 +3382,7 @@
     function getDimensionPromptPrefix(dim) {
         const prefixes = {
             anime: 'masterpiece, best quality, highly detailed anime illustration, anime coloring, cel shading,',
-            realistic: 'RAW photo, professional photography, photorealistic, 8k uhd, DSLR, high quality, film grain,',
+            realistic: 'RAW photo, professional photography, photorealistic, 8k uhd, DSLR, high quality,',
             fantasy: 'fantasy digital painting, semi-realistic, ethereal glow, detailed illustration, concept art,',
             '2.5d': '2.5D art, anime character design with realistic lighting, detailed textures, blending anime and photorealism,'
         };
@@ -3355,8 +3397,8 @@
                 style_notes: 'Use classic anime coloring with cel shading. The image should look like a high-quality anime screenshot or illustration.'
             },
             realistic: {
-                task: 'Generate a photorealistic character portrait',
-                style_notes: 'Use professional photography style with natural lighting, DSLR quality, film grain, and realistic skin texture.'
+                task: 'Generate a photorealistic character image',
+                style_notes: 'Use professional photography style with natural lighting, DSLR quality, and realistic skin texture.'
             },
             fantasy: {
                 task: 'Generate a fantasy-style character illustration',
@@ -3627,9 +3669,11 @@
         // Position near copy button
         const copyBtn = document.getElementById('btn-copy');
         const rect = copyBtn.getBoundingClientRect();
-        sitePicker.style.top = `${rect.bottom + 10}px`;
         sitePicker.style.left = `${rect.left}px`;
         sitePicker.classList.add('active');
+        // 放在按鈕上方
+        const popupHeight = sitePicker.offsetHeight;
+        sitePicker.style.top = `${rect.top - popupHeight - 10}px`;
 
         // Close on outside click
         setTimeout(() => {
