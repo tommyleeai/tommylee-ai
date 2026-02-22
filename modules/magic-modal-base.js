@@ -169,12 +169,38 @@ window.PromptGen.MagicModalBase = (function () {
         let searchQuery = '';
         let filterLetter = null;
 
-        // 如果有已存的 advanced 狀態，預選
-        if (config.restoreSelection) {
-            const restored = config.restoreSelection(ITEMS, state);
-            if (restored) {
-                if (restored.selectedItem) selectedItem = restored.selectedItem;
-                if (restored.selectedBonuses) selectedBonuses = restored.selectedBonuses;
+        // === 狀態還原：重新開啟 modal 時恢復先前的選取 ===
+        // 預設 fallback：從 state[advancedKey] 自動推導
+        function defaultRestoreSelection(items, st) {
+            const advKey = config.advancedKey;
+            if (!advKey || !st[advKey]) return null;
+            const prev = st[advKey];
+            // 找 selectedXxx 屬性（如 selectedRace、selectedCamera）
+            const selKey = Object.keys(prev).find(k => k.startsWith('selected'));
+            const selData = selKey ? prev[selKey] : null;
+            const foundItem = selData
+                ? items.find(s => (s[idField] || s.id) === (selData[idField] || selData.id || selData.en))
+                : null;
+            const bonuses = new Map();
+            if (prev.bonusTraits && prev.bonusTraitsZh) {
+                prev.bonusTraits.forEach((en, i) => {
+                    bonuses.set(en, prev.bonusTraitsZh[i] || en);
+                });
+            }
+            return { selectedItem: foundItem, selectedBonuses: bonuses };
+        }
+
+        const restoreFn = config.restoreSelection || defaultRestoreSelection;
+        const restored = restoreFn(ITEMS, state);
+        if (restored) {
+            if (restored.selectedItem) selectedItem = restored.selectedItem;
+            if (restored.selectedBonuses) selectedBonuses = restored.selectedBonuses;
+            // 自動跳轉到已選 item 所在的分類 tab
+            if (selectedItem) {
+                const itemCat = selectedItem[catField];
+                if (itemCat && CATEGORIES.some(c => (c.id || c.key) === itemCat)) {
+                    activeCat = itemCat;
+                }
             }
         }
 
