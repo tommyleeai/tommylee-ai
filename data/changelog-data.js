@@ -7,6 +7,14 @@ window.PromptGen.Changelog = (function () {
     // Changelog Data
     const changelog = [
         {
+            version: "v8.1.1",
+            date: "2026-02-22",
+            changes: [
+                "🎡 修復 Fate Wheel Badge 不顯示問題：hairstyle/bodyType/outfit/headwear/expression/pose/scene/atmosphere 共 9 區塊添加 fallback 邏輯",
+                "🏷️ 當資料陣列找不到匹配 tag 時，badge 直接顯示原始 tag 值而非跳過渲染"
+            ]
+        },
+        {
             version: "v8.1",
             date: "2026-02-22",
             changes: [

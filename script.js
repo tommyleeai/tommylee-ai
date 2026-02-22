@@ -651,24 +651,23 @@
                 if (state.selections.hairstyle) {
                     const hairData = state.gender === 'female' ? HAIRSTYLES_FEMALE : HAIRSTYLES_MALE;
                     const hairObj = hairData.find(h => h.value === state.selections.hairstyle);
-                    if (hairObj) {
-                        const badge = document.createElement('span');
-                        badge.className = 'selected-race-badge';
-                        badge.innerHTML = `✓ ${getOptionLabel(hairObj)} <span class="badge-x" title="${state.lang === 'zh' ? '取消選擇' : 'Deselect'}">✕</span>`;
-                        badge.querySelector('.badge-x').addEventListener('click', (e) => {
-                            e.stopPropagation();
-                            delete state.selections.hairstyle;
-                            renderTabContent();
-                            generatePrompt();
-                            saveState();
-                        });
-                        const titleEl = header.querySelector('.section-block-title');
-                        const titleWrapper = document.createElement('div');
-                        titleWrapper.className = 'section-title-with-badge';
-                        titleEl.parentNode.insertBefore(titleWrapper, titleEl);
-                        titleWrapper.appendChild(titleEl);
-                        titleWrapper.appendChild(badge);
-                    }
+                    const hairLabel = hairObj ? getOptionLabel(hairObj) : state.selections.hairstyle;
+                    const badge = document.createElement('span');
+                    badge.className = 'selected-race-badge';
+                    badge.innerHTML = `✓ ${hairLabel} <span class="badge-x" title="${state.lang === 'zh' ? '取消選擇' : 'Deselect'}">✕</span>`;
+                    badge.querySelector('.badge-x').addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        delete state.selections.hairstyle;
+                        renderTabContent();
+                        generatePrompt();
+                        saveState();
+                    });
+                    const titleEl = header.querySelector('.section-block-title');
+                    const titleWrapper = document.createElement('div');
+                    titleWrapper.className = 'section-title-with-badge';
+                    titleEl.parentNode.insertBefore(titleWrapper, titleEl);
+                    titleWrapper.appendChild(titleEl);
+                    titleWrapper.appendChild(badge);
                 }
 
                 // If hairAdvanced modal has selections, show summary bar
@@ -773,24 +772,23 @@
                 if (state.selections.bodyType) {
                     const bodyData = state.gender === 'female' ? BODY_TYPES_FEMALE : BODY_TYPES_MALE;
                     const bodyObj = bodyData.find(b => b.value === state.selections.bodyType);
-                    if (bodyObj) {
-                        const badge = document.createElement('span');
-                        badge.className = 'selected-race-badge';
-                        badge.innerHTML = `✓ ${getOptionLabel(bodyObj)} <span class="badge-x" title="${state.lang === 'zh' ? '取消選擇' : 'Deselect'}">✕</span>`;
-                        badge.querySelector('.badge-x').addEventListener('click', (e) => {
-                            e.stopPropagation();
-                            delete state.selections.bodyType;
-                            renderTabContent();
-                            generatePrompt();
-                            saveState();
-                        });
-                        const titleEl = header.querySelector('.section-block-title');
-                        const titleWrapper = document.createElement('div');
-                        titleWrapper.className = 'section-title-with-badge';
-                        titleEl.parentNode.insertBefore(titleWrapper, titleEl);
-                        titleWrapper.appendChild(titleEl);
-                        titleWrapper.appendChild(badge);
-                    }
+                    const bodyLabel = bodyObj ? getOptionLabel(bodyObj) : state.selections.bodyType;
+                    const badge = document.createElement('span');
+                    badge.className = 'selected-race-badge';
+                    badge.innerHTML = `✓ ${bodyLabel} <span class="badge-x" title="${state.lang === 'zh' ? '取消選擇' : 'Deselect'}">✕</span>`;
+                    badge.querySelector('.badge-x').addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        delete state.selections.bodyType;
+                        renderTabContent();
+                        generatePrompt();
+                        saveState();
+                    });
+                    const titleEl = header.querySelector('.section-block-title');
+                    const titleWrapper = document.createElement('div');
+                    titleWrapper.className = 'section-title-with-badge';
+                    titleEl.parentNode.insertBefore(titleWrapper, titleEl);
+                    titleWrapper.appendChild(titleEl);
+                    titleWrapper.appendChild(badge);
                 }
 
                 // If bodyAdvanced is active, show summary bar
@@ -896,24 +894,23 @@
                 // 已選服裝 badge
                 if (state.selections.outfit) {
                     const outfitObj = OUTFITS.find(o => o.value === state.selections.outfit);
-                    if (outfitObj) {
-                        const badge = document.createElement('span');
-                        badge.className = 'selected-race-badge';
-                        badge.innerHTML = `✓ ${getOptionLabel(outfitObj)} <span class="badge-x" title="${state.lang === 'zh' ? '取消選擇' : 'Deselect'}">✕</span>`;
-                        badge.querySelector('.badge-x').addEventListener('click', (e) => {
-                            e.stopPropagation();
-                            delete state.selections.outfit;
-                            renderTabContent();
-                            generatePrompt();
-                            saveState();
-                        });
-                        const titleEl = header.querySelector('.section-block-title');
-                        const titleWrapper = document.createElement('div');
-                        titleWrapper.className = 'section-title-with-badge';
-                        titleEl.parentNode.insertBefore(titleWrapper, titleEl);
-                        titleWrapper.appendChild(titleEl);
-                        titleWrapper.appendChild(badge);
-                    }
+                    const outfitLabel = outfitObj ? getOptionLabel(outfitObj) : state.selections.outfit;
+                    const badge = document.createElement('span');
+                    badge.className = 'selected-race-badge';
+                    badge.innerHTML = `✓ ${outfitLabel} <span class="badge-x" title="${state.lang === 'zh' ? '取消選擇' : 'Deselect'}">✕</span>`;
+                    badge.querySelector('.badge-x').addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        delete state.selections.outfit;
+                        renderTabContent();
+                        generatePrompt();
+                        saveState();
+                    });
+                    const titleEl = header.querySelector('.section-block-title');
+                    const titleWrapper = document.createElement('div');
+                    titleWrapper.className = 'section-title-with-badge';
+                    titleEl.parentNode.insertBefore(titleWrapper, titleEl);
+                    titleWrapper.appendChild(titleEl);
+                    titleWrapper.appendChild(badge);
                 }
 
                 // outfitAdvanced 橫幅（加分特徵）
@@ -1005,24 +1002,23 @@
                 // 已選頭飾 badge
                 if (state.selections.headwear) {
                     const hwObj = HEADWEAR.find(o => o.value === state.selections.headwear);
-                    if (hwObj) {
-                        const badge = document.createElement('span');
-                        badge.className = 'selected-race-badge';
-                        badge.innerHTML = `✓ ${getOptionLabel(hwObj)} <span class="badge-x" title="${state.lang === 'zh' ? '取消選擇' : 'Deselect'}">✕</span>`;
-                        badge.querySelector('.badge-x').addEventListener('click', (e) => {
-                            e.stopPropagation();
-                            delete state.selections.headwear;
-                            renderTabContent();
-                            generatePrompt();
-                            saveState();
-                        });
-                        const titleEl = header.querySelector('.section-block-title');
-                        const titleWrapper = document.createElement('div');
-                        titleWrapper.className = 'section-title-with-badge';
-                        titleEl.parentNode.insertBefore(titleWrapper, titleEl);
-                        titleWrapper.appendChild(titleEl);
-                        titleWrapper.appendChild(badge);
-                    }
+                    const hwLabel = hwObj ? getOptionLabel(hwObj) : state.selections.headwear;
+                    const badge = document.createElement('span');
+                    badge.className = 'selected-race-badge';
+                    badge.innerHTML = `✓ ${hwLabel} <span class="badge-x" title="${state.lang === 'zh' ? '取消選擇' : 'Deselect'}">✕</span>`;
+                    badge.querySelector('.badge-x').addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        delete state.selections.headwear;
+                        renderTabContent();
+                        generatePrompt();
+                        saveState();
+                    });
+                    const titleEl = header.querySelector('.section-block-title');
+                    const titleWrapper = document.createElement('div');
+                    titleWrapper.className = 'section-title-with-badge';
+                    titleEl.parentNode.insertBefore(titleWrapper, titleEl);
+                    titleWrapper.appendChild(titleEl);
+                    titleWrapper.appendChild(badge);
                 }
 
                 // headwearAdvanced 橫幅（加分特徵）
@@ -1220,6 +1216,28 @@
                 exprBtnGroup.appendChild(exprMagicBtn);
                 exprBtnGroup.appendChild(exprCustomToggle);
 
+                // 已選表情 badge
+                if (state.selections.expression) {
+                    const exprObj = section.data.find(o => o.value === state.selections.expression);
+                    const exprLabel = exprObj ? getOptionLabel(exprObj) : state.selections.expression;
+                    const badge = document.createElement('span');
+                    badge.className = 'selected-race-badge';
+                    badge.innerHTML = `✓ ${exprLabel} <span class="badge-x" title="${state.lang === 'zh' ? '取消選擇' : 'Deselect'}">✕</span>`;
+                    badge.querySelector('.badge-x').addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        delete state.selections.expression;
+                        renderTabContent();
+                        generatePrompt();
+                        saveState();
+                    });
+                    const titleEl = header.querySelector('.section-block-title');
+                    const titleWrapper = document.createElement('div');
+                    titleWrapper.className = 'section-title-with-badge';
+                    titleEl.parentNode.insertBefore(titleWrapper, titleEl);
+                    titleWrapper.appendChild(titleEl);
+                    titleWrapper.appendChild(badge);
+                }
+
                 // expressionAdvanced 橫幅（與種族/職業一致）
                 if (state.expressionAdvanced && state.expressionAdvanced.expression) {
                     const ea = state.expressionAdvanced;
@@ -1313,6 +1331,28 @@
                 header.insertBefore(poseBtnGroup, poseCustomToggle);
                 poseBtnGroup.appendChild(poseMagicBtn);
                 poseBtnGroup.appendChild(poseCustomToggle);
+
+                // 已選姿勢 badge
+                if (state.selections.pose) {
+                    const poseObj = section.data.find(o => o.value === state.selections.pose);
+                    const poseLabel = poseObj ? getOptionLabel(poseObj) : state.selections.pose;
+                    const badge = document.createElement('span');
+                    badge.className = 'selected-race-badge';
+                    badge.innerHTML = `✓ ${poseLabel} <span class="badge-x" title="${state.lang === 'zh' ? '取消選擇' : 'Deselect'}">✕</span>`;
+                    badge.querySelector('.badge-x').addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        delete state.selections.pose;
+                        renderTabContent();
+                        generatePrompt();
+                        saveState();
+                    });
+                    const titleEl = header.querySelector('.section-block-title');
+                    const titleWrapper = document.createElement('div');
+                    titleWrapper.className = 'section-title-with-badge';
+                    titleEl.parentNode.insertBefore(titleWrapper, titleEl);
+                    titleWrapper.appendChild(titleEl);
+                    titleWrapper.appendChild(badge);
+                }
 
                 // poseAdvanced 橫幅（與種族/職業一致）
                 if (state.poseAdvanced && state.poseAdvanced.pose) {
@@ -1626,25 +1666,24 @@
                 if (state.selections.scene) {
                     const scData = window.PromptGen.SceneMagicData;
                     const scObj = scData ? scData.ITEMS.find(s => s.value === state.selections.scene) : null;
-                    if (scObj) {
-                        const badge = document.createElement('span');
-                        badge.className = 'selected-race-badge';
-                        badge.innerHTML = `✓ ${scObj.icon} ${state.lang === 'zh' ? scObj.label : scObj.en} <span class="badge-x" title="${state.lang === 'zh' ? '取消選擇' : 'Deselect'}">✕</span>`;
-                        badge.querySelector('.badge-x').addEventListener('click', (e) => {
-                            e.stopPropagation();
-                            delete state.selections.scene;
-                            delete state.sceneAdvanced;
-                            renderTabContent();
-                            generatePrompt();
-                            saveState();
-                        });
-                        const titleEl = header.querySelector('.section-block-title');
-                        const titleWrapper = document.createElement('div');
-                        titleWrapper.className = 'section-title-with-badge';
-                        titleEl.parentNode.insertBefore(titleWrapper, titleEl);
-                        titleWrapper.appendChild(titleEl);
-                        titleWrapper.appendChild(badge);
-                    }
+                    const scLabel = scObj ? `${scObj.icon} ${state.lang === 'zh' ? scObj.label : scObj.en}` : state.selections.scene;
+                    const badge = document.createElement('span');
+                    badge.className = 'selected-race-badge';
+                    badge.innerHTML = `✓ ${scLabel} <span class="badge-x" title="${state.lang === 'zh' ? '取消選擇' : 'Deselect'}">✕</span>`;
+                    badge.querySelector('.badge-x').addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        delete state.selections.scene;
+                        delete state.sceneAdvanced;
+                        renderTabContent();
+                        generatePrompt();
+                        saveState();
+                    });
+                    const titleEl = header.querySelector('.section-block-title');
+                    const titleWrapper = document.createElement('div');
+                    titleWrapper.className = 'section-title-with-badge';
+                    titleEl.parentNode.insertBefore(titleWrapper, titleEl);
+                    titleWrapper.appendChild(titleEl);
+                    titleWrapper.appendChild(badge);
                 }
 
                 // ★ sceneAdvanced 橫幅：顯示加分特徵
@@ -1730,6 +1769,28 @@
                 header.insertBefore(atmBtnGroup, atmCustomToggle);
                 atmBtnGroup.appendChild(atmMagicBtn);
                 atmBtnGroup.appendChild(atmCustomToggle);
+
+                // 已選時間氛圍 badge
+                if (state.selections.atmosphere) {
+                    const atmObj = section.data.find(o => o.value === state.selections.atmosphere);
+                    const atmLabel = atmObj ? getOptionLabel(atmObj) : state.selections.atmosphere;
+                    const badge = document.createElement('span');
+                    badge.className = 'selected-race-badge';
+                    badge.innerHTML = `✓ ${atmLabel} <span class="badge-x" title="${state.lang === 'zh' ? '取消選擇' : 'Deselect'}">✕</span>`;
+                    badge.querySelector('.badge-x').addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        delete state.selections.atmosphere;
+                        renderTabContent();
+                        generatePrompt();
+                        saveState();
+                    });
+                    const titleEl = header.querySelector('.section-block-title');
+                    const titleWrapper = document.createElement('div');
+                    titleWrapper.className = 'section-title-with-badge';
+                    titleEl.parentNode.insertBefore(titleWrapper, titleEl);
+                    titleWrapper.appendChild(titleEl);
+                    titleWrapper.appendChild(badge);
+                }
 
                 // atmosphereAdvanced 橫幅
                 if (state.atmosphereAdvanced) {
@@ -1911,6 +1972,30 @@
 
                 tabContent.appendChild(sectionEl);
                 return; // 眼色 section 處理完畢
+            }
+
+            // === 通用 badge：為走通用路徑的 section 顯示已選取 badge ===
+            if (section.type !== 'color' && section.type !== 'eyeColor' && !MULTI_SELECT_SECTIONS.has(section.id)) {
+                if (state.selections[section.id]) {
+                    const selObj = data.find(o => o.value === state.selections[section.id]);
+                    const selLabel = selObj ? getOptionLabel(selObj) : state.selections[section.id];
+                    const badge = document.createElement('span');
+                    badge.className = 'selected-race-badge';
+                    badge.innerHTML = `✓ ${selLabel} <span class="badge-x" title="${state.lang === 'zh' ? '取消選擇' : 'Deselect'}">✕</span>`;
+                    badge.querySelector('.badge-x').addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        delete state.selections[section.id];
+                        renderTabContent();
+                        generatePrompt();
+                        saveState();
+                    });
+                    const titleEl = header.querySelector('.section-block-title');
+                    const titleWrapper = document.createElement('div');
+                    titleWrapper.className = 'section-title-with-badge';
+                    titleEl.parentNode.insertBefore(titleWrapper, titleEl);
+                    titleWrapper.appendChild(titleEl);
+                    titleWrapper.appendChild(badge);
+                }
             }
 
             // Render options based on type
