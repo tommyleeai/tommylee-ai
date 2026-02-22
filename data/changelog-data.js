@@ -7,6 +7,16 @@ window.PromptGen.Changelog = (function () {
     // Changelog Data
     const changelog = [
         {
+            version: "v8.2",
+            date: "2026-02-22",
+            changes: [
+                "⚙️ Magic Modal 大規模重構：建立 magic-modal-base.js 共用基底模組（統一 mm- prefix）",
+                "📦 9 個 modal JS 從 4,067 行壓縮至 1,002 行（-75%），每個 modal 僅 39-76 行薄包裝",
+                "🎨 7 個重複 CSS 合併為 magic-modal-base.css（4,983 行 → 710 行，-86%）",
+                "📉 產品程式碼總行數 35,288 → 24,283 行（-31%，減少 11,005 行）"
+            ]
+        },
+        {
             version: "v8.1.1",
             date: "2026-02-22",
             changes: [

@@ -1,10 +1,10 @@
-﻿/* ===================================================================
-   Headwear Magic Modal — 服裝大全 CSS
-   從 demos/race_magic_demo.html 提取，掛載於主頁面
+/* ===================================================================
+   Magic Modal Base CSS — 所有 grid-based Magic Modal 共用樣式
+   統一使用 mm- prefix
    =================================================================== */
 
-/* === Headwear Magic Modal Overlay === */
-#headwear-magic-modal {
+/* === Magic Modal Overlay === */
+.mm-overlay {
     position: fixed;
     inset: 0;
     z-index: 10000;
@@ -12,10 +12,10 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    animation: hmm-fadeIn .4s ease
+    animation: mm-fadeIn .4s ease
 }
 
-@keyframes hmm-fadeIn {
+@keyframes mm-fadeIn {
     from {
         opacity: 0
     }
@@ -26,16 +26,16 @@
 }
 
 /* === 閃光爆發 === */
-.hmm-flash {
+.mm-flash {
     position: absolute;
     inset: 0;
     pointer-events: none;
     z-index: 1;
     background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, .8) 0%, rgba(168, 85, 247, .3) 30%, transparent 70%);
-    animation: hmm-flash .6s ease-out forwards
+    animation: mm-flash .6s ease-out forwards
 }
 
-@keyframes hmm-flash {
+@keyframes mm-flash {
     0% {
         opacity: 1;
         transform: scale(.5)
@@ -53,7 +53,7 @@
 }
 
 /* === 旋轉魔法陣 === */
-.hmm-magic-circle {
+.mm-magic-circle {
     position: absolute;
     width: 500px;
     height: 500px;
@@ -63,15 +63,15 @@
     pointer-events: none;
     z-index: 0;
     opacity: .1;
-    animation: hmm-circleIn 1s ease-out, hmm-rotate 25s linear infinite
+    animation: mm-circleIn 1s ease-out, mm-rotate 25s linear infinite
 }
 
-.hmm-magic-circle svg {
+.mm-magic-circle svg {
     width: 100%;
     height: 100%
 }
 
-@keyframes hmm-rotate {
+@keyframes mm-rotate {
     from {
         transform: translate(-50%, -50%) rotate(0deg)
     }
@@ -81,7 +81,7 @@
     }
 }
 
-@keyframes hmm-circleIn {
+@keyframes mm-circleIn {
     from {
         opacity: 0;
         transform: translate(-50%, -50%) scale(.3) rotate(-90deg)
@@ -94,7 +94,7 @@
 }
 
 /* === 粒子 === */
-.hmm-particles {
+.mm-particles {
     position: absolute;
     inset: 0;
     pointer-events: none;
@@ -102,13 +102,13 @@
     overflow: hidden
 }
 
-.hmm-particle {
+.mm-particle {
     position: absolute;
     border-radius: 50%;
-    animation: hmm-sparkle linear infinite
+    animation: mm-sparkle linear infinite
 }
 
-@keyframes hmm-sparkle {
+@keyframes mm-sparkle {
     0% {
         transform: translateY(100vh) scale(0);
         opacity: 0
@@ -134,7 +134,7 @@
 }
 
 /* === 流星 === */
-.hmm-meteor {
+.mm-meteor {
     position: absolute;
     pointer-events: none;
     z-index: 0;
@@ -142,11 +142,11 @@
     height: 80px;
     background: linear-gradient(to bottom, rgba(251, 191, 36, 0), rgba(251, 191, 36, .7), rgba(251, 191, 36, 0));
     border-radius: 2px;
-    animation: hmm-meteor linear forwards;
+    animation: mm-meteor linear forwards;
     opacity: 0
 }
 
-@keyframes hmm-meteor {
+@keyframes mm-meteor {
     0% {
         opacity: 0;
         transform: translate(0, 0) rotate(30deg)
@@ -167,7 +167,7 @@
 }
 
 /* === Container（固定高度）=== */
-.hmm-container {
+.mm-container {
     position: relative;
     z-index: 2;
     width: 92vw;
@@ -179,11 +179,11 @@
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    animation: hmm-containerIn .5s cubic-bezier(.34, 1.56, .64, 1);
+    animation: mm-containerIn .5s cubic-bezier(.34, 1.56, .64, 1);
     box-shadow: 0 0 50px rgba(124, 58, 237, .2), 0 0 100px rgba(124, 58, 237, .08)
 }
 
-@keyframes hmm-containerIn {
+@keyframes mm-containerIn {
     from {
         opacity: 0;
         transform: scale(.5)
@@ -196,19 +196,19 @@
 }
 
 /* === Header === */
-.hmm-header {
+.mm-header {
     padding: 16px 24px 12px;
     border-bottom: 1px solid rgba(148, 163, 184, .1);
     flex-shrink: 0
 }
 
-.hmm-title-row {
+.mm-title-row {
     display: flex;
     align-items: center;
     justify-content: space-between
 }
 
-.hmm-title {
+.mm-title {
     font-size: 1.2rem;
     font-weight: 700;
     background: linear-gradient(90deg, #fbbf24, #a855f7, #7c3aed, #fbbf24);
@@ -216,10 +216,10 @@
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
-    animation: hmm-titleGlow 3s ease infinite, hmm-titleIn .8s ease .3s both
+    animation: mm-titleGlow 3s ease infinite, mm-titleIn .8s ease .3s both
 }
 
-@keyframes hmm-titleGlow {
+@keyframes mm-titleGlow {
 
     0%,
     100% {
@@ -231,7 +231,7 @@
     }
 }
 
-@keyframes hmm-titleIn {
+@keyframes mm-titleIn {
     from {
         opacity: 0;
         filter: blur(8px)
@@ -244,12 +244,12 @@
 }
 
 /* === 工具列按鈕 === */
-.hmm-toolbar {
+.mm-toolbar {
     display: flex;
     gap: 6px
 }
 
-.hmm-tool-btn {
+.mm-tool-btn {
     padding: 6px 12px;
     font-size: .72rem;
     border-radius: 8px;
@@ -264,29 +264,29 @@
     gap: 4px
 }
 
-.hmm-tool-btn:hover {
+.mm-tool-btn:hover {
     border-color: rgba(168, 85, 247, .4);
     color: #c084fc;
     transform: translateY(-1px)
 }
 
-.hmm-tool-icon {
+.mm-tool-icon {
     font-size: 1rem
 }
 
 /* === 搜尋框 === */
-.hmm-search-row {
+.mm-search-row {
     display: flex;
     gap: 8px;
     margin-top: 10px
 }
 
-.hmm-search-wrap {
+.mm-search-wrap {
     flex: 1;
     position: relative
 }
 
-.hmm-search {
+.mm-search {
     width: 100%;
     padding: 9px 16px 9px 48px !important;
     background: rgba(30, 41, 59, .8);
@@ -299,12 +299,12 @@
     transition: border-color .3s
 }
 
-.hmm-search:focus {
+.mm-search:focus {
     border-color: rgba(168, 85, 247, .5);
     box-shadow: 0 0 10px rgba(168, 85, 247, .12)
 }
 
-.hmm-search-icon {
+.mm-search-icon {
     position: absolute;
     left: 12px;
     top: 50%;
@@ -314,28 +314,21 @@
 }
 
 /* === 分類 Tabs === */
-.hmm-tabs {
+.mm-tabs {
     display: flex;
     gap: 4px;
     padding: 10px 24px 0;
     overflow-x: auto;
-    flex-shrink: 0;
-    scroll-padding-right: 24px
-}
-
-.hmm-tabs::after {
-    content: '';
-    min-width: 20px;
     flex-shrink: 0
 }
 
-.hmm-tabs::-webkit-scrollbar {
+.mm-tabs::-webkit-scrollbar {
     height: 0
 }
 
-.hmm-tab {
+.mm-tab {
     box-sizing: border-box;
-    padding: 7px 10px;
+    padding: 7px 14px;
     font-size: .76rem;
     border-radius: 8px 8px 0 0;
     cursor: pointer;
@@ -350,12 +343,11 @@
     flex-direction: column;
     align-items: center;
     gap: 2px;
-    min-width: 54px;
-    flex-shrink: 0;
+    min-width: 64px;
     position: relative
 }
 
-.hmm-tab:hover {
+.mm-tab:hover {
     color: #c084fc;
     background: rgba(124, 58, 237, .15);
     border-color: rgba(168, 85, 247, .25);
@@ -364,7 +356,7 @@
     box-shadow: 0 2px 8px rgba(124, 58, 237, .15)
 }
 
-.hmm-tab.active {
+.mm-tab.active {
     background: linear-gradient(180deg, rgba(124, 58, 237, .2) 0%, rgba(30, 41, 59, .9) 100%);
     color: #f3e8ff;
     border-color: rgba(168, 85, 247, .4);
@@ -373,40 +365,40 @@
     transform: translateY(-1px)
 }
 
-.hmm-tab.active .hmm-tab-icon {
+.mm-tab.active .mm-tab-icon {
     transform: scale(1.15);
     filter: drop-shadow(0 0 6px rgba(168, 85, 247, .6))
 }
 
-.hmm-tab-icon {
+.mm-tab-icon {
     font-size: .95rem;
     transition: transform .25s ease, filter .25s ease
 }
 
-.hmm-tab-zh {
+.mm-tab-zh {
     font-size: .65rem;
     font-weight: 500
 }
 
-.hmm-tab-en {
+.mm-tab-en {
     font-size: .55rem;
     color: #64748b
 }
 
-.hmm-tab-count {
+.mm-tab-count {
     font-size: .55rem;
     color: #64748b;
     margin-top: 1px;
     transition: color .25s ease
 }
 
-.hmm-tab.active .hmm-tab-count {
+.mm-tab.active .mm-tab-count {
     color: #c084fc;
     font-weight: 600
 }
 
 /* === 主體（固定高度 flex-grow）=== */
-.hmm-body {
+.mm-body {
     display: flex;
     flex: 1;
     overflow: hidden;
@@ -414,7 +406,7 @@
     min-height: 0
 }
 
-.hmm-main {
+.mm-main {
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -423,22 +415,22 @@
     padding-top: 14px
 }
 
-.hmm-grid-wrap {
+.mm-grid-wrap {
     flex: 1;
     overflow-y: auto;
     padding: 0 10px 14px 20px;
     min-height: 0
 }
 
-.hmm-grid {
+.mm-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 5px;
     align-content: start
 }
 
-/* === 種族 Chip === */
-.hmm-race-chip {
+/* === Chip === */
+.mm-chip {
     padding: 7px 9px;
     font-size: .73rem;
     border-radius: 8px;
@@ -455,26 +447,26 @@
     position: relative
 }
 
-.hmm-race-chip:hover {
+.mm-chip:hover {
     border-color: rgba(168, 85, 247, .4);
     color: #e2e8f0;
     background: rgba(124, 58, 237, .08);
     transform: translateY(-1px)
 }
 
-.hmm-race-chip.selected {
+.mm-chip.selected {
     background: rgba(124, 58, 237, .2);
     border-color: #a855f7;
     color: #fff;
     box-shadow: 0 0 10px rgba(168, 85, 247, .15)
 }
 
-.hmm-chip-icon {
+.mm-chip-icon {
     font-size: .85rem;
     flex-shrink: 0
 }
 
-.hmm-chip-text {
+.mm-chip-text {
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -482,7 +474,7 @@
     flex: 1
 }
 
-.hmm-chip-zh {
+.mm-chip-zh {
     font-size: .73rem;
     font-weight: 500;
     white-space: nowrap;
@@ -490,7 +482,7 @@
     text-overflow: ellipsis
 }
 
-.hmm-chip-en {
+.mm-chip-en {
     font-size: .58rem;
     color: #64748b;
     white-space: nowrap;
@@ -498,12 +490,12 @@
     text-overflow: ellipsis
 }
 
-.hmm-race-chip.selected .hmm-chip-en {
+.mm-chip.selected .mm-chip-en {
     color: rgba(255, 255, 255, .5)
 }
 
 /* === 🔥 熱門標記 === */
-.hmm-hot-badge {
+.mm-hot-badge {
     position: absolute;
     top: 2px;
     right: 3px;
@@ -512,12 +504,12 @@
     opacity: .7
 }
 
-.hmm-race-chip:hover .hmm-hot-badge {
+.mm-chip:hover .mm-hot-badge {
     opacity: 1
 }
 
 /* === 📋 最近使用標記 === */
-.hmm-recent-badge {
+.mm-recent-badge {
     position: absolute;
     bottom: 2px;
     right: 3px;
@@ -527,7 +519,7 @@
 }
 
 /* === A-Z 索引 === */
-.hmm-az {
+.mm-az {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -539,7 +531,7 @@
     flex-shrink: 0
 }
 
-.hmm-az-letter {
+.mm-az-letter {
     font-size: .5rem;
     color: #475569;
     cursor: pointer;
@@ -549,18 +541,18 @@
     line-height: 1.2
 }
 
-.hmm-az-letter:hover {
+.mm-az-letter:hover {
     color: #a855f7;
     background: rgba(168, 85, 247, .1)
 }
 
-.hmm-az-letter.active {
+.mm-az-letter.active {
     color: #fff;
     background: rgba(124, 58, 237, .4)
 }
 
 /* === 加分特徵（卡片容器）=== */
-.hmm-bonus {
+.mm-bonus {
     margin: 8px 16px;
     padding: 12px 16px;
     border-radius: 10px;
@@ -571,27 +563,27 @@
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, .03), 0 2px 8px rgba(0, 0, 0, .2)
 }
 
-.hmm-bonus.show {
+.mm-bonus.show {
     display: block
 }
 
-.hmm-bonus-title {
+.mm-bonus-title {
     font-size: .75rem;
     color: #94a3b8;
     margin-bottom: 6px
 }
 
-.hmm-bonus-title span {
+.mm-bonus-title span {
     color: #fbbf24
 }
 
-.hmm-bonus-tags {
+.mm-bonus-tags {
     display: flex;
     flex-wrap: wrap;
     gap: 5px
 }
 
-.hmm-bonus-tag {
+.mm-bonus-tag {
     padding: 3px 10px;
     font-size: .7rem;
     border-radius: 16px;
@@ -603,19 +595,19 @@
     font-family: inherit
 }
 
-.hmm-bonus-tag:hover {
+.mm-bonus-tag:hover {
     border-color: rgba(251, 191, 36, .4);
     color: #fbbf24
 }
 
-.hmm-bonus-tag.active {
+.mm-bonus-tag.active {
     background: rgba(251, 191, 36, .15);
     border-color: #fbbf24;
     color: #fbbf24
 }
 
 /* === Footer === */
-.hmm-footer {
+.mm-footer {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -624,21 +616,21 @@
     flex-shrink: 0
 }
 
-.hmm-status {
+.mm-status {
     font-size: .7rem;
     color: #64748b
 }
 
-.hmm-status b {
+.mm-status b {
     color: #a855f7
 }
 
-.hmm-actions {
+.mm-actions {
     display: flex;
     gap: 10px
 }
 
-.hmm-btn {
+.mm-btn {
     padding: 7px 18px;
     border-radius: 8px;
     font-size: .78rem;
@@ -648,29 +640,29 @@
     transition: all .2s
 }
 
-.hmm-btn-cancel {
+.mm-btn-cancel {
     background: rgba(100, 116, 139, .2);
     color: #94a3b8
 }
 
-.hmm-btn-cancel:hover {
+.mm-btn-cancel:hover {
     background: rgba(100, 116, 139, .3);
     color: #e2e8f0
 }
 
-.hmm-btn-apply {
+.mm-btn-apply {
     background: linear-gradient(135deg, #7c3aed, #a855f7);
     color: #fff;
     box-shadow: 0 3px 12px rgba(124, 58, 237, .3)
 }
 
-.hmm-btn-apply:hover {
+.mm-btn-apply:hover {
     transform: translateY(-1px);
     box-shadow: 0 5px 16px rgba(124, 58, 237, .4)
 }
 
 /* === 空結果 === */
-.hmm-empty {
+.mm-empty {
     grid-column: 1/-1;
     padding: 40px;
     text-align: center;
@@ -678,17 +670,17 @@
     font-size: .85rem
 }
 
-.hmm-grid-wrap::-webkit-scrollbar {
+.mm-grid-wrap::-webkit-scrollbar {
     width: 5px
 }
 
-.hmm-grid-wrap::-webkit-scrollbar-thumb {
+.mm-grid-wrap::-webkit-scrollbar-thumb {
     background: rgba(148, 163, 184, .15);
     border-radius: 3px
 }
 
 /* === 🎲 骰子動畫覆蓋層 === */
-.hmm-dice-overlay {
+.mm-dice-overlay {
     position: absolute;
     inset: 0;
     background: rgba(0, 0, 0, .6);
@@ -702,20 +694,19 @@
     border-radius: 16px
 }
 
-.hmm-dice-overlay.active {
+.mm-dice-overlay.active {
     opacity: 1;
     pointer-events: auto
 }
 
-.hmm-dice-emoji {
+.mm-dice-emoji {
     font-size: 80px;
     line-height: 1;
     filter: drop-shadow(0 0 20px rgba(168, 85, 247, .7)) drop-shadow(0 0 50px rgba(124, 58, 237, .4));
-    animation: hmm-dice-drop .4s cubic-bezier(.22, .68, .31, 1.2) forwards
+    animation: mm-dice-drop .4s cubic-bezier(.22, .68, .31, 1.2) forwards
 }
 
-/* Phase 1: 從上方掉落到中央 */
-@keyframes hmm-dice-drop {
+@keyframes mm-dice-drop {
     0% {
         transform: translateY(-200px) rotate(-90deg) scale(.5);
         opacity: 0
@@ -736,12 +727,11 @@
     }
 }
 
-/* Phase 2: 旋轉 + 多次回彈 */
-.hmm-dice-emoji.rolling {
-    animation: hmm-dice-bounce 1s ease-out forwards
+.mm-dice-emoji.rolling {
+    animation: mm-dice-bounce 1s ease-out forwards
 }
 
-@keyframes hmm-dice-bounce {
+@keyframes mm-dice-bounce {
     0% {
         transform: translateY(0) rotate(0deg) scale(1)
     }
@@ -787,12 +777,11 @@
     }
 }
 
-/* Phase 3: 彈出消失 */
-.hmm-dice-emoji.exit {
-    animation: hmm-dice-exit .3s ease-in forwards
+.mm-dice-emoji.exit {
+    animation: mm-dice-exit .3s ease-in forwards
 }
 
-@keyframes hmm-dice-exit {
+@keyframes mm-dice-exit {
     0% {
         transform: translateY(0) rotate(720deg) scale(1);
         opacity: 1
@@ -809,11 +798,11 @@
     }
 }
 
-.hmm-dice-spinning .hmm-tool-icon {
-    animation: hmm-dice-btn-spin .6s ease-out
+.mm-dice-spinning .mm-tool-icon {
+    animation: mm-dice-btn-spin .6s ease-out
 }
 
-@keyframes hmm-dice-btn-spin {
+@keyframes mm-dice-btn-spin {
     0% {
         transform: rotate(0deg)
     }
@@ -824,7 +813,7 @@
 }
 
 /* === 隨機選中閃光 === */
-@keyframes hmm-chip-flash {
+@keyframes mm-chip-flash {
     0% {
         box-shadow: 0 0 0 rgba(251, 191, 36, 0)
     }
@@ -842,6 +831,6 @@
     }
 }
 
-.hmm-race-chip.random-pick {
-    animation: hmm-chip-flash 1.2s ease
+.mm-chip.random-pick {
+    animation: mm-chip-flash 1.2s ease
 }
