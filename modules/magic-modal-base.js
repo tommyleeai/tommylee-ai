@@ -146,14 +146,16 @@ window.PromptGen.MagicModalBase = (function () {
         } else if (rawData.ITEMS) {
             ITEMS = rawData.ITEMS.map(item => ({
                 ...item,
-                isHot: HOT_ITEMS_LIST.includes(item[idField] || item.id)
+                label: item.label || item.name || item.en,
+                isHot: HOT_ITEMS_LIST.includes(item.id) || HOT_ITEMS_LIST.includes(item[idField])
             }));
         } else if (deps.rawData) {
             ITEMS = deps.rawData.map(r => ({
                 ...r,
+                label: r.label || r.name || r.en,
                 [catField]: rawData.autoClassify ? rawData.autoClassify(r.en) : r[catField],
                 icon: rawData.getIcon ? rawData.getIcon(r.en) : (r.icon || ''),
-                isHot: HOT_ITEMS_LIST.includes(r[idField] || r.en)
+                isHot: HOT_ITEMS_LIST.includes(r.id) || HOT_ITEMS_LIST.includes(r[idField])
             }));
         } else {
             ITEMS = [];
@@ -446,7 +448,8 @@ window.PromptGen.MagicModalBase = (function () {
                     selectOption(config.stateKey, selectedItem.value, { label: selectedItem.label, en: selectedItem.en, value: selectedItem.value });
                     const bonusEn = [...selectedBonuses.keys()];
                     const bonusZh = [...selectedBonuses.values()];
-                    if (hasBonus && bonusEn.length) {
+                    if (hasBonus) {
+                        // 始終保存 selectedItem，確保重新開啟 Modal 時能還原
                         const advObj = {
                             bonusTraits: bonusEn,
                             bonusTraitsZh: bonusZh
@@ -457,8 +460,6 @@ window.PromptGen.MagicModalBase = (function () {
                             advObj['selected' + config.stateKey.charAt(0).toUpperCase() + config.stateKey.slice(1)] = { label: selectedItem.label, en: selectedItem.en, value: selectedItem.value };
                         }
                         state[config.advancedKey] = advObj;
-                    } else if (hasBonus) {
-                        delete state[config.advancedKey];
                     }
                     generatePrompt();
                     saveState();
