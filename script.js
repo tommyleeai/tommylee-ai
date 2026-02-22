@@ -2972,6 +2972,51 @@
         });
     }
 
+    // === About Modal Logic ===
+    const btnAbout = document.getElementById('btn-about');
+    const aboutModal = document.getElementById('about-modal');
+    const btnCloseAbout = document.getElementById('btn-close-about');
+
+    function animateCountUp(el, target, duration) {
+        const start = 0;
+        const startTime = performance.now();
+        function update(currentTime) {
+            const elapsed = currentTime - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            // easeOutExpo
+            const eased = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
+            const current = Math.floor(start + (target - start) * eased);
+            el.textContent = current.toLocaleString();
+            if (progress < 1) requestAnimationFrame(update);
+            else el.textContent = target.toLocaleString() + '+';
+        }
+        requestAnimationFrame(update);
+    }
+
+    if (btnAbout && aboutModal) {
+        btnAbout.addEventListener('click', () => {
+            sfx.playClick();
+            aboutModal.classList.add('active');
+            // 觸發計數動畫
+            aboutModal.querySelectorAll('.about-stat-number[data-target]').forEach(el => {
+                const target = parseInt(el.dataset.target);
+                if (target > 100) {
+                    animateCountUp(el, target, 1500);
+                }
+            });
+        });
+
+        const closeAbout = () => {
+            sfx.playClick();
+            aboutModal.classList.remove('active');
+        };
+
+        btnCloseAbout.addEventListener('click', closeAbout);
+        aboutModal.addEventListener('click', (e) => {
+            if (e.target === aboutModal) closeAbout();
+        });
+    }
+
     // --- Init ---
 
     // Sound Toggle Button

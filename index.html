@@ -66,7 +66,8 @@
     </script>
 
     <!-- Stylesheets -->
-    <link rel="stylesheet" href="styles.css?v=7.9.2">
+    <link rel="stylesheet" href="styles.css?v=8.1">
+    <link rel="stylesheet" href="styles/about-modal.css?v=8.1">
     <link rel="stylesheet" href="styles/race-magic-modal.css?v=7.4.1">
     <link rel="stylesheet" href="styles/job-magic-modal.css?v=7.4.1">
     <link rel="stylesheet" href="styles/hair-magic-modal.css?v=7.4.1">
@@ -126,8 +127,7 @@
             <header class="header">
                 <h1>
                     <img id="app-logo" src="assets/logo.png" alt="AI Studio Logo">
-                    <i class="fa-solid fa-wand-magic-sparkles"></i> 次元繪師 · 角色招喚の禁忌魔導書 <span
-                        class="version">v7.9.2</span>
+                    <i class="fa-solid fa-wand-magic-sparkles"></i> 次元繪師 · 角色招喚の禁忌魔導書 <span class="version">v8.1</span>
                     <div class="header-buttons">
                         <button id="btn-lang-toggle" class="btn-icon btn-icon-text active" title="語言：中文 → 按此切英文">
                             <span class="btn-icon-label">中</span>
@@ -143,6 +143,9 @@
                         </button>
                         <button id="btn-history" class="btn-icon" title="Version History">
                             <i class="fa-solid fa-clock-rotate-left"></i>
+                        </button>
+                        <button id="btn-about" class="btn-icon" title="關於本站">
+                            <i class="fa-solid fa-book-open"></i>
                         </button>
                     </div>
                 </h1>
@@ -423,6 +426,67 @@
             </div>
         </div>
     </div>
+
+    <!-- About Origin Modal -->
+    <div id="about-modal" class="modal-overlay">
+        <div class="settings-panel about-panel">
+            <div class="settings-header about-header">
+                <h2><i class="fa-solid fa-book-open"></i> 起源 · Origin</h2>
+                <button class="btn-close" id="btn-close-about">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="settings-body about-body">
+                <div class="about-hero">
+                    <div class="about-hero-icon">📖</div>
+                    <h3 class="about-hero-title">寫在前面</h3>
+                    <p class="about-hero-sub">一個人 × 一個 AI × 不到 10 天</p>
+                </div>
+
+                <div class="about-content">
+                    <p>我原本只是在測試各大生成式 AI 的做圖能力，寫著寫著發現一些問題，或者說是不方便的地方，每次要重新輸入一些提示詞，或是今天忘了這明天忘了那，總之就是 100 個不方便。</p>
+
+                    <p>後來剛好朋友教我使用了 <strong class="about-highlight">Antigravity</strong>，一邊玩一邊學，反正都要選個主題來玩，就選了 AI
+                        生成圖片的提示詞來玩，然後就<strong class="about-highlight">一發不可收拾</strong>。</p>
+
+                    <p>我和 AI 為了這個網站簡直是沒日沒夜，一堆想法和 AI 討論，討論後就測試，測試完就將功能放上網頁。</p>
+
+                    <div class="about-stats">
+                        <div class="about-stat-card">
+                            <div class="about-stat-number" data-target="45000">0</div>
+                            <div class="about-stat-label">行程式碼</div>
+                            <div class="about-stat-sub">我一個字都沒寫，全部是 AI 自己寫的</div>
+                        </div>
+                        <div class="about-stat-card">
+                            <div class="about-stat-number" data-target="10">&lt;10</div>
+                            <div class="about-stat-label">天完成</div>
+                            <div class="about-stat-sub">短短不到 10 天的時間</div>
+                        </div>
+                    </div>
+
+                    <div class="about-highlight-box">
+                        <div class="about-highlight-label">✦ 總組合數</div>
+                        <div class="about-combo-number">≈ 1.10 × 10<sup>70</sup></div>
+                        <div class="about-combo-full">
+                            11,000,000,000,000,000,000,000,000,000,000,000,<br>000,000,000,000,000,000,000,000,000,000,000
+                            種</div>
+                        <p class="about-combo-note">這比宇宙中的原子數量（約 10<sup>80</sup>）只少了 10 個數量級
+                            😅<br>每次按下運命的輪盤，幾乎不可能出現重複的角色組合！</p>
+                    </div>
+
+                    <p>在過去也根本不敢想藉由一個人的人力來完成，而現在卻做到了。</p>
+
+                    <p>不得不感嘆現在 AI 進步的速度，這個實驗性的網站還有很多功能和想法我還沒做出來，下一個網站要做什麼我也還在思考，現在不是做不做得出來的問題，而是<strong
+                            class="about-highlight">要做什麼的問題了</strong>～</p>
+                </div>
+
+                <div class="about-footer-info">
+                    <p>Made with 💜 by <strong>Tommy Lee</strong> × <strong>AI</strong></p>
+                    <p class="about-footer-url">tommylee.ai</p>
+                </div>
+            </div>
+        </div>
+    </div>
     <!-- Site Picker Popup -->
     <div id="site-picker" class="site-picker-popup">
         <div class="site-picker-header" data-i18n="choose-website">選擇 AI 網站</div>
@@ -464,7 +528,7 @@
     <script src="modules/atmosphere-magic-modal.js?v=7.8"></script>
     <script src="modules/fate-wheel-modal.js?v=8.0"></script>
     <script src="modules/conflict-system.js?v=7.4.1"></script>
-    <script src="script.js?v=7.9.2"></script>
+    <script src="script.js?v=8.1"></script>
 </body>
 
 </html>
