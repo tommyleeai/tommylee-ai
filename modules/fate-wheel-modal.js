@@ -322,6 +322,60 @@ window.PromptGen.FateWheelModal = (function () {
         center: { id: 'gender', title: '性別' }
     };
 
+    // ========================================
+    // 動態選項池：從 options-data.js 讀取
+    // 硬編碼 options 作為 fallback
+    // ========================================
+    const DATA_SOURCES = {
+        race: 'RACES',
+        job: 'JOBS',
+        hairstyle: ['HAIRSTYLES_FEMALE', 'HAIRSTYLES_MALE'],
+        bodyType: ['BODY_TYPES_FEMALE', 'BODY_TYPES_MALE'],
+        hairColor: 'HAIR_COLORS',
+        eyeColor: 'EYE_COLORS',
+        outfit: 'OUTFITS',
+        headwear: 'HEADWEAR',
+        expression: 'EXPRESSIONS',
+        mood: 'MOODS',
+        pose: 'POSES',
+        atmosphere: 'WEATHER',
+        lighting: 'LIGHTING',
+        focalLength: 'FOCAL_LENGTHS',
+        lensEffect: 'LENS_EFFECTS',
+        aperture: 'APERTURES',
+        cameraAngle: 'CAMERA_ANGLES',
+        shotSize: 'SHOT_SIZES',
+        scene: 'SCENES',
+        artist: 'ARTISTS',
+        artStyle: 'ART_STYLES',
+        animeStyle: 'ANIME_STYLES',
+        handItems: 'HAND_ITEMS'
+        // quality 保留硬編碼（輪盤使用複合值如 "masterpiece, best quality"）
+    };
+
+    function getOptionsPool(section) {
+        const Data = window.PromptGen && window.PromptGen.Data;
+        if (!Data) return section.options;
+
+        const source = DATA_SOURCES[section.id];
+        if (!source) return section.options;
+
+        let items;
+        if (Array.isArray(source)) {
+            // 合併多個陣列（如男女髮型）
+            items = source.reduce((acc, key) => acc.concat(Data[key] || []), []);
+        } else {
+            items = Data[source];
+        }
+
+        if (!items || !items.length) return section.options;
+
+        return items.map(item => ({
+            tag: item.value,
+            display: item.label || item.en
+        }));
+    }
+
     // Grid positions
     const OUTER_PATH = [
         [0, 0], [0, 1], [0, 2], [0, 3], [0, 4],
@@ -713,7 +767,8 @@ window.PromptGen.FateWheelModal = (function () {
                 if (lockedIndices.has(i)) {
                     return { ...ws.cells[i] };
                 }
-                const opt = sec.options[Math.floor(Math.random() * sec.options.length)];
+                const pool = getOptionsPool(sec);
+                const opt = pool[Math.floor(Math.random() * pool.length)];
                 return {
                     id: sec.id, title: sec.title, stateKey: sec.stateKey,
                     value: opt.tag,
