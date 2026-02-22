@@ -1520,10 +1520,37 @@ window.PromptGen.FateWheelModal = (function () {
             appState.customInputVisible = {};
             appState.customFields = [];
 
-            // === 輔助：用 Fate Wheel tag 查找 RACES/JOBS 的正確 value ===
+            // === 輔助：用 Fate Wheel tag 查找主頁資料陣列的正確 value ===
             const Data = window.PromptGen && window.PromptGen.Data;
-            const mainRaces = Data ? Data.RACES : [];
-            const mainJobs = Data ? Data.JOBS : [];
+
+            // stateKey → 主頁資料陣列映射（涵蓋所有 Fate Wheel section）
+            const dataLookup = {};
+            if (Data) {
+                dataLookup['race'] = Data.RACES || [];
+                dataLookup['job'] = Data.JOBS || [];
+                // 髮型/身材：合併男女兩組
+                dataLookup['hairstyle'] = [].concat(Data.HAIRSTYLES_FEMALE || [], Data.HAIRSTYLES_MALE || []);
+                dataLookup['bodyType'] = [].concat(Data.BODY_TYPES_FEMALE || [], Data.BODY_TYPES_MALE || []);
+                dataLookup['hairColor'] = Data.HAIR_COLORS || [];
+                dataLookup['eyeColor'] = Data.EYE_COLORS || [];
+                dataLookup['outfit'] = Data.OUTFITS || [];
+                dataLookup['headwear'] = Data.HEADWEAR || [];
+                dataLookup['expression'] = Data.EXPRESSIONS || [];
+                dataLookup['mood'] = Data.MOODS || [];
+                dataLookup['handItem'] = Data.HAND_ITEMS || [];
+                dataLookup['atmosphere'] = Data.WEATHER || [];
+                dataLookup['lighting'] = Data.LIGHTING || [];
+                dataLookup['focalLength'] = Data.FOCAL_LENGTHS || [];
+                dataLookup['lensEffect'] = Data.LENS_EFFECTS || [];
+                dataLookup['aperture'] = Data.APERTURES || [];
+                dataLookup['cameraAngle'] = Data.CAMERA_ANGLES || [];
+                dataLookup['scene'] = Data.SCENES || [];
+                dataLookup['shotSize'] = Data.SHOT_SIZES || [];
+                dataLookup['artist'] = Data.ARTISTS || [];
+                dataLookup['artStyle'] = Data.ART_STYLES || [];
+                dataLookup['animeStyle'] = Data.ANIME_STYLES || [];
+                dataLookup['quality'] = Data.QUALITY_TAGS || [];
+            }
 
             function findMainValue(tag, list) {
                 if (!list || !list.length) return tag;
@@ -1548,15 +1575,15 @@ window.PromptGen.FateWheelModal = (function () {
                 if (!stateKey) continue;
 
                 if (result.isMulti) {
-                    // 品質等多選欄位 → 拆為陣列
+                    // 品質等多選欄位 → 拆為陣列，每個 tag 也要查找正確 value
                     appState.selections[stateKey] = result.value.split(',').map(s => s.trim());
                 } else {
-                    // race/job 特殊處理：查找主頁 RACES/JOBS 的正確 value
-                    if (stateKey === 'race') {
-                        appState.selections[stateKey] = findMainValue(result.value, mainRaces);
-                    } else if (stateKey === 'job') {
-                        appState.selections[stateKey] = findMainValue(result.value, mainJobs);
+                    // 查找主頁資料陣列的正確 value
+                    const lookupList = dataLookup[stateKey];
+                    if (lookupList && lookupList.length > 0) {
+                        appState.selections[stateKey] = findMainValue(result.value, lookupList);
                     } else {
+                        // 無對應陣列（如 pose）→ 直接寫入 tag
                         appState.selections[stateKey] = result.value;
                     }
                 }
