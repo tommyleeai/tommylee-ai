@@ -31,9 +31,9 @@ window.PromptGen.CameraSuperModal = (function () {
                 { zh: '特寫', en: 'Close-Up', fun: '看清你眼中的決意', prompt: 'close-up portrait, head and shoulders framing, face occupies 70% of frame height' },
                 { zh: '中特寫', en: 'Medium CU', fun: '展現上半身的氣場', prompt: 'medium close-up, bust shot, chest up framing, subject fills about 60% of frame' },
                 { zh: '中景', en: 'Medium', fun: '標準對話距離，剛好看到雙手', prompt: 'medium shot, waist-up framing, subject occupies about half of frame height' },
-                { zh: '牛仔鏡頭', en: 'Cowboy', fun: '西部決鬥！手要摸到槍套的距離 🤠', prompt: 'cowboy shot, mid-thigh framing, american shot, figure takes up roughly 60% of frame height' },
-                { zh: '全身', en: 'Full Shot', fun: '從頭到腳，完整展現你的戰鬥姿態', prompt: 'full body shot, head to toe visible, feet on ground, full figure occupies about 40-50% of frame height' },
-                { zh: '遠景', en: 'Wide', fun: '人物變小，世界開始接管畫面 🌄', prompt: 'wide shot, figure small in frame, environment-dominant, subject occupies about one third of frame height, vast environment' },
+                { zh: '牛仔鏡頭', en: 'Cowboy', fun: '西部決鬥！手要摸到槍套的距離 🤠', prompt: 'cowboy shot, mid-thigh framing, american shot, legs visible to mid-thigh, figure takes up roughly 60% of frame height' },
+                { zh: '全身', en: 'Full Shot', fun: '從頭到腳，完整展現你的戰鬥姿態', prompt: 'full body shot, head to toe visible, entire figure from head to feet, feet visible on ground, full length portrait, whole body completely in frame, no cropping, figure occupies about 40-50% of frame height' },
+                { zh: '遠景', en: 'Wide', fun: '人物變小，世界開始接管畫面 🌄', prompt: 'wide shot, full figure small in frame, head to toe visible, environment-dominant, subject occupies about one third of frame height, vast environment' },
                 { zh: '大遠景', en: 'Extreme Wide', fun: '渺小如螞蟻，被世界吞噬的感覺', prompt: 'extreme wide shot, tiny figure in vast landscape, dwarfed by environment, subject less than 10% of frame, environmental storytelling' }
             ]
         },
@@ -120,7 +120,8 @@ window.PromptGen.CameraSuperModal = (function () {
         { icon: '🗜️', zh: '背景壓縮效果', en: 'compressed background, stacked visual layers' },
         { icon: '📐', zh: '透視誇張感', en: 'exaggerated perspective, strong convergence lines' },
         { icon: '🌿', zh: '前景元素', en: 'foreground elements adding depth, shooting through foliage, layered framing' },
-        { icon: '⚡', zh: '速度感線條', en: 'dynamic motion blur, radial blur, sense of kinetic energy' }
+        { icon: '⚡', zh: '速度感線條', en: 'dynamic motion blur, radial blur, sense of kinetic energy' },
+        { icon: '👟', zh: '下半身錨定', en: 'feet and shoes clearly visible on ground, detailed legs and ankles, full leg visibility, no leg cropping' }
     ];
 
     // ═══════════════════════════════════════════
