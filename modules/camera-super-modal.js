@@ -124,88 +124,150 @@ window.PromptGen.CameraSuperModal = (function () {
     ];
 
     // ═══════════════════════════════════════════
-    // 🚧 衝突規則
+    // 🧠 智慧衝突仲裁系統
     // ═══════════════════════════════════════════
-    const CAMERA_CONFLICTS = [
-        // ── Chip × Chip：方向互斥 ──
-        { type: 'chip_chip', a: 'front', b: 'back', msg: '正面與背影方向互斥' },
-        { type: 'chip_chip', a: 'front', b: 'profile', msg: '正面與完全側面方向互斥' },
-        { type: 'chip_chip', a: 'back', b: 'profile', msg: '背影與完全側面方向互斥' },
-        // ── Chip × Chip：運動互斥 ──
-        { type: 'chip_chip', a: 'dolly_in', b: 'dolly_out', msg: '推進與拉遠方向互斥' },
-        // ── Chip × Chip：構圖互斥 ──
-        { type: 'chip_chip', a: 'centered', b: 'thirds', msg: '中心構圖與三分法互斥' },
-        // ── Slider × Chip：提示詞矛盾 ──
-        { type: 'slider_chip', slider: 'distance', value: 7, chip: 'pov', msg: '大遠景與 POV 提示詞矛盾' },
-        // ── Slider × Slider：物理距離矛盾 ──
-        // 微距 (lens=7) 與中景以上 (distance ≥ 3) 衝突
-        { type: 'slider_slider', sliderA: 'lens', valueA: 7, sliderB: 'distance', minB: 3, msg: '微距鏡頭無法拍攝中景以上距離' },
-        // 望遠 200mm+ (lens=6) 無法拍大特寫 (distance=0)：最近對焦距離限制
-        { type: 'slider_slider', sliderA: 'lens', valueA: 6, sliderB: 'distance', maxB: 0, msg: '望遠 200mm+ 最近對焦距離限制，無法拍攝大特寫' },
-        // 超廣角 14mm (lens=1) 拍特寫以內 (distance ≤ 1) 會嚴重畸變
-        { type: 'slider_slider', sliderA: 'lens', valueA: 1, sliderB: 'distance', maxB: 1, msg: '超廣角 14mm 近距離臉部嚴重畸變，建議改用 50mm 以上' },
-        // 魚眼 8mm (lens=0) 拍遠景以上 (distance ≥ 6) 會過度桶狀形變
-        { type: 'slider_slider', sliderA: 'lens', valueA: 0, sliderB: 'distance', minB: 6, msg: '魚眼鏡頭在遠景中產生過度桶狀形變，AI 難以正確渲染' },
-        // ── Slider × Bonus：物理特性矛盾 ──
-        { type: 'slider_bonus', slider: 'dof', value: 5, bonusEn: 'creamy bokeh, beautiful light orbs in background', msg: '奶油散景與 f/16 全域清晰矛盾' },
-        { type: 'slider_bonus', slider: 'lens', values: [0, 1], bonusEn: 'compressed background, stacked visual layers', msg: '背景壓縮效果是望遠特徵，廣角做不到' },
-        { type: 'slider_bonus', slider: 'lens', values: [6], bonusEn: 'exaggerated perspective, strong convergence lines', msg: '透視誇張感是廣角特徵，望遠做不到' }
-    ];
+    // 優先級：distance(1) > vAngle(2) > lens(3) > dof(4) > chips(5-7) > bonus(8)
+    const SLIDER_PRIORITY = { distance: 1, vAngle: 2, lens: 3, dof: 4 };
+
+    // chipId → 所屬 section index (0=水平角度 pri5, 1=鏡頭運動 pri6, 2=構圖 pri7)
+    function getChipPriority(chipId) {
+        for (let i = 0; i < CHIP_SECTIONS.length; i++) {
+            if (CHIP_SECTIONS[i].items.some(item => item.id === chipId)) return 5 + i;
+        }
+        return 99;
+    }
+
+    // ── 衝突規則矩陣 ──
+    const CONFLICT_MATRIX = {
+        // Slider × Slider：物理矛盾（a 和 b 都是 slider key）
+        slider_slider: [
+            { a: 'lens', aVal: 7, b: 'distance', bRange: [3, 7], msg: '微距鏡頭無法拍攝中景以上距離' },
+            { a: 'lens', aVal: 6, b: 'distance', bRange: [0, 0], msg: '望遠 200mm+ 最近對焦距離限制，無法拍攝大特寫' },
+            { a: 'lens', aVal: 1, b: 'distance', bRange: [0, 1], msg: '超廣角 14mm 近距離臉部嚴重畸變' },
+            { a: 'lens', aVal: 0, b: 'distance', bRange: [6, 7], msg: '魚眼鏡頭在遠景中產生過度桶狀形變' },
+            { a: 'vAngle', aVal: 4, b: 'distance', bRange: [0, 1], msg: '鳥瞰角度無法拍攝特寫' },
+            { a: 'vAngle', aVal: 0, b: 'distance', bRange: [7, 7], msg: '蟲視角度無法拍攝大遠景' },
+            { a: 'dof', aVal: 0, b: 'lens', bRange: [7, 7], msg: '微距鏡頭已自帶極淺景深，f/1.2 疊加無意義' },
+        ],
+        // Slider × Chip
+        slider_chip: [
+            { slider: 'distance', sRange: [6, 7], chip: 'pov', msg: '遠景與 POV 第一人稱矛盾' },
+            { slider: 'distance', sRange: [0, 1], chip: 'crane', msg: '特寫與起重機運鏡矛盾' },
+            { slider: 'distance', sRange: [0, 0], chip: 'layered', msg: '大特寫無法呈現前中後三層景深' },
+        ],
+        // Chip × Chip：互斥
+        chip_chip: [
+            { a: 'front', b: 'back', msg: '正面與背影方向互斥' },
+            { a: 'front', b: 'profile', msg: '正面與完全側面方向互斥' },
+            { a: 'back', b: 'profile', msg: '背影與完全側面方向互斥' },
+            { a: 'dolly_in', b: 'dolly_out', msg: '推進與拉遠方向互斥' },
+            { a: 'centered', b: 'thirds', msg: '中心構圖與三分法互斥' },
+        ],
+        // Slider × Bonus
+        slider_bonus: [
+            { slider: 'dof', sRange: [5, 5], bonus: 'creamy bokeh, beautiful light orbs in background', msg: '奶油散景與 f/16 全域清晰矛盾' },
+            { slider: 'lens', sRange: [0, 1], bonus: 'compressed background, stacked visual layers', msg: '背景壓縮效果是望遠特徵，廣角做不到' },
+            { slider: 'lens', sRange: [5, 6], bonus: 'exaggerated perspective, strong convergence lines', msg: '透視誇張感是廣角特徵，望遠做不到' },
+        ]
+    };
 
     /**
-     * 檢查一個 chip 是否與當前狀態衝突
-     * @param {string} chipId - 要檢查的 chip ID
-     * @param {Set} currentChips - 目前已選的 chips
-     * @param {Object} sliders - { key: value } 已啟用的推桿值
-     * @returns {string|null} 衝突訊息，無衝突回傳 null
+     * 判斷 slider 值是否落在指定 range 內
      */
-    function getChipConflict(chipId, currentChips, sliders) {
-        for (const rule of CAMERA_CONFLICTS) {
-            if (rule.type === 'chip_chip') {
-                if (chipId === rule.a && currentChips.has(rule.b)) return rule.msg;
-                if (chipId === rule.b && currentChips.has(rule.a)) return rule.msg;
-            } else if (rule.type === 'slider_chip') {
-                if (chipId === rule.chip && sliders[rule.slider] === rule.value) return rule.msg;
+    function inRange(val, range) {
+        return val >= range[0] && val <= range[1];
+    }
+
+    /**
+     * 🧠 核心仲裁函式：掃描所有衝突，按優先級自動移除低優先的項目
+     * @returns {Array} 被移除的項目列表 [{ type, key, label, reason }]
+     */
+    function resolveConflicts() {
+        const resolved = [];
+
+        // ── 1. Slider × Slider ──
+        for (const rule of CONFLICT_MATRIX.slider_slider) {
+            if (!sliderEnabled[rule.a] || !sliderEnabled[rule.b]) continue;
+            if (sliderValues[rule.a] !== rule.aVal) continue;
+            if (!inRange(sliderValues[rule.b], rule.bRange)) continue;
+            // 優先級數字小 = 優先級高 → 關閉優先級低的那個
+            const priA = SLIDER_PRIORITY[rule.a];
+            const priB = SLIDER_PRIORITY[rule.b];
+            const loser = priA > priB ? rule.a : rule.b;
+            const loserLabel = SLIDERS[loser].label;
+            sliderEnabled[loser] = false;
+            resolved.push({ type: 'slider', key: loser, label: loserLabel, reason: rule.msg });
+        }
+
+        // ── 2. Slider × Chip ──
+        for (const rule of CONFLICT_MATRIX.slider_chip) {
+            if (!sliderEnabled[rule.slider]) continue;
+            if (!inRange(sliderValues[rule.slider], rule.sRange)) continue;
+            if (!selectedChips.has(rule.chip)) continue;
+            const sliderPri = SLIDER_PRIORITY[rule.slider];
+            const chipPri = getChipPriority(rule.chip);
+            if (sliderPri < chipPri) {
+                // 推桿優先 → 移除 chip
+                const chipItem = CHIP_SECTIONS.flatMap(s => s.items).find(i => i.id === rule.chip);
+                selectedChips.delete(rule.chip);
+                resolved.push({ type: 'chip', key: rule.chip, label: chipItem?.zh || rule.chip, reason: rule.msg });
+            } else {
+                // chip 優先 → 關閉推桿（理論上不會發生，因為 slider 優先級永遠更高）
+                sliderEnabled[rule.slider] = false;
+                resolved.push({ type: 'slider', key: rule.slider, label: SLIDERS[rule.slider].label, reason: rule.msg });
             }
+        }
+
+        // ── 3. Chip × Chip（同 section 互斥：後選的贏，先選的被移除）──
+        for (const rule of CONFLICT_MATRIX.chip_chip) {
+            if (selectedChips.has(rule.a) && selectedChips.has(rule.b)) {
+                // 移除優先級較低的；同 section 則移除 a（先被選的）
+                const priA = getChipPriority(rule.a);
+                const priB = getChipPriority(rule.b);
+                const loser = priA > priB ? rule.a : rule.a; // 同 section，移除 a
+                const chipItem = CHIP_SECTIONS.flatMap(s => s.items).find(i => i.id === loser);
+                selectedChips.delete(loser);
+                resolved.push({ type: 'chip', key: loser, label: chipItem?.zh || loser, reason: rule.msg });
+            }
+        }
+
+        // ── 4. Slider × Bonus ──
+        for (const rule of CONFLICT_MATRIX.slider_bonus) {
+            if (!sliderEnabled[rule.slider]) continue;
+            if (!inRange(sliderValues[rule.slider], rule.sRange)) continue;
+            if (!selectedBonuses.has(rule.bonus)) continue;
+            // 推桿永遠優先 → 移除 bonus
+            const bonusTrait = BONUS_TRAITS.find(t => t.en === rule.bonus);
+            selectedBonuses.delete(rule.bonus);
+            resolved.push({ type: 'bonus', key: rule.bonus, label: bonusTrait?.zh || '特效', reason: rule.msg });
+        }
+
+        return resolved;
+    }
+
+    /**
+     * 供 randomAll 使用的快速衝突檢查（不修改 state，只回傳是否衝突）
+     */
+    function getChipConflict(chipId, currentChips, activeSliders) {
+        // chip × chip
+        for (const rule of CONFLICT_MATRIX.chip_chip) {
+            if (chipId === rule.a && currentChips.has(rule.b)) return rule.msg;
+            if (chipId === rule.b && currentChips.has(rule.a)) return rule.msg;
+        }
+        // slider × chip
+        for (const rule of CONFLICT_MATRIX.slider_chip) {
+            if (chipId !== rule.chip) continue;
+            const sv = activeSliders[rule.slider];
+            if (sv !== undefined && inRange(sv, rule.sRange)) return rule.msg;
         }
         return null;
     }
 
-    /**
-     * 檢查兩個推桿之間是否衝突
-     * @returns {string|null}
-     */
-    function getSliderConflict(enabledSliders, sliderVals) {
-        for (const rule of CAMERA_CONFLICTS) {
-            if (rule.type === 'slider_slider') {
-                if (enabledSliders[rule.sliderA] && enabledSliders[rule.sliderB]
-                    && sliderVals[rule.sliderA] === rule.valueA) {
-                    // 支援 minB（值 >= 下限）和 maxB（值 <= 上限）
-                    const valB = sliderVals[rule.sliderB];
-                    const minOk = rule.minB === undefined || valB >= rule.minB;
-                    const maxOk = rule.maxB === undefined || valB <= rule.maxB;
-                    if (minOk && maxOk) return rule;
-                }
-            }
-        }
-        return null;
-    }
-
-    /**
-     * 檢查一個 bonus 是否與當前推桿衝突
-     * @param {string} bonusEn - bonus 的 en 字串
-     * @param {Object} sliders - { key: value } 已啟用的推桿值
-     * @returns {string|null}
-     */
-    function getBonusConflict(bonusEn, sliders) {
-        for (const rule of CAMERA_CONFLICTS) {
-            if (rule.type === 'slider_bonus' && rule.bonusEn === bonusEn) {
-                const sliderVal = sliders[rule.slider];
-                if (sliderVal === undefined) continue;
-                // 支援 value（單值）和 values（多值）
-                if (rule.value !== undefined && sliderVal === rule.value) return rule.msg;
-                if (rule.values && rule.values.includes(sliderVal)) return rule.msg;
-            }
+    function getBonusConflict(bonusEn, activeSliders) {
+        for (const rule of CONFLICT_MATRIX.slider_bonus) {
+            if (rule.bonus !== bonusEn) continue;
+            const sv = activeSliders[rule.slider];
+            if (sv !== undefined && inRange(sv, rule.sRange)) return rule.msg;
         }
         return null;
     }
@@ -426,23 +488,21 @@ window.PromptGen.CameraSuperModal = (function () {
 @keyframes csm-rotate { from { transform: translate(-50%,-50%) rotate(0deg); } to { transform: translate(-50%,-50%) rotate(360deg); } }
 @keyframes csm-float { 0%,100% { transform: translateY(0) translateX(0); opacity: .3; } 50% { transform: translateY(-80px) translateX(20px); opacity: .7; } }
 @keyframes csm-pulse { 0%,100% { opacity: 1; } 50% { opacity: .7; } }
-/* === Conflict Toast === */
-.csm-conflict-toast {
+/* === Resolved Toast (仲裁回饋) === */
+.csm-resolved-toast {
     position: fixed; top: 60px; left: 50%; transform: translateX(-50%) translateY(-20px);
-    z-index: 10010; padding: 10px 20px; border-radius: 12px;
-    background: rgba(239, 68, 68, .92); backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 100, 100, .5);
-    color: #fff; font-size: .78rem; font-weight: 700;
-    box-shadow: 0 8px 30px rgba(239, 68, 68, .4);
+    z-index: 10010; padding: 12px 22px; border-radius: 14px;
+    background: rgba(99, 102, 241, .92); backdrop-filter: blur(10px);
+    border: 1px solid rgba(139, 92, 246, .5);
+    color: #fff; font-size: .75rem; font-weight: 600; line-height: 1.6;
+    box-shadow: 0 8px 30px rgba(99, 102, 241, .35);
     opacity: 0; pointer-events: none;
     transition: opacity .3s, transform .3s;
-    max-width: 90vw; text-align: center;
+    max-width: 90vw; text-align: left;
 }
-.csm-conflict-toast.visible { opacity: 1; transform: translateX(-50%) translateY(0); pointer-events: auto; }
-.csm-chip.conflict { border-color: rgba(239, 68, 68, .6) !important; box-shadow: 0 0 12px rgba(239, 68, 68, .2); }
-.csm-bonus-tag.conflict { border-color: rgba(239, 68, 68, .6) !important; box-shadow: 0 0 8px rgba(239, 68, 68, .2); }
-.csm-slider-group.conflict { border-color: rgba(239, 68, 68, .4) !important; box-shadow: 0 0 15px rgba(239, 68, 68, .1); }
-@keyframes csm-conflictFlash { 0% { box-shadow: 0 0 0 rgba(239,68,68,0); } 50% { box-shadow: 0 0 20px rgba(239,68,68,.3); } 100% { box-shadow: 0 0 0 rgba(239,68,68,0); } }
+.csm-resolved-toast.visible { opacity: 1; transform: translateX(-50%) translateY(0); pointer-events: auto; }
+.csm-resolved-toast del { color: rgba(255,255,255,.5); text-decoration: line-through; }
+.csm-resolved-toast strong { color: #fbbf24; }
 /* === Camera Super Modal END === */
         `;
         document.head.appendChild(style);
@@ -631,29 +691,41 @@ window.PromptGen.CameraSuperModal = (function () {
     function jumpSlider(key, pos) {
         sliderEnabled[key] = true;
         sliderValues[key] = pos;
+        // 🧠 即時仲裁
+        const resolved = resolveConflicts();
         renderBody();
         updatePreview();
+        if (resolved.length > 0) showResolvedFeedback(resolved);
     }
 
     function onSlide(key, val) {
         sliderValues[key] = parseInt(val);
         sliderEnabled[key] = true;
-        const slider = SLIDERS[key];
-        const stop = slider.stops[val];
-        const desc = document.getElementById(`csm-desc-${key}`);
-        if (desc) desc.innerHTML = `<span class="fun">${stop.fun}</span><span class="pro"> — ${stop.prompt}</span>`;
-        const group = document.getElementById(`csm-sg-${key}`);
-        if (group) group.classList.add('active');
-        const valEl = group?.querySelector('.csm-slider-value');
-        if (valEl) valEl.textContent = stop.zh + ' (' + stop.en + ')';
+        // 🧠 即時仲裁
+        const resolved = resolveConflicts();
+        if (resolved.length > 0) {
+            // 有衝突被自動解決 → 完整重新渲染
+            renderBody();
+            renderBonus();
+            showResolvedFeedback(resolved);
+        } else {
+            // 無衝突 → 只更新當前推桿 UI（效能優化）
+            const slider = SLIDERS[key];
+            const stop = slider.stops[val];
+            const desc = document.getElementById(`csm-desc-${key}`);
+            if (desc) desc.innerHTML = `<span class="fun">${stop.fun}</span><span class="pro"> — ${stop.prompt}</span>`;
+            const group = document.getElementById(`csm-sg-${key}`);
+            if (group) group.classList.add('active');
+            const valEl = group?.querySelector('.csm-slider-value');
+            if (valEl) valEl.textContent = stop.zh + ' (' + stop.en + ')';
+        }
         updatePreview();
-        checkAndShowConflicts();
     }
 
     // ═══════════════════════════════════════════
-    // ⚠️ 自選衝突即時檢查
+    // 🔧 仲裁結果視覺回饋
     // ═══════════════════════════════════════════
-    let conflictToastTimer = null;
+    let resolvedToastTimer = null;
 
     function getActiveSliderMap() {
         const map = {};
@@ -663,127 +735,71 @@ window.PromptGen.CameraSuperModal = (function () {
         return map;
     }
 
-    function checkAndShowConflicts() {
-        const activeSliders = getActiveSliderMap();
-        const conflicts = [];
-
-        // 清除之前的衝突高亮
-        document.querySelectorAll('.csm-chip.conflict, .csm-bonus-tag.conflict, .csm-slider-group.conflict')
-            .forEach(el => el.classList.remove('conflict'));
-
-        // 1. Chip × Chip 衝突
-        for (const rule of CAMERA_CONFLICTS) {
-            if (rule.type === 'chip_chip') {
-                if (selectedChips.has(rule.a) && selectedChips.has(rule.b)) {
-                    conflicts.push(rule.msg);
-                    // 高亮衝突 chips
-                    document.querySelector(`[data-chip-id="${rule.a}"]`)?.classList.add('conflict');
-                    document.querySelector(`[data-chip-id="${rule.b}"]`)?.classList.add('conflict');
-                }
-            }
-        }
-
-        // 2. Slider × Chip 衝突
-        for (const rule of CAMERA_CONFLICTS) {
-            if (rule.type === 'slider_chip') {
-                if (activeSliders[rule.slider] === rule.value && selectedChips.has(rule.chip)) {
-                    conflicts.push(rule.msg);
-                    document.querySelector(`[data-chip-id="${rule.chip}"]`)?.classList.add('conflict');
-                    document.getElementById(`csm-sg-${rule.slider}`)?.classList.add('conflict');
-                }
-            }
-        }
-
-        // 3. Slider × Slider 衝突
-        for (const rule of CAMERA_CONFLICTS) {
-            if (rule.type === 'slider_slider') {
-                if (sliderEnabled[rule.sliderA] && sliderEnabled[rule.sliderB]
-                    && sliderValues[rule.sliderA] === rule.valueA
-                    && sliderValues[rule.sliderB] >= rule.minB) {
-                    conflicts.push(rule.msg);
-                    document.getElementById(`csm-sg-${rule.sliderA}`)?.classList.add('conflict');
-                    document.getElementById(`csm-sg-${rule.sliderB}`)?.classList.add('conflict');
-                }
-            }
-        }
-
-        // 4. Slider × Bonus 衝突
-        for (const rule of CAMERA_CONFLICTS) {
-            if (rule.type === 'slider_bonus') {
-                if (!selectedBonuses.has(rule.bonusEn)) continue;
-                const sv = activeSliders[rule.slider];
-                if (sv === undefined) continue;
-                let hit = false;
-                if (rule.value !== undefined && sv === rule.value) hit = true;
-                if (rule.values && rule.values.includes(sv)) hit = true;
-                if (hit) {
-                    conflicts.push(rule.msg);
-                    document.getElementById(`csm-sg-${rule.slider}`)?.classList.add('conflict');
-                    document.querySelector(`[data-bonus-en="${CSS.escape(rule.bonusEn)}"]`)?.classList.add('conflict');
-                }
-            }
-        }
-
-        if (conflicts.length > 0) {
-            showConflictToastCSM(conflicts);
-            playConflictBeep();
-        } else {
-            hideConflictToast();
-        }
-    }
-
-    function showConflictToastCSM(conflicts) {
-        let toast = document.getElementById('csmConflictToast');
+    function showResolvedFeedback(resolvedItems) {
+        let toast = document.getElementById('csmResolvedToast');
         if (!toast) {
             toast = document.createElement('div');
-            toast.id = 'csmConflictToast';
-            toast.className = 'csm-conflict-toast';
+            toast.id = 'csmResolvedToast';
+            toast.className = 'csm-resolved-toast';
             document.body.appendChild(toast);
         }
-        toast.innerHTML = `⚠️ ${conflicts.join(' │ ')}`;
+        const lines = resolvedItems.map(r => `<del>${r.label}</del> → 已關閉（${r.reason}）`).join('<br>');
+        toast.innerHTML = `🔧 <strong>已自動調整</strong><br>${lines}`;
         toast.classList.add('visible');
-        if (conflictToastTimer) clearTimeout(conflictToastTimer);
-        conflictToastTimer = setTimeout(() => hideConflictToast(), 4000);
-    }
+        if (resolvedToastTimer) clearTimeout(resolvedToastTimer);
+        resolvedToastTimer = setTimeout(() => {
+            toast.classList.remove('visible');
+        }, 4000);
 
-    function hideConflictToast() {
-        const toast = document.getElementById('csmConflictToast');
-        if (toast) toast.classList.remove('visible');
-    }
-
-    function playConflictBeep() {
+        // 溫和提示音（柔和版）
         try {
             const ctx = new (window.AudioContext || window.webkitAudioContext)();
             const osc = ctx.createOscillator();
             const g = ctx.createGain();
             osc.connect(g).connect(ctx.destination);
-            osc.type = 'square';
-            osc.frequency.setValueAtTime(440, ctx.currentTime);
-            osc.frequency.setValueAtTime(330, ctx.currentTime + 0.08);
-            g.gain.setValueAtTime(0.06, ctx.currentTime);
-            g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15);
+            osc.type = 'sine'; // 柔和正弦波，不是刺耳方波
+            osc.frequency.setValueAtTime(523, ctx.currentTime);  // C5
+            osc.frequency.setValueAtTime(392, ctx.currentTime + 0.1); // G4
+            g.gain.setValueAtTime(0.04, ctx.currentTime);
+            g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.2);
             osc.start(ctx.currentTime);
-            osc.stop(ctx.currentTime + 0.15);
+            osc.stop(ctx.currentTime + 0.2);
         } catch (e) { }
     }
 
     // ═══════════════════════════════════════════
-    // Chip / Bonus 邏輯
+    // Chip / Bonus 邏輯（含即時仲裁）
     // ═══════════════════════════════════════════
     function toggleChip(id) {
-        if (selectedChips.has(id)) selectedChips.delete(id);
-        else selectedChips.add(id);
+        if (selectedChips.has(id)) {
+            selectedChips.delete(id);
+        } else {
+            selectedChips.add(id);
+        }
+        // 🧠 即時仲裁
+        const resolved = resolveConflicts();
         renderBody();
+        if (resolved.length > 0) {
+            renderBonus();
+            showResolvedFeedback(resolved);
+        }
         updatePreview();
-        checkAndShowConflicts();
     }
 
     function toggleBonus(en) {
-        if (selectedBonuses.has(en)) selectedBonuses.delete(en);
-        else selectedBonuses.add(en);
+        if (selectedBonuses.has(en)) {
+            selectedBonuses.delete(en);
+        } else {
+            selectedBonuses.add(en);
+        }
+        // 🧠 即時仲裁
+        const resolved = resolveConflicts();
         renderBonus();
+        if (resolved.length > 0) {
+            renderBody();
+            showResolvedFeedback(resolved);
+        }
         updatePreview();
-        checkAndShowConflicts();
     }
 
     // ═══════════════════════════════════════════
@@ -796,32 +812,21 @@ window.PromptGen.CameraSuperModal = (function () {
             sliderValues[key] = Math.floor(Math.random() * SLIDERS[key].stops.length);
         }
 
-        // ── Step 2: 修正推桿 × 推桿衝突 ──
-        let sliderConflict = getSliderConflict(sliderEnabled, sliderValues);
-        let retries = 10;
-        while (sliderConflict && retries-- > 0) {
-            // 隨機關閉衝突的其中一個推桿
-            const disableKey = Math.random() > 0.5 ? sliderConflict.sliderA : sliderConflict.sliderB;
-            sliderEnabled[disableKey] = false;
-            sliderConflict = getSliderConflict(sliderEnabled, sliderValues);
-        }
+        // ── Step 2: 使用仲裁系統修正推桿衝突 ──
+        resolveConflicts(); // 自動移除低優先級衝突項
 
         // ── Step 3: 收集已啟用的推桿值 ──
-        const activeSliders = {};
-        for (const key of Object.keys(SLIDERS)) {
-            if (sliderEnabled[key]) activeSliders[key] = sliderValues[key];
-        }
+        const activeSliders = getActiveSliderMap();
 
         // ── Step 4: 約束感知選 Chip ──
         selectedChips.clear();
         for (const section of CHIP_SECTIONS) {
             if (Math.random() > 0.4) {
-                // 打亂順序再逐一嘗試
                 const shuffled = [...section.items].sort(() => Math.random() - 0.5);
                 for (const item of shuffled) {
                     if (!getChipConflict(item.id, selectedChips, activeSliders)) {
                         selectedChips.add(item.id);
-                        break; // 每 section 最多選一個
+                        break;
                     }
                 }
             }
