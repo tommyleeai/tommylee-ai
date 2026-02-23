@@ -293,6 +293,72 @@ html {
 
 /* === 標題列 Toggle 按鈕狀態 END === */
 
+/* === 會員登入 UI START === */
+.btn-login {
+    background: rgba(52, 211, 153, 0.15);
+    border-color: rgba(52, 211, 153, 0.3);
+    color: #34d399;
+}
+
+.btn-login:hover {
+    background: rgba(52, 211, 153, 0.25);
+    border-color: #34d399;
+    box-shadow: 0 4px 12px rgba(52, 211, 153, 0.3);
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    animation: authFadeIn 0.4s ease;
+}
+
+.user-avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 2px solid rgba(187, 134, 252, 0.4);
+    object-fit: cover;
+}
+
+.user-name {
+    font-size: 0.8rem;
+    color: #c4b5fd;
+    max-width: 100px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-weight: 500;
+}
+
+.btn-logout {
+    background: rgba(239, 68, 68, 0.15);
+    border-color: rgba(239, 68, 68, 0.3);
+    color: #ef4444;
+    padding: 4px 8px;
+    font-size: 0.8rem;
+}
+
+.btn-logout:hover {
+    background: rgba(239, 68, 68, 0.25);
+    border-color: #ef4444;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+@keyframes authFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* === 會員登入 UI END === */
+
 /* === 5. 按鈕系統 END === */
 
 /* === 6. 主佈局：左欄/右欄 START === 🔒 */
