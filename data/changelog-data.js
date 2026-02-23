@@ -7,6 +7,18 @@ window.PromptGen.Changelog = (function () {
     // Changelog Data
     const changelog = [
         {
+            version: "v8.7",
+            date: "2026-02-23",
+            changes: [
+                "🔐 新增 Firebase 會員系統：Google 一鍵登入/登出",
+                "💾 新增 Prompt 雲端存檔：登入後可將生成的 prompt 存到雲端",
+                "📋 新增歷史記錄 Modal：查看、搜尋、載入過去的 prompt",
+                "⭐ 新增收藏夾功能：星號標記重要 prompt",
+                "📝 支援重新命名已存檔的 prompt",
+                "🗑️ 支援刪除已存檔的 prompt（含確認對話框）"
+            ]
+        },
+        {
             version: "v8.6",
             date: "2026-02-23",
             changes: [
