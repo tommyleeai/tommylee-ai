@@ -2824,13 +2824,12 @@
         // 次元 task header
         const dimHeader = getDimensionYAMLHeader(state.dimension);
         yaml += `task: ${dimHeader.task}\n`;
-        // 如果有選擇畫面比例，附加到 style_notes
-        let styleNotes = dimHeader.style_notes;
+        yaml += `style_notes: ${dimHeader.style_notes}\n`;
+        // ★ 畫面比例放在 YAML 前段（style_notes 之後），確保 AI 優先處理構圖
         if (state.aspectRatio) {
             const arData = OptionsData.ASPECT_RATIOS.find(ar => ar.label === state.aspectRatio || ar.en === state.aspectRatio);
-            if (arData) styleNotes += ' ' + arData.value + '.';
+            if (arData) yaml += `aspect_ratio: ${arData.value}\n`;
         }
-        yaml += `style_notes: ${styleNotes}\n`;
         if (inputSubject.value.trim()) yaml += `additional_instructions: ${inputSubject.value.trim()}\n`;
         yaml += `gender: ${state.gender ? (state.gender === 'female' ? 'female' : 'male') : 'unspecified'}\n`;
 
