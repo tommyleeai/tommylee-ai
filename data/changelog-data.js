@@ -7,6 +7,16 @@ window.PromptGen.Changelog = (function () {
     // Changelog Data
     const changelog = [
         {
+            version: "v8.5.1",
+            date: "2026-02-23",
+            changes: [
+                "🛡️ AI 安全審核：18-29 歲年齡描述全面重寫（移除 youthful/flawless/toned 等高風險詞）",
+                "🔒 移除 voyeur/predatory/seductive/child-like/micro bikini 等 13 處敏感詞彙",
+                "📸 運鏡 Super Modal 品質修正：12 處 prompt 優化（移除強制姿勢、動態運鏡改靜態描述）",
+                "📝 修正 body-magic-data 中 3 處高風險建議文字"
+            ]
+        },
+        {
             version: "v8.5",
             date: "2026-02-23",
             changes: [
