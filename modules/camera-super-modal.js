@@ -140,6 +140,12 @@ window.PromptGen.CameraSuperModal = (function () {
         // ── Slider × Slider：物理距離矛盾 ──
         // 微距 (lens=7) 與中景以上 (distance ≥ 3) 衝突
         { type: 'slider_slider', sliderA: 'lens', valueA: 7, sliderB: 'distance', minB: 3, msg: '微距鏡頭無法拍攝中景以上距離' },
+        // 望遠 200mm+ (lens=6) 無法拍大特寫 (distance=0)：最近對焦距離限制
+        { type: 'slider_slider', sliderA: 'lens', valueA: 6, sliderB: 'distance', maxB: 0, msg: '望遠 200mm+ 最近對焦距離限制，無法拍攝大特寫' },
+        // 超廣角 14mm (lens=1) 拍特寫以內 (distance ≤ 1) 會嚴重畸變
+        { type: 'slider_slider', sliderA: 'lens', valueA: 1, sliderB: 'distance', maxB: 1, msg: '超廣角 14mm 近距離臉部嚴重畸變，建議改用 50mm 以上' },
+        // 魚眼 8mm (lens=0) 拍遠景以上 (distance ≥ 6) 會過度桶狀形變
+        { type: 'slider_slider', sliderA: 'lens', valueA: 0, sliderB: 'distance', minB: 6, msg: '魚眼鏡頭在遠景中產生過度桶狀形變，AI 難以正確渲染' },
         // ── Slider × Bonus：物理特性矛盾 ──
         { type: 'slider_bonus', slider: 'dof', value: 5, bonusEn: 'creamy bokeh, beautiful light orbs in background', msg: '奶油散景與 f/16 全域清晰矛盾' },
         { type: 'slider_bonus', slider: 'lens', values: [0, 1], bonusEn: 'compressed background, stacked visual layers', msg: '背景壓縮效果是望遠特徵，廣角做不到' },
@@ -173,9 +179,12 @@ window.PromptGen.CameraSuperModal = (function () {
         for (const rule of CAMERA_CONFLICTS) {
             if (rule.type === 'slider_slider') {
                 if (enabledSliders[rule.sliderA] && enabledSliders[rule.sliderB]
-                    && sliderVals[rule.sliderA] === rule.valueA
-                    && sliderVals[rule.sliderB] >= rule.minB) {
-                    return rule;
+                    && sliderVals[rule.sliderA] === rule.valueA) {
+                    // 支援 minB（值 >= 下限）和 maxB（值 <= 上限）
+                    const valB = sliderVals[rule.sliderB];
+                    const minOk = rule.minB === undefined || valB >= rule.minB;
+                    const maxOk = rule.maxB === undefined || valB <= rule.maxB;
+                    if (minOk && maxOk) return rule;
                 }
             }
         }
