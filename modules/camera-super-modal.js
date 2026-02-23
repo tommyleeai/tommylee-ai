@@ -27,14 +27,14 @@ window.PromptGen.CameraSuperModal = (function () {
         distance: {
             icon: '📏', label: '鏡頭距離', labelEn: 'Shot Distance',
             stops: [
-                { zh: '大特寫', en: 'ECU', fun: '只看到眼睛在燃燒 🔥', prompt: 'extreme close-up, macro detail, partial face filling the frame' },
-                { zh: '特寫', en: 'Close-Up', fun: '看清你眼中的決意', prompt: 'close-up portrait, head and shoulders framing' },
-                { zh: '中特寫', en: 'Medium CU', fun: '展現上半身的氣場', prompt: 'medium close-up, bust shot, chest up framing' },
-                { zh: '中景', en: 'Medium', fun: '標準對話距離，剛好看到雙手', prompt: 'medium shot, waist-up, conversational framing' },
-                { zh: '牛仔鏡頭', en: 'Cowboy', fun: '西部決鬥！手要摸到槍套的距離 🤠', prompt: 'cowboy shot, mid-thigh framing, american shot' },
-                { zh: '全身', en: 'Full Shot', fun: '從頭到腳，完整展現你的戰鬥姿態', prompt: 'full body shot, head to toe visible, feet on ground' },
-                { zh: '遠景', en: 'Wide', fun: '人物變小，世界開始接管畫面 🌄', prompt: 'wide shot, figure small in frame, environment-dominant' },
-                { zh: '大遠景', en: 'Extreme Wide', fun: '渺小如螞蟻，被世界吞噬的感覺', prompt: 'extreme wide shot, tiny figure in vast landscape, dwarfed by environment' }
+                { zh: '大特寫', en: 'ECU', fun: '只看到眼睛在燃燒 🔥', prompt: 'extreme close-up, macro detail, partial face filling the frame, subject fills 90% of frame' },
+                { zh: '特寫', en: 'Close-Up', fun: '看清你眼中的決意', prompt: 'close-up portrait, head and shoulders framing, face occupies 70% of frame height' },
+                { zh: '中特寫', en: 'Medium CU', fun: '展現上半身的氣場', prompt: 'medium close-up, bust shot, chest up framing, subject fills about 60% of frame' },
+                { zh: '中景', en: 'Medium', fun: '標準對話距離，剛好看到雙手', prompt: 'medium shot, waist-up framing, subject occupies about half of frame height' },
+                { zh: '牛仔鏡頭', en: 'Cowboy', fun: '西部決鬥！手要摸到槍套的距離 🤠', prompt: 'cowboy shot, mid-thigh framing, american shot, figure takes up roughly 40% of frame height' },
+                { zh: '全身', en: 'Full Shot', fun: '從頭到腳，完整展現你的戰鬥姿態', prompt: 'full body shot, head to toe visible, feet on ground, full figure occupies about one third of frame height' },
+                { zh: '遠景', en: 'Wide', fun: '人物變小，世界開始接管畫面 🌄', prompt: 'wide shot, figure small in frame, environment-dominant, subject occupies about 20% of frame height, vast environment' },
+                { zh: '大遠景', en: 'Extreme Wide', fun: '渺小如螞蟻，被世界吞噬的感覺', prompt: 'extreme wide shot, tiny figure in vast landscape, dwarfed by environment, subject less than 10% of frame, environmental storytelling' }
             ]
         },
         vAngle: {
@@ -90,7 +90,7 @@ window.PromptGen.CameraSuperModal = (function () {
             icon: '🎥', label: '鏡頭運動', labelEn: 'Camera Movement',
             items: [
                 { id: 'dolly_in', zh: '推進', en: 'Dolly-In', fun: '逼近真相的緊張感', prompt: 'dolly-in effect, approaching perspective, increasingly intimate framing, shallow DOF' },
-                { id: 'dolly_out', zh: '拉遠', en: 'Dolly-Out', fun: '揭露全局的震撼退場 🌌', prompt: 'pull-back reveal composition, subject small in expanding environment, wide context visible' },
+                { id: 'dolly_out', zh: '拉遠', en: 'Dolly-Out', fun: '揭露全局的震撼退場 🌌', prompt: 'pull-back reveal composition, subject shrinking in frame from large to about one-third, expanding environment reveal' },
                 { id: 'orbit', zh: '環繞', en: 'Orbit', fun: '繞著主角轉的英雄時刻 💫', prompt: 'three-quarter angle suggesting orbital motion, dynamic wraparound perspective, subject from angled side' },
                 { id: 'crane', zh: '起重機', en: 'Crane', fun: '由低升高的史詩級運鏡 🏗️', prompt: 'elevated sweeping perspective, dramatic high vantage point, overhead composition' },
                 { id: 'handheld', zh: '手持晃動', en: 'Handheld', fun: '紀錄片般的生猛真實感 📰', prompt: 'handheld camera, slight shake, documentary style, film grain' },
