@@ -2606,6 +2606,18 @@
             'outfit', 'headwear', 'handItems', 'expression', 'mood', 'pose', 'animeStyle', 'artStyle', 'artist', 'quality',
             'scene', 'weather', 'lighting', 'cameraAngle', 'shotSize', 'focalLength', 'aperture', 'lensEffect'];
 
+        // ★ Grok/Flux 全身強化：Super Modal 啟用時，把 camera prompt 前置到 parts 最前面
+        // 原因：Grok/Flux 對 prompt 前 1/3 的權重最敏感，camera prompt 若排在最後會被忽略
+        if (state.cameraAdvanced && state.cameraAdvanced.superMode && state.cameraAdvanced.bonusTraits && state.cameraAdvanced.bonusTraits.length > 0) {
+            // 插入到 parts 最前面（在 dimension/gender/age 之後）
+            state.cameraAdvanced.bonusTraits.forEach(trait => parts.push(trait));
+            // 把 camera prompt 移到 parts 前端（dimension prefix 保持第一）
+            const cameraCount = state.cameraAdvanced.bonusTraits.length;
+            const cameraParts = parts.splice(parts.length - cameraCount, cameraCount);
+            // 插入到 dimension prefix 之後（index 1）
+            parts.splice(1, 0, ...cameraParts);
+        }
+
         sectionOrder.forEach(secId => {
             // Skip bodyType if bodyAdvanced is active (handled separately)
             if (secId === 'bodyType' && state.bodyAdvanced) {
@@ -2684,11 +2696,8 @@
                 return;
             }
             // Skip cameraAngle if cameraAdvanced (Super Modal) is active
+            // ★ camera prompt 已在前置邏輯中輸出，這裡直接跳過避免重複
             if (secId === 'cameraAngle' && state.cameraAdvanced && state.cameraAdvanced.superMode) {
-                // Super Modal 已套用 → 直接輸出所有 prompt 文字
-                if (state.cameraAdvanced.bonusTraits && state.cameraAdvanced.bonusTraits.length > 0) {
-                    state.cameraAdvanced.bonusTraits.forEach(trait => parts.push(trait));
-                }
                 return;
             }
             // Skip camera sub-sections when cameraAdvanced is active (already covered by magic modal)
@@ -2765,9 +2774,12 @@
                 state.sceneAdvanced.bonusTraits.forEach(trait => parts.push(trait));
             }
 
-            // ★ cameraAdvanced bonusTraits（附加在 cameraAngle section 後）
+            // ★ cameraAdvanced bonusTraits — 已在前置邏輯中輸出，此處跳過
+            // (保留非 superMode 的 magic modal 支援)
             if (secId === 'cameraAngle' && state.cameraAdvanced && state.cameraAdvanced.bonusTraits && state.cameraAdvanced.bonusTraits.length > 0) {
-                state.cameraAdvanced.bonusTraits.forEach(trait => parts.push(trait));
+                if (!state.cameraAdvanced.superMode) {
+                    state.cameraAdvanced.bonusTraits.forEach(trait => parts.push(trait));
+                }
             }
         });
 
@@ -2787,7 +2799,7 @@
             }
         });
 
-        let result = parts.join(', ');
+        let result = parts.join(', ').replace(/,\s*,/g, ',');
 
         // Apply conflict resolution to final prompt
         if (state.conflictInfo && state.conflictResolution) {
