@@ -286,7 +286,7 @@
 
             // === 運鏡魔法啟用時，禁用鏡頭/焦段/光圈/鏡頭效果 ===
             const CAMERA_SUB_SECTIONS = ['shotSize', 'focalLength', 'aperture', 'lensEffect'];
-            if (CAMERA_SUB_SECTIONS.includes(section.id) && state.cameraAdvanced && state.cameraAdvanced.bonusTraits && state.cameraAdvanced.bonusTraits.length > 0) {
+            if (CAMERA_SUB_SECTIONS.includes(section.id) && state.cameraAdvanced) {
                 sectionEl.classList.add('section-disabled-by-magic');
             }
 
@@ -922,14 +922,14 @@
                     titleWrapper.appendChild(badge);
                 }
 
-                // outfitAdvanced 橫幅（加分特徵）
-                if (state.outfitAdvanced && state.outfitAdvanced.bonusTraits && state.outfitAdvanced.bonusTraits.length > 0) {
+                // outfitAdvanced 橫幅（魔法啟用資訊）
+                if (state.outfitAdvanced) {
                     const oa = state.outfitAdvanced;
                     const summaryBar = document.createElement('div');
                     summaryBar.className = 'body-advanced-summary';
                     const summaryText = document.createElement('span');
-                    const zhList = (oa.bonusTraitsZh || oa.bonusTraits).join('、');
-                    summaryText.innerHTML = `🔮 服飾魔法啟用中：${oa.selectedOutfit || ''} — ${zhList}`;
+                    const zhList = (oa.bonusTraitsZh && oa.bonusTraitsZh.length) ? (oa.bonusTraitsZh || oa.bonusTraits).join('、') : '';
+                    summaryText.innerHTML = `🔮 服飾魔法啟用中：${oa.selectedOutfit || ''}${zhList ? ' — ' + zhList : ''}`;
                     const editBtn = document.createElement('button');
                     editBtn.className = 'body-advanced-edit-btn';
                     editBtn.textContent = '編輯';
@@ -953,7 +953,7 @@
                 renderPaginatedGrid(sectionEl, section, OUTFITS, 'outfitPage');
 
                 // outfitAdvanced 啟用時，灰色 grid
-                if (state.outfitAdvanced && state.outfitAdvanced.bonusTraits && state.outfitAdvanced.bonusTraits.length > 0) {
+                if (state.outfitAdvanced) {
                     const tagGrid = sectionEl.querySelector('.tag-grid-paginated');
                     if (tagGrid) tagGrid.classList.add('body-section-disabled');
                 }
@@ -1031,13 +1031,13 @@
                 }
 
                 // headwearAdvanced 橫幅（加分特徵）
-                if (state.headwearAdvanced && state.headwearAdvanced.bonusTraits && state.headwearAdvanced.bonusTraits.length > 0) {
+                if (state.headwearAdvanced) {
                     const ha = state.headwearAdvanced;
                     const summaryBar = document.createElement('div');
                     summaryBar.className = 'body-advanced-summary';
                     const summaryText = document.createElement('span');
-                    const zhList = (ha.bonusTraitsZh || ha.bonusTraits).join('、');
-                    summaryText.innerHTML = `🔮 頭飾魔法啟用中：${ha.selectedItem || ''} — ${zhList}`;
+                    const zhList = (ha.bonusTraitsZh && ha.bonusTraitsZh.length) ? (ha.bonusTraitsZh || ha.bonusTraits).join('、') : '';
+                    summaryText.innerHTML = `🔮 頭飾魔法啟用中：${ha.selectedItem || ''}${zhList ? ' - ' + zhList : ''}`;
                     const editBtn = document.createElement('button');
                     editBtn.className = 'body-advanced-edit-btn';
                     editBtn.textContent = '編輯';
@@ -1061,7 +1061,7 @@
                 renderPaginatedGrid(sectionEl, section, HEADWEAR, 'headwearPage');
 
                 // headwearAdvanced 啟用時，灰色 grid
-                if (state.headwearAdvanced && state.headwearAdvanced.bonusTraits && state.headwearAdvanced.bonusTraits.length > 0) {
+                if (state.headwearAdvanced) {
                     const tagGrid = sectionEl.querySelector('.tag-grid-paginated');
                     if (tagGrid) tagGrid.classList.add('body-section-disabled');
                 }
@@ -1140,13 +1140,13 @@
                 }
 
                 // handItemsAdvanced 橫幅（加分特徵）
-                if (state.handItemsAdvanced && state.handItemsAdvanced.bonusTraits && state.handItemsAdvanced.bonusTraits.length > 0) {
+                if (state.handItemsAdvanced) {
                     const hia = state.handItemsAdvanced;
                     const summaryBar = document.createElement('div');
                     summaryBar.className = 'body-advanced-summary';
                     const summaryText = document.createElement('span');
-                    const zhList = (hia.bonusTraitsZh || hia.bonusTraits).join('、');
-                    summaryText.innerHTML = `🔮 手持物魔法啟用中：${hia.selectedItem || ''} — ${zhList}`;
+                    const zhList = (hia.bonusTraitsZh && hia.bonusTraitsZh.length) ? (hia.bonusTraitsZh || hia.bonusTraits).join('、') : '';
+                    summaryText.innerHTML = `🔮 手持物魔法啟用中：${hia.selectedItem || ''}${zhList ? ' - ' + zhList : ''}`;
                     const editBtn = document.createElement('button');
                     editBtn.className = 'body-advanced-edit-btn';
                     editBtn.textContent = '編輯';
@@ -1170,7 +1170,7 @@
                 renderPaginatedGrid(sectionEl, section, HAND_ITEMS, 'handItemsPage');
 
                 // handItemsAdvanced 啟用時，灰色 grid
-                if (state.handItemsAdvanced && state.handItemsAdvanced.bonusTraits && state.handItemsAdvanced.bonusTraits.length > 0) {
+                if (state.handItemsAdvanced) {
                     const tagGrid = sectionEl.querySelector('.tag-grid-paginated');
                     if (tagGrid) tagGrid.classList.add('body-section-disabled');
                 }
@@ -1695,16 +1695,16 @@
                     titleWrapper.appendChild(badge);
                 }
 
-                // ★ sceneAdvanced 橫幅：顯示加分特徵
-                if (state.sceneAdvanced && state.sceneAdvanced.bonusTraits && state.sceneAdvanced.bonusTraits.length > 0) {
+                // ★ sceneAdvanced 橫幅：顯示魔法啟用資訊
+                if (state.sceneAdvanced) {
                     const sa = state.sceneAdvanced;
-                    const traitNames = sa.bonusTraitsZh ? sa.bonusTraitsZh.join('、') : sa.bonusTraits.join(', ');
+                    const traitNames = (sa.bonusTraitsZh && sa.bonusTraitsZh.length) ? sa.bonusTraitsZh.join('、') : (sa.bonusTraits && sa.bonusTraits.length ? sa.bonusTraits.join(', ') : '');
                     const sceneName = sa.selectedScene ? `${sa.selectedScene.label} ${sa.selectedScene.en}` : '';
 
                     const summaryBar = document.createElement('div');
                     summaryBar.className = 'body-advanced-summary';
                     const summaryText = document.createElement('span');
-                    summaryText.innerHTML = `🌍 ${state.lang === 'zh' ? '場景魔法啟用中' : 'Scene Magic Active'}：${sceneName} / 🏷️ ${traitNames}`;
+                    summaryText.innerHTML = `🌍 ${state.lang === 'zh' ? '場景魔法啟用中' : 'Scene Magic Active'}：${sceneName}${traitNames ? ' / 🏷️ ' + traitNames : ''}`;
 
                     const editBtn = document.createElement('button');
                     editBtn.className = 'body-summary-action';
@@ -1736,7 +1736,7 @@
                 renderPaginatedGrid(sectionEl, section, scAllItems, 'scenePage');
 
                 // Advanced 啟用時灰化 grid
-                if (state.sceneAdvanced && state.sceneAdvanced.bonusTraits && state.sceneAdvanced.bonusTraits.length > 0) {
+                if (state.sceneAdvanced) {
                     const tagGrid = sectionEl.querySelector('.tag-grid-paginated');
                     if (tagGrid) tagGrid.classList.add('body-section-disabled');
                 }
@@ -1789,16 +1789,16 @@
                     titleWrapper.appendChild(badge);
                 }
 
-                // ★ cameraAdvanced 橫幅：顯示加分特徵
-                if (state.cameraAdvanced && state.cameraAdvanced.bonusTraits && state.cameraAdvanced.bonusTraits.length > 0) {
+                // ★ cameraAdvanced 橫幅：顯示魔法啟用資訊
+                if (state.cameraAdvanced) {
                     const ca = state.cameraAdvanced;
-                    const traitNames = ca.bonusTraitsZh ? ca.bonusTraitsZh.join('、') : ca.bonusTraits.join(', ');
+                    const traitNames = (ca.bonusTraitsZh && ca.bonusTraitsZh.length) ? ca.bonusTraitsZh.join('、') : (ca.bonusTraits && ca.bonusTraits.length ? ca.bonusTraits.join(', ') : '');
                     const cameraName = ca.selectedCamera ? `${ca.selectedCamera.label} ${ca.selectedCamera.en}` : '';
 
                     const summaryBar = document.createElement('div');
                     summaryBar.className = 'body-advanced-summary';
                     const summaryText = document.createElement('span');
-                    summaryText.innerHTML = `📸 ${state.lang === 'zh' ? '運鏡魔法啟用中' : 'Camera Magic Active'}：${cameraName} / 🏷️ ${traitNames}`;
+                    summaryText.innerHTML = `📸 ${state.lang === 'zh' ? '運鏡魔法啟用中' : 'Camera Magic Active'}：${cameraName}${traitNames ? ' / 🏷️ ' + traitNames : ''}`;
 
                     const editBtn = document.createElement('button');
                     editBtn.className = 'body-summary-action';
@@ -1836,7 +1836,7 @@
                 renderPaginatedGrid(sectionEl, section, caAllItems, 'cameraAnglePage');
 
                 // Advanced 啟用時灰化 grid
-                if (state.cameraAdvanced && state.cameraAdvanced.bonusTraits && state.cameraAdvanced.bonusTraits.length > 0) {
+                if (state.cameraAdvanced) {
                     const tagGrid = sectionEl.querySelector('.tag-grid-paginated');
                     if (tagGrid) tagGrid.classList.add('body-section-disabled');
                 }
@@ -3326,7 +3326,7 @@
             state.customInputs = {};
             state.customInputVisible = {};
             state.customFields = [];
-            inputSubject.value = '做一張全新的圖';
+            inputSubject.value = '';
 
             inputNegative.value = '';
 
