@@ -121,7 +121,7 @@ window.PromptGen.CameraSuperModal = (function () {
         { icon: '📐', zh: '透視誇張感', en: 'exaggerated perspective, strong convergence lines' },
         { icon: '🌿', zh: '前景元素', en: 'foreground elements adding depth, shooting through foliage, layered framing' },
         { icon: '⚡', zh: '速度感線條', en: 'dynamic motion blur, radial blur, sense of kinetic energy' },
-        { icon: '👟', zh: '下半身錨定', en: 'wearing detailed shoes on feet, ankles and full legs shown, feet planted firmly on ground, full leg visibility, no leg cropping' }
+        { icon: '👟', zh: '下半身錨定', en: 'feet clearly visible on ground, feet planted firmly, ankles and full legs shown, full leg visibility, no leg cropping' }
     ];
 
     // ═══════════════════════════════════════════
