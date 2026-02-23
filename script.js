@@ -4379,5 +4379,46 @@
             mainContent.style.maxWidth = mainContent.offsetWidth + 'px';
         }
     });
+    // ============================================
+    // 全域 ESC 鍵：關閉任何開啟的 Modal
+    // ============================================
+    document.addEventListener('keydown', function (e) {
+        if (e.key !== 'Escape') return;
+
+        // 1. 固定 Modal（settings / changelog / about）
+        const fixedModals = ['settings-modal', 'changelog-modal', 'about-modal'];
+        for (const id of fixedModals) {
+            const m = document.getElementById(id);
+            if (m && m.style.display !== 'none' && m.style.display !== '') {
+                m.style.display = 'none';
+                document.body.style.overflow = '';
+                return;
+            }
+        }
+
+        // 2. Magic Modal 系列（所有 *-overlay 用 display:flex 顯示的）
+        const magicOverlays = document.querySelectorAll(
+            '.mm-overlay, .hmm-overlay, .bmm-overlay, .emm-overlay, .pmm-overlay, ' +
+            '.atmm-overlay, .scene-mm-overlay, .camera-mm-overlay, ' +
+            '#konami-super-overlay, #camera-super-overlay, #fate-wheel-overlay'
+        );
+        for (const ov of magicOverlays) {
+            if (ov && ov.style.display !== 'none' && ov.style.display !== '') {
+                ov.style.display = 'none';
+                document.body.style.overflow = '';
+                return;
+            }
+        }
+
+        // 3. Prompt 歷史記錄 Modal（.active 切換）
+        if (window.PromptGen && window.PromptGen.PromptHistory) {
+            const histOverlay = document.querySelector('.history-modal-overlay.active');
+            if (histOverlay) {
+                window.PromptGen.PromptHistory.closeModal();
+                return;
+            }
+        }
+    });
+
 
 });
