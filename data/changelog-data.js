@@ -7,6 +7,16 @@ window.PromptGen.Changelog = (function () {
     // Changelog Data
     const changelog = [
         {
+            version: "v8.6",
+            date: "2026-02-23",
+            changes: [
+                "📐 新增「畫面比例」功能：攝影 tab 新增 7 種比例選項（9:16/3:4/1:1/4:3/16:9/2.35:1/21:9）",
+                "🖼️ Camera Super Modal 新增畫面比例推桿",
+                "📸 全身照 Grok 強化：Full Shot / Wide Shot 加入權重語法（:1.4/:1.3）+ 下半身錨定 bonus trait",
+                "🎯 畫面比例 YAML 輸出位置前移到 style_notes 之後，確保 AI 優先處理構圖指令"
+            ]
+        },
+        {
             version: "v8.5.1",
             date: "2026-02-23",
             changes: [
