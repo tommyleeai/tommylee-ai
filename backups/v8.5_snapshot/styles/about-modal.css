@@ -1,0 +1,274 @@
+/* === About Origin Modal START === */
+/* v8.1 — 起源故事 Modal 專屬樣式 */
+
+/* --- About Panel (wider for content) --- */
+.about-panel {
+    max-width: 680px;
+}
+
+/* --- About Header --- */
+.about-header h2 i {
+    color: #f0abfc;
+}
+
+/* --- About Body --- */
+.about-body {
+    padding: 0 !important;
+    max-height: 72vh;
+}
+
+/* --- Hero Section --- */
+.about-hero {
+    text-align: center;
+    padding: 2rem 1.5rem 1.5rem;
+    background: linear-gradient(180deg, rgba(139, 92, 246, 0.12) 0%, transparent 100%);
+    border-bottom: 1px solid rgba(139, 92, 246, 0.1);
+}
+
+.about-hero-icon {
+    font-size: 3rem;
+    margin-bottom: 0.6rem;
+    animation: aboutHeroFloat 3s ease-in-out infinite;
+}
+
+@keyframes aboutHeroFloat {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-8px);
+    }
+}
+
+.about-hero-title {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #e2e8f0;
+    margin: 0 0 0.4rem;
+    background: linear-gradient(135deg, #c084fc, #f0abfc, #a78bfa);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.about-hero-sub {
+    color: #94a3b8;
+    font-size: 0.95rem;
+    margin: 0;
+    letter-spacing: 0.05em;
+}
+
+/* --- Content Area --- */
+.about-content {
+    padding: 1.5rem;
+    line-height: 1.85;
+    color: #cbd5e1;
+    font-size: 0.92rem;
+}
+
+.about-content p {
+    margin: 0 0 1rem;
+}
+
+.about-content p:last-child {
+    margin-bottom: 0;
+}
+
+/* --- Highlight Text --- */
+.about-highlight {
+    color: #c084fc;
+    font-weight: 600;
+    -webkit-text-fill-color: #c084fc;
+}
+
+/* --- Stats Cards --- */
+.about-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin: 1.5rem 0;
+}
+
+.about-stat-card {
+    background: rgba(139, 92, 246, 0.08);
+    border: 1px solid rgba(139, 92, 246, 0.15);
+    border-radius: 12px;
+    padding: 1.2rem;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.about-stat-card:hover {
+    border-color: rgba(139, 92, 246, 0.35);
+    background: rgba(139, 92, 246, 0.12);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(139, 92, 246, 0.15);
+}
+
+.about-stat-number {
+    font-size: 2.2rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #a78bfa, #f0abfc);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1.1;
+    margin-bottom: 0.3rem;
+}
+
+.about-stat-label {
+    font-size: 0.85rem;
+    color: #a78bfa;
+    font-weight: 600;
+    margin-bottom: 0.3rem;
+}
+
+.about-stat-sub {
+    font-size: 0.72rem;
+    color: #64748b;
+    font-style: italic;
+}
+
+/* --- Highlight Box (Combination Number) --- */
+.about-highlight-box {
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(240, 171, 252, 0.08));
+    border: 1px solid rgba(139, 92, 246, 0.2);
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+    margin: 1.5rem 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.about-highlight-box::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: conic-gradient(from 0deg,
+            transparent,
+            rgba(139, 92, 246, 0.05),
+            transparent,
+            rgba(240, 171, 252, 0.05),
+            transparent);
+    animation: aboutBoxRotate 8s linear infinite;
+}
+
+@keyframes aboutBoxRotate {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.about-highlight-label {
+    position: relative;
+    font-size: 0.85rem;
+    color: #a78bfa;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.6rem;
+}
+
+.about-combo-number {
+    position: relative;
+    font-size: 2rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #fbbf24, #f59e0b, #c084fc, #a78bfa);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    background-size: 200% 200%;
+    animation: aboutComboShimmer 3s ease-in-out infinite;
+    margin-bottom: 0.5rem;
+}
+
+@keyframes aboutComboShimmer {
+
+    0%,
+    100% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+}
+
+.about-combo-full {
+    position: relative;
+    font-size: 0.65rem;
+    color: #64748b;
+    font-family: 'Courier New', monospace;
+    line-height: 1.6;
+    word-break: break-all;
+    margin-bottom: 0.8rem;
+}
+
+.about-combo-note {
+    position: relative;
+    font-size: 0.82rem;
+    color: #94a3b8;
+    margin: 0;
+    line-height: 1.6;
+}
+
+.about-combo-note sup {
+    color: #c084fc;
+}
+
+/* --- Footer Info --- */
+.about-footer-info {
+    text-align: center;
+    padding: 1.2rem 1.5rem;
+    border-top: 1px solid rgba(139, 92, 246, 0.1);
+    background: rgba(139, 92, 246, 0.03);
+}
+
+.about-footer-info p {
+    margin: 0 0 0.3rem;
+    color: #94a3b8;
+    font-size: 0.85rem;
+}
+
+.about-footer-info p:last-child {
+    margin-bottom: 0;
+}
+
+.about-footer-info strong {
+    color: #c084fc;
+}
+
+.about-footer-url {
+    font-size: 0.75rem !important;
+    color: #64748b !important;
+    letter-spacing: 0.1em;
+}
+
+/* --- Number Count-up Animation --- */
+.about-stat-number.counting {
+    animation: aboutCountPulse 0.1s ease-in-out;
+}
+
+@keyframes aboutCountPulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.02);
+    }
+}
+
+/* === About Origin Modal END === */
