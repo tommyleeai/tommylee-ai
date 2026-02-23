@@ -929,7 +929,8 @@
                     summaryBar.className = 'body-advanced-summary';
                     const summaryText = document.createElement('span');
                     const zhList = (oa.bonusTraitsZh && oa.bonusTraitsZh.length) ? (oa.bonusTraitsZh || oa.bonusTraits).join('、') : '';
-                    summaryText.innerHTML = `🔮 服飾魔法啟用中：${oa.selectedOutfit || ''}${zhList ? ' — ' + zhList : ''}`;
+                    const outfitName = oa.selectedOutfit ? (typeof oa.selectedOutfit === 'object' ? oa.selectedOutfit.label : oa.selectedOutfit) : '';
+                    summaryText.innerHTML = `🔮 服飾魔法啟用中：${outfitName}${zhList ? ' — ' + zhList : ''}`;
                     const editBtn = document.createElement('button');
                     editBtn.className = 'body-advanced-edit-btn';
                     editBtn.textContent = '編輯';
@@ -1037,7 +1038,8 @@
                     summaryBar.className = 'body-advanced-summary';
                     const summaryText = document.createElement('span');
                     const zhList = (ha.bonusTraitsZh && ha.bonusTraitsZh.length) ? (ha.bonusTraitsZh || ha.bonusTraits).join('、') : '';
-                    summaryText.innerHTML = `🔮 頭飾魔法啟用中：${ha.selectedItem || ''}${zhList ? ' - ' + zhList : ''}`;
+                    const hwName = ha.selectedItem ? (typeof ha.selectedItem === 'object' ? ha.selectedItem.label : ha.selectedItem) : '';
+                    summaryText.innerHTML = `🔮 頭飾魔法啟用中：${hwName}${zhList ? ' - ' + zhList : ''}`;
                     const editBtn = document.createElement('button');
                     editBtn.className = 'body-advanced-edit-btn';
                     editBtn.textContent = '編輯';
@@ -1146,7 +1148,8 @@
                     summaryBar.className = 'body-advanced-summary';
                     const summaryText = document.createElement('span');
                     const zhList = (hia.bonusTraitsZh && hia.bonusTraitsZh.length) ? (hia.bonusTraitsZh || hia.bonusTraits).join('、') : '';
-                    summaryText.innerHTML = `🔮 手持物魔法啟用中：${hia.selectedItem || ''}${zhList ? ' - ' + zhList : ''}`;
+                    const hiName = hia.selectedItem ? (typeof hia.selectedItem === 'object' ? hia.selectedItem.label : hia.selectedItem) : '';
+                    summaryText.innerHTML = `🔮 手持物魔法啟用中：${hiName}${zhList ? ' - ' + zhList : ''}`;
                     const editBtn = document.createElement('button');
                     editBtn.className = 'body-advanced-edit-btn';
                     editBtn.textContent = '編輯';
