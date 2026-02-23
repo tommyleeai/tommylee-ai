@@ -70,6 +70,18 @@ window.PromptGen.CameraSuperModal = (function () {
                 { zh: 'f/8 銳利', en: 'f/8', fun: '風景攝影的黃金光圈 🏔️', prompt: 'f/8, sharp throughout, optimal sharpness, landscape photography' },
                 { zh: 'f/16 全域清晰', en: 'f/16', fun: '從鼻尖到天邊，全！部！銳！利！', prompt: 'f/16, deep focus, everything razor sharp from near to far' }
             ]
+        },
+        aspectRatio: {
+            icon: '🖼️', label: '畫面比例', labelEn: 'Aspect Ratio',
+            stops: [
+                { zh: '9:16 直式', en: '9:16', fun: '手機全螢幕，IG 限動最佳比例 📱', prompt: 'vertical portrait composition, tall narrow frame, 9:16 aspect ratio' },
+                { zh: '3:4 直式', en: '3:4', fun: '經典人像比例，優雅不失衡 📷', prompt: 'vertical composition, portrait orientation, 3:4 aspect ratio' },
+                { zh: '1:1 方形', en: '1:1', fun: '完美正方形，IG 經典排版 ⬜', prompt: 'square composition, centered framing, 1:1 aspect ratio' },
+                { zh: '4:3 橫式', en: '4:3', fun: '傳統相片比例，穩重經典', prompt: 'horizontal composition, landscape orientation, 4:3 aspect ratio' },
+                { zh: '16:9 橫式', en: '16:9', fun: '電影寬螢幕，沉浸感十足 🎬', prompt: 'cinematic wide composition, widescreen framing, 16:9 aspect ratio' },
+                { zh: '2.35:1 電影', en: '2.35:1', fun: '好萊塢大片感，超寬銀幕 🎥', prompt: 'anamorphic widescreen, cinemascope ultrawide composition, 2.35:1 aspect ratio' },
+                { zh: '21:9 超寬', en: '21:9', fun: '全景級超寬構圖，史詩場面專用 🌅', prompt: 'ultrawide panoramic composition, extreme horizontal framing, 21:9 aspect ratio' }
+            ]
         }
     };
 

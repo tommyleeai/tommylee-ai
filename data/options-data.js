@@ -2599,6 +2599,17 @@ window.PromptGen.Data = (function () {
         { label: '拍立得', en: 'Polaroid', value: 'polaroid' }
     ];
 
+    // v9.x 畫面比例
+    const ASPECT_RATIOS = [
+        { label: '9:16 直式', en: '9:16 Portrait', value: 'vertical portrait composition, tall narrow frame, 9:16 aspect ratio', icon: '📱' },
+        { label: '3:4 直式', en: '3:4 Portrait', value: 'vertical composition, portrait orientation, 3:4 aspect ratio', icon: '📷' },
+        { label: '1:1 方形', en: '1:1 Square', value: 'square composition, centered framing, 1:1 aspect ratio', icon: '⬜' },
+        { label: '4:3 橫式', en: '4:3 Landscape', value: 'horizontal composition, landscape orientation, 4:3 aspect ratio', icon: '🖥️' },
+        { label: '16:9 橫式', en: '16:9 Widescreen', value: 'cinematic wide composition, widescreen framing, 16:9 aspect ratio', icon: '🎬' },
+        { label: '2.35:1 電影', en: '2.35:1 Cinemascope', value: 'anamorphic widescreen, cinemascope ultrawide composition, 2.35:1 aspect ratio', icon: '🎥' },
+        { label: '21:9 超寬', en: '21:9 Ultrawide', value: 'ultrawide panoramic composition, extreme horizontal framing, 21:9 aspect ratio', icon: '🌅' }
+    ];
+
     // Body types — Female
     const BODY_TYPES_FEMALE = [
         { label: '巨乳', en: 'Large Breasts', value: 'large breasts' },
@@ -2707,6 +2718,7 @@ window.PromptGen.Data = (function () {
         ],
         camera: [
             { id: 'cameraAngle', title: { zh: '角度', en: 'Angle' }, data: CAMERA_ANGLES, count: 20 },
+            { id: 'aspectRatio', title: { zh: '畫面比例', en: 'Aspect Ratio' }, data: ASPECT_RATIOS },
             { id: 'shotSize', title: { zh: '鏡頭', en: 'Shot Size' }, data: SHOT_SIZES },
             { id: 'focalLength', title: { zh: '焦段', en: 'Focal Length' }, data: FOCAL_LENGTHS },
             { id: 'aperture', title: { zh: '光圈', en: 'Aperture' }, data: APERTURES },
@@ -2723,7 +2735,7 @@ window.PromptGen.Data = (function () {
         TABS, RACES, JOBS, CONFLICT_RULES, HAIRSTYLES_FEMALE, HAIRSTYLES_MALE,
         HAIR_COLORS, EYE_COLORS, OUTFITS, HEADWEAR, HAND_ITEMS, EXPRESSIONS, MOODS, POSES,
         ANIME_STYLES, ART_STYLES, ARTISTS, QUALITY_TAGS,
-        SCENES, WEATHER, LIGHTING, CAMERA_ANGLES,
+        SCENES, WEATHER, LIGHTING, CAMERA_ANGLES, ASPECT_RATIOS,
         SHOT_SIZES, FOCAL_LENGTHS, APERTURES, LENS_EFFECTS,
         AGE_DESCRIPTORS, BODY_TYPES_FEMALE, BODY_TYPES_MALE,
         TAB_SECTIONS, getAgeDescriptor

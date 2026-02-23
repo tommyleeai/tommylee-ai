@@ -2604,7 +2604,7 @@
         // Generate order based on tabs
         const sectionOrder = ['race', 'job', 'hairstyle', 'bodyType', 'hairColor', 'eyeColorLeft', 'eyeColorRight',
             'outfit', 'headwear', 'handItems', 'expression', 'mood', 'pose', 'animeStyle', 'artStyle', 'artist', 'quality',
-            'scene', 'weather', 'lighting', 'cameraAngle', 'shotSize', 'focalLength', 'aperture', 'lensEffect'];
+            'scene', 'weather', 'lighting', 'cameraAngle', 'aspectRatio', 'shotSize', 'focalLength', 'aperture', 'lensEffect'];
 
         // ★ Grok/Flux 全身強化：Super Modal 啟用時，把 camera prompt 前置到 parts 最前面
         // 原因：Grok/Flux 對 prompt 前 1/3 的權重最敏感，camera prompt 若排在最後會被忽略
@@ -2701,7 +2701,7 @@
                 return;
             }
             // Skip camera sub-sections when cameraAdvanced is active (already covered by magic modal)
-            const CAMERA_SUB_SECS = ['shotSize', 'focalLength', 'aperture', 'lensEffect'];
+            const CAMERA_SUB_SECS = ['aspectRatio', 'shotSize', 'focalLength', 'aperture', 'lensEffect'];
             if (CAMERA_SUB_SECS.includes(secId) && state.cameraAdvanced && state.cameraAdvanced.bonusTraits && state.cameraAdvanced.bonusTraits.length > 0) {
                 return;
             }
@@ -2845,7 +2845,7 @@
             'expression': 'expression', 'mood': 'mood', 'pose': 'pose', 'animeStyle': 'anime_style',
             'artStyle': 'art_style', 'artist': 'artist', 'quality': 'quality',
             'scene': 'scene', 'weather': 'weather', 'lighting': 'lighting',
-            'cameraAngle': 'camera_angle', 'shotSize': 'shot_size', 'focalLength': 'focal_length',
+            'cameraAngle': 'camera_angle', 'aspectRatio': 'aspect_ratio', 'shotSize': 'shot_size', 'focalLength': 'focal_length',
             'aperture': 'aperture', 'lensEffect': 'lens_effect'
         };
 
