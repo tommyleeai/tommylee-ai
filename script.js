@@ -3191,7 +3191,7 @@
 
 
     // Changelog Logic
-    const btnHistory = document.getElementById('btn-history');
+    const btnHistory = document.getElementById('btn-changelog');
     const changelogModal = document.getElementById('changelog-modal');
     const btnCloseChangelog = document.getElementById('btn-close-changelog');
     const changelogBody = document.getElementById('changelog-body');
