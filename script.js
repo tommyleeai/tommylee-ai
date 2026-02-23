@@ -3327,8 +3327,24 @@
             state.customInputVisible = {};
             state.customFields = [];
             inputSubject.value = '';
-
             inputNegative.value = '';
+
+            // 清除所有高級魔法 & 超級魔法設定
+            delete state.raceAdvanced;
+            delete state.jobAdvanced;
+            delete state.hairAdvanced;
+            delete state.bodyAdvanced;
+            delete state.outfitAdvanced;
+            delete state.headwearAdvanced;
+            delete state.handItemsAdvanced;
+            delete state.expressionAdvanced;
+            delete state.poseAdvanced;
+            delete state.animeStyleAdvanced;
+            delete state.artStyleAdvanced;
+            delete state.artistAdvanced;
+            delete state.sceneAdvanced;
+            delete state.cameraAdvanced;
+            delete state.atmosphereAdvanced;
 
             state.isPreviewLocked = false;
             hidePreview();
