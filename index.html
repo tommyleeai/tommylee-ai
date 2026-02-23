@@ -130,6 +130,9 @@
                         <div id="user-info" class="user-info" style="display:none;">
                             <img id="user-avatar" class="user-avatar" src="" alt="">
                             <span id="user-name" class="user-name"></span>
+                            <button id="btn-history" class="btn-icon btn-history" title="歷史記錄 (History)">
+                                <i class="fa-solid fa-clock-rotate-left"></i>
+                            </button>
                             <button id="btn-logout" class="btn-icon btn-logout" title="登出 (Sign Out)">
                                 <i class="fa-solid fa-right-from-bracket"></i>
                             </button>
@@ -255,8 +258,12 @@
                 <div class="output-container">
                     <div id="final-prompt" class="output-display" contenteditable="false"
                         data-placeholder="您的提示詞將顯示於此..."></div>
-                    <button id="btn-copy" class="btn btn-primary btn-block"><i class="fa-regular fa-copy"></i> 複製
-                        (Copy)</button>
+                    <div class="output-btn-row">
+                        <button id="btn-copy" class="btn btn-primary btn-block"><i class="fa-regular fa-copy"></i> 複製
+                            (Copy)</button>
+                        <button id="btn-save-prompt" class="btn btn-save-prompt" title="存檔到雲端"><i
+                                class="fa-solid fa-cloud-arrow-up"></i> 存檔</button>
+                    </div>
                 </div>
 
                 <div class="prompt-section-header negative-header">
@@ -545,6 +552,7 @@
     <script src="modules/conflict-system.js?v=7.4.1"></script>
     <script src="modules/firebase-init.js?v=8.6"></script>
     <script src="modules/auth-ui.js?v=8.6"></script>
+    <script src="modules/prompt-history.js?v=8.6"></script>
     <script src="script.js?v=8.6"></script>
     <script>
         // Firebase 初始化（等 DOM 就緒）
@@ -552,6 +560,9 @@
             if (window.PromptGen.FirebaseInit && window.PromptGen.FirebaseInit.init()) {
                 if (window.PromptGen.AuthUI) {
                     window.PromptGen.AuthUI.init();
+                }
+                if (window.PromptGen.PromptHistory) {
+                    window.PromptGen.PromptHistory.init();
                 }
             }
         });
