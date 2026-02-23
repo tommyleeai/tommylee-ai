@@ -4385,24 +4385,32 @@
     document.addEventListener('keydown', function (e) {
         if (e.key !== 'Escape') return;
 
-        // 1. 固定 Modal（settings / changelog / about）
-        const fixedModals = ['settings-modal', 'changelog-modal', 'about-modal'];
-        for (const id of fixedModals) {
-            const m = document.getElementById(id);
-            if (m && m.style.display !== 'none' && m.style.display !== '') {
-                m.style.display = 'none';
-                document.body.style.overflow = '';
-                return;
+        // 1. Prompt 歷史記錄 Modal（.active 切換）
+        const histOverlay = document.querySelector('.history-modal-overlay.active');
+        if (histOverlay) {
+            if (window.PromptGen && window.PromptGen.PromptHistory) {
+                window.PromptGen.PromptHistory.closeModal();
             }
+            return;
         }
 
-        // 2. Magic Modal 系列（所有 *-overlay 用 display:flex 顯示的）
-        const magicOverlays = document.querySelectorAll(
-            '.mm-overlay, .hmm-overlay, .bmm-overlay, .emm-overlay, .pmm-overlay, ' +
-            '.atmm-overlay, .scene-mm-overlay, .camera-mm-overlay, ' +
-            '#konami-super-overlay, #camera-super-overlay, #fate-wheel-overlay'
-        );
-        for (const ov of magicOverlays) {
+        // 2. MagicModalBase overlay（動態建立，存在即代表開著）
+        const mmOverlay = document.querySelector('.mm-overlay');
+        if (mmOverlay) {
+            const cancelBtn = mmOverlay.querySelector('.mm-btn-cancel');
+            if (cancelBtn) cancelBtn.click();
+            else mmOverlay.remove();
+            return;
+        }
+
+        // 3. 獨立 Magic Modal（各有自己的 overlay class）
+        const independentOverlays = [
+            '.hmm-overlay', '.bmm-overlay', '.emm-overlay', '.pmm-overlay',
+            '.atmm-overlay', '.scene-mm-overlay', '.camera-mm-overlay',
+            '#konami-super-overlay', '#camera-super-overlay', '#fate-wheel-overlay'
+        ];
+        for (const sel of independentOverlays) {
+            const ov = document.querySelector(sel);
             if (ov && ov.style.display !== 'none' && ov.style.display !== '') {
                 ov.style.display = 'none';
                 document.body.style.overflow = '';
@@ -4410,11 +4418,13 @@
             }
         }
 
-        // 3. Prompt 歷史記錄 Modal（.active 切換）
-        if (window.PromptGen && window.PromptGen.PromptHistory) {
-            const histOverlay = document.querySelector('.history-modal-overlay.active');
-            if (histOverlay) {
-                window.PromptGen.PromptHistory.closeModal();
+        // 4. 固定 Modal（settings / changelog / about）
+        const fixedModals = ['settings-modal', 'changelog-modal', 'about-modal'];
+        for (const id of fixedModals) {
+            const m = document.getElementById(id);
+            if (m && m.style.display !== 'none' && m.style.display !== '') {
+                m.style.display = 'none';
+                document.body.style.overflow = '';
                 return;
             }
         }
