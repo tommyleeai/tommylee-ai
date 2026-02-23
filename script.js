@@ -2824,7 +2824,13 @@
         // 次元 task header
         const dimHeader = getDimensionYAMLHeader(state.dimension);
         yaml += `task: ${dimHeader.task}\n`;
-        yaml += `style_notes: ${dimHeader.style_notes}\n`;
+        // 如果有選擇畫面比例，附加到 style_notes
+        let styleNotes = dimHeader.style_notes;
+        if (state.aspectRatio) {
+            const arData = OptionsData.ASPECT_RATIOS.find(ar => ar.label === state.aspectRatio || ar.en === state.aspectRatio);
+            if (arData) styleNotes += ' ' + arData.value + '.';
+        }
+        yaml += `style_notes: ${styleNotes}\n`;
         if (inputSubject.value.trim()) yaml += `additional_instructions: ${inputSubject.value.trim()}\n`;
         yaml += `gender: ${state.gender ? (state.gender === 'female' ? 'female' : 'male') : 'unspecified'}\n`;
 
@@ -2845,7 +2851,7 @@
             'expression': 'expression', 'mood': 'mood', 'pose': 'pose', 'animeStyle': 'anime_style',
             'artStyle': 'art_style', 'artist': 'artist', 'quality': 'quality',
             'scene': 'scene', 'weather': 'weather', 'lighting': 'lighting',
-            'cameraAngle': 'camera_angle', 'aspectRatio': 'aspect_ratio', 'shotSize': 'shot_size', 'focalLength': 'focal_length',
+            'cameraAngle': 'camera_angle', 'shotSize': 'shot_size', 'focalLength': 'focal_length',
             'aperture': 'aperture', 'lensEffect': 'lens_effect'
         };
 
