@@ -3,13 +3,13 @@
 // 從 script.js 提取，掛載至 window.PromptGen.BodyMagicData
 // ============================================
 window.PromptGen = window.PromptGen || {};
-window.PromptGen.BodyMagicData = (function() {
+window.PromptGen.BodyMagicData = (function () {
     // ── Body Magic Data — Full Demo v2 (7-level slider system with positive/negative/explain) ──
     const BODY_MAGIC_DATA = {
         FEMALE_BUST: {
             1: {
                 zh: '🔮 完全無胸 / Doll-flat',
-                positive: ['completely flat chest', 'no breasts at all', 'doll-like torso', 'child-like flat body'],
+                positive: ['completely flat chest', 'no breasts', 'doll-like flat torso', 'androgynous upper body'],
                 negative: ['breasts', 'cleavage', 'bust', 'curvy', 'voluptuous', 'busty', 'chest'],
                 weight: 1.7, fantasy: true,
                 explain: '🔮 <strong>幻想級 — 完全無胸</strong>：如人偶或精靈般完全平坦的胸部。需要極高權重 (1.7) + 全面壓制負向提示詞。適合精靈、仙子、人偶等非人類角色。'
@@ -19,14 +19,14 @@ window.PromptGen.BodyMagicData = (function() {
                 positive: ['flat chest', 'very small breasts', 'almost flat'],
                 negative: ['big breasts', 'large breasts', 'cleavage', 'voluptuous', 'curvy', 'busty'],
                 weight: 1.5, fantasy: false,
-                explain: '<strong>非常平坦</strong>：逆勢設定，需要高權重 (1.5) + 大量負向提示詞壓制 AI 預設偏好。建議搭配 young girl body 或 loli proportions。'
+                explain: '<strong>非常平坦</strong>：逆勢設定，需要高權重 (1.5) + 大量負向提示詞壓制 AI 預設偏好。建議搭配 petite frame 或 slender figure。'
             },
             3: {
                 zh: '偏小纖細 / Small',
                 positive: ['small breasts', 'petite breasts', 'subtle curves', 'slim figure'],
                 negative: ['large breasts', 'big breasts', 'voluptuous', 'curvy', 'busty', 'cleavage'],
                 weight: 1.35, fantasy: false,
-                explain: '<strong>偏小纖細</strong>：較逆勢，權重 (1.35)。建議把 age descriptor 中的 mature womanly figure 改為 youthful slim figure。'
+                explain: '<strong>偏小纖細</strong>：較逆勢，權重 (1.35)。建議把 age descriptor 中的 mature figure 改為 elegant slim figure。'
             },
             4: {
                 zh: '中等自然 / Medium',

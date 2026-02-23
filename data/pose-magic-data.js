@@ -300,7 +300,7 @@ window.PromptGen.PoseMagicData = (function () {
         { label: '膝上特寫', en: 'Cowboy Shot', value: 'cowboy shot, from knees up, medium shot, western framing', category: 'camera' },
         { label: '人物置左', en: 'Subject Left', value: 'subject on left side, rule of thirds left, offset composition', category: 'camera' },
         { label: '地面低拍', en: 'Ground Shot', value: 'ground level shot, worms eye view, very low angle, from below', category: 'camera' },
-        { label: '窺視構圖', en: 'Voyeur Shot', value: 'voyeur perspective, peeping through, hidden observer angle', category: 'camera' },
+        { label: '窥視構圖', en: 'Hidden Observer', value: 'hidden observer perspective, looking through doorway, candid angle', category: 'camera' },
         { label: '倒影構圖', en: 'Reflection Shot', value: 'reflection composition, mirror reflection, water reflection, symmetrical', category: 'camera' },
         { label: '背後跟拍', en: 'Follow Behind', value: 'following from behind, tracking shot, walking away from camera', category: 'camera' },
         { label: '正面逆光', en: 'Backlit Front', value: 'backlit silhouette, rim light, dramatic backlighting, halo effect', category: 'camera' },

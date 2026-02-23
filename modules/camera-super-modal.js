@@ -31,7 +31,7 @@ window.PromptGen.CameraSuperModal = (function () {
                 { zh: '特寫', en: 'Close-Up', fun: '看清你眼中的決意', prompt: 'close-up portrait, head and shoulders framing' },
                 { zh: '中特寫', en: 'Medium CU', fun: '展現上半身的氣場', prompt: 'medium close-up, bust shot, chest up framing' },
                 { zh: '中景', en: 'Medium', fun: '標準對話距離，剛好看到雙手', prompt: 'medium shot, waist-up, conversational framing' },
-                { zh: '牛仔鏡頭', en: 'Cowboy', fun: '西部決鬥！手要摸到槍套的距離 🤠', prompt: 'cowboy shot, mid-thigh framing, gunslinger pose' },
+                { zh: '牛仔鏡頭', en: 'Cowboy', fun: '西部決鬥！手要摸到槍套的距離 🤠', prompt: 'cowboy shot, mid-thigh framing, american shot' },
                 { zh: '全身', en: 'Full Shot', fun: '從頭到腳，完整展現你的戰鬥姿態', prompt: 'full body shot, head to toe visible, feet on ground' },
                 { zh: '遠景', en: 'Wide', fun: '人物變小，世界開始接管畫面 🌄', prompt: 'wide shot, figure small in frame, environment-dominant' },
                 { zh: '大遠景', en: 'Extreme Wide', fun: '渺小如螞蟻，被世界吞噬的感覺', prompt: 'extreme wide shot, tiny figure in vast landscape, dwarfed by environment' }
@@ -51,7 +51,7 @@ window.PromptGen.CameraSuperModal = (function () {
             icon: '🔭', label: '鏡頭焦距', labelEn: 'Focal Length',
             stops: [
                 { zh: '魚眼 8mm', en: 'Fisheye', fun: '扭曲世界的魔眼！180°全視界 🐟', prompt: 'fisheye lens, extreme barrel distortion, 180 degree view' },
-                { zh: '超廣角 14mm', en: 'Ultra-Wide', fun: '把整個世界硬塞進一張畫裡', prompt: '14mm ultra-wide angle, exaggerated perspective, vast space' },
+                { zh: '超廣角 14mm', en: 'Ultra-Wide', fun: '把整個世界硬塞進一張畫裡', prompt: '14mm ultra-wide angle, exaggerated perspective, strong converging lines' },
                 { zh: '廣角 35mm', en: 'Wide 35mm', fun: '街頭攝影師的秘密武器 📸', prompt: '35mm wide-angle lens, natural but wide perspective' },
                 { zh: '標準 50mm', en: 'Nifty Fifty', fun: '最接近你肉眼看到的真實世界 👁️', prompt: '50mm standard lens, natural human eye perspective' },
                 { zh: '人像 85mm', en: '85mm Portrait', fun: '人像攝影之王 👑 奶油般的散景', prompt: '85mm portrait lens, beautiful face compression, creamy bokeh' },
@@ -65,8 +65,8 @@ window.PromptGen.CameraSuperModal = (function () {
             stops: [
                 { zh: 'f/1.2 極淺', en: 'f/1.2', fun: '只有瞳孔是清楚的，夢幻到犯規 ✨', prompt: 'f/1.2 aperture, paper-thin depth of field, only eyes in focus' },
                 { zh: 'f/1.8 淺景深', en: 'f/1.8', fun: '主角清楚，背景化為迷幻光點 🌸', prompt: 'f/1.8, shallow depth of field, beautiful bokeh, subject isolation' },
-                { zh: 'f/2.8 柔和', en: 'f/2.8', fun: '柔和的背景虛化，舒適的人像感', prompt: 'f/2.8, moderate shallow DOF, gentle background blur' },
-                { zh: 'f/5.6 均衡', en: 'f/5.6', fun: '小團體都能拍清楚的萬用光圈', prompt: 'f/5.6, moderate depth of field, small group in focus' },
+                { zh: 'f/2.8 柔和', en: 'f/2.8', fun: '柔和的背景虛化，舒適的人像感', prompt: 'f/2.8, moderate shallow DOF, gentle background blur, subject isolation' },
+                { zh: 'f/5.6 均衡', en: 'f/5.6', fun: '小團體都能拍清楚的萬用光圈', prompt: 'f/5.6, moderate depth of field, environmental portrait, balanced focus' },
                 { zh: 'f/8 銳利', en: 'f/8', fun: '風景攝影的黃金光圈 🏔️', prompt: 'f/8, sharp throughout, optimal sharpness, landscape photography' },
                 { zh: 'f/16 全域清晰', en: 'f/16', fun: '從鼻尖到天邊，全！部！銳！利！', prompt: 'f/16, deep focus, everything razor sharp from near to far' }
             ]
@@ -80,8 +80,8 @@ window.PromptGen.CameraSuperModal = (function () {
                 { id: 'front', zh: '正面', en: 'Front View', fun: '直視鏡頭的壓迫感', prompt: 'front view, facing camera, looking at viewer' },
                 { id: 'three_quarter', zh: '3/4 側臉', en: 'Three-Quarter', fun: '最經典的角度，臉部超立體 💎', prompt: 'three-quarter view, face turned 30-45 degrees' },
                 { id: 'profile', zh: '完全側面', en: 'Profile', fun: '硬幣上的王者輪廓', prompt: 'profile view, perfect side angle, one eye visible' },
-                { id: 'back', zh: '背影', en: 'Back View', fun: '走向未知的孤獨背影 🚶', prompt: 'back view, from behind, face not shown, walking away' },
-                { id: 'dutch', zh: '荷蘭角', en: 'Dutch Angle', fun: '歪斜的世界！不安感爆表 😵‍💫', prompt: 'Dutch angle, tilted 20-30 degrees, canted disorienting' },
+                { id: 'back', zh: '背影', en: 'Back View', fun: '走向未知的孤獨背影 🚶', prompt: 'back view, from behind, facing away from camera, rear perspective' },
+                { id: 'dutch', zh: '荷蘭角', en: 'Dutch Angle', fun: '歪斜的世界！不安感爆表 😵‍💫', prompt: 'Dutch angle, tilted 20-30 degrees, canted angle, disorienting perspective' },
                 { id: 'ots', zh: '過肩', en: 'Over-the-Shoulder', fun: '偷窺別人對話的視角', prompt: 'over-the-shoulder shot, foreground shoulder blurred' },
                 { id: 'pov', zh: '第一人稱', en: 'POV', fun: '你就是主角！看到自己的手 🎮', prompt: "POV shot, first-person perspective, character's hands visible" }
             ]
@@ -89,10 +89,10 @@ window.PromptGen.CameraSuperModal = (function () {
         {
             icon: '🎥', label: '鏡頭運動', labelEn: 'Camera Movement',
             items: [
-                { id: 'dolly_in', zh: '推進', en: 'Dolly-In', fun: '逼近真相的緊張感', prompt: 'dolly-in, push-in, camera moving toward, shallow DOF' },
-                { id: 'dolly_out', zh: '拉遠', en: 'Dolly-Out', fun: '揭露全局的震撼退場 🌌', prompt: 'dolly-out, pull-back, reveal shot, environment expanding' },
-                { id: 'orbit', zh: '環繞', en: 'Orbit', fun: '繞著主角轉的英雄時刻 💫', prompt: 'orbit shot, camera circling around, dynamic perspective' },
-                { id: 'crane', zh: '起重機', en: 'Crane', fun: '由低升高的史詩級運鏡 🏗️', prompt: 'crane shot, sweeping overhead, camera rising dramatically' },
+                { id: 'dolly_in', zh: '推進', en: 'Dolly-In', fun: '逼近真相的緊張感', prompt: 'dolly-in effect, approaching perspective, increasingly intimate framing, shallow DOF' },
+                { id: 'dolly_out', zh: '拉遠', en: 'Dolly-Out', fun: '揭露全局的震撼退場 🌌', prompt: 'pull-back reveal composition, subject small in expanding environment, wide context visible' },
+                { id: 'orbit', zh: '環繞', en: 'Orbit', fun: '繞著主角轉的英雄時刻 💫', prompt: 'three-quarter angle suggesting orbital motion, dynamic wraparound perspective, subject from angled side' },
+                { id: 'crane', zh: '起重機', en: 'Crane', fun: '由低升高的史詩級運鏡 🏗️', prompt: 'elevated sweeping perspective, dramatic high vantage point, overhead composition' },
                 { id: 'handheld', zh: '手持晃動', en: 'Handheld', fun: '紀錄片般的生猛真實感 📰', prompt: 'handheld camera, slight shake, documentary style, film grain' },
                 { id: 'tracking', zh: '追蹤', en: 'Tracking', fun: '緊跟主角奔跑的速度感 🏃', prompt: 'tracking shot, following subject, background motion blur' },
                 { id: 'whip_pan', zh: '甩鏡', en: 'Whip Pan', fun: '極速甩頭！畫面全部模糊 💨', prompt: 'whip pan, speed blur, swish pan, extreme motion' }
@@ -119,8 +119,8 @@ window.PromptGen.CameraSuperModal = (function () {
         { icon: '✨', zh: '奶油散景光點', en: 'creamy bokeh, beautiful light orbs in background' },
         { icon: '🗜️', zh: '背景壓縮效果', en: 'compressed background, stacked visual layers' },
         { icon: '📐', zh: '透視誇張感', en: 'exaggerated perspective, strong convergence lines' },
-        { icon: '🌿', zh: '前景元素', en: 'foreground elements adding depth, shooting through' },
-        { icon: '⚡', zh: '速度感線條', en: 'speed lines, dynamic energy, sense of fast movement' }
+        { icon: '🌿', zh: '前景元素', en: 'foreground elements adding depth, shooting through foliage, layered framing' },
+        { icon: '⚡', zh: '速度感線條', en: 'dynamic motion blur, radial blur, sense of kinetic energy' }
     ];
 
     // ═══════════════════════════════════════════

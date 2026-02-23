@@ -146,7 +146,7 @@ window.PromptGen.ExpressionMagicData = (function () {
         { label: '精神錯亂', en: 'Deranged', value: 'deranged expression, psychotic look, losing sanity', category: 'mad' },
         { label: '失控怒笑', en: 'Rage Laugh', value: 'laughing while furious, unhinged laughter', category: 'mad' },
         { label: '雙瞳異色', en: 'Heterochromia Mad', value: 'heterochromia with madness, split personality eyes', category: 'mad' },
-        { label: '舔唇', en: 'Lip Licking', value: 'licking lips, predatory gaze, hungry expression', category: 'mad' },
+        { label: '舔唇', en: 'Lip Licking', value: 'licking lips, intense gaze, anticipating expression', category: 'mad' },
         { label: '壞掉的笑', en: 'Broken Smile', value: 'broken smile, something snapped, lost sanity smile', category: 'mad' },
         { label: '暗黑覺醒', en: 'Dark Awakening', value: 'dark awakening, evil aura, corrupted expression', category: 'mad' },
         { label: '人格分裂', en: 'Split Personality', value: 'split personality, half normal half insane, duality', category: 'mad' },
