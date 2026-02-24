@@ -7,6 +7,19 @@ window.PromptGen.Changelog = (function () {
     // Changelog Data
     const changelog = [
         {
+            version: "v8.8",
+            date: "2026-02-24",
+            changes: [
+                "📷 寫實模式大幅強化：新增 getDimensionPromptPrefix() 寫實前綴（photorealistic portrait photography）",
+                "🎭 新增 wrapRealisticCosplay()：寫實模式下幻想元素自動包裝為 cosplay 語境",
+                "🔍 新增 filterByDimension()：維度感知 UI 過濾，寫實模式自動隱藏動漫專屬風格",
+                "🏷️ ANIME_STYLES 全部標註 dim:'anime'，ART_STYLES 部分標註 dim:'anime'",
+                "🔄 維度切換自動清除不相容的風格選擇並 re-render",
+                "📝 YAML 輸出寫實模式下 cosplay 包裝一致化 + 跳過 anime_style/art_style 欄位",
+                "🐛 修復維度切換 TypeError：DATA.SECTIONS → DATA.TAB_SECTIONS.style 正確路徑"
+            ]
+        },
+        {
             version: "v8.7.1",
             date: "2026-02-24",
             changes: [
