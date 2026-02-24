@@ -262,6 +262,8 @@
                             (Copy)</button>
                         <button id="btn-save-prompt" class="btn btn-save-prompt" title="存檔到雲端"><i
                                 class="fa-solid fa-cloud-arrow-up"></i> 存檔</button>
+                        <button id="btn-share" class="btn btn-share" title="分享角色設定連結"><i
+                                class="fa-solid fa-share-nodes"></i> 分享</button>
                     </div>
                 </div>
 
@@ -553,6 +555,7 @@
     <script src="modules/firebase-init.js?v=8.7"></script>
     <script src="modules/auth-ui.js?v=8.7"></script>
     <script src="modules/prompt-history.js?v=8.7"></script>
+    <script src="modules/share-url.js?v=8.9"></script>
     <script src="script.js?v=8.8"></script>
     <script>
         // Firebase 初始化（等 DOM 就緒）
@@ -563,6 +566,19 @@
                 }
                 if (window.PromptGen.PromptHistory) {
                     window.PromptGen.PromptHistory.init();
+                }
+                // 分享 URL 載入：Firebase 就緒後才偵測 ?s= 參數
+                if (window.PromptGen.ShareURL && window.PromptGen._applySharedState) {
+                    (async () => {
+                        try {
+                            const sharedState = await window.PromptGen.ShareURL.loadSharedState();
+                            if (sharedState) {
+                                window.PromptGen._applySharedState(sharedState);
+                            }
+                        } catch (err) {
+                            console.error('[ShareURL] 載入分享 state 時發生錯誤:', err);
+                        }
+                    })();
                 }
             }
         });

@@ -423,7 +423,67 @@ html {
     }
 }
 
-/* History Modal */
+/* === 分享 URL 功能 START === */
+.btn-share {
+    background: rgba(99, 102, 241, 0.15);
+    border: 1px solid rgba(99, 102, 241, 0.3);
+    color: #818cf8;
+    padding: 0.6rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.btn-share:hover {
+    background: rgba(99, 102, 241, 0.25);
+    border-color: #818cf8;
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+    transform: translateY(-1px);
+}
+
+.btn-share:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* 分享 Toast 通知 */
+.share-toast {
+    position: fixed;
+    top: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-20px);
+    background: rgba(20, 20, 30, 0.95);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(99, 102, 241, 0.4);
+    color: #c4b5fd;
+    padding: 14px 28px;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    z-index: 99999;
+    opacity: 0;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 20px rgba(99, 102, 241, 0.15);
+    pointer-events: none;
+}
+
+.share-toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+.share-toast-error {
+    border-color: rgba(239, 68, 68, 0.4);
+    color: #fca5a5;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 20px rgba(239, 68, 68, 0.15);
+}
+
+/* === 分享 URL 功能 END === */
 .history-modal-overlay {
     position: fixed;
     inset: 0;

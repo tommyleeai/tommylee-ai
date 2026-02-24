@@ -4486,4 +4486,60 @@
     // 所有 Modal 在開啟時都已透過 ModalRegistry.register() 註冊
     // ModalRegistry 內建的全域 ESC listener 會自動關閉堆疊頂端的 Modal
     // 不再需要在這裡手動檢查每個 Modal 的狀態
+
+    // ============================================
+    // 分享 URL 功能初始化
+    // ============================================
+    if (window.PromptGen.ShareURL) {
+        // 初始化分享按鈕
+        window.PromptGen.ShareURL.init({
+            getState: () => {
+                return {
+                    ...state,
+                    inputSubject: inputSubject.value,
+                    inputNegative: inputNegative.value
+                };
+            },
+            getPrompt: () => {
+                const el = document.getElementById('final-prompt');
+                return el ? el.textContent.trim() : '';
+            }
+        });
+
+        // 匯出 applySharedState 供 Firebase 就緒後呼叫
+        window.PromptGen._applySharedState = function (sharedState) {
+            state.dimension = sharedState.dimension || 'anime';
+            state.gender = sharedState.gender || 'female';
+            state.age = sharedState.age || 21;
+            state.selections = sharedState.selections || {};
+            state.customInputs = sharedState.customInputs || {};
+            state.bodyAdvanced = sharedState.bodyAdvanced || null;
+            state.hairAdvanced = sharedState.hairAdvanced || null;
+            state.hairMagicPrompts = sharedState.hairMagicPrompts || null;
+            state.raceAdvanced = sharedState.raceAdvanced || null;
+            state.jobAdvanced = sharedState.jobAdvanced || null;
+            state.outfitAdvanced = sharedState.outfitAdvanced || null;
+            state.headwearAdvanced = sharedState.headwearAdvanced || null;
+            state.handItemsAdvanced = sharedState.handItemsAdvanced || null;
+            state.expressionAdvanced = sharedState.expressionAdvanced || null;
+            state.poseAdvanced = sharedState.poseAdvanced || null;
+            state.sceneAdvanced = sharedState.sceneAdvanced || null;
+            state.cameraAdvanced = sharedState.cameraAdvanced || null;
+            state.atmosphereAdvanced = sharedState.atmosphereAdvanced || null;
+            state.heterochromia = sharedState.heterochromia || false;
+
+            if (sharedState.inputSubject) inputSubject.value = sharedState.inputSubject;
+            if (sharedState.inputNegative) inputNegative.value = sharedState.inputNegative;
+
+            // 重新渲染整個介面
+            updateDimensionUI();
+            renderTabs();
+            renderTabContent();
+            generatePrompt();
+            saveState();
+
+            window.PromptGen.ShareURL.showToast('✨ 已載入朋友分享的角色設定！');
+            console.log('[ShareURL] ✅ 共享 state 已套用');
+        };
+    }
 });
