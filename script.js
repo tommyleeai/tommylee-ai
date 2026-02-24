@@ -3548,8 +3548,9 @@
             // ★ 維度切換時清除不相容的已選風格
             if (state.selections.animeStyle) {
                 const DATA = window.PromptGen.Data;
-                const animeData = DATA.SECTIONS.find(s => s.id === 'animeStyle');
-                if (animeData) {
+                const styleSections = DATA.TAB_SECTIONS && DATA.TAB_SECTIONS.style;
+                const animeData = styleSections && styleSections.find(s => s.id === 'animeStyle');
+                if (animeData && animeData.data) {
                     const filtered = filterByDimension(animeData.data, state.dimension);
                     const stillValid = filtered.some(o => o.value === state.selections.animeStyle);
                     if (!stillValid) {
@@ -3560,8 +3561,9 @@
             }
             if (state.selections.artStyle) {
                 const DATA = window.PromptGen.Data;
-                const artData = DATA.SECTIONS.find(s => s.id === 'artStyle');
-                if (artData) {
+                const styleSections = DATA.TAB_SECTIONS && DATA.TAB_SECTIONS.style;
+                const artData = styleSections && styleSections.find(s => s.id === 'artStyle');
+                if (artData && artData.data) {
                     const filtered = filterByDimension(artData.data, state.dimension);
                     const stillValid = filtered.some(o => o.value === state.selections.artStyle);
                     if (!stillValid) {
