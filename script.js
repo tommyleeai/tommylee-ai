@@ -4488,6 +4488,15 @@
     // 不再需要在這裡手動檢查每個 Modal 的狀態
 
     // ============================================
+    // 匯出 getState 供其他模組使用
+    // ============================================
+    window.PromptGen._getState = () => ({
+        ...state,
+        inputSubject: inputSubject.value,
+        inputNegative: inputNegative.value
+    });
+
+    // ============================================
     // 分享 URL 功能初始化
     // ============================================
     if (window.PromptGen.ShareURL) {

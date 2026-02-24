@@ -9,6 +9,128 @@ window.PromptGen.PromptHistory = (function () {
 
     const COLLECTION = 'prompts'; // users/{uid}/prompts/{id}
     let modalEl = null;
+    let _getStateFn = null; // 從 script.js 注入的 getState 函數
+
+    // === 從 value 反查中文 label ===
+    function findLabel(dataArray, value) {
+        if (!dataArray || !value) return null;
+        const item = dataArray.find(d => d.value === value);
+        return item ? item.label : null;
+    }
+
+    // === 智慧命名：從 state 提取有意義的中文名稱 ===
+    function generateSmartName() {
+        const state = _getStateFn ? _getStateFn() : null;
+        if (!state || !state.selections) return '未命名';
+
+        const DATA = window.PromptGen.Data;
+        if (!DATA) return '未命名';
+
+        const parts = [];
+
+        // 表情或心情（作為形容詞）
+        let adjective = null;
+        const actionSections = DATA.TAB_SECTIONS && DATA.TAB_SECTIONS.action;
+        if (actionSections) {
+            // 優先用表情
+            if (state.selections.expression) {
+                const exprSection = actionSections.find(s => s.id === 'expression');
+                if (exprSection && exprSection.data) {
+                    adjective = findLabel(exprSection.data, state.selections.expression);
+                }
+            }
+            // 沒有表情就用心情
+            if (!adjective && state.selections.mood) {
+                const moodSection = actionSections.find(s => s.id === 'mood');
+                if (moodSection && moodSection.data) {
+                    adjective = findLabel(moodSection.data, state.selections.mood);
+                }
+            }
+        }
+        if (adjective) parts.push(adjective + '的');
+
+        // 種族
+        if (state.selections.race && DATA.RACES) {
+            const label = findLabel(DATA.RACES, state.selections.race);
+            if (label) parts.push(label);
+        }
+
+        // 職業
+        if (state.selections.job && DATA.JOBS) {
+            const label = findLabel(DATA.JOBS, state.selections.job);
+            if (label) parts.push(label);
+        }
+
+        // 性別標記
+        const genderMap = { 'female': '女', 'male': '男' };
+        const genderLabel = genderMap[state.gender];
+        if (genderLabel && parts.length > 0) {
+            parts.push('(' + genderLabel + ')');
+        }
+
+        return parts.length > 0 ? parts.join('') : '未命名';
+    }
+
+    // === 產生中文預覽摘要 ===
+    function generateChineseSummary() {
+        const state = _getStateFn ? _getStateFn() : null;
+        if (!state || !state.selections) return '';
+
+        const DATA = window.PromptGen.Data;
+        if (!DATA) return '';
+
+        const items = [];
+        const dimMap = { 'anime': '二次元', 'realistic': '寫實', 'fantasy': '幻想', '2.5d': '2.5D' };
+        if (state.dimension) items.push('【' + (dimMap[state.dimension] || state.dimension) + '】');
+
+        const genderMap = { 'female': '♀ 女性', 'male': '♂ 男性' };
+        if (state.gender) items.push(genderMap[state.gender] || state.gender);
+
+        if (state.age) items.push(state.age + '歲');
+
+        // 種族
+        if (state.selections.race && DATA.RACES) {
+            const label = findLabel(DATA.RACES, state.selections.race);
+            if (label) items.push('種族:' + label);
+        }
+
+        // 職業
+        if (state.selections.job && DATA.JOBS) {
+            const label = findLabel(DATA.JOBS, state.selections.job);
+            if (label) items.push('職業:' + label);
+        }
+
+        // 各分頁 section 嘗試反查
+        const sectionLabels = {
+            expression: '表情', pose: '動作', hairstyle: '髮型',
+            bodyType: '體型', outfit: '服裝', headwear: '頭飾',
+            handItems: '手持物', animeStyle: '動漫風格', artStyle: '畫風',
+            artist: '繪師', scene: '場景', hairColor: '髮色'
+        };
+
+        for (const [key, zhLabel] of Object.entries(sectionLabels)) {
+            if (!state.selections[key]) continue;
+            // 嘗試從各 TAB_SECTIONS 找到中文 label
+            let found = false;
+            if (DATA.TAB_SECTIONS) {
+                for (const tabSections of Object.values(DATA.TAB_SECTIONS)) {
+                    if (!Array.isArray(tabSections)) continue;
+                    const section = tabSections.find(s => s.id === key);
+                    if (section && section.data) {
+                        const label = findLabel(section.data, state.selections[key]);
+                        if (label) {
+                            items.push(zhLabel + ':' + label);
+                            found = true;
+                            break;
+                        }
+                    }
+                }
+            }
+            // 如果找不到就跳過（不顯示英文 value）
+        }
+
+        return items.join(' ｜ ');
+    }
 
     // === Firestore 參考 ===
     function getUserPromptRef() {
@@ -36,21 +158,19 @@ window.PromptGen.PromptHistory = (function () {
 
         try {
             const ref = getUserPromptRef();
-            // 計算現有數量做編號
-            const snapshot = await ref.orderBy('createdAt', 'desc').limit(1).get();
-            let count = 1;
-            if (!snapshot.empty) {
-                const lastName = snapshot.docs[0].data().name || '';
-                const match = lastName.match(/#(\d+)/);
-                if (match) count = parseInt(match[1]) + 1;
-            }
+
+            // 智慧命名
+            const smartName = generateSmartName();
+            // 中文預覽摘要
+            const summary = generateChineseSummary();
 
             await ref.add({
-                name: `未命名 #${count}`,
+                name: smartName,
                 yaml: yaml,
                 negative: finalNegative ? finalNegative.value.trim() : '',
                 starred: false,
                 dimension: getDimensionLabel(),
+                summary: summary,
                 createdAt: firebase.firestore.FieldValue.serverTimestamp()
             });
 
@@ -221,7 +341,8 @@ window.PromptGen.PromptHistory = (function () {
 
         listEl.innerHTML = prompts.map(p => {
             const date = p.createdAt ? p.createdAt.toDate().toLocaleString('zh-TW') : '未知';
-            const preview = (p.yaml || '').substring(0, 120).replace(/\n/g, ' ');
+            // 優先使用中文摘要，沒有的話截取 YAML 前 120 字元
+            const preview = p.summary || (p.yaml || '').substring(0, 120).replace(/\n/g, ' ');
             return `
                 <div class="history-item" data-id="${p.id}">
                     <div class="history-item-header">
@@ -232,7 +353,7 @@ window.PromptGen.PromptHistory = (function () {
                         <span class="hist-dim">${p.dimension || ''}</span>
                         <span class="hist-date">${date}</span>
                     </div>
-                    <div class="history-item-preview">${preview}...</div>
+                    <div class="history-item-preview">${preview}</div>
                     <div class="history-item-actions">
                         <button class="hist-load" data-id="${p.id}" title="載入此 prompt">
                             <i class="fa-solid fa-download"></i> 載入
@@ -284,7 +405,12 @@ window.PromptGen.PromptHistory = (function () {
     }
 
     // === 初始化 ===
-    function init() {
+    function init(deps) {
+        // 注入 getState 函數（若有傳入）
+        if (deps && deps.getState) {
+            _getStateFn = deps.getState;
+        }
+
         // 存檔按鈕
         const saveBtn = document.getElementById('btn-save-prompt');
         if (saveBtn) saveBtn.addEventListener('click', savePrompt);

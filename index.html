@@ -565,7 +565,9 @@
                     window.PromptGen.AuthUI.init();
                 }
                 if (window.PromptGen.PromptHistory) {
-                    window.PromptGen.PromptHistory.init();
+                    window.PromptGen.PromptHistory.init({
+                        getState: () => window.PromptGen._getState ? window.PromptGen._getState() : null
+                    });
                 }
                 // 分享 URL 載入：Firebase 就緒後才偵測 ?s= 參數
                 if (window.PromptGen.ShareURL && window.PromptGen._applySharedState) {
