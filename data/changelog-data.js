@@ -7,6 +7,15 @@ window.PromptGen.Changelog = (function () {
     // Changelog Data
     const changelog = [
         {
+            version: "v8.9.4",
+            date: "2026-02-24",
+            changes: [
+                "🐾 吉祥物互動功能：點擊吉祥物後播放往右跑走的離場動畫，2 分鐘後自動從右邊彈回",
+                "🧠 修復智慧命名與中文摘要功能：PromptHistory.init 移至 _getState 定義之後，確保 state 可用",
+                "🔒 PromptHistory 加入 _initialized 防護，防止按鈕事件被重複綁定"
+            ]
+        },
+        {
             version: "v8.9",
             date: "2026-02-24",
             changes: [
