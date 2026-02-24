@@ -7,6 +7,14 @@ window.PromptGen.Changelog = (function () {
     // Changelog Data
     const changelog = [
         {
+            version: "v8.7.1",
+            date: "2026-02-24",
+            changes: [
+                "🎡 修復輪盤確認使用後無法切換維度的 bug：將 updateDimensionUI 加入 Fate Wheel 模組依賴注入",
+                "🔧 修正 applyResultsToMainState 未呼叫 updateDimensionUI 導致維度按鈕高亮與 state 不同步"
+            ]
+        },
+        {
             version: "v8.7",
             date: "2026-02-23",
             changes: [

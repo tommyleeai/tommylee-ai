@@ -3194,7 +3194,7 @@
     });
     if (window.PromptGen.FateWheelModal) {
         window.PromptGen.FateWheelModal.setup({
-            state, sfx, generatePrompt, generatePromptPlain, saveState, renderTabContent
+            state, sfx, generatePrompt, generatePromptPlain, saveState, renderTabContent, updateDimensionUI
         });
     }
 

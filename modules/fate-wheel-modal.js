@@ -6,7 +6,7 @@
 window.PromptGen = window.PromptGen || {};
 window.PromptGen.FateWheelModal = (function () {
     // Dependencies injected via setup()
-    let appState, sfx, generatePrompt, generatePromptPlain, saveState, renderTabContent;
+    let appState, sfx, generatePrompt, generatePromptPlain, saveState, renderTabContent, updateDimensionUI;
 
     function setup(deps) {
         appState = deps.state;
@@ -15,6 +15,7 @@ window.PromptGen.FateWheelModal = (function () {
         generatePromptPlain = deps.generatePromptPlain;
         saveState = deps.saveState;
         renderTabContent = deps.renderTabContent;
+        updateDimensionUI = deps.updateDimensionUI;
     }
 
     // ========================================
@@ -1783,6 +1784,7 @@ window.PromptGen.FateWheelModal = (function () {
             }
 
             // 觸發主頁更新
+            if (updateDimensionUI) updateDimensionUI();
             if (renderTabContent) renderTabContent();
             if (generatePrompt) generatePrompt();
             if (saveState) saveState();
