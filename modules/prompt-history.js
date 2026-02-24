@@ -405,11 +405,16 @@ window.PromptGen.PromptHistory = (function () {
     }
 
     // === 初始化 ===
+    let _initialized = false;
     function init(deps) {
         // 注入 getState 函數（若有傳入）
         if (deps && deps.getState) {
             _getStateFn = deps.getState;
         }
+
+        // 防止按鈕事件重複綁定
+        if (_initialized) return;
+        _initialized = true;
 
         // 存檔按鈕
         const saveBtn = document.getElementById('btn-save-prompt');

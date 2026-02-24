@@ -4496,6 +4496,13 @@
         inputNegative: inputNegative.value
     });
 
+    // 注入 getState 到 PromptHistory（確保智慧命名可取得 state）
+    if (window.PromptGen.PromptHistory) {
+        window.PromptGen.PromptHistory.init({
+            getState: window.PromptGen._getState
+        });
+    }
+
     // ============================================
     // 分享 URL 功能初始化
     // ============================================
