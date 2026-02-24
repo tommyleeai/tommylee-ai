@@ -526,15 +526,25 @@ window.PromptGen.Data = (function () {
         { a: 'race', b: 'job', keyword_a: 'ghoul', keyword_b: 'shrine maiden', reason: '💀 屍鬼與神社服務衝突' },
         { a: 'race', b: 'job', keyword_a: 'death knight', keyword_b: 'shrine maiden', reason: '💀 亡靈騎士 vs 神聖服務' },
         { a: 'race', b: 'job', keyword_a: 'death knight', keyword_b: 'cleric', reason: '💀 亡靈騎士 vs 治癒' },
+        { a: 'race', b: 'job', keyword_a: 'death knight', keyword_b: 'nun', reason: '💀 亡靈騎士與修女信仰完全對立' },
+        { a: 'race', b: 'job', keyword_a: 'death knight', keyword_b: 'paladin', reason: '💀 亡靈騎士與聖騎士聖光對立' },
         { a: 'race', b: 'job', keyword_a: 'zombie', keyword_b: 'shrine maiden', reason: '🧟 殭屍與神聖互斥' },
         { a: 'race', b: 'job', keyword_a: 'zombie', keyword_b: 'cleric', reason: '🧟 殭屍與治癒互斥' },
+        { a: 'race', b: 'job', keyword_a: 'zombie', keyword_b: 'nun', reason: '🧟 殭屍與修女信仰對立' },
         { a: 'race', b: 'job', keyword_a: 'zombie', keyword_b: 'chef', reason: '🧟 殭屍做菜有衛生問題' },
         { a: 'race', b: 'job', keyword_a: 'zombie', keyword_b: 'nurse', reason: '🧟 殭屍當護士有衛生問題' },
         { a: 'race', b: 'job', keyword_a: 'dracolich', keyword_b: 'shrine maiden', reason: '💀 骸骨龍與神聖互斥' },
+        { a: 'race', b: 'job', keyword_a: 'dracolich', keyword_b: 'nun', reason: '💀 骸骨龍與修女信仰對立' },
         { a: 'race', b: 'job', keyword_a: 'grim reaper', keyword_b: 'shrine maiden', reason: '💀 死神與神聖互斥' },
         { a: 'race', b: 'job', keyword_a: 'grim reaper', keyword_b: 'cleric', reason: '💀 死神與治癒互斥' },
+        { a: 'race', b: 'job', keyword_a: 'grim reaper', keyword_b: 'nun', reason: '💀 死神與修女信仰對立' },
         { a: 'race', b: 'job', keyword_a: 'vampire', keyword_b: 'shrine maiden', reason: '🧛 吸血鬼怕神聖之地' },
         { a: 'race', b: 'job', keyword_a: 'vampire', keyword_b: 'cleric', reason: '🧛 吸血鬼怕治癒之光' },
+        { a: 'race', b: 'job', keyword_a: 'vampire', keyword_b: 'nun', reason: '🧛 吸血鬼與修女的神聖力量衝突' },
+        { a: 'race', b: 'job', keyword_a: 'lich', keyword_b: 'nun', reason: '💀 巫妖與修女信仰完全對立' },
+        { a: 'race', b: 'job', keyword_a: 'skeleton', keyword_b: 'nun', reason: '💀 白骨與修女淨化衝突' },
+        { a: 'race', b: 'job', keyword_a: 'wraith', keyword_b: 'nun', reason: '💀 怨靈與修女信仰衝突' },
+        { a: 'race', b: 'job', keyword_a: 'ghoul', keyword_b: 'nun', reason: '💀 屍鬼與修女信仰衝突' },
 
         // 😈 惡魔系 vs 神聖職業
         { a: 'race', b: 'job', keyword_a: 'demon', keyword_b: 'cleric', reason: '😈 惡魔與神聖治癒互斥' },
@@ -776,7 +786,55 @@ window.PromptGen.Data = (function () {
         { a: 'job', b: 'outfit', keyword_a: 'idol', keyword_b: 'plague doctor', reason: '🎤 偶像穿瘟疫醫生服上台？' },
 
         // ═══════════════════════════════════════════
-        // D. 性別相關衝突 (gender-aware, uses 'gender' key)
+        // D-1. 跨風格衝突 — 奇幻/聖職 vs 現代運動裝備
+        // ═══════════════════════════════════════════
+
+        // ✝️ 修女/牧師 vs 運動休閒服裝
+        { a: 'job', b: 'outfit', keyword_a: 'nun', keyword_b: 'yoga', reason: '✝️ 修女穿瑜珈服？信仰服飾衝突' },
+        { a: 'job', b: 'outfit', keyword_a: 'nun', keyword_b: 'boxing', reason: '✝️ 修女穿拳擊裝？信仰服飾衝突' },
+        { a: 'job', b: 'outfit', keyword_a: 'nun', keyword_b: 'gym clothes', reason: '✝️ 修女穿運動服？信仰服飾衝突' },
+        { a: 'job', b: 'outfit', keyword_a: 'nun', keyword_b: 'cheerleader', reason: '✝️ 修女穿啦啦隊服？信仰衝突' },
+        { a: 'job', b: 'outfit', keyword_a: 'nun', keyword_b: 'race queen', reason: '✝️ 修女穿賽車女郎裝？信仰衝突' },
+        { a: 'job', b: 'outfit', keyword_a: 'cleric', keyword_b: 'yoga', reason: '⛪ 牧師穿瑜珈服？信仰服飾衝突' },
+        { a: 'job', b: 'outfit', keyword_a: 'cleric', keyword_b: 'boxing', reason: '⛪ 牧師穿拳擊裝？職業衝突' },
+        { a: 'job', b: 'outfit', keyword_a: 'cleric', keyword_b: 'gym clothes', reason: '⛪ 牧師穿運動服？職業衝突' },
+        { a: 'job', b: 'outfit', keyword_a: 'shrine maiden', keyword_b: 'yoga', reason: '⛩️ 巫女穿瑜珈服？傳統與現代衝突' },
+        { a: 'job', b: 'outfit', keyword_a: 'shrine maiden', keyword_b: 'boxing', reason: '⛩️ 巫女穿拳擊裝？傳統與現代衝突' },
+        { a: 'job', b: 'outfit', keyword_a: 'shrine maiden', keyword_b: 'gym clothes', reason: '⛩️ 巫女穿運動服？傳統與現代衝突' },
+        { a: 'job', b: 'outfit', keyword_a: 'paladin', keyword_b: 'yoga', reason: '🛡️ 聖騎士穿瑜珈服？職業服飾衝突' },
+        { a: 'job', b: 'outfit', keyword_a: 'paladin', keyword_b: 'boxing', reason: '🛡️ 聖騎士穿拳擊裝？職業服飾衝突' },
+
+        // ⚔️ 奇幻職業 vs 現代頭飾
+        { a: 'job', b: 'headwear', keyword_a: 'knight', keyword_b: 'boxing', reason: '⚔️ 騎士戴拳擊頭盔？奇幻與運動衝突' },
+        { a: 'job', b: 'headwear', keyword_a: 'knight', keyword_b: 'swimming', reason: '⚔️ 騎士戴泳帽？奇幻與運動衝突' },
+        { a: 'job', b: 'headwear', keyword_a: 'mage', keyword_b: 'boxing', reason: '🧙 魔法師戴拳擊頭盔？奇幻與運動衝突' },
+        { a: 'job', b: 'headwear', keyword_a: 'paladin', keyword_b: 'boxing', reason: '🛡️ 聖騎士戴拳擊頭盔？職業衝突' },
+        { a: 'job', b: 'headwear', keyword_a: 'assassin', keyword_b: 'boxing', reason: '🗡️ 刺客戴拳擊頭盔？職業衝突' },
+        { a: 'job', b: 'headwear', keyword_a: 'samurai', keyword_b: 'boxing', reason: '🥷 武士戴拳擊頭盔？風格衝突' },
+        { a: 'job', b: 'headwear', keyword_a: 'necromancer', keyword_b: 'boxing', reason: '💀 死靈法師戴拳擊頭盔？風格衝突' },
+        { a: 'job', b: 'headwear', keyword_a: 'nun', keyword_b: 'boxing', reason: '✝️ 修女戴拳擊頭盔？信仰與運動衝突' },
+        { a: 'job', b: 'headwear', keyword_a: 'shrine maiden', keyword_b: 'boxing', reason: '⛩️ 巫女戴拳擊頭盔？傳統與運動衝突' },
+
+        // 💀 亡靈/奇幻種族 vs 現代運動服裝
+        { a: 'race', b: 'outfit', keyword_a: 'death knight', keyword_b: 'yoga', reason: '💀 亡靈騎士穿瑜珈服？太荒謬了' },
+        { a: 'race', b: 'outfit', keyword_a: 'death knight', keyword_b: 'boxing', reason: '💀 亡靈騎士穿拳擊裝？風格衝突' },
+        { a: 'race', b: 'outfit', keyword_a: 'death knight', keyword_b: 'gym clothes', reason: '💀 亡靈騎士穿運動服？風格衝突' },
+        { a: 'race', b: 'outfit', keyword_a: 'death knight', keyword_b: 'cheerleader', reason: '💀 亡靈騎士穿啦啦隊服？太荒謬了' },
+        { a: 'race', b: 'outfit', keyword_a: 'lich', keyword_b: 'yoga', reason: '💀 巫妖穿瑜珈服？太荒謬了' },
+        { a: 'race', b: 'outfit', keyword_a: 'lich', keyword_b: 'gym clothes', reason: '💀 巫妖穿運動服？太荒謬了' },
+        { a: 'race', b: 'outfit', keyword_a: 'skeleton', keyword_b: 'yoga', reason: '💀 骷髏穿瑜珈服？沒有肉身' },
+        { a: 'race', b: 'outfit', keyword_a: 'skeleton', keyword_b: 'gym clothes', reason: '💀 骷髏穿運動服？沒有肉身' },
+        { a: 'race', b: 'outfit', keyword_a: 'zombie', keyword_b: 'yoga', reason: '🧟 殭屍穿瑜珈服？太荒謬了' },
+        { a: 'race', b: 'outfit', keyword_a: 'zombie', keyword_b: 'cheerleader', reason: '🧟 殭屍穿啦啦隊服？太荒謬了' },
+
+        // 💀 亡靈/奇幻種族 vs 現代頭飾
+        { a: 'race', b: 'headwear', keyword_a: 'death knight', keyword_b: 'boxing', reason: '💀 亡靈騎士戴拳擊頭盔？太荒謬了' },
+        { a: 'race', b: 'headwear', keyword_a: 'lich', keyword_b: 'boxing', reason: '💀 巫妖戴拳擊頭盔？太荒謬了' },
+        { a: 'race', b: 'headwear', keyword_a: 'skeleton', keyword_b: 'boxing', reason: '💀 骷髏戴拳擊頭盔？太荒謬了' },
+        { a: 'race', b: 'headwear', keyword_a: 'vampire', keyword_b: 'boxing', reason: '🧛 吸血鬼戴拳擊頭盔？風格衝突' },
+
+        // ═══════════════════════════════════════════
+        // E. 性別相關衝突 (gender-aware, uses 'gender' key)
         // ═══════════════════════════════════════════
         { a: 'gender', b: 'outfit', keyword_a: 'male', keyword_b: 'bunny suit', reason: '🐰 兔女郎裝通常是女性服裝，AI 可能理解錯誤' },
         { a: 'gender', b: 'outfit', keyword_a: 'male', keyword_b: 'princess dress', reason: '👗 公主禮服是女性服裝，AI 可能理解錯誤' },

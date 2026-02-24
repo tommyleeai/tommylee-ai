@@ -3189,7 +3189,7 @@
     });
     window.PromptGen.ConflictSystem.setup({
         state, sfx, CONFLICT_RULES, generatePrompt, saveState, selectOption,
-        RACES, JOBS, OUTFITS, BODY_TYPES_FEMALE, BODY_TYPES_MALE,
+        RACES, JOBS, OUTFITS, HEADWEAR, BODY_TYPES_FEMALE, BODY_TYPES_MALE,
         HAIRSTYLES_FEMALE, HAIRSTYLES_MALE
     });
     if (window.PromptGen.FateWheelModal) {

@@ -6,7 +6,7 @@ window.PromptGen = window.PromptGen || {};
 window.PromptGen.ConflictSystem = (function () {
     // Dependencies injected via setup()
     let state, sfx, CONFLICT_RULES, generatePrompt, saveState, selectOption;
-    let RACES, JOBS, OUTFITS, BODY_TYPES_FEMALE, BODY_TYPES_MALE, HAIRSTYLES_FEMALE, HAIRSTYLES_MALE;
+    let RACES, JOBS, OUTFITS, HEADWEAR, BODY_TYPES_FEMALE, BODY_TYPES_MALE, HAIRSTYLES_FEMALE, HAIRSTYLES_MALE;
 
     function setup(deps) {
         state = deps.state;
@@ -18,6 +18,7 @@ window.PromptGen.ConflictSystem = (function () {
         RACES = deps.RACES;
         JOBS = deps.JOBS;
         OUTFITS = deps.OUTFITS;
+        HEADWEAR = deps.HEADWEAR;
         BODY_TYPES_FEMALE = deps.BODY_TYPES_FEMALE;
         BODY_TYPES_MALE = deps.BODY_TYPES_MALE;
         HAIRSTYLES_FEMALE = deps.HAIRSTYLES_FEMALE;
@@ -49,6 +50,7 @@ window.PromptGen.ConflictSystem = (function () {
                     race: RACES,
                     job: JOBS,
                     outfit: OUTFITS,
+                    headwear: HEADWEAR,
                     bodyType: state.gender === 'female' ? BODY_TYPES_FEMALE : BODY_TYPES_MALE,
                     hairstyle: state.gender === 'female' ? HAIRSTYLES_FEMALE : HAIRSTYLES_MALE
                 };
