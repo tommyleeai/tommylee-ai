@@ -383,6 +383,7 @@ window.PromptGen.ExpressionMagicModal = (function () {
 
         // === 關閉 helper ===
         function closeModal() {
+            window.PromptGen.ModalRegistry.unregister('expression-magic-modal');
             overlay.style.animation = 'emm-fadeIn 0.3s ease reverse';
             setTimeout(() => overlay.remove(), 280);
         }
@@ -437,9 +438,8 @@ window.PromptGen.ExpressionMagicModal = (function () {
         // === 點擊外部關閉 ===
         overlay.addEventListener('click', (e) => { if (e.target === overlay) closeModal(); });
 
-        // === ESC ===
-        const escH = (e) => { if (e.key === 'Escape') { closeModal(); document.removeEventListener('keydown', escH); } };
-        document.addEventListener('keydown', escH);
+        // 註冊到 ModalRegistry（統一 ESC 關閉）
+        window.PromptGen.ModalRegistry.register('expression-magic-modal', closeModal);
     }
 
     return {

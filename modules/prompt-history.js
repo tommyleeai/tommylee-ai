@@ -156,12 +156,15 @@ window.PromptGen.PromptHistory = (function () {
         if (!modalEl) createModal();
         modalEl.classList.add('active');
         document.body.style.overflow = 'hidden';
+        // 註冊到 ModalRegistry（統一 ESC 關閉）
+        window.PromptGen.ModalRegistry.register('prompt-history-modal', closeModal);
         renderList();
     }
 
     function closeModal() {
         if (modalEl) modalEl.classList.remove('active');
         document.body.style.overflow = '';
+        window.PromptGen.ModalRegistry.unregister('prompt-history-modal');
     }
 
     function createModal() {

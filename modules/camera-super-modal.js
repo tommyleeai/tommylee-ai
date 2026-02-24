@@ -874,6 +874,7 @@ window.PromptGen.CameraSuperModal = (function () {
     // 關閉 Modal
     // ═══════════════════════════════════════════
     function closeModal() {
+        window.PromptGen.ModalRegistry.unregister('camera-super-modal');
         const o = document.getElementById('cameraSuperModal');
         if (!o) return;
         o.classList.add('closing');
@@ -991,6 +992,9 @@ window.PromptGen.CameraSuperModal = (function () {
         renderBody();
         renderBonus();
         updatePreview();
+
+        // 註冊到 ModalRegistry（統一 ESC 關閉）
+        window.PromptGen.ModalRegistry.register('camera-super-modal', closeModal);
     }
 
     return { setup, open };

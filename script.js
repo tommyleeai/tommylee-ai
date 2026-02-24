@@ -1504,7 +1504,9 @@
                     sectionEl.appendChild(summaryBar);
                 }
 
-                renderPaginatedGrid(sectionEl, section, section.data, 'animeStylePage');
+                // ★ 維度感知過濾：寫實模式下隱藏動漫風格
+                const filteredAnimeData = filterByDimension(section.data, state.dimension);
+                renderPaginatedGrid(sectionEl, section, filteredAnimeData, 'animeStylePage');
                 if (state.animeStyleAdvanced) {
                     const tagGrid = sectionEl.querySelector('.tag-grid-paginated');
                     if (tagGrid) tagGrid.classList.add('body-section-disabled');
@@ -1576,7 +1578,9 @@
                     sectionEl.appendChild(summaryBar);
                 }
 
-                renderPaginatedGrid(sectionEl, section, section.data, 'artStylePage');
+                // ★ 維度感知過濾：寫實模式下隱藏部分藝術風格
+                const filteredArtData = filterByDimension(section.data, state.dimension);
+                renderPaginatedGrid(sectionEl, section, filteredArtData, 'artStylePage');
                 if (state.artStyleAdvanced) {
                     const tagGrid = sectionEl.querySelector('.tag-grid-paginated');
                     if (tagGrid) tagGrid.classList.add('body-section-disabled');
@@ -2729,7 +2733,8 @@
                 if (Array.isArray(val)) {
                     parts.push(val.join(', '));
                 } else {
-                    parts.push(val);
+                    // ★ 寫實模式 cosplay 包裝
+                    parts.push(wrapRealisticCosplay(secId, val));
                 }
             }
 
@@ -2855,6 +2860,11 @@
         };
 
         Object.keys(yamlMap).forEach(secId => {
+            // ★ 維度感知：寫實模式下跳過被過濾的 animeStyle/artStyle
+            if ((secId === 'animeStyle' || secId === 'artStyle') && state.dimension === 'realistic') {
+                // 在寫實模式下完全不輸出動漫/漫畫風格
+                return;
+            }
             // Skip bodyType if bodyAdvanced is active (handled separately)
             if (secId === 'bodyType' && state.bodyAdvanced) {
                 const primaryData = state.gender === 'female' ? BODY_MAGIC_DATA.FEMALE_BUST : BODY_MAGIC_DATA.MALE_MUSCLE;
@@ -2953,7 +2963,8 @@
                 if (Array.isArray(selVal) && selVal.length > 0) {
                     parts.push(selVal.join(', '));
                 } else if (!Array.isArray(selVal)) {
-                    parts.push(selVal);
+                    // ★ 寫實模式 cosplay 包裝（YAML 路徑）
+                    parts.push(wrapRealisticCosplay(secId, selVal));
                 }
             }
             if (state.customInputs[secId]) parts.push(state.customInputs[secId]);
@@ -3215,11 +3226,14 @@
             sfx.playClick();
             renderChangelog();
             changelogModal.classList.add('active');
+            // 註冊到 ModalRegistry（統一 ESC 關閉）
+            window.PromptGen.ModalRegistry.register('changelog-modal', closeChangelog);
         });
 
         const closeChangelog = () => {
             sfx.playClick();
             changelogModal.classList.remove('active');
+            window.PromptGen.ModalRegistry.unregister('changelog-modal');
         };
 
         btnCloseChangelog.addEventListener('click', closeChangelog);
@@ -3253,6 +3267,8 @@
         btnAbout.addEventListener('click', () => {
             sfx.playClick();
             aboutModal.classList.add('active');
+            // 註冊到 ModalRegistry（統一 ESC 關閉）
+            window.PromptGen.ModalRegistry.register('about-modal', closeAbout);
             // 觸發計數動畫
             aboutModal.querySelectorAll('.about-stat-number[data-target]').forEach(el => {
                 const target = parseInt(el.dataset.target);
@@ -3265,6 +3281,7 @@
         const closeAbout = () => {
             sfx.playClick();
             aboutModal.classList.remove('active');
+            window.PromptGen.ModalRegistry.unregister('about-modal');
         };
 
         btnCloseAbout.addEventListener('click', closeAbout);
@@ -3418,12 +3435,63 @@
     function getDimensionPromptPrefix(dim) {
         const prefixes = {
             anime: 'masterpiece, best quality, highly detailed anime illustration, anime coloring, cel shading,',
-            realistic: 'RAW photo, professional photography, photorealistic, 8k uhd, DSLR, high quality,',
+            realistic: 'RAW photo, professional photography, (photorealistic:1.4), 8k uhd, DSLR, high quality, real human, real skin texture, natural lighting, NOT anime, NOT illustration, NOT cartoon, NOT drawing, NOT painting,',
             fantasy: 'fantasy digital painting, semi-realistic, ethereal glow, detailed illustration, concept art,',
             '2.5d': '2.5D art, anime character design with realistic lighting, detailed textures, blending anime and photorealism,'
         };
         const key = (dim === 'fate') ? ['anime', 'realistic', 'fantasy', '2.5d'][Math.floor(Math.random() * 4)] : dim;
         return prefixes[key] || prefixes.anime;
+    }
+
+    // === 寫實模式 cosplay 包裝 ===
+    // 不需要 cosplay 的種族（現實存在的）
+    const REAL_RACE_VALUES = ['human'];
+    // 不需要 cosplay 的職業關鍵字（現實存在的職業）
+    const REAL_JOB_KEYWORDS = ['soldier', 'doctor', 'nurse', 'teacher', 'chef', 'police', 'firefighter', 'model', 'idol', 'dancer', 'singer', 'photographer', 'barista'];
+
+    function wrapRealisticCosplay(secId, tagValue) {
+        if (state.dimension !== 'realistic') return tagValue;
+        if (!tagValue || tagValue === '無') return tagValue;
+
+        switch (secId) {
+            case 'race': {
+                // 人類不需要 cosplay
+                const lv = tagValue.toLowerCase();
+                if (REAL_RACE_VALUES.some(r => lv === r)) return tagValue;
+                return `(${tagValue}) cosplay, cosplay costume, cosplay makeup, detailed costume`;
+            }
+            case 'job': {
+                // 現實職業不需要 cosplay
+                const lv = tagValue.toLowerCase();
+                if (REAL_JOB_KEYWORDS.some(k => lv.includes(k))) return tagValue;
+                return `(${tagValue}) cosplay outfit, costume, role-playing`;
+            }
+            case 'handItems': {
+                // 魔法道具 → prop
+                const lv = tagValue.toLowerCase();
+                if (lv.includes('magic') || lv.includes('staff') || lv.includes('wand') || lv.includes('sword') || lv.includes('scythe') || lv.includes('bow') || lv.includes('spear')) {
+                    return `${tagValue}, prop replica, handcrafted prop`;
+                }
+                return tagValue;
+            }
+            default:
+                return tagValue;
+        }
+    }
+
+    // === 維度感知選項過濾 ===
+    function filterByDimension(options, currentDim) {
+        if (!currentDim || currentDim === 'fate') return options;
+        // dim 相容表
+        const COMPAT = {
+            anime: ['anime', 'fantasy'],
+            realistic: ['realistic'],
+            fantasy: ['fantasy', 'anime'],
+            '2.5d': ['anime', 'fantasy', 'realistic']
+        };
+        const allowed = COMPAT[currentDim];
+        if (!allowed) return options;
+        return options.filter(o => !o.dim || allowed.includes(o.dim));
     }
 
     function getDimensionYAMLHeader(dim) {
@@ -3476,7 +3544,35 @@
 
             // Toggle: 再按一次取消
             state.dimension = (state.dimension === dim) ? 'anime' : dim;
+
+            // ★ 維度切換時清除不相容的已選風格
+            if (state.selections.animeStyle) {
+                const DATA = window.PromptGen.Data;
+                const animeData = DATA.SECTIONS.find(s => s.id === 'animeStyle');
+                if (animeData) {
+                    const filtered = filterByDimension(animeData.data, state.dimension);
+                    const stillValid = filtered.some(o => o.value === state.selections.animeStyle);
+                    if (!stillValid) {
+                        delete state.selections.animeStyle;
+                        delete state.animeStyleAdvanced;
+                    }
+                }
+            }
+            if (state.selections.artStyle) {
+                const DATA = window.PromptGen.Data;
+                const artData = DATA.SECTIONS.find(s => s.id === 'artStyle');
+                if (artData) {
+                    const filtered = filterByDimension(artData.data, state.dimension);
+                    const stillValid = filtered.some(o => o.value === state.selections.artStyle);
+                    if (!stillValid) {
+                        delete state.selections.artStyle;
+                        delete state.artStyleAdvanced;
+                    }
+                }
+            }
+
             updateDimensionUI();
+            renderTabContent();
             generatePrompt();
             saveState();
         });
@@ -3679,12 +3775,15 @@
     function openSettings() {
         settingsModal.classList.add('active');
         sfx.playClick();
+        // 註冊到 ModalRegistry（統一 ESC 關閉）
+        window.PromptGen.ModalRegistry.register('settings-modal', closeSettings);
     }
 
     // Close settings modal
     function closeSettings() {
         settingsModal.classList.remove('active');
         sfx.playClick();
+        window.PromptGen.ModalRegistry.unregister('settings-modal');
     }
 
     // Show site picker popup
@@ -4380,55 +4479,9 @@
         }
     });
     // ============================================
-    // 全域 ESC 鍵：關閉任何開啟的 Modal
+    // 全域 ESC 鍵：統一由 ModalRegistry 處理
     // ============================================
-    document.addEventListener('keydown', function (e) {
-        if (e.key !== 'Escape') return;
-
-        // 1. Prompt 歷史記錄 Modal（.active 切換）
-        const histOverlay = document.querySelector('.history-modal-overlay.active');
-        if (histOverlay) {
-            if (window.PromptGen && window.PromptGen.PromptHistory) {
-                window.PromptGen.PromptHistory.closeModal();
-            }
-            return;
-        }
-
-        // 2. MagicModalBase overlay（動態建立，存在即代表開著）
-        const mmOverlay = document.querySelector('.mm-overlay');
-        if (mmOverlay) {
-            const cancelBtn = mmOverlay.querySelector('.mm-btn-cancel');
-            if (cancelBtn) cancelBtn.click();
-            else mmOverlay.remove();
-            return;
-        }
-
-        // 3. 獨立 Magic Modal（各有自己的 overlay class）
-        const independentOverlays = [
-            '.hmm-overlay', '.bmm-overlay', '.emm-overlay', '.pmm-overlay',
-            '.atmm-overlay', '.scene-mm-overlay', '.camera-mm-overlay',
-            '#konami-super-overlay', '#camera-super-overlay', '#fate-wheel-overlay'
-        ];
-        for (const sel of independentOverlays) {
-            const ov = document.querySelector(sel);
-            if (ov && ov.style.display !== 'none' && ov.style.display !== '') {
-                ov.style.display = 'none';
-                document.body.style.overflow = '';
-                return;
-            }
-        }
-
-        // 4. 固定 Modal（settings / changelog / about）
-        const fixedModals = ['settings-modal', 'changelog-modal', 'about-modal'];
-        for (const id of fixedModals) {
-            const m = document.getElementById(id);
-            if (m && m.style.display !== 'none' && m.style.display !== '') {
-                m.style.display = 'none';
-                document.body.style.overflow = '';
-                return;
-            }
-        }
-    });
-
-
+    // 所有 Modal 在開啟時都已透過 ModalRegistry.register() 註冊
+    // ModalRegistry 內建的全域 ESC listener 會自動關閉堆疊頂端的 Modal
+    // 不再需要在這裡手動檢查每個 Modal 的狀態
 });

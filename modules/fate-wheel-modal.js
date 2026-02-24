@@ -353,6 +353,43 @@ window.PromptGen.FateWheelModal = (function () {
         // quality 保留硬編碼（輪盤使用複合值如 "masterpiece, best quality"）
     };
 
+    // === Fate Wheel 衝突檢查 ===
+    // 模擬 ConflictSystem.checkAllConflicts 的邏輯，但用輪盤的臨時結果而非 appState
+    function checkFateWheelConflicts(results, genderValue) {
+        const Data = window.PromptGen && window.PromptGen.Data;
+        if (!Data || !Data.CONFLICT_RULES) return [];
+
+        // 建立 stateKey → value 的映射（模擬 appState.selections）
+        const simState = {};
+        for (const r of results) {
+            if (!r.isNone && r.stateKey && r.value) {
+                simState[r.stateKey] = r.value;
+            }
+        }
+        // gender 使用 'male'/'female' 格式（與 ConflictSystem 一致）
+        const simGender = genderValue === '1girl' ? 'female' : 'male';
+
+        const conflicts = [];
+        for (const rule of Data.CONFLICT_RULES) {
+            const selA = rule.a === 'gender' ? simGender : simState[rule.a];
+            const selB = rule.b === 'gender' ? simGender : simState[rule.b];
+            if (!selA || !selB) continue;
+            const matchA = rule.a === 'gender'
+                ? selA === rule.keyword_a
+                : selA.toLowerCase().includes(rule.keyword_a);
+            const matchB = rule.b === 'gender'
+                ? selB === rule.keyword_b
+                : selB.toLowerCase().includes(rule.keyword_b);
+            if (matchA && matchB) {
+                // 記錄衝突的 stateKey（排除 gender，因為不需重新抽性別）
+                const conflictKey = rule.a === 'gender' ? rule.b : (rule.b === 'gender' ? rule.a : rule.b);
+                conflicts.push({ rule, conflictKey, reason: rule.reason });
+            }
+        }
+        return conflicts;
+    }
+
+
     function getOptionsPool(section) {
         const Data = window.PromptGen && window.PromptGen.Data;
         if (!Data) return section.options;
@@ -477,6 +514,9 @@ window.PromptGen.FateWheelModal = (function () {
 
         document.body.appendChild(overlay);
 
+        // 註冊到 ModalRegistry（統一 ESC 關閉，任何階段皆可）
+        window.PromptGen.ModalRegistry.register('fate-wheel-modal', closeModal);
+
         // Play open sound
         if (sfx) sfx.playClick();
 
@@ -556,13 +596,7 @@ window.PromptGen.FateWheelModal = (function () {
 
         // Keyboard handler
         function keyHandler(e) {
-            // 星級動畫播放中禁止任何按鍵操作
-            if (ws.phase === 'stars' || ws.phase === 'center' || ws.phase === 'revealing-outer' || ws.phase === 'revealing-inner') {
-                e.preventDefault();
-                return;
-            }
-
-            // Konami Code 序列偵測
+            // Konami Code 序列偵測（任何 phase 都允許輸入秘技）
             if (e.code === KONAMI_SEQUENCE[konamiProgress]) {
                 konamiProgress++;
                 if (konamiProgress === KONAMI_SEQUENCE.length) {
@@ -573,15 +607,17 @@ window.PromptGen.FateWheelModal = (function () {
                 konamiProgress = (e.code === KONAMI_SEQUENCE[0]) ? 1 : 0;
             }
 
+            // 星級動畫播放中禁止其他按鍵操作
+            if (ws.phase === 'stars' || ws.phase === 'center' || ws.phase === 'revealing-outer' || ws.phase === 'revealing-inner') {
+                e.preventDefault();
+                return;
+            }
+
             if (e.code === 'Space') {
                 e.preventDefault();
                 handleLever();
             }
-            if (e.code === 'Escape') {
-                if (ws.phase === 'idle' || ws.phase === 'lock') {
-                    closeModal();
-                }
-            }
+            // ESC 由 ModalRegistry 統一處理
         }
         document.addEventListener('keydown', keyHandler);
 
@@ -763,6 +799,11 @@ window.PromptGen.FateWheelModal = (function () {
             const starLevel = rollStars(lockedTags);
             const [targetMin, targetMax] = TAG_RANGES[starLevel];
 
+            // ★ 預先決定性別（供衝突過濾使用）
+            const preGender = GENDERS[Math.floor(Math.random() * GENDERS.length)];
+            const preAge = Math.floor(Math.random() * 27) + 14;
+            const preDim = DIMENSIONS[Math.floor(Math.random() * DIMENSIONS.length)];
+
             let results = allSections.map((sec, i) => {
                 if (lockedIndices.has(i)) {
                     return { ...ws.cells[i] };
@@ -779,6 +820,42 @@ window.PromptGen.FateWheelModal = (function () {
                     isMulti: !!sec.isMulti
                 };
             });
+
+            // ★ 衝突過濾：檢查並重新抽選衝突項（最多 5 輪）
+            for (let attempt = 0; attempt < 5; attempt++) {
+                const conflicts = checkFateWheelConflicts(results, preGender);
+                if (conflicts.length === 0) break;
+
+                // 收集需要重新抽選的 stateKey
+                const rerollKeys = new Set(conflicts.map(c => c.conflictKey));
+
+                for (let i = 0; i < results.length; i++) {
+                    if (lockedIndices.has(i) || results[i].isNone) continue;
+                    if (!rerollKeys.has(results[i].stateKey)) continue;
+
+                    const sec = allSections[i];
+                    const pool = getOptionsPool(sec);
+                    if (pool.length <= 1) continue; // 只有一個選項則跳過
+
+                    // 嘗試選一個不同的選項
+                    const oldTag = results[i].value;
+                    let newOpt = pool[Math.floor(Math.random() * pool.length)];
+                    let rerollTry = 0;
+                    while (newOpt.tag === oldTag && rerollTry < 10) {
+                        newOpt = pool[Math.floor(Math.random() * pool.length)];
+                        rerollTry++;
+                    }
+                    results[i].value = newOpt.tag;
+                    results[i].display = newOpt.display;
+                    results[i].tagCount = newOpt.tag.split(',').length;
+                }
+            }
+
+            // 記錄最終衝突狀態（用於 debug）
+            const remainingConflicts = checkFateWheelConflicts(results, preGender);
+            if (remainingConflicts.length > 0) {
+                console.warn('[FateWheel] 無法完全消除衝突:', remainingConflicts.map(c => c.reason));
+            }
 
             let total = results.reduce((s, r) => s + r.tagCount, 0) + 1;
 
@@ -814,6 +891,8 @@ window.PromptGen.FateWheelModal = (function () {
             ws.pregenResults = results;
             ws.pregenStars = starLevel;
             ws.pregenTotalTags = total; // 粗估值作為 fallback，實際計數在 showStarRating 時精確計算
+            // ★ 儲存預先決定的中心格資訊
+            ws.pregenCenter = { gender: preGender, age: preAge, dimension: preDim };
         }
 
         // === SPIN LOGIC ===
@@ -1012,6 +1091,8 @@ window.PromptGen.FateWheelModal = (function () {
                 } else {
                     const displayText = result.display || result.value;
                     valEl.textContent = result.isBonus ? '🌟 ' + displayText : displayText;
+                    // 短文字用更大字體
+                    if (displayText.length <= 3) valEl.classList.add('fw-short-value');
                     cell.classList.add('fw-result-filled');
                     if (result.isBonus) {
                         cell.classList.add('fw-result-bonus');
@@ -1034,9 +1115,11 @@ window.PromptGen.FateWheelModal = (function () {
             const cell = document.getElementById(`fw-cell-${CENTER_POS[0]}-${CENTER_POS[1]}`);
             const valEl = document.getElementById('fw-centerValue');
 
-            const gender = GENDERS[Math.floor(Math.random() * GENDERS.length)];
-            const age = Math.floor(Math.random() * 27) + 14;
-            const dim = DIMENSIONS[Math.floor(Math.random() * DIMENSIONS.length)];
+            // ★ 使用 pregenerateResults 預先決定的性別（已通過衝突過濾）
+            const center = ws.pregenCenter || {};
+            const gender = center.gender || GENDERS[Math.floor(Math.random() * GENDERS.length)];
+            const age = center.age || Math.floor(Math.random() * 27) + 14;
+            const dim = center.dimension || DIMENSIONS[Math.floor(Math.random() * DIMENSIONS.length)];
             const centerValue = `${gender}, ${age}歲, ${dim}`;
 
             valEl.textContent = `${gender === '1girl' ? '♀' : '♂'} ${age}歲`;
@@ -1450,6 +1533,34 @@ window.PromptGen.FateWheelModal = (function () {
             o2.start(t); o2.stop(t + 0.1);
         }
 
+        function playConfirmSfx_charge() {
+            if (!sfx || !sfx.initialized || sfx.isMuted) return;
+            if (sfx.ctx.state === 'suspended') sfx.ctx.resume();
+            const t = sfx.ctx.currentTime;
+            const mg = sfx.masterGain;
+            // 上行頻率掃描（充能感）
+            const o = sfx.ctx.createOscillator();
+            const g = sfx.ctx.createGain();
+            o.type = 'sine';
+            o.frequency.setValueAtTime(200, t);
+            o.frequency.exponentialRampToValueAtTime(800, t + 0.35);
+            g.gain.setValueAtTime(0.15, t);
+            g.gain.linearRampToValueAtTime(0.25, t + 0.2);
+            g.gain.exponentialRampToValueAtTime(0.001, t + 0.4);
+            o.connect(g); g.connect(mg);
+            o.start(t); o.stop(t + 0.4);
+            // 高頻閃爍
+            const o2 = sfx.ctx.createOscillator();
+            const g2 = sfx.ctx.createGain();
+            o2.type = 'triangle';
+            o2.frequency.setValueAtTime(1200, t);
+            o2.frequency.exponentialRampToValueAtTime(2400, t + 0.3);
+            g2.gain.setValueAtTime(0.06, t);
+            g2.gain.exponentialRampToValueAtTime(0.001, t + 0.35);
+            o2.connect(g2); g2.connect(mg);
+            o2.start(t + 0.05); o2.stop(t + 0.35);
+        }
+
         function flyParticlesToSections(changedKeys) {
             const currentTab = appState.activeTab;
             const tabContent = document.getElementById('tab-content');
@@ -1473,8 +1584,17 @@ window.PromptGen.FateWheelModal = (function () {
                 if (matched && sectionMap[def.id]) targetSections.push(sectionMap[def.id]);
             });
             if (targetSections.length === 0) return;
-            const cx = window.innerWidth / 2;
-            const cy = window.innerHeight / 2;
+            const mascotEl = document.getElementById('mascot-image') || document.getElementById('mascot-wrapper');
+            let mx, my;
+            if (mascotEl) {
+                const mRect = mascotEl.getBoundingClientRect();
+                mx = mRect.left + mRect.width / 2;
+                my = mRect.top + mRect.height / 2;
+            } else {
+                // fallback: 右下角
+                mx = window.innerWidth - 80;
+                my = window.innerHeight - 120;
+            }
 
             targetSections.forEach((sectionEl, i) => {
                 setTimeout(() => {
@@ -1487,9 +1607,9 @@ window.PromptGen.FateWheelModal = (function () {
                         for (let p = 0; p < 6; p++) {
                             const particle = document.createElement('div');
                             particle.className = 'fw-confirm-particle';
-                            // 起點：離中心較遠的隨機位置
-                            const sx = cx + (Math.random() - 0.5) * 200;
-                            const sy = cy + (Math.random() - 0.5) * 200;
+                            // 起點：吉祥物附近的隨機位置（±1200px 大範圍）
+                            const sx = mx + (Math.random() - 0.5) * 2400;
+                            const sy = my + (Math.random() - 0.5) * 2400;
                             particle.style.left = sx + 'px';
                             particle.style.top = sy + 'px';
                             const size = 8 + Math.random() * 8;
@@ -1497,18 +1617,19 @@ window.PromptGen.FateWheelModal = (function () {
                             particle.style.height = size + 'px';
                             document.body.appendChild(particle);
 
-                            // Phase 1: 聚合到中心（120ms）
+                            // Phase 1: 聚合到吉祥物中心（±30px）
                             setTimeout(() => {
-                                particle.style.left = cx + (Math.random() - 0.5) * 30 + 'px';
-                                particle.style.top = cy + (Math.random() - 0.5) * 30 + 'px';
+                                particle.style.left = mx + (Math.random() - 0.5) * 60 + 'px';
+                                particle.style.top = my + (Math.random() - 0.5) * 60 + 'px';
                             }, p * 40 + 20);
 
-                            // Phase 2: 蓄力脈動（+300ms 停頓）
+                            // Phase 2: 蓄力脈動（+400ms 停頓）
                             setTimeout(() => {
                                 particle.classList.add('fw-charging');
-                            }, 200 + p * 40);
+                                if (p === 0) playConfirmSfx_charge();
+                            }, 350 + p * 40);
 
-                            // Phase 3: 加速發射！（+250ms 後爆發飛出）
+                            // Phase 3: 加速發射！（+650ms 後爆發飛出）
                             setTimeout(() => {
                                 particle.classList.remove('fw-charging');
                                 particle.classList.add('fw-launching');
@@ -1516,18 +1637,18 @@ window.PromptGen.FateWheelModal = (function () {
                                 particle.style.top = ty + (Math.random() - 0.5) * 20 + 'px';
                                 particle.style.opacity = '0';
                                 particle.style.transform = 'scale(0.2)';
-                            }, 500 + p * 30);
+                            }, 700 + p * 30);
 
-                            // 清除
-                            setTimeout(() => { if (particle.parentNode) particle.remove(); }, 1100);
+                            // 清除（等發射動畫 800ms 完成）
+                            setTimeout(() => { if (particle.parentNode) particle.remove(); }, 1600);
                         }
-                        // 命中效果（延遲配合新時序）
+                        // 命中效果（配合發射動畫結束）
                         setTimeout(() => {
                             playConfirmSfx_hit(i);
                             sectionEl.classList.add('fw-section-glow');
                             setTimeout(() => sectionEl.classList.remove('fw-section-glow'), 1400);
                             spawnHitSparks(tx, ty);
-                        }, 700);
+                        }, 1300);
                     }, 180);
                 }, i * 500);
             });
@@ -1665,10 +1786,21 @@ window.PromptGen.FateWheelModal = (function () {
             if (renderTabContent) renderTabContent();
             if (generatePrompt) generatePrompt();
             if (saveState) saveState();
+
+            // ★ 安全網：觸發衝突系統檢查（防止極端情況漏網）
+            try {
+                if (window.PromptGen.ConflictSystem) {
+                    window.PromptGen.ConflictSystem.onSelectionChanged();
+                }
+            } catch (e) {
+                console.warn('[FateWheel] 衝突系統回呼失敗:', e);
+            }
         }
 
         // === Close ===
         function closeModal() {
+            // 從 ModalRegistry 移除
+            window.PromptGen.ModalRegistry.unregister('fate-wheel-modal');
             // Clean up timers
             if (ws.timer) clearTimeout(ws.timer);
             if (ws.autoStopTimer) clearTimeout(ws.autoStopTimer);

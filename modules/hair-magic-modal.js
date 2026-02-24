@@ -614,6 +614,7 @@ window.PromptGen.HairMagicModal = (function () {
 
         // === Close ===
         function closeModal() {
+            window.PromptGen.ModalRegistry.unregister('hair-magic-modal');
             overlay.style.animation = 'hmm-fadeIn .3s ease reverse';
             setTimeout(() => overlay.remove(), 280);
         }
@@ -643,8 +644,8 @@ window.PromptGen.HairMagicModal = (function () {
         });
 
         overlay.addEventListener('click', e => { if (e.target === overlay) closeModal(); });
-        const escH = e => { if (e.key === 'Escape') { closeModal(); document.removeEventListener('keydown', escH); } };
-        document.addEventListener('keydown', escH);
+        // 註冊到 ModalRegistry（統一 ESC 關閉）
+        window.PromptGen.ModalRegistry.register('hair-magic-modal', closeModal);
     }
 
     // === 音效 ===
