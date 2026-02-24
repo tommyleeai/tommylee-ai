@@ -4558,4 +4558,49 @@
             console.log('[ShareURL] ✅ 共享 state 已套用');
         };
     }
+
+    // ============================================
+    // 吉祥物互動：點擊消失 → 2 分鐘後跑回來
+    // ============================================
+    const mascotWrapper = document.getElementById('mascot-wrapper');
+    const mascotImg = document.getElementById('mascot-image');
+    let mascotTimer = null;
+
+    if (mascotImg && mascotWrapper) {
+        mascotImg.addEventListener('click', () => {
+            if (mascotWrapper.classList.contains('mascot-leaving') ||
+                mascotWrapper.classList.contains('mascot-hidden')) return;
+
+            // 播放音效
+            if (window.PromptGen.SoundManager) {
+                window.PromptGen.SoundManager.play('click');
+            }
+
+            // 離場動畫
+            mascotWrapper.classList.remove('mascot-returning');
+            mascotWrapper.classList.add('mascot-leaving');
+
+            // 動畫結束後隱藏
+            setTimeout(() => {
+                mascotWrapper.classList.remove('mascot-leaving');
+                mascotWrapper.classList.add('mascot-hidden');
+            }, 600);
+
+            // 2 分鐘後回來
+            if (mascotTimer) clearTimeout(mascotTimer);
+            mascotTimer = setTimeout(() => {
+                mascotWrapper.classList.remove('mascot-hidden');
+                mascotWrapper.classList.add('mascot-returning');
+
+                // 回場動畫結束後恢復正常浮動
+                setTimeout(() => {
+                    mascotWrapper.classList.remove('mascot-returning');
+                }, 800);
+
+                if (window.PromptGen.SoundManager) {
+                    window.PromptGen.SoundManager.play('click');
+                }
+            }, 120000); // 2 分鐘 = 120000ms
+        });
+    }
 });
