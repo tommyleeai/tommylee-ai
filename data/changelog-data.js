@@ -7,6 +7,16 @@ window.PromptGen.Changelog = (function () {
     // Changelog Data
     const changelog = [
         {
+            version: "v8.9",
+            date: "2026-02-24",
+            changes: [
+                "🔗 新增分享 URL 功能：將角色設定編碼成短連結，朋友開啟即載入相同設定",
+                "☁️ Firestore 短碼存儲：shared_prompts 公開集合，7 碼短 ID",
+                "📋 分享按鈕自動複製連結到剪貼板 + Toast 成功提示",
+                "✨ 載入分享連結時自動還原所有角色設定並顯示歡迎提示"
+            ]
+        },
+        {
             version: "v8.8",
             date: "2026-02-24",
             changes: [
