@@ -301,6 +301,31 @@
 
             // Custom button (skip for genderAge section)
             if (section.type !== 'genderAge') {
+                // === MAX 全選按鈕（僅多選 section，如畫質）===
+                if (MULTI_SELECT_SECTIONS.has(section.id)) {
+                    const allValues = section.data.map(o => o.value);
+                    const currentArr = state.selections[section.id] || [];
+                    const isAllSelected = allValues.length > 0 && allValues.every(v => currentArr.includes(v));
+
+                    const maxBtn = document.createElement('button');
+                    maxBtn.className = `btn-max-toggle${isAllSelected ? ' active' : ''}`;
+                    maxBtn.innerHTML = '<i class="fa-solid fa-bolt"></i> MAX';
+                    maxBtn.title = isAllSelected
+                        ? (state.lang === 'zh' ? '取消全選' : 'Deselect All')
+                        : (state.lang === 'zh' ? '全部選取' : 'Select All');
+                    maxBtn.addEventListener('click', () => {
+                        if (isAllSelected) {
+                            delete state.selections[section.id];
+                        } else {
+                            state.selections[section.id] = [...allValues];
+                        }
+                        renderTabContent();
+                        updateLockedPreview();
+                        generatePrompt();
+                    });
+                    header.appendChild(maxBtn);
+                }
+
                 const customBtn = document.createElement('button');
                 customBtn.className = `btn-custom-toggle${state.customInputVisible[section.id] ? ' active' : ''}`;
                 customBtn.innerHTML = '<i class="fa-solid fa-pen"></i> ' + (state.lang === 'zh' ? '自訂' : 'Custom');
@@ -2689,10 +2714,10 @@
 
         // ★ 已在寫實模式下選/取消人類 → 自動套用/還原攝影預設
         if (sectionId === 'race' && state.dimension === 'realistic') {
-            if (state.selections.race === 'human' && !_realisticBackup) {
+            if (state.selections.race && state.selections.race.startsWith('human') && !_realisticBackup) {
                 applyRealisticPhotoPreset(state.dimension);
                 renderTabs();
-            } else if (state.selections.race !== 'human' && _realisticBackup) {
+            } else if ((!state.selections.race || !state.selections.race.startsWith('human')) && _realisticBackup) {
                 restoreFromRealisticPreset();
                 renderTabs();
             }
@@ -3664,7 +3689,7 @@
             case 'race': {
                 // 人類不需要 cosplay
                 const lv = tagValue.toLowerCase();
-                if (REAL_RACE_VALUES.some(r => lv === r)) return tagValue;
+                if (REAL_RACE_VALUES.some(r => lv.startsWith(r))) return tagValue;
                 return `(${tagValue}) cosplay, cosplay costume, cosplay makeup, detailed costume`;
             }
             case 'job': {
@@ -3776,7 +3801,7 @@
 
             // ★ 寫實模式 + 人類種族 = 真人攝影自動預設
             if (state.dimension === 'realistic' && prevDim !== 'realistic') {
-                const isHuman = state.selections.race === 'human';
+                const isHuman = state.selections.race && state.selections.race.startsWith('human');
                 if (isHuman) {
                     applyRealisticPhotoPreset(prevDim);
                 }

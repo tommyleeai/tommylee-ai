@@ -7,6 +7,15 @@ window.PromptGen.Changelog = (function () {
     // Changelog Data
     const changelog = [
         {
+            version: "v8.9.9",
+            date: "2026-02-26",
+            changes: [
+                "⚡ 畫質 MAX 按鈕：一鍵全選/全取消所有畫質標籤，金色閃電風格",
+                "🔧 修正寫實攝影自動預設：種族 value 強化後的 human 偵測改用前綴匹配",
+                "🔧 修正 Cosplay 跳過邏輯：人類種族在寫實模式下不再被包裝為 cosplay"
+            ]
+        },
+        {
             version: "v8.9.8",
             date: "2026-02-26",
             changes: [

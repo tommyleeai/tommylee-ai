@@ -3244,6 +3244,40 @@ input[type=range]::-webkit-slider-thumb:hover {
     border-color: var(--accent-color);
 }
 
+/* === MAX 全選按鈕 START === */
+.btn-max-toggle {
+    padding: 4px 10px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    background: rgba(255, 215, 0, 0.1);
+    border: 1px solid rgba(255, 215, 0, 0.3);
+    color: #ffd700;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    opacity: 0.8;
+    margin-left: auto;
+    margin-right: 6px;
+}
+
+.btn-max-toggle:hover {
+    opacity: 1;
+    background: rgba(255, 215, 0, 0.2);
+    border-color: rgba(255, 215, 0, 0.5);
+    box-shadow: 0 0 8px rgba(255, 215, 0, 0.2);
+}
+
+.btn-max-toggle.active {
+    background: linear-gradient(135deg, #ffd700, #ff8c00);
+    color: #1a0a2e;
+    opacity: 1;
+    border-color: #ffd700;
+    box-shadow: 0 0 12px rgba(255, 215, 0, 0.4);
+}
+
+/* === MAX 全選按鈕 END === */
+
 /* Gender Toggle */
 .gender-toggle {
     display: flex;
