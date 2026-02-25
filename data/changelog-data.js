@@ -7,6 +7,15 @@ window.PromptGen.Changelog = (function () {
     // Changelog Data
     const changelog = [
         {
+            version: "v8.9.6",
+            date: "2026-02-25",
+            changes: [
+                "🎭 寫實模式動漫風格 = Cosplay：動漫風格選項在寫實模式下不再消失，改為自動包裝 cosplay 提示詞",
+                "📝 wrapRealisticCosplay 新增 animeStyle case：寫實模式選動漫風格時輸出 cosplay photography 語境",
+                "🔄 次元切換不再清除 animeStyle 選項，切回二次元自動恢復原始提示詞"
+            ]
+        },
+        {
             version: "v8.9.4",
             date: "2026-02-24",
             changes: [

@@ -1504,9 +1504,8 @@
                     sectionEl.appendChild(summaryBar);
                 }
 
-                // ★ 維度感知過濾：寫實模式下隱藏動漫風格
-                const filteredAnimeData = filterByDimension(section.data, state.dimension);
-                renderPaginatedGrid(sectionEl, section, filteredAnimeData, 'animeStylePage');
+                // ★ 動漫風格在所有維度下都顯示（寫實模式 = cosplay）
+                renderPaginatedGrid(sectionEl, section, section.data, 'animeStylePage');
                 if (state.animeStyleAdvanced) {
                     const tagGrid = sectionEl.querySelector('.tag-grid-paginated');
                     if (tagGrid) tagGrid.classList.add('body-section-disabled');
@@ -2288,7 +2287,12 @@
             chip.dataset.section = section.id;
             chip.dataset.value = option.value;
             if (option.image) chip.dataset.image = option.image;
-            chip.textContent = getOptionLabel(option);
+            const chipLabel = getOptionLabel(option);
+            if (chipLabel.includes('\n')) {
+                chip.innerHTML = chipLabel.split('\n').map(s => s.replace(/</g, '&lt;')).join('<br>');
+            } else {
+                chip.textContent = chipLabel;
+            }
 
             chip.addEventListener('click', () => {
                 if (isMulti) {
@@ -2340,7 +2344,12 @@
             chip.dataset.section = section.id;
             chip.dataset.value = option.value;
             if (option.image) chip.dataset.image = option.image;
-            chip.textContent = getOptionLabel(option);
+            const chipLabel2 = getOptionLabel(option);
+            if (chipLabel2.includes('\n')) {
+                chip.innerHTML = chipLabel2.split('\n').map(s => s.replace(/</g, '&lt;')).join('<br>');
+            } else {
+                chip.textContent = chipLabel2;
+            }
             chip.title = option.en || option.label;
 
             chip.addEventListener('click', () => {
@@ -2860,11 +2869,21 @@
         };
 
         Object.keys(yamlMap).forEach(secId => {
-            // ★ 維度感知：寫實模式下跳過被過濾的 animeStyle/artStyle
-            if ((secId === 'animeStyle' || secId === 'artStyle') && state.dimension === 'realistic') {
-                // 在寫實模式下完全不輸出動漫/漫畫風格
-                return;
+            // ★ 維度感知：寫實模式下 artStyle 仍跳過 dim:anime 的選項
+            if (secId === 'artStyle' && state.dimension === 'realistic') {
+                // artStyle 在寫實模式下過濾掉 dim:anime（但 animeStyle 改為 cosplay 輸出）
+                const artVal = state.selections[secId];
+                if (artVal) {
+                    const DATA = window.PromptGen.Data;
+                    const styleSections = DATA.TAB_SECTIONS && DATA.TAB_SECTIONS.style;
+                    const artData = styleSections && styleSections.find(s => s.id === 'artStyle');
+                    if (artData && artData.data) {
+                        const artItem = artData.data.find(o => o.value === artVal);
+                        if (artItem && artItem.dim === 'anime') return; // 純動漫風格在寫實模式下跳過
+                    }
+                }
             }
+            // ★ animeStyle 在寫實模式下不再跳過 — 交給 wrapRealisticCosplay 處理 cosplay 包裝
             // Skip bodyType if bodyAdvanced is active (handled separately)
             if (secId === 'bodyType' && state.bodyAdvanced) {
                 const primaryData = state.gender === 'female' ? BODY_MAGIC_DATA.FEMALE_BUST : BODY_MAGIC_DATA.MALE_MUSCLE;
@@ -3135,6 +3154,7 @@
 
     // --- Sound Manager (from modules/sound-manager.js) ---
     const sfx = new SoundManager();
+    window.PromptGen._sfx = sfx; // 匯出供吉祥物等外部程式碼使用
 
     // ============================================
     // 模組依賴注入
@@ -3474,6 +3494,10 @@
                 }
                 return tagValue;
             }
+            case 'animeStyle': {
+                // ★ 寫實模式下動漫風格 = cosplay 該角色/風格
+                return `(${tagValue}) cosplay, anime character cosplay, cosplay photography, detailed costume and makeup`;
+            }
             default:
                 return tagValue;
         }
@@ -3545,20 +3569,8 @@
             // Toggle: 再按一次取消
             state.dimension = (state.dimension === dim) ? 'anime' : dim;
 
-            // ★ 維度切換時清除不相容的已選風格
-            if (state.selections.animeStyle) {
-                const DATA = window.PromptGen.Data;
-                const styleSections = DATA.TAB_SECTIONS && DATA.TAB_SECTIONS.style;
-                const animeData = styleSections && styleSections.find(s => s.id === 'animeStyle');
-                if (animeData && animeData.data) {
-                    const filtered = filterByDimension(animeData.data, state.dimension);
-                    const stillValid = filtered.some(o => o.value === state.selections.animeStyle);
-                    if (!stillValid) {
-                        delete state.selections.animeStyle;
-                        delete state.animeStyleAdvanced;
-                    }
-                }
-            }
+            // ★ 動漫風格在所有維度下都保留（寫實模式 = cosplay）
+            // 不再清除 animeStyle 選項
             if (state.selections.artStyle) {
                 const DATA = window.PromptGen.Data;
                 const styleSections = DATA.TAB_SECTIONS && DATA.TAB_SECTIONS.style;
@@ -4523,7 +4535,7 @@
         });
 
         // 匯出 applySharedState 供 Firebase 就緒後呼叫
-        window.PromptGen._applySharedState = function (sharedState) {
+        window.PromptGen._applySharedState = function (sharedState, toastMessage) {
             state.dimension = sharedState.dimension || 'anime';
             state.gender = sharedState.gender || 'female';
             state.age = sharedState.age || 21;
@@ -4544,6 +4556,10 @@
             state.atmosphereAdvanced = sharedState.atmosphereAdvanced || null;
             state.heterochromia = sharedState.heterochromia || false;
 
+            // 還原格式設定（YAML/純文字、語言）
+            if (sharedState.format) state.format = sharedState.format;
+            if (sharedState.language) state.language = sharedState.language;
+
             if (sharedState.inputSubject) inputSubject.value = sharedState.inputSubject;
             if (sharedState.inputNegative) inputNegative.value = sharedState.inputNegative;
 
@@ -4554,8 +4570,22 @@
             generatePrompt();
             saveState();
 
-            window.PromptGen.ShareURL.showToast('✨ 已載入朋友分享的角色設定！');
-            console.log('[ShareURL] ✅ 共享 state 已套用');
+            // 同步格式 toggle 按鈕 UI
+            const fmtBtn = document.getElementById('btn-format-toggle');
+            if (fmtBtn) {
+                fmtBtn.classList.toggle('active', state.format === 'yaml');
+                fmtBtn.title = state.format === 'yaml'
+                    ? '格式：YAML → 按此切純文字'
+                    : '格式：純文字 → 按此切 YAML';
+            }
+            const langBtn = document.getElementById('btn-lang-toggle');
+            if (langBtn) {
+                langBtn.classList.toggle('active', state.language === 'zh');
+            }
+
+            const msg = toastMessage || '✨ 已載入朋友分享的角色設定！';
+            window.PromptGen.ShareURL.showToast(msg);
+            console.log('[State] ✅ state 已套用');
         };
     }
 });
@@ -4575,9 +4605,13 @@
                 if (mascotWrapper.classList.contains('mascot-leaving') ||
                     mascotWrapper.classList.contains('mascot-hidden')) return;
 
-                // 播放音效
-                if (window.PromptGen && window.PromptGen.SoundManager) {
-                    window.PromptGen.SoundManager.play('click');
+                // 播放音效（透過全域 sfx 實例，不影響動畫流程）
+                try {
+                    if (window.PromptGen && window.PromptGen._sfx) {
+                        window.PromptGen._sfx.playClick();
+                    }
+                } catch (e) {
+                    console.warn('[Mascot] 音效播放失敗:', e.message);
                 }
 
                 // 離場動畫
@@ -4601,8 +4635,12 @@
                         mascotWrapper.classList.remove('mascot-returning');
                     }, 800);
 
-                    if (window.PromptGen && window.PromptGen.SoundManager) {
-                        window.PromptGen.SoundManager.play('click');
+                    try {
+                        if (window.PromptGen && window.PromptGen._sfx) {
+                            window.PromptGen._sfx.playClick();
+                        }
+                    } catch (e) {
+                        console.warn('[Mascot] 音效播放失敗:', e.message);
                     }
                 }, 120000); // 2 分鐘
             });
