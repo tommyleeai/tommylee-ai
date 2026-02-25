@@ -3567,6 +3567,7 @@
             }
 
             // Toggle: 再按一次取消
+            const prevDim = state.dimension;
             state.dimension = (state.dimension === dim) ? 'anime' : dim;
 
             // ★ 動漫風格在所有維度下都保留（寫實模式 = cosplay）
@@ -3585,11 +3586,66 @@
                 }
             }
 
+            // ★ 寫實模式 + 人類種族 = 真人攝影自動預設
+            if (state.dimension === 'realistic' && prevDim !== 'realistic') {
+                const isHuman = state.selections.race === 'human';
+                if (isHuman) {
+                    applyRealisticPhotoPreset();
+                }
+            }
+
             updateDimensionUI();
+            renderTabs();
             renderTabContent();
             generatePrompt();
             saveState();
         });
+    }
+
+    // ★ 真人攝影預設一鍵套用
+    function applyRealisticPhotoPreset() {
+        const DATA = window.PromptGen.Data;
+        if (!DATA) return;
+
+        // 1) 切到風格分頁
+        state.activeTab = 'style';
+
+        // 2) 全選畫質
+        if (DATA.QUALITY_TAGS) {
+            state.selections['quality'] = DATA.QUALITY_TAGS.map(q => q.value);
+        }
+
+        // 3) additional_instructions: Japanese
+        if (inputSubject && !inputSubject.value.includes('Japanese')) {
+            inputSubject.value = inputSubject.value.trim()
+                ? inputSubject.value.trim() + ', Japanese'
+                : 'Japanese';
+        }
+
+        // 4) 藝術風格 → 寫實
+        state.selections.artStyle = 'realistic, photorealistic';
+
+        // 5) 鏡頭焦距 → 中望遠（85mm 人像）
+        state.selections.focalLength = 'medium telephoto';
+
+        // 6) 光圈 → 大光圈 f/1.8（淺景深）
+        state.selections.aperture = 'large aperture, f/1.8, shallow depth of field, bokeh';
+
+        // 7) 取景 → 牛仔鏡頭（半身）
+        state.selections.shotSize = 'cowboy shot';
+
+        // 8) 打光 → 自然光
+        state.selections.lighting = 'natural light';
+
+        // 中二 toast 提示
+        if (window.PromptGen.ShareURL && window.PromptGen.ShareURL.showToast) {
+            window.PromptGen.ShareURL.showToast(
+                '⚡ 「次元結界・寫實化」發動！真人攝影魔法陣已展開 📸✨',
+                'success'
+            );
+        }
+
+        console.log('[Dimension] ✅ 已自動套用真人攝影預設（人類種族 + 寫實模式）');
     }
 
     // 獨立運命輪盤按鈕

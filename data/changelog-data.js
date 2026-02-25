@@ -7,6 +7,16 @@ window.PromptGen.Changelog = (function () {
     // Changelog Data
     const changelog = [
         {
+            version: "v8.9.7",
+            date: "2026-02-25",
+            changes: [
+                "🎨 藝術風格預覽圖：28 種藝術風格全部加入 hover 預覽圖（Grok API 批量生成）",
+                "📛 智慧命名增強：種族/職業未選時自動 fallback 到動漫風格、畫風、服裝、場景",
+                "♀♂ 性別符號上色：歷史紀錄名稱前綴粉色 ♀ / 藍色 ♂ 符號",
+                "📸 寫實模式自動預設：人類 + 寫實 = 一鍵套用真人攝影設定（全畫質、85mm、f/1.8、自然光、半身鏡頭、Japanese）"
+            ]
+        },
+        {
             version: "v8.9.6",
             date: "2026-02-25",
             changes: [

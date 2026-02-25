@@ -18,6 +18,18 @@ window.PromptGen.PromptHistory = (function () {
         return item ? item.label : null;
     }
 
+    // === 名稱中性別符號上色 ===
+    function formatNameWithGender(name) {
+        if (!name) return '未命名';
+        if (name.startsWith('♀')) {
+            return `<span style="color:#f472b6;font-weight:700">♀</span>${name.substring(1)}`;
+        }
+        if (name.startsWith('♂')) {
+            return `<span style="color:#60a5fa;font-weight:700">♂</span>${name.substring(1)}`;
+        }
+        return name;
+    }
+
     // === 智慧命名：從 state 提取有意義的中文名稱 ===
     function generateSmartName() {
         const state = _getStateFn ? _getStateFn() : null;
@@ -61,14 +73,41 @@ window.PromptGen.PromptHistory = (function () {
             if (label) parts.push(label);
         }
 
-        // 性別標記
-        const genderMap = { 'female': '女', 'male': '男' };
-        const genderLabel = genderMap[state.gender];
-        if (genderLabel && parts.length > 0) {
-            parts.push('(' + genderLabel + ')');
+        // ★ 如果種族和職業都沒選，嘗試其他欄位作為 fallback
+        if (!state.selections.race && !state.selections.job) {
+            // 嘗試動漫風格
+            if (state.selections.animeStyle && DATA.ANIME_STYLES) {
+                const label = findLabel(DATA.ANIME_STYLES, state.selections.animeStyle);
+                if (label) parts.push(label.replace(/\\n/g, ' '));
+            }
+            // 嘗試藝術風格
+            if (state.selections.artStyle && DATA.ART_STYLES) {
+                const label = findLabel(DATA.ART_STYLES, state.selections.artStyle);
+                if (label) parts.push(label);
+            }
+            // 嘗試服裝
+            if (parts.length === 0 || (parts.length === 1 && adjective)) {
+                if (state.selections.outfit && DATA.OUTFITS) {
+                    const label = findLabel(DATA.OUTFITS, state.selections.outfit);
+                    if (label) parts.push(label);
+                }
+            }
+            // 嘗試場景
+            if (parts.length === 0 || (parts.length === 1 && adjective)) {
+                if (state.selections.scene && DATA.SCENES) {
+                    const label = findLabel(DATA.SCENES, state.selections.scene);
+                    if (label) parts.push(label);
+                }
+            }
         }
 
-        return parts.length > 0 ? parts.join('') : '未命名';
+        // 性別符號放最前面
+        const genderSymbol = state.gender === 'female' ? '♀ ' : state.gender === 'male' ? '♂ ' : '';
+
+        if (parts.length > 0) {
+            return genderSymbol + parts.join('');
+        }
+        return genderSymbol ? genderSymbol.trim() : '未命名';
     }
 
     // === 產生中文預覽摘要 ===
@@ -140,6 +179,21 @@ window.PromptGen.PromptHistory = (function () {
         return db.collection('users').doc(user.uid).collection(COLLECTION);
     }
 
+    // === 取得精簡版 state（排除背景圖等大型資料）===
+    function getCleanState() {
+        const fullState = _getStateFn ? _getStateFn() : null;
+        if (!fullState) return null;
+
+        // 複製一份，排除不必要的大型資料
+        const clean = { ...fullState };
+        delete clean.background;       // 背景圖 base64 太大
+        delete clean.spellMode;        // 咒語模式是顯示設定，不需保存
+        delete clean.spellEffect;      // 同上
+        delete clean.conflictWarningsEnabled; // 使用者偏好，非角色設定
+        delete clean.conflictAutoResolution;  // 同上
+        return clean;
+    }
+
     // === 存檔 ===
     async function savePrompt() {
         const user = window.PromptGen.currentUser;
@@ -163,8 +217,10 @@ window.PromptGen.PromptHistory = (function () {
             const smartName = generateSmartName();
             // 中文預覽摘要
             const summary = generateChineseSummary();
+            // 取得精簡版完整選項狀態（供載入時還原）
+            const cleanState = getCleanState();
 
-            await ref.add({
+            const docData = {
                 name: smartName,
                 yaml: yaml,
                 negative: finalNegative ? finalNegative.value.trim() : '',
@@ -172,7 +228,14 @@ window.PromptGen.PromptHistory = (function () {
                 dimension: getDimensionLabel(),
                 summary: summary,
                 createdAt: firebase.firestore.FieldValue.serverTimestamp()
-            });
+            };
+
+            // 加入完整選項狀態（如果取得成功）
+            if (cleanState) {
+                docData.state = cleanState;
+            }
+
+            await ref.add(docData);
 
             // 存檔成功動畫
             const btn = document.getElementById('btn-save-prompt');
@@ -185,7 +248,7 @@ window.PromptGen.PromptHistory = (function () {
                     btn.classList.remove('save-success');
                 }, 1500);
             }
-            console.log('[History] ✅ Prompt 已存檔');
+            console.log('[History] ✅ Prompt 已存檔（含完整 state）');
         } catch (error) {
             console.error('[History] ❌ 存檔失敗:', error);
             alert('存檔失敗：' + error.message);
@@ -258,13 +321,43 @@ window.PromptGen.PromptHistory = (function () {
         }
     }
 
-    // === 載入 prompt 到輸出區 ===
-    function loadPrompt(yaml, negative) {
-        const finalPrompt = document.getElementById('final-prompt');
-        const finalNegative = document.getElementById('final-negative');
-        if (finalPrompt) finalPrompt.textContent = yaml;
-        if (finalNegative) finalNegative.value = negative || '';
+    // === 載入 prompt 到輸出區（含完整 state 還原）===
+    function loadPrompt(yaml, negative, savedState) {
         closeModal();
+
+        // 如果有完整 state，透過 _applySharedState 還原所有選項
+        if (savedState && window.PromptGen._applySharedState) {
+            window.PromptGen._applySharedState(savedState, '📂 已載入存檔的角色設定！');
+            console.log('[History] ✅ Prompt 已載入（完整 state 還原）');
+        } else {
+            // 舊版存檔沒有 state，只能替換文字（向下相容）
+            const finalPrompt = document.getElementById('final-prompt');
+            const finalNegative = document.getElementById('final-negative');
+
+            if (finalPrompt) {
+                finalPrompt.textContent = yaml;
+            }
+            if (finalNegative) finalNegative.value = negative || '';
+            console.log('[History] ⚠️ Prompt 已載入（僅文字，舊版存檔無 state）');
+        }
+
+        // 載入成功的視覺反饋
+        const finalPrompt = document.getElementById('final-prompt');
+        if (finalPrompt) {
+            finalPrompt.classList.add('load-flash');
+            setTimeout(() => finalPrompt.classList.remove('load-flash'), 1200);
+        }
+
+        // 自動捲動到輸出區域
+        setTimeout(() => {
+            const outputSection = document.querySelector('.output-section');
+            if (outputSection) {
+                outputSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+            if (finalPrompt) {
+                finalPrompt.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }, 300);
     }
 
     // === Modal UI ===
@@ -349,7 +442,7 @@ window.PromptGen.PromptHistory = (function () {
                         <button class="hist-star ${p.starred ? 'starred' : ''}" data-id="${p.id}" data-starred="${p.starred}" title="收藏">
                             <i class="fa-${p.starred ? 'solid' : 'regular'} fa-star"></i>
                         </button>
-                        <span class="hist-name" data-id="${p.id}" title="點擊重新命名">${p.name || '未命名'}</span>
+                        <span class="hist-name" data-id="${p.id}" title="點擊重新命名">${formatNameWithGender(p.name || '未命名')}</span>
                         <span class="hist-dim">${p.dimension || ''}</span>
                         <span class="hist-date">${date}</span>
                     </div>
@@ -380,7 +473,7 @@ window.PromptGen.PromptHistory = (function () {
         listEl.querySelectorAll('.hist-load').forEach(btn => {
             btn.addEventListener('click', () => {
                 const item = prompts.find(p => p.id === btn.dataset.id);
-                if (item) loadPrompt(item.yaml, item.negative);
+                if (item) loadPrompt(item.yaml, item.negative, item.state || null);
             });
         });
 
