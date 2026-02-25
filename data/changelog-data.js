@@ -7,6 +7,15 @@ window.PromptGen.Changelog = (function () {
     // Changelog Data
     const changelog = [
         {
+            version: "v8.9.8",
+            date: "2026-02-26",
+            changes: [
+                "🐉 種族描述大強化：233 個種族的 prompt value 全面升級為風格中立的豐富描述（外觀、服裝、氛圍、細節效果）",
+                "🔧 性別中立修正：移除種族 value 中硬編碼的 girl 標記，改由 prompt 生成系統根據性別動態處理",
+                "⚡ 衝突規則同步：更新衝突偵測 keyword 以匹配新的種族 value 格式"
+            ]
+        },
+        {
             version: "v8.9.7",
             date: "2026-02-25",
             changes: [
