@@ -178,10 +178,8 @@ html {
 
 /* === 4. Header 與 Logo START === */
 .header {
-    text-align: left;
-    /* Align left */
+    text-align: center;
     margin-top: 1.2rem;
-    /* Align with right column Preview title */
     margin-bottom: 1rem;
     flex-shrink: 0;
 }
@@ -209,10 +207,10 @@ html {
 
 /* Header Buttons Container */
 .header-buttons {
-    display: inline-flex;
+    display: flex;
+    justify-content: center;
     gap: 8px;
-    margin-left: 12px;
-    vertical-align: middle;
+    margin-top: 8px;
     -webkit-text-fill-color: initial;
     /* Fix: Prevent inheriting transparent text from h1 */
 }
@@ -683,8 +681,8 @@ html {
     font-family: 'Consolas', monospace;
     margin-bottom: 8px;
     line-height: 1.4;
-    max-height: 40px;
-    overflow: hidden;
+    word-break: break-word;
+    overflow-wrap: break-word;
 }
 
 .history-item-actions {
@@ -1149,6 +1147,30 @@ textarea {
     color: rgba(255, 255, 255, 0.3);
     font-style: italic;
 }
+
+/* === 存檔載入閃爍動畫 START === */
+.output-display.load-flash {
+    animation: loadFlash 1.2s ease-out;
+}
+
+@keyframes loadFlash {
+    0% {
+        border-color: #10b981;
+        box-shadow: 0 0 20px rgba(16, 185, 129, 0.5), inset 0 0 15px rgba(16, 185, 129, 0.15);
+    }
+
+    30% {
+        border-color: #34d399;
+        box-shadow: 0 0 30px rgba(16, 185, 129, 0.4), inset 0 0 10px rgba(16, 185, 129, 0.1);
+    }
+
+    100% {
+        border-color: var(--glass-border);
+        box-shadow: none;
+    }
+}
+
+/* === 存檔載入閃爍動畫 END === */
 
 /* Custom Fields */
 .custom-field-row {

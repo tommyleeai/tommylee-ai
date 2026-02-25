@@ -59,7 +59,7 @@ window.PromptGen.ExpressionMagicModal = (function () {
                     <div class="emm-title-row">
                         <div class="emm-title">🎭 表情魔法系統 — Expression Magic</div>
                         <div class="emm-toolbar">
-                            <button class="cmm-tool-btn" id="emm-reset" title="重設"><span class="cmm-tool-icon">🔄</span> 重設</button>
+                            <button class="cmm-tool-btn" id="emm-dice" title="隨機選取"><span class="cmm-tool-icon">🎲</span> 隨機</button>
                         </div>
                     </div>
                 </div>
@@ -365,20 +365,47 @@ window.PromptGen.ExpressionMagicModal = (function () {
             updatePreview();
         });
 
-        // === 重設 ===
-        document.getElementById('emm-reset').addEventListener('click', () => {
-            sfx.playClick();
-            selectedExpr = null;
-            intensity = 4;
+        // === 🎲 隨機選取 ===
+        document.getElementById('emm-dice').addEventListener('click', () => {
+            // 從所有表情中隨機選一個
+            const randomExpr = EXPRS[Math.floor(Math.random() * EXPRS.length)];
+            selectedExpr = {
+                label: randomExpr.label,
+                en: randomExpr.en,
+                value: randomExpr.value,
+                category: randomExpr.category
+            };
+
+            // 隨機強度 (2~6，避免極端)
+            intensity = 2 + Math.floor(Math.random() * 5);
+            document.getElementById('emm-slider').value = intensity;
+
+            // 隨機啟用 0~2 個特效
             activeEffects.clear();
-            searchQuery = '';
-            const searchInput = document.getElementById('emm-search');
-            if (searchInput) searchInput.value = '';
-            document.getElementById('emm-slider').value = 4;
-            overlay.querySelectorAll('.emm-expr-chip').forEach(c => c.classList.remove('selected'));
-            overlay.querySelectorAll('.emm-effect-chip').forEach(c => c.classList.remove('active'));
+            const shuffled = [...EFFECTS].sort(() => Math.random() - 0.5);
+            const count = Math.floor(Math.random() * 3);
+            shuffled.slice(0, count).forEach(ef => activeEffects.add(ef.id));
+            overlay.querySelectorAll('.emm-effect-chip').forEach(c => {
+                c.classList.toggle('active', activeEffects.has(c.dataset.eid));
+            });
+
+            // 切換到該表情的分類 tab
+            currentTab = randomExpr.category;
+            overlay.querySelectorAll('.emm-tab').forEach(t => t.classList.remove('active'));
+            const targetTab = overlay.querySelector(`.emm-tab[data-tab="${currentTab}"]`);
+            if (targetTab) targetTab.classList.add('active');
+
+            // 骰子音效
+            if (window.PromptGen.MagicModalBase) window.PromptGen.MagicModalBase.playDiceRollSound();
+
             renderGrid();
             updatePreview();
+
+            // 滾動到選中的 chip
+            setTimeout(() => {
+                const sel = overlay.querySelector('.emm-expr-chip.selected');
+                if (sel) sel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 100);
         });
 
         // === 關閉 helper ===

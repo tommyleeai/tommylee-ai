@@ -64,7 +64,7 @@ window.PromptGen.PoseMagicModal = (function () {
                     <div class="pmm-title-row">
                         <div class="pmm-title">🎭 角色姿勢魔法系統 — Pose Magic</div>
                         <div class="pmm-toolbar">
-                            <button class="cmm-tool-btn" id="pmm-reset" title="重設"><span class="cmm-tool-icon">🔄</span> 重設</button>
+                            <button class="cmm-tool-btn" id="pmm-dice" title="隨機選取"><span class="cmm-tool-icon">🎲</span> 隨機</button>
                         </div>
                     </div>
                 </div>
@@ -299,22 +299,54 @@ window.PromptGen.PoseMagicModal = (function () {
             updatePreview();
         });
 
-        // === 重設 ===
-        document.getElementById('pmm-reset').addEventListener('click', () => {
-            sfx.playClick();
-            selectedPose = null;
-            selectedGravity = null;
-            selectedGaze = null;
-            searchQuery = '';
-            const searchInput = document.getElementById('pmm-search');
-            if (searchInput) searchInput.value = '';
-            overlay.querySelectorAll('.pmm-pose-chip').forEach(c => c.classList.remove('selected'));
-            // 重設重心選擇
+        // === 🎲 隨機選取 ===
+        document.getElementById('pmm-dice').addEventListener('click', () => {
+            // 從所有姿勢中隨機選一個
+            const randomPose = POSES[Math.floor(Math.random() * POSES.length)];
+            selectedPose = {
+                label: randomPose.label,
+                en: randomPose.en,
+                value: randomPose.value,
+                category: randomPose.category
+            };
+
+            // 隨機重心（50% 機率有重心）
+            selectedGravity = Math.random() > 0.5 ? GRAVITY[Math.floor(Math.random() * GRAVITY.length)].id : null;
+
+            // 隨機視線（60% 機率有視線）
+            selectedGaze = Math.random() > 0.4 ? GAZE[Math.floor(Math.random() * GAZE.length)].id : null;
+
+            // 更新重心 UI
             document.querySelectorAll('#pmm-gravity-grid .pmm-attr-chip').forEach(c => c.classList.remove('active'));
-            // 重設視線選擇
+            if (selectedGravity) {
+                const gc = document.querySelector(`#pmm-gravity-grid .pmm-attr-chip[data-gid="${selectedGravity}"]`);
+                if (gc) gc.classList.add('active');
+            }
+
+            // 更新視線 UI
             document.querySelectorAll('#pmm-gaze-grid .pmm-attr-chip').forEach(c => c.classList.remove('active'));
+            if (selectedGaze) {
+                const gz = document.querySelector(`#pmm-gaze-grid .pmm-attr-chip[data-gzid="${selectedGaze}"]`);
+                if (gz) gz.classList.add('active');
+            }
+
+            // 切換到該姿勢的分類 tab
+            currentTab = randomPose.category;
+            overlay.querySelectorAll('.pmm-tab').forEach(t => t.classList.remove('active'));
+            const targetTab = overlay.querySelector(`.pmm-tab[data-tab="${currentTab}"]`);
+            if (targetTab) targetTab.classList.add('active');
+
+            // 骰子音效
+            if (window.PromptGen.MagicModalBase) window.PromptGen.MagicModalBase.playDiceRollSound();
+
             renderGrid();
             updatePreview();
+
+            // 滾動到選中的 chip
+            setTimeout(() => {
+                const sel = overlay.querySelector('.pmm-pose-chip.selected');
+                if (sel) sel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 100);
         });
 
         // === 關閉 helper ===

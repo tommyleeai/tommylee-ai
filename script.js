@@ -2157,9 +2157,171 @@
 
 
     // ============================================
+    // ============================================
+    // ★ 登入守門 — 高級魔法與命運之輪需要登入
+    // ============================================
+    function requireLogin(featureName) {
+        const authUI = window.PromptGen.AuthUI;
+        if (authUI && authUI.isLoggedIn()) return true;
+
+        // 未登入 → 顯示中二封印提示
+        showMagicSealPrompt(featureName);
+        return false;
+    }
+
+    function showMagicSealPrompt(featureName) {
+        // 防止重複
+        if (document.getElementById('magic-seal-overlay')) return;
+
+        // 音效
+        try {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(300, ctx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(80, ctx.currentTime + 0.4);
+            gain.gain.setValueAtTime(0.2, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5);
+            osc.connect(gain).connect(ctx.destination);
+            osc.start(); osc.stop(ctx.currentTime + 0.5);
+        } catch (e) { }
+
+        const overlay = document.createElement('div');
+        overlay.id = 'magic-seal-overlay';
+        overlay.innerHTML = `
+            <div class="seal-backdrop"></div>
+            <div class="seal-content">
+                <div class="seal-icon">🔒</div>
+                <div class="seal-title">⛓️ 魔力封印 ⛓️</div>
+                <div class="seal-subtitle">「${featureName || '禁忌魔法'}」尚未解封</div>
+                <div class="seal-desc">
+                    此為<span class="seal-highlight">上位魔法</span>，需要完成<span class="seal-highlight">契約締結</span>才能使用。<br>
+                    以你的 Google 帳號獻上靈魂簽名，即可解除封印。
+                </div>
+                <button class="seal-login-btn" id="seal-login-btn">
+                    <i class="fa-brands fa-google"></i> 締結契約・解除封印
+                </button>
+                <button class="seal-close-btn" id="seal-close-btn">暫時撤退...</button>
+            </div>
+        `;
+
+        // 注入 CSS
+        if (!document.getElementById('magic-seal-css')) {
+            const style = document.createElement('style');
+            style.id = 'magic-seal-css';
+            style.textContent = `
+                #magic-seal-overlay {
+                    position: fixed; inset: 0; z-index: 999999;
+                    display: flex; align-items: center; justify-content: center;
+                    animation: seal-in 0.3s ease-out;
+                }
+                .seal-backdrop {
+                    position: absolute; inset: 0;
+                    background: rgba(0,0,0,0.75);
+                    backdrop-filter: blur(8px);
+                }
+                .seal-content {
+                    position: relative; text-align: center;
+                    background: linear-gradient(135deg, rgba(30,15,50,0.95), rgba(15,10,35,0.95));
+                    border: 2px solid rgba(220,50,50,0.4);
+                    border-radius: 20px;
+                    padding: 40px 48px;
+                    max-width: 440px;
+                    box-shadow: 0 0 60px rgba(220,50,50,0.2), 0 0 120px rgba(139,92,246,0.1), 0 20px 60px rgba(0,0,0,0.5);
+                    animation: seal-content-in 0.4s cubic-bezier(0.16,1,0.3,1) 0.1s both;
+                }
+                .seal-icon {
+                    font-size: 3.5rem;
+                    animation: seal-shake 0.5s ease 0.3s;
+                    filter: drop-shadow(0 0 20px rgba(220,50,50,0.5));
+                }
+                .seal-title {
+                    font-size: 1.6rem; font-weight: 900;
+                    color: #ff6b6b; letter-spacing: 6px;
+                    margin: 12px 0 8px;
+                    text-shadow: 0 0 20px rgba(220,50,50,0.5);
+                }
+                .seal-subtitle {
+                    font-size: 1.05rem; color: #e0d4ff;
+                    margin-bottom: 16px; letter-spacing: 1px;
+                }
+                .seal-desc {
+                    font-size: 0.9rem; color: #a0a0c0;
+                    line-height: 1.7; margin-bottom: 24px;
+                }
+                .seal-highlight {
+                    color: #fbbf24; font-weight: 700;
+                }
+                .seal-login-btn {
+                    display: inline-flex; align-items: center; gap: 10px;
+                    background: linear-gradient(135deg, #7c3aed, #4f46e5);
+                    color: #fff; border: none; border-radius: 12px;
+                    padding: 14px 32px; font-size: 1rem; font-weight: 700;
+                    cursor: pointer; letter-spacing: 1px;
+                    transition: all 0.3s;
+                    box-shadow: 0 4px 20px rgba(124,58,237,0.4);
+                }
+                .seal-login-btn:hover {
+                    transform: translateY(-2px) scale(1.02);
+                    box-shadow: 0 8px 30px rgba(124,58,237,0.6);
+                }
+                .seal-close-btn {
+                    display: block; margin: 16px auto 0;
+                    background: none; border: none;
+                    color: #666; font-size: 0.85rem;
+                    cursor: pointer; transition: color 0.2s;
+                }
+                .seal-close-btn:hover { color: #999; }
+                @keyframes seal-in {
+                    from { opacity: 0; } to { opacity: 1; }
+                }
+                @keyframes seal-content-in {
+                    0% { transform: scale(0.8) translateY(20px); opacity: 0; }
+                    100% { transform: scale(1) translateY(0); opacity: 1; }
+                }
+                @keyframes seal-shake {
+                    0%, 100% { transform: rotate(0); }
+                    25% { transform: rotate(-8deg); }
+                    75% { transform: rotate(8deg); }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+
+        document.body.appendChild(overlay);
+
+        // 登入按鈕
+        document.getElementById('seal-login-btn').addEventListener('click', async () => {
+            const authUI = window.PromptGen.AuthUI;
+            if (authUI && authUI.signIn) {
+                try {
+                    await authUI.signIn();
+                    overlay.remove();
+                } catch (e) {
+                    console.error('登入失敗:', e);
+                }
+            }
+        });
+
+        // 關閉按鈕
+        document.getElementById('seal-close-btn').addEventListener('click', () => {
+            overlay.style.animation = 'seal-in 0.2s ease reverse forwards';
+            setTimeout(() => overlay.remove(), 200);
+        });
+
+        // 點擊背景關閉
+        overlay.querySelector('.seal-backdrop').addEventListener('click', () => {
+            overlay.style.animation = 'seal-in 0.2s ease reverse forwards';
+            setTimeout(() => overlay.remove(), 200);
+        });
+    }
+
+    // ============================================
     // Body Magic Modal — 由 modules/body-magic-modal.js 提供
     // ============================================
     function openBodyMagicModal() {
+        if (!requireLogin('體型魔法')) return;
         window.PromptGen.BodyMagicModal.openBodyMagicModal();
     }
 
@@ -2167,6 +2329,7 @@
     // Race Magic Modal — 由 modules/race-magic-modal.js 提供
     // ============================================
     function openRaceMagicModal() {
+        if (!requireLogin('種族魔法')) return;
         window.PromptGen.RaceMagicModal.openRaceMagicModal();
     }
 
@@ -2174,6 +2337,7 @@
     // Job Magic Modal — 由 modules/job-magic-modal.js 提供
     // ============================================
     function openJobMagicModal() {
+        if (!requireLogin('職業魔法')) return;
         window.PromptGen.JobMagicModal.openJobMagicModal();
     }
 
@@ -2181,6 +2345,7 @@
     // Hair Magic Modal — 由 modules/hair-magic-modal.js 提供
     // ============================================
     function openHairMagicModal() {
+        if (!requireLogin('髮型魔法')) return;
         window.PromptGen.HairMagicModal.openHairMagicModal();
     }
 
@@ -2188,6 +2353,7 @@
     // Outfit Magic Modal — 由 modules/outfit-magic-modal.js 提供
     // ============================================
     function openOutfitMagicModal() {
+        if (!requireLogin('服裝魔法')) return;
         window.PromptGen.OutfitMagicModal.openOutfitMagicModal();
     }
 
@@ -2195,6 +2361,7 @@
     // Headwear Magic Modal — 由 modules/headwear-magic-modal.js 提供
     // ============================================
     function openHeadwearMagicModal() {
+        if (!requireLogin('頭飾魔法')) return;
         window.PromptGen.HeadwearMagicModal.openHeadwearMagicModal();
     }
 
@@ -2202,6 +2369,7 @@
     // Hand Items Magic Modal — 由 modules/hand-items-magic-modal.js 提供
     // ============================================
     function openHandItemsMagicModal() {
+        if (!requireLogin('手持物魔法')) return;
         window.PromptGen.HandItemsMagicModal.openHandItemsMagicModal();
     }
 
@@ -2209,6 +2377,7 @@
     // Expression Magic Modal — 由 modules/expression-magic-modal.js 提供
     // ============================================
     function openExpressionMagicModal() {
+        if (!requireLogin('表情魔法')) return;
         window.PromptGen.ExpressionMagicModal.openExpressionMagicModal();
     }
 
@@ -2216,6 +2385,7 @@
     // Pose Magic Modal — 由 modules/pose-magic-modal.js 提供
     // ============================================
     function openPoseMagicModal() {
+        if (!requireLogin('姿勢魔法')) return;
         window.PromptGen.PoseMagicModal.openPoseMagicModal();
     }
 
@@ -2223,6 +2393,7 @@
     // Anime Style Magic Modal — 由 modules/anime-style-magic-modal.js 提供
     // ============================================
     function openAnimeStyleMagicModal() {
+        if (!requireLogin('動漫風格魔法')) return;
         window.PromptGen.AnimeStyleMagicModal.openAnimeStyleMagicModal();
     }
 
@@ -2230,6 +2401,7 @@
     // Art Style Magic Modal — 由 modules/art-style-magic-modal.js 提供
     // ============================================
     function openArtStyleMagicModal() {
+        if (!requireLogin('藝術風格魔法')) return;
         window.PromptGen.ArtStyleMagicModal.openArtStyleMagicModal();
     }
 
@@ -2237,21 +2409,25 @@
     // Artist Magic Modal — 由 modules/artist-magic-modal.js 提供
     // ============================================
     function openArtistMagicModal() {
+        if (!requireLogin('繪師魔法')) return;
         window.PromptGen.ArtistMagicModal.openArtistMagicModal();
     }
     function openSceneMagicModal() {
+        if (!requireLogin('場景魔法')) return;
         window.PromptGen.SceneMagicModal.openSceneMagicModal();
     }
     // ============================================
     // Camera Magic Modal — 由 modules/camera-magic-modal.js 提供
     // ============================================
     function openCameraMagicModal() {
+        if (!requireLogin('攝影魔法')) return;
         window.PromptGen.CameraMagicModal.openCameraMagicModal();
     }
     // ============================================
     // Atmosphere Magic Modal — 由 modules/atmosphere-magic-modal.js 提供
     // ============================================
     function openAtmosphereMagicModal() {
+        if (!requireLogin('氛圍魔法')) return;
         window.PromptGen.AtmosphereMagicModal.openAtmosphereMagicModal();
     }
 
@@ -2509,6 +2685,17 @@
             delete state.selections[sectionId];
         } else {
             state.selections[sectionId] = value;
+        }
+
+        // ★ 已在寫實模式下選/取消人類 → 自動套用/還原攝影預設
+        if (sectionId === 'race' && state.dimension === 'realistic') {
+            if (state.selections.race === 'human' && !_realisticBackup) {
+                applyRealisticPhotoPreset(state.dimension);
+                renderTabs();
+            } else if (state.selections.race !== 'human' && _realisticBackup) {
+                restoreFromRealisticPreset();
+                renderTabs();
+            }
         }
 
         renderTabContent();
@@ -3550,6 +3737,7 @@
 
     function triggerFateWheel() {
         // v8.0 — 開啟命運之輪 Modal（完整轉盤體驗）
+        if (!requireLogin('運命の輪盤')) return;
         if (window.PromptGen.FateWheelModal) {
             window.PromptGen.FateWheelModal.openFateWheelModal();
         }
@@ -3590,8 +3778,13 @@
             if (state.dimension === 'realistic' && prevDim !== 'realistic') {
                 const isHuman = state.selections.race === 'human';
                 if (isHuman) {
-                    applyRealisticPhotoPreset();
+                    applyRealisticPhotoPreset(prevDim);
                 }
+            }
+
+            // ★ 離開寫實模式 → 還原先前設定
+            if (prevDim === 'realistic' && state.dimension !== 'realistic') {
+                restoreFromRealisticPreset();
             }
 
             updateDimensionUI();
@@ -3602,10 +3795,26 @@
         });
     }
 
+    // 備份暫存（套用寫實預設前的原始值）
+    let _realisticBackup = null;
+
     // ★ 真人攝影預設一鍵套用
-    function applyRealisticPhotoPreset() {
+    function applyRealisticPhotoPreset(prevDim) {
         const DATA = window.PromptGen.Data;
         if (!DATA) return;
+
+        // 備份目前狀態
+        _realisticBackup = {
+            activeTab: state.activeTab,
+            quality: state.selections['quality'] ? [...(Array.isArray(state.selections['quality']) ? state.selections['quality'] : [state.selections['quality']])] : undefined,
+            artStyle: state.selections.artStyle,
+            focalLength: state.selections.focalLength,
+            aperture: state.selections.aperture,
+            shotSize: state.selections.shotSize,
+            lighting: state.selections.lighting,
+            inputSubject: inputSubject ? inputSubject.value : '',
+            prevDim: prevDim
+        };
 
         // 1) 切到風格分頁
         state.activeTab = 'style';
@@ -3637,15 +3846,215 @@
         // 8) 打光 → 自然光
         state.selections.lighting = 'natural light';
 
-        // 中二 toast 提示
-        if (window.PromptGen.ShareURL && window.PromptGen.ShareURL.showToast) {
-            window.PromptGen.ShareURL.showToast(
-                '⚡ 「次元結界・寫實化」發動！真人攝影魔法陣已展開 📸✨',
-                'success'
-            );
-        }
+        // ★ 次元結界特效 + 音效
+        showDimensionBarrier();
 
         console.log('[Dimension] ✅ 已自動套用真人攝影預設（人類種族 + 寫實模式）');
+    }
+
+    // ★ 離開寫實模式 → 還原備份
+    function restoreFromRealisticPreset() {
+        if (!_realisticBackup) return;
+
+        // 還原分頁
+        state.activeTab = _realisticBackup.activeTab || 'basic';
+
+        // 還原畫質
+        if (_realisticBackup.quality !== undefined) {
+            state.selections['quality'] = _realisticBackup.quality;
+        } else {
+            delete state.selections['quality'];
+        }
+
+        // 還原藝術風格
+        if (_realisticBackup.artStyle !== undefined) {
+            state.selections.artStyle = _realisticBackup.artStyle;
+        } else {
+            delete state.selections.artStyle;
+        }
+
+        // 還原焦距
+        if (_realisticBackup.focalLength !== undefined) {
+            state.selections.focalLength = _realisticBackup.focalLength;
+        } else {
+            delete state.selections.focalLength;
+        }
+
+        // 還原光圈
+        if (_realisticBackup.aperture !== undefined) {
+            state.selections.aperture = _realisticBackup.aperture;
+        } else {
+            delete state.selections.aperture;
+        }
+
+        // 還原取景
+        if (_realisticBackup.shotSize !== undefined) {
+            state.selections.shotSize = _realisticBackup.shotSize;
+        } else {
+            delete state.selections.shotSize;
+        }
+
+        // 還原打光
+        if (_realisticBackup.lighting !== undefined) {
+            state.selections.lighting = _realisticBackup.lighting;
+        } else {
+            delete state.selections.lighting;
+        }
+
+        // 還原 inputSubject（移除自動加的 Japanese）
+        if (inputSubject && _realisticBackup.inputSubject !== undefined) {
+            inputSubject.value = _realisticBackup.inputSubject;
+        }
+
+        _realisticBackup = null;
+        console.log('[Dimension] ↩️ 已還原寫實模式前的設定');
+    }
+
+    // ★ 次元結界・寫實化 — 全畫面特效 + 音效
+    function showDimensionBarrier() {
+        // --- 音效（Web Audio API 合成） ---
+        try {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            // 低頻嗡鳴
+            const osc1 = ctx.createOscillator();
+            const gain1 = ctx.createGain();
+            osc1.type = 'sine';
+            osc1.frequency.setValueAtTime(80, ctx.currentTime);
+            osc1.frequency.exponentialRampToValueAtTime(200, ctx.currentTime + 0.3);
+            gain1.gain.setValueAtTime(0.3, ctx.currentTime);
+            gain1.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.8);
+            osc1.connect(gain1).connect(ctx.destination);
+            osc1.start(ctx.currentTime);
+            osc1.stop(ctx.currentTime + 0.8);
+
+            // 高頻叮！
+            const osc2 = ctx.createOscillator();
+            const gain2 = ctx.createGain();
+            osc2.type = 'sine';
+            osc2.frequency.setValueAtTime(1200, ctx.currentTime + 0.15);
+            osc2.frequency.exponentialRampToValueAtTime(800, ctx.currentTime + 0.6);
+            gain2.gain.setValueAtTime(0, ctx.currentTime);
+            gain2.gain.linearRampToValueAtTime(0.25, ctx.currentTime + 0.18);
+            gain2.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.9);
+            osc2.connect(gain2).connect(ctx.destination);
+            osc2.start(ctx.currentTime + 0.15);
+            osc2.stop(ctx.currentTime + 0.9);
+
+            // 短促衝擊
+            const osc3 = ctx.createOscillator();
+            const gain3 = ctx.createGain();
+            osc3.type = 'square';
+            osc3.frequency.setValueAtTime(150, ctx.currentTime);
+            gain3.gain.setValueAtTime(0.15, ctx.currentTime);
+            gain3.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.15);
+            osc3.connect(gain3).connect(ctx.destination);
+            osc3.start(ctx.currentTime);
+            osc3.stop(ctx.currentTime + 0.15);
+        } catch (e) { /* 靜音降級 */ }
+
+        // --- 全畫面特效 ---
+        const overlay = document.createElement('div');
+        overlay.id = 'dimension-barrier-fx';
+        overlay.innerHTML = `
+            <div class="db-flash"></div>
+            <div class="db-ring"></div>
+            <div class="db-ring db-ring2"></div>
+            <div class="db-text">⚡ 次元結界・寫實化 ⚡<br><span>真人攝影魔法陣已展開</span></div>
+            <div class="db-particles">${Array.from({ length: 20 }, (_, i) =>
+            `<div class="db-particle" style="--i:${i};--x:${Math.random() * 100}vw;--y:${Math.random() * 100}vh;--d:${Math.random() * 360}deg"></div>`
+        ).join('')}</div>
+        `;
+
+        // 注入 CSS（如果還沒有）
+        if (!document.getElementById('dimension-barrier-css')) {
+            const style = document.createElement('style');
+            style.id = 'dimension-barrier-css';
+            style.textContent = `
+                #dimension-barrier-fx {
+                    position: fixed; inset: 0; z-index: 999999;
+                    display: flex; align-items: center; justify-content: center;
+                    pointer-events: none;
+                    background: rgba(0, 0, 0, 0.65);
+                    animation: db-overlay-in 0.3s ease-out, db-fadeout 0.5s ease 1.8s forwards;
+                }
+                @keyframes db-overlay-in {
+                    0% { background: rgba(0,0,0,0); }
+                    100% { background: rgba(0,0,0,0.65); }
+                }
+                .db-flash {
+                    position: absolute; inset: 0;
+                    background: radial-gradient(circle at center, rgba(139,92,246,0.4) 0%, rgba(59,130,246,0.2) 40%, transparent 70%);
+                    animation: db-flash-pulse 0.6s ease-out;
+                }
+                .db-ring {
+                    position: absolute; width: 300px; height: 300px;
+                    border: 3px solid rgba(139,92,246,0.6);
+                    border-radius: 50%;
+                    box-shadow: 0 0 40px rgba(139,92,246,0.4), inset 0 0 40px rgba(139,92,246,0.1);
+                    animation: db-ring-expand 1.2s ease-out forwards;
+                }
+                .db-ring2 {
+                    border-color: rgba(59,130,246,0.5);
+                    box-shadow: 0 0 40px rgba(59,130,246,0.3), inset 0 0 40px rgba(59,130,246,0.1);
+                    animation-delay: 0.15s;
+                    animation-duration: 1.4s;
+                }
+                .db-text {
+                    position: relative; text-align: center;
+                    font-size: 1.8rem; font-weight: 900;
+                    color: #f0e8ff;
+                    text-shadow: 0 0 30px rgba(139,92,246,0.8), 0 0 60px rgba(59,130,246,0.5), 0 2px 4px rgba(0,0,0,0.8);
+                    letter-spacing: 4px;
+                    padding: 24px 48px;
+                    border-radius: 16px;
+                    background: rgba(15, 10, 40, 0.7);
+                    border: 1px solid rgba(139,92,246,0.3);
+                    animation: db-text-in 0.5s cubic-bezier(0.16,1,0.3,1) 0.1s both;
+                }
+                .db-text span {
+                    display: block; font-size: 1rem; font-weight: 500;
+                    color: #93c5fd; letter-spacing: 2px;
+                    margin-top: 8px; opacity: 0.9;
+                }
+                .db-particle {
+                    position: absolute;
+                    left: var(--x); top: var(--y);
+                    width: 4px; height: 4px;
+                    background: #c4b5fd; border-radius: 50%;
+                    box-shadow: 0 0 8px #8b5cf6;
+                    animation: db-sparkle 1s ease-out calc(var(--i) * 0.05s) both;
+                }
+                @keyframes db-flash-pulse {
+                    0% { opacity: 0; transform: scale(0.5); }
+                    30% { opacity: 1; transform: scale(1.2); }
+                    100% { opacity: 0; transform: scale(2); }
+                }
+                @keyframes db-ring-expand {
+                    0% { transform: scale(0.3) rotate(0deg); opacity: 0.8; }
+                    100% { transform: scale(3) rotate(180deg); opacity: 0; }
+                }
+                @keyframes db-text-in {
+                    0% { transform: scale(0.5) translateY(20px); opacity: 0; }
+                    60% { transform: scale(1.05) translateY(-5px); opacity: 1; }
+                    100% { transform: scale(1) translateY(0); opacity: 1; }
+                }
+                @keyframes db-sparkle {
+                    0% { transform: translate(0,0) scale(0); opacity: 1; }
+                    100% { transform: translate(calc(cos(var(--d))*80px), calc(sin(var(--d))*80px)) scale(1.5); opacity: 0; }
+                }
+                @keyframes db-fadeout {
+                    to { opacity: 0; }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+
+        document.body.appendChild(overlay);
+
+        // 2.3 秒後移除
+        setTimeout(() => {
+            overlay.remove();
+        }, 2300);
     }
 
     // 獨立運命輪盤按鈕
