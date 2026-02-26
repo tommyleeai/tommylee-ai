@@ -2965,10 +2965,12 @@
                 if (secId === 'eyeColorLeft') {
                     const rightEye = state.selections['eyeColorRight'];
                     if (rightEye && rightEye !== val) {
-                        parts.push(`${val} left eye, ${rightEye} right eye`);
+                        // 異色瞳：明確標示左右眼
+                        parts.push(`heterochromia, left eye: ${val}, right eye: ${rightEye}`);
                         return; // Skip right eye in normal flow
                     } else {
-                        parts.push(`${val} eyes`);
+                        // 同色瞳：直接輸出完整描述
+                        parts.push(val);
                         return;
                     }
                 }
@@ -2976,7 +2978,7 @@
                     // Already handled by left eye
                     const leftEye = state.selections['eyeColorLeft'];
                     if (leftEye) return; // Already emitted
-                    parts.push(`${val} eyes`);
+                    parts.push(val);
                     return;
                 }
                 // 複選 section → 合併為逗號分隔
