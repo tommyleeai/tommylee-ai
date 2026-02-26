@@ -1365,12 +1365,12 @@ window.PromptGen.Data = (function () {
         // ── 04 圍巾與頸部（5 件）──
         { label: '圍巾', en: 'Scarf', value: 'scarf, winter scarf', image: 'assets/previews/hw_scarf.png' },
         { label: '領巾', en: 'Neckerchief', value: 'neckerchief, neck scarf', image: 'assets/previews/hw_neckerchief.png' },
-        { label: '披肩', en: 'Shawl', value: 'shawl, shoulder wrap' },
-        { label: '斗篷帽', en: 'Hooded Cloak', value: 'hooded cloak, cloak with hood' },
-        { label: '頭巾', en: 'Bandana', value: 'bandana, head bandana' },
+        { label: '披肩', en: 'Shawl', value: 'shawl, shoulder wrap', image: 'assets/previews/hw_shawl.png' },
+        { label: '斗篷帽', en: 'Hooded Cloak', value: 'hooded cloak, cloak with hood', image: 'assets/previews/hw_hooded_cloak.png' },
+        { label: '頭巾', en: 'Bandana', value: 'bandana, head bandana', image: 'assets/previews/hw_bandana.png' },
         // ── 05 面部覆蓋（6 件）──
-        { label: '面具', en: 'Mask', value: 'mask, masquerade mask' },
-        { label: '半面罩', en: 'Half Mask', value: 'half mask, half face mask' },
+        { label: '面具', en: 'Mask', value: 'mask, masquerade mask', image: 'assets/previews/hw_mask.png' },
+        { label: '半面罩', en: 'Half Mask', value: 'half mask, half face mask', image: 'assets/previews/hw_half_mask.png' },
         { label: '眼罩', en: 'Eye Patch', value: 'eye patch, eyepatch' },
         { label: '面紗', en: 'Veil', value: 'veil, face veil' },
         { label: '口罩', en: 'Face Mask', value: 'face mask, surgical mask' },
