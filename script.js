@@ -4454,6 +4454,30 @@
         }, 100);
     }
 
+    // 暴露全域函數：複製文字 + 開啟 SitePicker（供 ImageAnalyzer 等外部模組呼叫）
+    window.PromptGen.copyAndShowSitePicker = function (text) {
+        if (!text) return;
+        navigator.clipboard.writeText(text);
+
+        const DEFAULT_AI_SITES = [
+            { name: 'Grok 速度型', url: 'https://grok.com/' },
+            { name: 'Gpt 乖寶型', url: 'https://chatgpt.com/' },
+            { name: 'bing 笨呆型', url: 'https://www.bing.com/images/create/ai-image-generator' }
+        ];
+        const saved = localStorage.getItem('aiSites');
+        const aiSites = saved ? JSON.parse(saved) : DEFAULT_AI_SITES;
+        const validSites = aiSites.filter(site => site.name && site.url);
+
+        if (validSites.length === 0) {
+            sfx.playSuccess();
+        } else if (validSites.length === 1) {
+            window.open(validSites[0].url, '_blank');
+            sfx.playSuccess();
+        } else {
+            showSitePicker(validSites);
+        }
+    };
+
     // Event Listeners for Settings
     btnSettings.addEventListener('click', openSettings);
     btnCloseSettings.addEventListener('click', closeSettings);

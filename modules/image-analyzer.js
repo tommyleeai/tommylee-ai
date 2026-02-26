@@ -175,20 +175,24 @@ IMPORTANT:
             });
         }
 
-        // 套用按鈕
+        // 套用按鈕：複製 + 開啟 SitePicker（不關閉 Modal）
         if (btnApply) {
             btnApply.addEventListener('click', function () {
                 const text = resultBox.textContent;
                 if (!text) return;
+                // 同時填入主頁輸出區
                 const outputEl = document.getElementById('final-prompt');
                 if (outputEl) {
                     outputEl.textContent = text;
-                    // 觸發音效
-                    if (window.PromptGen._sfx) {
-                        window.PromptGen._sfx.playSuccess();
-                    }
                 }
-                closeModal();
+                // 呼叫全域的 複製+SitePicker
+                if (window.PromptGen.copyAndShowSitePicker) {
+                    window.PromptGen.copyAndShowSitePicker(text);
+                }
+                // 按鈕反饋
+                const origHTML = btnApply.innerHTML;
+                btnApply.innerHTML = '<i class="fa-solid fa-check"></i> 已複製，選擇生成網站';
+                setTimeout(function () { btnApply.innerHTML = origHTML; }, 2000);
             });
         }
 
@@ -350,6 +354,9 @@ IMPORTANT:
 
                 // 自動存檔到 Firebase
                 saveAnalysis(resultText);
+
+                // 分析完成後改按鈕文字
+                btnAnalyze.innerHTML = '<i class="fa-solid fa-arrow-rotate-right"></i> 分析下一張';
 
             } catch (err) {
                 showError(err.message);
