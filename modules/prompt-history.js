@@ -341,6 +341,11 @@ window.PromptGen.PromptHistory = (function () {
             console.log('[History] ⚠️ Prompt 已載入（僅文字，舊版存檔無 state）');
         }
 
+        // 載入成功音效
+        if (window.PromptGen.SoundManager) {
+            window.PromptGen.SoundManager.playSuccess();
+        }
+
         // 載入成功的視覺反饋
         const finalPrompt = document.getElementById('final-prompt');
         if (finalPrompt) {
