@@ -2842,7 +2842,7 @@
         }
 
         // Age
-        if (state.age) {
+        if (state.age && state.ageEnabled !== false) {
             const ageDesc = getAgeDescriptor(state.age, state.gender);
             if (ageDesc) {
                 parts.push(ageDesc);
@@ -3088,7 +3088,7 @@
         if (inputSubject.value.trim()) yaml += `additional_instructions: ${inputSubject.value.trim()}\n`;
         yaml += `gender: ${state.gender ? (state.gender === 'female' ? 'female' : 'male') : 'unspecified'}\n`;
 
-        if (state.age) {
+        if (state.age && state.ageEnabled !== false) {
             const ageDesc = getAgeDescriptor(state.age, state.gender);
             if (ageDesc) {
                 yaml += `age: ${ageDesc}\n`;
