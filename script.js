@@ -1560,6 +1560,34 @@
                     const tagGrid = sectionEl.querySelector('.tag-grid-paginated');
                     if (tagGrid) tagGrid.classList.add('body-section-disabled');
                 }
+
+                // Custom input
+                if (state.customInputVisible[section.id]) {
+                    const customRow = document.createElement('div');
+                    customRow.className = 'custom-input-row';
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.className = 'custom-section-input';
+                    input.placeholder = state.lang === 'zh' ? '輸入自訂值...' : 'Enter custom value...';
+                    input.value = state.customInputs[section.id] || '';
+                    input.addEventListener('input', (e) => {
+                        state.customInputs[section.id] = e.target.value.trim();
+                        generatePrompt();
+                    });
+                    customRow.appendChild(input);
+                    const clearBtn = document.createElement('button');
+                    clearBtn.className = 'btn-clear-custom';
+                    clearBtn.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+                    clearBtn.addEventListener('click', () => {
+                        state.customInputs[section.id] = '';
+                        state.customInputVisible[section.id] = false;
+                        renderTabContent();
+                        generatePrompt();
+                    });
+                    customRow.appendChild(clearBtn);
+                    sectionEl.appendChild(customRow);
+                }
+
                 tabContent.appendChild(sectionEl);
                 return;
             }
@@ -1634,6 +1662,35 @@
                     const tagGrid = sectionEl.querySelector('.tag-grid-paginated');
                     if (tagGrid) tagGrid.classList.add('body-section-disabled');
                 }
+
+
+                // Custom input
+                if (state.customInputVisible[section.id]) {
+                    const customRow = document.createElement('div');
+                    customRow.className = 'custom-input-row';
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.className = 'custom-section-input';
+                    input.placeholder = state.lang === 'zh' ? '輸入自訂值...' : 'Enter custom value...';
+                    input.value = state.customInputs[section.id] || '';
+                    input.addEventListener('input', (e) => {
+                        state.customInputs[section.id] = e.target.value.trim();
+                        generatePrompt();
+                    });
+                    customRow.appendChild(input);
+                    const clearBtn = document.createElement('button');
+                    clearBtn.className = 'btn-clear-custom';
+                    clearBtn.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+                    clearBtn.addEventListener('click', () => {
+                        state.customInputs[section.id] = '';
+                        state.customInputVisible[section.id] = false;
+                        renderTabContent();
+                        generatePrompt();
+                    });
+                    customRow.appendChild(clearBtn);
+                    sectionEl.appendChild(customRow);
+                }
+
                 tabContent.appendChild(sectionEl);
                 return;
             }
@@ -1706,6 +1763,34 @@
                     const tagGrid = sectionEl.querySelector('.tag-grid-paginated');
                     if (tagGrid) tagGrid.classList.add('body-section-disabled');
                 }
+
+                // Custom input
+                if (state.customInputVisible[section.id]) {
+                    const customRow = document.createElement('div');
+                    customRow.className = 'custom-input-row';
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.className = 'custom-section-input';
+                    input.placeholder = state.lang === 'zh' ? '輸入自訂值...' : 'Enter custom value...';
+                    input.value = state.customInputs[section.id] || '';
+                    input.addEventListener('input', (e) => {
+                        state.customInputs[section.id] = e.target.value.trim();
+                        generatePrompt();
+                    });
+                    customRow.appendChild(input);
+                    const clearBtn = document.createElement('button');
+                    clearBtn.className = 'btn-clear-custom';
+                    clearBtn.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+                    clearBtn.addEventListener('click', () => {
+                        state.customInputs[section.id] = '';
+                        state.customInputVisible[section.id] = false;
+                        renderTabContent();
+                        generatePrompt();
+                    });
+                    customRow.appendChild(clearBtn);
+                    sectionEl.appendChild(customRow);
+                }
+
                 tabContent.appendChild(sectionEl);
                 return;
             }
