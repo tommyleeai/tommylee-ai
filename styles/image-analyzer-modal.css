@@ -1,0 +1,288 @@
+/* === Image Analyzer Modal START === */
+
+/* ── Modal Overlay ── */
+#image-analyzer-modal .settings-panel {
+    max-width: 680px;
+    width: 95%;
+}
+
+/* ── Upload Area ── */
+.ia-upload-zone {
+    position: relative;
+    border: 2px dashed rgba(167, 139, 250, 0.4);
+    border-radius: 16px;
+    padding: 2.5rem 1.5rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: rgba(167, 139, 250, 0.05);
+    margin-bottom: 1rem;
+}
+
+.ia-upload-zone:hover,
+.ia-upload-zone.drag-over {
+    border-color: rgba(167, 139, 250, 0.8);
+    background: rgba(167, 139, 250, 0.12);
+    transform: scale(1.01);
+}
+
+.ia-upload-zone input[type="file"] {
+    display: none;
+}
+
+.ia-upload-icon {
+    font-size: 2.5rem;
+    margin-bottom: 0.75rem;
+    opacity: 0.7;
+}
+
+.ia-upload-text {
+    color: #94a3b8;
+    font-size: 0.9rem;
+    line-height: 1.6;
+}
+
+.ia-upload-text strong {
+    color: #a78bfa;
+}
+
+/* ── Image Preview ── */
+.ia-preview-container {
+    display: none;
+    margin-bottom: 1rem;
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    background: rgba(0, 0, 0, 0.3);
+}
+
+.ia-preview-container.active {
+    display: block;
+}
+
+.ia-preview-container img {
+    width: 100%;
+    max-height: 320px;
+    object-fit: contain;
+    display: block;
+}
+
+.ia-preview-remove {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(239, 68, 68, 0.85);
+    color: #fff;
+    font-size: 0.9rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    backdrop-filter: blur(4px);
+}
+
+.ia-preview-remove:hover {
+    background: rgba(239, 68, 68, 1);
+    transform: scale(1.1);
+}
+
+/* ── Analyze Button ── */
+.ia-analyze-btn {
+    width: 100%;
+    padding: 0.85rem 1.5rem;
+    border: none;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #7c3aed 0%, #a78bfa 100%);
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.ia-analyze-btn:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 20px rgba(124, 58, 237, 0.4);
+}
+
+.ia-analyze-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.ia-analyze-btn .ia-spinner {
+    display: none;
+    width: 18px;
+    height: 18px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: ia-spin 0.8s linear infinite;
+}
+
+.ia-analyze-btn.loading .ia-spinner {
+    display: inline-block;
+}
+
+.ia-analyze-btn.loading .ia-btn-text {
+    display: none;
+}
+
+@keyframes ia-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* ── Result Area ── */
+.ia-result-area {
+    display: none;
+    margin-top: 0.5rem;
+}
+
+.ia-result-area.active {
+    display: block;
+}
+
+.ia-result-label {
+    font-size: 0.8rem;
+    color: #a78bfa;
+    font-weight: 600;
+    margin-bottom: 0.4rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.ia-result-box {
+    background: rgba(0, 0, 0, 0.35);
+    border: 1px solid rgba(167, 139, 250, 0.2);
+    border-radius: 10px;
+    padding: 1rem;
+    color: #e2e8f0;
+    font-size: 0.88rem;
+    line-height: 1.7;
+    min-height: 80px;
+    max-height: 240px;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    word-break: break-word;
+    font-family: 'Inter', monospace;
+}
+
+.ia-result-box::-webkit-scrollbar {
+    width: 6px;
+}
+
+.ia-result-box::-webkit-scrollbar-thumb {
+    background: rgba(167, 139, 250, 0.3);
+    border-radius: 3px;
+}
+
+/* ── Action Buttons ── */
+.ia-action-row {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+}
+
+.ia-action-row .btn {
+    flex: 1;
+    padding: 0.6rem 1rem;
+    border: none;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+}
+
+.ia-btn-apply {
+    background: linear-gradient(135deg, #059669, #10b981);
+    color: #fff;
+}
+
+.ia-btn-apply:hover {
+    box-shadow: 0 3px 12px rgba(5, 150, 105, 0.4);
+    transform: translateY(-1px);
+}
+
+.ia-btn-copy {
+    background: rgba(167, 139, 250, 0.15);
+    color: #a78bfa;
+    border: 1px solid rgba(167, 139, 250, 0.3) !important;
+}
+
+.ia-btn-copy:hover {
+    background: rgba(167, 139, 250, 0.25);
+    transform: translateY(-1px);
+}
+
+/* ── Error Message ── */
+.ia-error {
+    display: none;
+    padding: 0.75rem 1rem;
+    border-radius: 10px;
+    background: rgba(239, 68, 68, 0.12);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: #fca5a5;
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
+}
+
+.ia-error.active {
+    display: block;
+}
+
+/* ── API Key Hint ── */
+.ia-apikey-hint {
+    display: none;
+    padding: 0.75rem 1rem;
+    border-radius: 10px;
+    background: rgba(251, 191, 36, 0.1);
+    border: 1px solid rgba(251, 191, 36, 0.3);
+    color: #fbbf24;
+    font-size: 0.83rem;
+    margin-bottom: 1rem;
+    line-height: 1.5;
+}
+
+.ia-apikey-hint.active {
+    display: block;
+}
+
+.ia-apikey-hint a {
+    color: #a78bfa;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+/* ── Token Info ── */
+.ia-token-info {
+    display: none;
+    font-size: 0.75rem;
+    color: #64748b;
+    margin-top: 0.5rem;
+    text-align: right;
+}
+
+.ia-token-info.active {
+    display: block;
+}
+
+/* === Image Analyzer Modal END === */

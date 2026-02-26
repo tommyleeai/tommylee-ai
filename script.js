@@ -4404,6 +4404,10 @@
     function openSettings() {
         settingsModal.classList.add('active');
         sfx.playClick();
+        // 載入 Gemini API Key 到 Settings
+        if (window.PromptGen.ImageAnalyzer) {
+            window.PromptGen.ImageAnalyzer.loadApiKeyToSettings();
+        }
         // 註冊到 ModalRegistry（統一 ESC 關閉）
         window.PromptGen.ModalRegistry.register('settings-modal', closeSettings);
     }
@@ -4488,6 +4492,11 @@
         // Filter out empty entries
         aiSitesConfig = aiSitesConfig.filter(site => site.name.trim() && site.url.trim());
         saveAISites();
+
+        // Save Gemini API Key
+        if (window.PromptGen.ImageAnalyzer) {
+            window.PromptGen.ImageAnalyzer.saveApiKeyFromSettings();
+        }
 
         // Save Background Settings
         saveState();

@@ -74,6 +74,7 @@
     <link rel="stylesheet" href="styles/pose-magic-modal.css?v=7.5">
     <link rel="stylesheet" href="styles/atmosphere-magic-modal.css?v=7.8">
     <link rel="stylesheet" href="styles/fate-wheel-modal.css?v=8.0">
+    <link rel="stylesheet" href="styles/image-analyzer-modal.css?v=9.1">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
@@ -136,6 +137,9 @@
                                 <i class="fa-solid fa-right-from-bracket"></i>
                             </button>
                         </div>
+                        <button id="btn-image-analyzer" class="btn-icon" title="📸 圖片解析 (Image Analyzer)">
+                            <i class="fa-solid fa-camera-retro"></i>
+                        </button>
                         <button id="btn-lang-toggle" class="btn-icon btn-icon-text active" title="語言：中文 → 按此切英文">
                             <span class="btn-icon-label">中</span>
                         </button>
@@ -400,6 +404,21 @@
 
                 <hr class="settings-divider">
 
+                <h3 class="settings-subtitle">🔑 AI 圖片解析 (Image Analyzer)</h3>
+
+                <!-- Gemini API Key -->
+                <div class="setting-group">
+                    <label>Gemini API Key</label>
+                    <div class="input-with-action">
+                        <input type="password" id="setting-gemini-key" placeholder="輸入您的 Gemini API Key"
+                            autocomplete="off">
+                        <small class="hint-text">前往 <a href="https://aistudio.google.com/apikey" target="_blank"
+                                style="color:#a78bfa;">Google AI Studio</a> 免費取得 API Key。資料僅存在您的瀏覽器中。</small>
+                    </div>
+                </div>
+
+                <hr class="settings-divider">
+
                 <h3 class="settings-subtitle">🔮 身材控制 (Body Magic)</h3>
 
                 <!-- Body Magic Toggle -->
@@ -496,6 +515,58 @@
             </div>
         </div>
     </div>
+
+    <!-- Image Analyzer Modal -->
+    <div id="image-analyzer-modal" class="modal-overlay">
+        <div class="settings-panel">
+            <div class="settings-header">
+                <h2><i class="fa-solid fa-camera-retro"></i> 📸 圖片解析 · Image Analyzer</h2>
+                <button class="btn-close" id="btn-close-image-analyzer">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="settings-body">
+                <div class="ia-apikey-hint">
+                    ⚠️ 尚未設定 API Key。請先到 <a id="ia-goto-settings">⚙️ 設定</a> 中輸入 Gemini API Key。
+                </div>
+
+                <div class="ia-upload-zone">
+                    <input type="file" id="ia-file-input" accept="image/png,image/jpeg,image/webp,image/gif">
+                    <div class="ia-upload-icon">📷</div>
+                    <div class="ia-upload-text">
+                        <strong>點擊上傳</strong> 或拖放圖片到此區域<br>
+                        也可以直接 <strong>Ctrl+V 貼上</strong><br>
+                        <small>支援 PNG, JPG, WEBP, GIF（最大 10MB）</small>
+                    </div>
+                </div>
+
+                <div class="ia-preview-container">
+                    <img id="ia-preview-img" alt="Preview">
+                    <button class="ia-preview-remove" title="移除圖片">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+
+                <button class="ia-analyze-btn" disabled>
+                    <span class="ia-spinner"></span>
+                    <span class="ia-btn-text"><i class="fa-solid fa-wand-magic-sparkles"></i> 開始分析</span>
+                </button>
+
+                <div class="ia-error"></div>
+
+                <div class="ia-result-area">
+                    <div class="ia-result-label"><i class="fa-solid fa-sparkles"></i> 分析結果 (Generated Prompt)</div>
+                    <div class="ia-result-box"></div>
+                    <div class="ia-token-info"></div>
+                    <div class="ia-action-row">
+                        <button class="btn ia-btn-apply"><i class="fa-solid fa-arrow-right"></i> 套用到輸出</button>
+                        <button class="btn ia-btn-copy"><i class="fa-regular fa-copy"></i> 複製</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Site Picker Popup -->
     <div id="site-picker" class="site-picker-popup">
         <div class="site-picker-header" data-i18n="choose-website">選擇 AI 網站</div>
@@ -555,8 +626,16 @@
     <script src="modules/auth-ui.js?v=8.7"></script>
     <script src="modules/prompt-history.js?v=8.9.2"></script>
     <script src="modules/share-url.js?v=8.9"></script>
+    <script src="modules/image-analyzer.js?v=9.1"></script>
     <script src="script.js?v=9.0.2"></script>
     <script>
+        // 圖片分析模組初始化
+        document.addEventListener('DOMContentLoaded', function () {
+            if (window.PromptGen.ImageAnalyzer) {
+                window.PromptGen.ImageAnalyzer.init();
+            }
+        });
+
         // Firebase 初始化（等 DOM 就緒）
         document.addEventListener('DOMContentLoaded', function () {
             if (window.PromptGen.FirebaseInit && window.PromptGen.FirebaseInit.init()) {
