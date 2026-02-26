@@ -2955,7 +2955,7 @@
                 return;
             }
             // Skip camera sub-sections when cameraAdvanced is active (already covered by magic modal)
-            const CAMERA_SUB_SECS = ['aspectRatio', 'shotSize', 'focalLength', 'aperture', 'lensEffect'];
+            const CAMERA_SUB_SECS = ['shotSize', 'focalLength', 'aperture', 'lensEffect'];
             if (CAMERA_SUB_SECS.includes(secId) && state.cameraAdvanced && state.cameraAdvanced.bonusTraits && state.cameraAdvanced.bonusTraits.length > 0) {
                 return;
             }
