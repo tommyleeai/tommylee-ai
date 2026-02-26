@@ -3366,15 +3366,39 @@ input[type=range]::-webkit-slider-thumb:hover {
     justify-content: center;
 }
 
+/* === 年齡點擊切換 START === */
 .age-number {
     font-size: 2rem;
     font-weight: 700;
-    background: linear-gradient(135deg, var(--accent-color), #03dac6);
-    background-clip: text;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
     line-height: 1;
+    transition: color 0.3s ease, opacity 0.3s ease;
 }
+
+.age-clickable {
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+    user-select: none;
+}
+
+.age-clickable:hover {
+    opacity: 0.8;
+}
+
+.age-disabled {
+    opacity: 0.35;
+}
+
+.age-disabled .age-number {
+    text-decoration: line-through;
+    color: #64748b !important;
+}
+
+.age-disabled .age-unit {
+    text-decoration: line-through;
+    color: #475569;
+}
+
+/* === 年齡點擊切換 END === */
 
 .age-unit {
     font-size: 0.8rem;

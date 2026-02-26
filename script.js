@@ -370,9 +370,25 @@
                 const ageWrap = document.createElement('div');
                 ageWrap.className = 'age-compact-wrap';
 
+                // 年齡顏色依性別：女粉紅、男藍色
+                const ageColor = state.gender === 'female' ? '#f472b6' : (state.gender === 'male' ? '#60a5fa' : '#a78bfa');
+                const ageDisabledClass = state.ageEnabled === false ? ' age-disabled' : '';
+
                 const ageDisplay = document.createElement('div');
-                ageDisplay.className = 'age-display';
-                ageDisplay.innerHTML = `<span class="age-number">${state.age}</span><span class="age-unit">${state.lang === 'zh' ? '歲' : 'yrs'}</span>`;
+                ageDisplay.className = 'age-display age-clickable' + ageDisabledClass;
+                ageDisplay.title = state.ageEnabled !== false
+                    ? (state.lang === 'zh' ? '點擊關閉年齡提示詞' : 'Click to disable age prompt')
+                    : (state.lang === 'zh' ? '點擊開啟年齡提示詞' : 'Click to enable age prompt');
+                ageDisplay.innerHTML = `<span class="age-number" style="color:${ageColor}">${state.age}</span><span class="age-unit">${state.lang === 'zh' ? '歲' : 'yrs'}</span>`;
+
+                // 點擊年齡數字切換 ageEnabled
+                ageDisplay.addEventListener('click', () => {
+                    state.ageEnabled = state.ageEnabled === false ? true : false;
+                    renderTabContent();
+                    generatePrompt();
+                    saveState();
+                    sfx.playClick();
+                });
 
                 const sliderContainer = document.createElement('div');
                 sliderContainer.className = 'slider-container';
@@ -397,8 +413,16 @@
 
                 slider.addEventListener('input', (e) => {
                     state.age = parseInt(e.target.value);
-                    ageDisplay.innerHTML = `<span class="age-number">${state.age}</span><span class="age-unit">${state.lang === 'zh' ? '歲' : 'yrs'}</span>`;
+                    const curColor = state.gender === 'female' ? '#f472b6' : (state.gender === 'male' ? '#60a5fa' : '#a78bfa');
+                    ageDisplay.innerHTML = `<span class="age-number" style="color:${curColor}">${state.age}</span><span class="age-unit">${state.lang === 'zh' ? '歲' : 'yrs'}</span>`;
                     slider.style.setProperty('--val', ((state.age - 1) / 99 * 100) + '%');
+
+                    // 拖動滑桿時自動啟用年齡
+                    if (state.ageEnabled === false) {
+                        state.ageEnabled = true;
+                        ageDisplay.classList.remove('age-disabled');
+                        ageDisplay.title = state.lang === 'zh' ? '點擊關閉年齡提示詞' : 'Click to disable age prompt';
+                    }
 
                     // Play pitch-varying tone
                     try {
