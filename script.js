@@ -2852,9 +2852,9 @@
         }
 
         // Generate order based on tabs
-        const sectionOrder = ['race', 'job', 'hairstyle', 'bodyType', 'hairColor', 'eyeColorLeft', 'eyeColorRight',
+        const sectionOrder = ['aspectRatio', 'race', 'job', 'hairstyle', 'bodyType', 'hairColor', 'eyeColorLeft', 'eyeColorRight',
             'outfit', 'headwear', 'handItems', 'expression', 'mood', 'pose', 'animeStyle', 'artStyle', 'artist', 'quality',
-            'scene', 'weather', 'lighting', 'cameraAngle', 'aspectRatio', 'shotSize', 'focalLength', 'aperture', 'lensEffect'];
+            'scene', 'weather', 'lighting', 'cameraAngle', 'shotSize', 'focalLength', 'aperture', 'lensEffect'];
 
         // ★ Grok/Flux 全身強化：Super Modal 啟用時，把 camera prompt 前置到 parts 最前面
         // 原因：Grok/Flux 對 prompt 前 1/3 的權重最敏感，camera prompt 若排在最後會被忽略
@@ -3081,9 +3081,12 @@
         yaml += `task: ${dimHeader.task}\n`;
         yaml += `style_notes: ${dimHeader.style_notes}\n`;
         // ★ 畫面比例放在 YAML 前段（style_notes 之後），確保 AI 優先處理構圖
-        if (state.aspectRatio) {
-            const arData = OptionsData.ASPECT_RATIOS.find(ar => ar.label === state.aspectRatio || ar.en === state.aspectRatio);
+        const arSelection = state.selections && state.selections.aspectRatio;
+        const arSource = state.aspectRatio || arSelection;
+        if (arSource) {
+            const arData = OptionsData.ASPECT_RATIOS.find(ar => ar.label === arSource || ar.en === arSource || ar.value === arSource);
             if (arData) yaml += `aspect_ratio: ${arData.value}\n`;
+            else yaml += `aspect_ratio: ${arSource}\n`;
         }
         if (inputSubject.value.trim()) yaml += `additional_instructions: ${inputSubject.value.trim()}\n`;
         yaml += `gender: ${state.gender ? (state.gender === 'female' ? 'female' : 'male') : 'unspecified'}\n`;
