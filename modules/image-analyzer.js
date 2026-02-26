@@ -20,29 +20,57 @@ window.PromptGen.ImageAnalyzer = (function () {
 
 Your output MUST be a single block of English tags/keywords separated by commas. Do NOT use sentences or paragraphs — only comma-separated descriptive tags.
 
-Analyze and include tags for ALL of the following aspects (if visible):
-1. **Subject**: gender, age appearance, race/species (human, elf, demon, etc.)
-2. **Face & Expression**: facial features, expression, makeup
-3. **Hair**: color, length, style (ponytail, twintails, bob cut, etc.)
-4. **Eyes**: color, shape, special features
-5. **Body**: body type, skin tone, notable features
-6. **Clothing & Accessories**: outfit details, accessories, jewelry, headwear, footwear
-7. **Pose & Action**: pose description, hand placement, body angle
-8. **Art Style**: anime, realistic, semi-realistic, specific artist style, rendering style
-9. **Background & Scene**: setting, environment, objects
-10. **Atmosphere & Lighting**: mood, color palette, lighting direction, time of day
-11. **Camera**: angle (front, side, 3/4), shot type (close-up, full body, portrait), depth of field
-12. **Quality tags**: masterpiece, best quality, highly detailed, etc.
+STEP 1: Identify the image type:
+- Character/Portrait (人物)
+- Landscape/Scenery (風景)
+- Product/Object (物品/產品設計)
+- Architecture/Interior (建築/室內)
+- Abstract/Pattern (抽象/圖案)
+- Screenshot/UI (截圖/介面) → describe what the screenshot depicts
+- Other
 
-Example output format:
-1girl, long blonde hair, blue eyes, elf ears, white dress, flower crown, sitting on grass, meadow background, soft sunlight, warm colors, fantasy art style, front view, upper body, masterpiece, best quality, highly detailed
+STEP 2: Based on the image type, analyze the relevant aspects:
+
+【For Character/Portrait images】
+- Subject: gender, age, race/species, number of characters
+- Face & Expression: facial features, expression, makeup
+- Hair: color, length, style
+- Eyes: color, shape, special features
+- Body: body type, skin tone
+- Clothing & Accessories: outfit, jewelry, headwear
+- Pose & Action: pose, hand placement, body angle
+
+【For Landscape/Scenery images】
+- Environment: terrain, vegetation, water, sky
+- Weather & Time: season, time of day, weather conditions
+- Architecture: buildings, structures if present
+- Natural elements: mountains, ocean, forest, clouds
+
+【For Product/Object images】
+- Object type, material, texture, color
+- Shape, proportions, design details
+- Surface finish, patterns, branding
+
+【For ALL image types, always include】
+- Art Style: anime, realistic, 3D render, watercolor, oil painting, photo, etc.
+- Composition: camera angle, shot type, framing
+- Lighting: direction, intensity, color temperature
+- Atmosphere: mood, color palette, tone
+- Background: setting, environment, depth
+- Quality tags: masterpiece, best quality, highly detailed, etc.
+
+Example outputs:
+- Character: 1girl, long blonde hair, blue eyes, white dress, sitting on grass, meadow, soft sunlight, fantasy art, masterpiece, best quality
+- Landscape: vast mountain range, snow-capped peaks, sunset sky, golden hour, dramatic clouds, alpine meadow, photorealistic, panoramic view, masterpiece
+- Product: sleek wireless headphones, matte black, minimalist design, floating, studio lighting, product photography, white background, 8k render
 
 IMPORTANT:
 - Output ONLY the comma-separated tags, nothing else
-- Start with quality tags and subject, then details
-- Be specific and descriptive
+- Start with quality tags, then the main subject/content
+- Be specific and descriptive — describe what you actually see
 - Use standard AI art prompt vocabulary
-- Minimum 20 tags, maximum 60 tags`;
+- Minimum 20 tags, maximum 60 tags
+- Do NOT hallucinate or add elements not visible in the image`;
 
     // ── 狀態 ──
     let currentImageBase64 = null;
@@ -180,14 +208,9 @@ IMPORTANT:
             btnApply.addEventListener('click', function () {
                 const text = resultBox.textContent;
                 if (!text) return;
-                // 同時填入主頁輸出區
-                const outputEl = document.getElementById('final-prompt');
-                if (outputEl) {
-                    outputEl.textContent = text;
-                }
                 // 呼叫全域的 複製+SitePicker
                 if (window.PromptGen.copyAndShowSitePicker) {
-                    window.PromptGen.copyAndShowSitePicker(text);
+                    window.PromptGen.copyAndShowSitePicker(text, btnApply);
                 }
                 // 按鈕反饋
                 const origHTML = btnApply.innerHTML;

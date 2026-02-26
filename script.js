@@ -1881,6 +1881,33 @@
                     const tagGrid = sectionEl.querySelector('.tag-grid-paginated');
                     if (tagGrid) tagGrid.classList.add('body-section-disabled');
                 }
+                // 場景自訂輸入框
+                if (state.customInputVisible[section.id]) {
+                    const customRow = document.createElement('div');
+                    customRow.className = 'custom-input-row';
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.className = 'custom-section-input';
+                    input.placeholder = state.lang === 'zh' ? '輸入自訂值...' : 'Enter custom value...';
+                    input.value = state.customInputs[section.id] || '';
+                    input.addEventListener('input', (e) => {
+                        state.customInputs[section.id] = e.target.value.trim();
+                        generatePrompt();
+                    });
+                    customRow.appendChild(input);
+                    const clearBtn = document.createElement('button');
+                    clearBtn.className = 'btn-clear-custom';
+                    clearBtn.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+                    clearBtn.addEventListener('click', () => {
+                        state.customInputs[section.id] = '';
+                        state.customInputVisible[section.id] = false;
+                        renderTabContent();
+                        generatePrompt();
+                    });
+                    customRow.appendChild(clearBtn);
+                    sectionEl.appendChild(customRow);
+                }
+
                 tabContent.appendChild(sectionEl);
                 return;
             }
@@ -4420,7 +4447,7 @@
     }
 
     // Show site picker popup
-    function showSitePicker(sites) {
+    function showSitePicker(sites, anchorEl) {
         sitePickerList.innerHTML = '';
         sites.forEach(site => {
             const btn = document.createElement('button');
@@ -4434,19 +4461,32 @@
             sitePickerList.appendChild(btn);
         });
 
-        // Position near copy button
-        const copyBtn = document.getElementById('btn-copy');
-        const rect = copyBtn.getBoundingClientRect();
-        sitePicker.style.left = `${rect.left}px`;
+        // Position near anchor button
+        const anchor = anchorEl || document.getElementById('btn-copy');
+        const rect = anchor.getBoundingClientRect();
+
+        // 先顯示取得 picker 尺寸
         sitePicker.classList.add('active');
-        // 放在按鈕上方
-        const popupHeight = sitePicker.offsetHeight;
-        sitePicker.style.top = `${rect.top - popupHeight - 10}px`;
+        const pickerWidth = sitePicker.offsetWidth;
+        const pickerHeight = sitePicker.offsetHeight;
+
+        // 判斷 anchor 是否在 modal 內
+        const parentModal = anchor.closest('.settings-modal');
+        if (parentModal) {
+            // Modal 內的按鈕：定位到 Modal 左邊、底部對齊按鈕底部
+            const modalRect = parentModal.getBoundingClientRect();
+            sitePicker.style.left = `${modalRect.left - pickerWidth - 10}px`;
+            sitePicker.style.top = `${rect.bottom - pickerHeight}px`;
+        } else {
+            // 預設：定位到按鈕上方
+            sitePicker.style.left = `${rect.left}px`;
+            sitePicker.style.top = `${rect.top - pickerHeight - 10}px`;
+        }
 
         // Close on outside click
         setTimeout(() => {
             document.addEventListener('click', function closePicker(e) {
-                if (!sitePicker.contains(e.target) && e.target !== copyBtn) {
+                if (!sitePicker.contains(e.target) && e.target !== anchor) {
                     sitePicker.classList.remove('active');
                     document.removeEventListener('click', closePicker);
                 }
@@ -4455,7 +4495,7 @@
     }
 
     // 暴露全域函數：複製文字 + 開啟 SitePicker（供 ImageAnalyzer 等外部模組呼叫）
-    window.PromptGen.copyAndShowSitePicker = function (text) {
+    window.PromptGen.copyAndShowSitePicker = function (text, anchorEl) {
         if (!text) return;
         navigator.clipboard.writeText(text);
 
@@ -4474,7 +4514,7 @@
             window.open(validSites[0].url, '_blank');
             sfx.playSuccess();
         } else {
-            showSitePicker(validSites);
+            showSitePicker(validSites, anchorEl);
         }
     };
 
