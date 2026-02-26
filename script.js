@@ -2008,9 +2008,7 @@
                     const tagGrid = sectionEl.querySelector('.tag-grid-paginated');
                     if (tagGrid) tagGrid.classList.add('body-section-disabled');
                 }
-                tabContent.appendChild(sectionEl);
-
-                // Custom input
+                // Custom input（加到 sectionEl 裡）
                 if (state.customInputVisible[section.id]) {
                     const customRow = document.createElement('div');
                     customRow.className = 'custom-input-row';
@@ -2025,8 +2023,19 @@
                         debouncedSaveState();
                     });
                     customRow.appendChild(input);
-                    tabContent.appendChild(customRow);
+                    const clearBtn = document.createElement('button');
+                    clearBtn.className = 'btn-clear-custom';
+                    clearBtn.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+                    clearBtn.addEventListener('click', () => {
+                        state.customInputs[section.id] = '';
+                        state.customInputVisible[section.id] = false;
+                        renderTabContent();
+                        generatePrompt();
+                    });
+                    customRow.appendChild(clearBtn);
+                    sectionEl.appendChild(customRow);
                 }
+                tabContent.appendChild(sectionEl);
                 return;
             }
 
