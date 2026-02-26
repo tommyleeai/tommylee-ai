@@ -342,8 +342,8 @@ window.PromptGen.PromptHistory = (function () {
         }
 
         // 載入成功音效
-        if (window.PromptGen.SoundManager) {
-            window.PromptGen.SoundManager.playSuccess();
+        if (window.PromptGen._sfx) {
+            window.PromptGen._sfx.playSuccess();
         }
 
         // 載入成功的視覺反饋
