@@ -49,7 +49,7 @@
         format: 'yaml',
         isPreviewLocked: false,
         highQuality: true,
-        bodyAdvanced: null,  // null = off, { primary: 4, build: 4, height: 4 } = on
+        bodyAdvanced: null,  // null = off, { primary: 4, build: 4, height: 4, weight: 3 } = on
         hairAdvanced: null,  // null = off, { hair_length, ponytail_height, ponytail_count, selectedItems[] }
         hairMagicPrompts: null,  // { positive: [], negative: [] }
         ageEnabled: true,    // age toggle
@@ -831,11 +831,12 @@
                     const primaryInfo = primaryData[state.bodyAdvanced.primary || 4];
                     const buildInfo = BODY_MAGIC_DATA.BUILD[state.bodyAdvanced.build || 4];
                     const heightInfo = BODY_MAGIC_DATA.HEIGHT[state.bodyAdvanced.height || 4];
+                    const weightInfo = BODY_MAGIC_DATA.WEIGHT ? BODY_MAGIC_DATA.WEIGHT[state.bodyAdvanced.weight || 3] : null;
 
                     const summaryBar = document.createElement('div');
                     summaryBar.className = 'body-advanced-summary';
                     const summaryText = document.createElement('span');
-                    summaryText.innerHTML = `🔮 ${state.lang === 'zh' ? '進階控制啟用中' : 'Advanced Active'}：${primaryInfo.zh} / ${buildInfo.zh} / ${heightInfo.zh}`;
+                    summaryText.innerHTML = `🔮 ${state.lang === 'zh' ? '進階控制啟用中' : 'Advanced Active'}：${primaryInfo.zh} / ${buildInfo.zh} / ${heightInfo.zh}${weightInfo ? ' / ' + weightInfo.zh : ''}`;
 
                     const editBtn = document.createElement('button');
                     editBtn.className = 'body-summary-action';
@@ -2850,6 +2851,7 @@
                 const primaryInfo = primaryData[state.bodyAdvanced.primary || 4];
                 const buildInfo = BODY_MAGIC_DATA.BUILD[state.bodyAdvanced.build || 4];
                 const heightInfo = BODY_MAGIC_DATA.HEIGHT[state.bodyAdvanced.height || 4];
+                const weightInfo = BODY_MAGIC_DATA.WEIGHT ? BODY_MAGIC_DATA.WEIGHT[state.bodyAdvanced.weight || 3] : null;
                 // Use positive[] arrays from demo v2 format with weights
                 if (primaryInfo.positive && primaryInfo.positive.length) {
                     primaryInfo.positive.forEach(tag => parts.push(`(${tag}:${primaryInfo.weight})`));
@@ -2859,6 +2861,9 @@
                 }
                 if (heightInfo.positive && heightInfo.positive.length) {
                     heightInfo.positive.forEach(tag => parts.push(`(${tag}:${heightInfo.weight})`));
+                }
+                if (weightInfo && weightInfo.positive && weightInfo.positive.length) {
+                    weightInfo.positive.forEach(tag => parts.push(`(${tag}:${weightInfo.weight})`));
                 }
                 return;
             }
@@ -3102,6 +3107,7 @@
                 const primaryInfo = primaryData[state.bodyAdvanced.primary || 4];
                 const buildInfo = BODY_MAGIC_DATA.BUILD[state.bodyAdvanced.build || 4];
                 const heightInfo = BODY_MAGIC_DATA.HEIGHT[state.bodyAdvanced.height || 4];
+                const weightInfo = BODY_MAGIC_DATA.WEIGHT ? BODY_MAGIC_DATA.WEIGHT[state.bodyAdvanced.weight || 3] : null;
                 const bodyParts = [];
                 if (primaryInfo.positive && primaryInfo.positive.length) {
                     primaryInfo.positive.forEach(tag => bodyParts.push(`(${tag}:${primaryInfo.weight})`));
@@ -3111,6 +3117,9 @@
                 }
                 if (heightInfo.positive && heightInfo.positive.length) {
                     heightInfo.positive.forEach(tag => bodyParts.push(`(${tag}:${heightInfo.weight})`));
+                }
+                if (weightInfo && weightInfo.positive && weightInfo.positive.length) {
+                    weightInfo.positive.forEach(tag => bodyParts.push(`(${tag}:${weightInfo.weight})`));
                 }
                 if (bodyParts.length > 0) {
                     yaml += `body_type: ${bodyParts.join(', ')}\n`;
@@ -3293,10 +3302,12 @@
             const primaryInfo = primaryData[state.bodyAdvanced.primary || 4];
             const buildInfo = BODY_MAGIC_DATA.BUILD[state.bodyAdvanced.build || 4];
             const heightInfo = BODY_MAGIC_DATA.HEIGHT[state.bodyAdvanced.height || 4];
+            const weightInfo = BODY_MAGIC_DATA.WEIGHT ? BODY_MAGIC_DATA.WEIGHT[state.bodyAdvanced.weight || 3] : null;
             const negParts = [];
             if (primaryInfo.negative && primaryInfo.negative.length) negParts.push(...primaryInfo.negative);
             if (buildInfo.negative && buildInfo.negative.length) negParts.push(...buildInfo.negative);
             if (heightInfo.negative && heightInfo.negative.length) negParts.push(...heightInfo.negative);
+            if (weightInfo && weightInfo.negative && weightInfo.negative.length) negParts.push(...weightInfo.negative);
             if (negParts.length > 0) {
                 const existing = outputNegative.value;
                 outputNegative.value = existing ? existing + ', ' + negParts.join(', ') : negParts.join(', ');

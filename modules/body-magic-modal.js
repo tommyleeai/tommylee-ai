@@ -25,7 +25,7 @@ window.PromptGen.BodyMagicModal = (function () {
         if (existing) existing.remove();
 
         const currentGender = state.gender;
-        const adv = state.bodyAdvanced || { primary: 4, build: 4, height: 4 };
+        const adv = state.bodyAdvanced || { primary: 4, build: 4, height: 4, weight: 3 };
 
         // Create overlay
         const overlay = document.createElement('div');
@@ -100,6 +100,22 @@ window.PromptGen.BodyMagicModal = (function () {
                         </div>
                     </div>
 
+                    <!-- WEIGHT -->
+                    <div class="bmm-feature">
+                        <div class="bmm-feature-header">
+                            <span class="bmm-feature-label">體重 (Weight)</span>
+                            <span class="bmm-feature-value" id="bmm-val-weight"></span>
+                        </div>
+                        <div class="bmm-scale">
+                            <span class="fl">🔮 骨瘦</span><span>輕盈</span><span>平均</span><span>微重</span><span>胖</span><span>肥</span><span class="fl">🔮 巨肥</span>
+                        </div>
+                        <div class="bmm-slider-wrap">
+                            <div class="bmm-fz bmm-fz-l"></div>
+                            <div class="bmm-fz bmm-fz-r"></div>
+                            <input type="range" id="bmm-sl-weight" class="sl-weight" min="1" max="7" value="${adv.weight || 3}" step="1">
+                        </div>
+                    </div>
+
                     <!-- PRESETS -->
                     <div>
                         <div class="bmm-feature-label" style="margin-bottom: 8px; color: #e2e8f0;">快速預設 (Quick Presets)</div>
@@ -119,6 +135,11 @@ window.PromptGen.BodyMagicModal = (function () {
                             <button class="bmm-preset-btn fp" data-p="amazon">⚔️ 亞馬遜女戰士</button>
                             <button class="bmm-preset-btn fp" data-p="giantess">🏔️ 巨人族女性</button>
                             <button class="bmm-preset-btn fp" data-p="pixie">✨ 小精靈</button>
+                            <div class="bmm-preset-divider"></div>
+                            <span class="bmm-preset-label">🍔 大碼 Overweight</span>
+                            <button class="bmm-preset-btn" data-p="chubby_f">🧸 微胖可愛</button>
+                            <button class="bmm-preset-btn" data-p="bbw">🌸 豐腴大碼</button>
+                            <button class="bmm-preset-btn fp" data-p="ssbbw">🔮 超大碼</button>
                         </div>
                         <div class="bmm-presets" id="bmm-preset-m" style="${currentGender === 'male' ? '' : 'display:none'}">
                             <span class="bmm-preset-label">寫實 Realistic</span>
@@ -134,6 +155,13 @@ window.PromptGen.BodyMagicModal = (function () {
                             <button class="bmm-preset-btn fp" data-p="titan">🏔️ 泰坦巨人</button>
                             <button class="bmm-preset-btn fp" data-p="antman">🐜 蟻人縮小</button>
                             <button class="bmm-preset-btn fp" data-p="skeleton">💀 骷髏法師</button>
+                            <div class="bmm-preset-divider"></div>
+                            <span class="bmm-preset-label">🍔 大碼 Overweight</span>
+                            <button class="bmm-preset-btn" data-p="dadbod">🍺 爸爸肚</button>
+                            <button class="bmm-preset-btn" data-p="bear">🐻 熊族</button>
+                            <button class="bmm-preset-btn" data-p="sumo">🏋️ 相撲力士</button>
+                            <button class="bmm-preset-btn" data-p="fat_m">🍔 胖男</button>
+                            <button class="bmm-preset-btn fp" data-p="obese_m">🔮 巨胖</button>
                         </div>
                     </div>
                 </div>
@@ -203,12 +231,14 @@ window.PromptGen.BodyMagicModal = (function () {
         const MUSC = BODY_MAGIC_DATA.MALE_MUSCLE;
         const BLD = BODY_MAGIC_DATA.BUILD;
         const HGT = BODY_MAGIC_DATA.HEIGHT;
+        const WGT = BODY_MAGIC_DATA.WEIGHT;
         const PRST = BODY_MAGIC_DATA.PRESETS;
 
         let modalGender = currentGender;
         const slP = document.getElementById('bmm-sl-primary');
         const slB = document.getElementById('bmm-sl-build');
         const slH = document.getElementById('bmm-sl-height');
+        const slW = document.getElementById('bmm-sl-weight');
 
         function fmtWeighted(tags, weight, isF) {
             if (!tags || tags.length === 0) return '';
@@ -221,11 +251,13 @@ window.PromptGen.BodyMagicModal = (function () {
             const pVal = parseInt(slP.value);
             const bVal = parseInt(slB.value);
             const hVal = parseInt(slH.value);
+            const wVal = parseInt(slW.value);
 
             const primary = modalGender === 'female' ? BUST[pVal] : MUSC[pVal];
             const build = BLD[bVal];
             const height = HGT[hVal];
-            const hasFantasy = primary.fantasy || build.fantasy || height.fantasy;
+            const weightData = WGT[wVal];
+            const hasFantasy = primary.fantasy || build.fantasy || height.fantasy || weightData.fantasy;
 
             // Fantasy banner
             document.getElementById('bmm-fbanner').classList.toggle('show', hasFantasy);
@@ -234,28 +266,34 @@ window.PromptGen.BodyMagicModal = (function () {
             const vp = document.getElementById('bmm-val-primary');
             const vb = document.getElementById('bmm-val-build');
             const vh = document.getElementById('bmm-val-height');
+            const vw = document.getElementById('bmm-val-weight');
             vp.textContent = primary.zh; vp.classList.toggle('fantasy', primary.fantasy);
             vb.textContent = build.zh; vb.classList.toggle('fantasy', build.fantasy);
             vh.textContent = height.zh; vh.classList.toggle('fantasy', height.fantasy);
+            vw.textContent = weightData.zh; vw.classList.toggle('fantasy', weightData.fantasy);
 
             // Slider fantasy class
             slP.classList.toggle('in-fantasy', primary.fantasy);
             slB.classList.toggle('in-fantasy', build.fantasy);
             slH.classList.toggle('in-fantasy', height.fantasy);
+            slW.classList.toggle('in-fantasy', weightData.fantasy);
 
             // Collect positive / negative
             const pPos = primary.positive || [];
             const bPos = build.positive || [];
             const hPos = height.positive || [];
+            const wPos = weightData.positive || [];
             const pNeg = primary.negative || [];
             const bNeg = build.negative || [];
             const hNeg = height.negative || [];
+            const wNeg = weightData.negative || [];
 
             let allPos = [];
             if (pPos.length) allPos.push(fmtWeighted(pPos, primary.weight, primary.fantasy));
             if (bPos.length) allPos.push(fmtWeighted(bPos, build.weight, build.fantasy));
             if (hPos.length) allPos.push(fmtWeighted(hPos, height.weight, height.fantasy));
-            const allNeg = [...new Set([...pNeg, ...bNeg, ...hNeg])];
+            if (wPos.length) allPos.push(fmtWeighted(wPos, weightData.weight, weightData.fantasy));
+            const allNeg = [...new Set([...pNeg, ...bNeg, ...hNeg, ...wNeg])];
 
             // Positive output
             document.getElementById('bmm-out-pos').innerHTML = allPos.filter(Boolean).join(', ') || '<span style="color:#64748b">（標準設定，無額外正向提示詞）</span>';
@@ -280,11 +318,15 @@ window.PromptGen.BodyMagicModal = (function () {
                 const pf = height.fantasy ? '🔮 ' : '';
                 yaml += '<span class="tag">height:</span> ' + pf + hPos.map(t => height.weight > 1 ? '(' + t + ':' + height.weight.toFixed(1) + ')' : t).join(', ') + '\n';
             }
+            if (wPos.length) {
+                const pf = weightData.fantasy ? '🔮 ' : '';
+                yaml += '<span class="tag">weight:</span> ' + pf + wPos.map(t => weightData.weight > 1 ? '(' + t + ':' + weightData.weight.toFixed(1) + ')' : t).join(', ') + '\n';
+            }
             if (allNeg.length) yaml += '<span class="negative">negative:</span> ' + allNeg.join(', ');
             document.getElementById('bmm-out-yaml').innerHTML = yaml || '<span style="color:#64748b">body: average body</span>';
 
             // Weight indicator
-            const maxW = Math.max(primary.weight, build.weight, height.weight);
+            const maxW = Math.max(primary.weight, build.weight, height.weight, weightData.weight);
             const pct = Math.min(((maxW - 1.0) / 0.8) * 100, 100);
             const wf = document.getElementById('bmm-wf');
             const wn = document.getElementById('bmm-wn');
@@ -298,15 +340,17 @@ window.PromptGen.BodyMagicModal = (function () {
             const pExplain = primary.explain || '';
             const bExplain = build.explain || '';
             const hExplain = height.explain || '';
+            const wExplain = weightData.explain || '';
             document.getElementById('bmm-explain').innerHTML =
                 '<strong>💡 原理說明：</strong><br>' +
                 '▸ <strong>' + (modalGender === 'female' ? '胸部' : '肌肉') + '</strong>：' + pExplain +
                 '<br>▸ <strong>體型</strong>：' + bExplain +
-                '<br>▸ <strong>身高</strong>：' + hExplain;
+                '<br>▸ <strong>身高</strong>：' + hExplain +
+                '<br>▸ <strong>體重</strong>：' + wExplain;
         }
 
         // Track fantasy state to play sound on entry
-        let prevFantasyCount = [adv.primary, adv.build, adv.height].filter(v => v === 1 || v === 7).length;
+        let prevFantasyCount = [adv.primary, adv.build, adv.height, adv.weight || 3].filter(v => v === 1 || v === 7).length;
 
         function playFantasySound() {
             try {
@@ -335,13 +379,14 @@ window.PromptGen.BodyMagicModal = (function () {
         // Slider events with fantasy sound detection
         function onSliderInput() {
             updateModal();
-            const curCount = [parseInt(slP.value), parseInt(slB.value), parseInt(slH.value)].filter(v => v === 1 || v === 7).length;
+            const curCount = [parseInt(slP.value), parseInt(slB.value), parseInt(slH.value), parseInt(slW.value)].filter(v => v === 1 || v === 7).length;
             if (curCount > prevFantasyCount) playFantasySound();
             prevFantasyCount = curCount;
         }
         slP.addEventListener('input', onSliderInput);
         slB.addEventListener('input', onSliderInput);
         slH.addEventListener('input', onSliderInput);
+        slW.addEventListener('input', onSliderInput);
 
         // Gender toggle
         overlay.querySelectorAll('.bmm-gender-btn').forEach(btn => {
@@ -367,7 +412,7 @@ window.PromptGen.BodyMagicModal = (function () {
             btn.addEventListener('click', () => {
                 const p = PRST[btn.dataset.p];
                 if (!p) return;
-                slP.value = p.primary; slB.value = p.build; slH.value = p.height;
+                slP.value = p.primary; slB.value = p.build; slH.value = p.height; slW.value = p.weight || 3;
                 updateModal();
             });
         });
@@ -387,7 +432,8 @@ window.PromptGen.BodyMagicModal = (function () {
             state.bodyAdvanced = {
                 primary: parseInt(slP.value),
                 build: parseInt(slB.value),
-                height: parseInt(slH.value)
+                height: parseInt(slH.value),
+                weight: parseInt(slW.value)
             };
             state.gender = modalGender;
             delete state.selections['bodyType'];

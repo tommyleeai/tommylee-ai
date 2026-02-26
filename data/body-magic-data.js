@@ -126,33 +126,52 @@ window.PromptGen.BodyMagicData = (function () {
             6: { zh: '高挑', positive: ['very tall', 'long legs', 'elongated proportions'], negative: ['short', 'petite', 'small'], weight: 1.3, fantasy: false, explain: '<strong>高挑</strong>：明顯高挑。' },
             7: { zh: '🔮 巨人族', positive: ['giant', 'towering over buildings', 'colossal height', '3 meters tall', 'gigantic humanoid', 'looking down at tiny people'], negative: ['short', 'petite', 'small', 'normal height', 'human-sized'], weight: 1.8, fantasy: true, explain: '🔮 <strong>幻想級 — 巨人族</strong>：如進擊的巨人般的超自然身高（3公尺以上）。需要極高權重 (1.8) + 特殊構圖提示。' }
         },
+        WEIGHT: {
+            1: { zh: '🔮 骨瘦如柴', positive: ['emaciated', 'skeletal thin', 'skin and bones', 'extremely underweight', 'visible every bone', 'gaunt hollow body'], negative: ['fat', 'chubby', 'plump', 'thick', 'heavy', 'normal weight'], weight: 1.7, fantasy: true, explain: '🔮 <strong>幻想級 — 骨瘦如柴</strong>：如亡靈、餓鬼般的極端消瘦。需要極高權重 (1.7)。' },
+            2: { zh: '輕盈', positive: ['lightweight body', 'lean', 'thin', 'low body fat', 'slender lightweight frame'], negative: ['fat', 'chubby', 'heavy', 'thick'], weight: 1.2, fantasy: false, explain: '<strong>輕盈</strong>：較輕的體重，健康的瘦。權重 (1.2)。' },
+            3: { zh: '平均', positive: ['average weight', 'normal body mass', 'healthy weight', 'moderate build'], negative: [], weight: 1.0, fantasy: false, explain: '<strong>平均</strong>：AI 預設範圍，不需額外控制。' },
+            4: { zh: '微重', positive: ['slightly heavy', 'soft belly', 'thick frame', 'a bit overweight', 'love handles', 'soft midsection'], negative: ['skinny', 'thin', 'lean', 'slim'], weight: 1.2, fantasy: false, explain: '<strong>微重</strong>：略微偏重，肌膚柔軟，權重 (1.2)。' },
+            5: { zh: '胖', positive: ['fat body', 'large belly', 'overweight', 'chubby', 'heavy set', 'thick limbs', 'double chin'], negative: ['skinny', 'thin', 'lean', 'slim', 'fit'], weight: 1.3, fantasy: false, explain: '<strong>胖</strong>：明顯過重，需要權重 (1.3) + 壓制負向。' },
+            6: { zh: '肥', positive: ['obese body', 'very large belly', 'extremely overweight', 'massive gut', 'rolls of fat', 'heavy jowls', 'thick sagging flesh'], negative: ['thin', 'slim', 'fit', 'lean', 'athletic', 'normal weight'], weight: 1.5, fantasy: false, explain: '<strong>肥</strong>：嚴重過重，需高權重 (1.5) 確保 AI 不會反彈。' },
+            7: { zh: '🔮 巨無霸肥', positive: ['morbidly obese', 'immense body mass', 'enormous belly dragging', 'super-sized body', 'barely mobile from weight', 'mountains of flesh', 'gravity-defying fat'], negative: ['thin', 'slim', 'fit', 'lean', 'athletic', 'normal weight', 'realistic proportions'], weight: 1.8, fantasy: true, explain: '🔮 <strong>幻想級 — 巨無霸肥</strong>：完全脱離現實的極端肥胖。需要極高權重 (1.8)。' }
+        },
         PRESETS: {
             // Female Realistic
-            loli: { primary: 2, build: 2, height: 2 },
-            petite: { primary: 3, build: 3, height: 2 },
-            slim: { primary: 3, build: 3, height: 4 },
-            average: { primary: 4, build: 4, height: 4 },
-            curvy: { primary: 5, build: 4, height: 4 },
-            voluptuous: { primary: 6, build: 5, height: 4 },
-            athletic_f: { primary: 4, build: 4, height: 5 },
+            loli: { primary: 2, build: 2, height: 2, weight: 2 },
+            petite: { primary: 3, build: 3, height: 2, weight: 2 },
+            slim: { primary: 3, build: 3, height: 4, weight: 2 },
+            average: { primary: 4, build: 4, height: 4, weight: 3 },
+            curvy: { primary: 5, build: 4, height: 4, weight: 3 },
+            voluptuous: { primary: 6, build: 5, height: 4, weight: 4 },
+            athletic_f: { primary: 4, build: 4, height: 5, weight: 3 },
             // Female Fantasy
-            fairy: { primary: 1, build: 1, height: 1 },
-            oppai: { primary: 7, build: 4, height: 4 },
-            amazon: { primary: 5, build: 6, height: 6 },
-            giantess: { primary: 5, build: 6, height: 7 },
-            pixie: { primary: 1, build: 1, height: 1 },
+            fairy: { primary: 1, build: 1, height: 1, weight: 1 },
+            oppai: { primary: 7, build: 4, height: 4, weight: 3 },
+            amazon: { primary: 5, build: 6, height: 6, weight: 4 },
+            giantess: { primary: 5, build: 6, height: 7, weight: 4 },
+            pixie: { primary: 1, build: 1, height: 1, weight: 1 },
+            // Female Overweight
+            chubby_f: { primary: 4, build: 4, height: 4, weight: 4 },
+            bbw: { primary: 5, build: 5, height: 4, weight: 5 },
+            ssbbw: { primary: 5, build: 6, height: 4, weight: 7 },
             // Male Realistic
-            shota: { primary: 2, build: 2, height: 2 },
-            slim_m: { primary: 3, build: 3, height: 4 },
-            average_m: { primary: 4, build: 4, height: 4 },
-            athletic_m: { primary: 5, build: 4, height: 5 },
-            muscular: { primary: 6, build: 5, height: 5 },
+            shota: { primary: 2, build: 2, height: 2, weight: 2 },
+            slim_m: { primary: 3, build: 3, height: 4, weight: 2 },
+            average_m: { primary: 4, build: 4, height: 4, weight: 3 },
+            athletic_m: { primary: 5, build: 4, height: 5, weight: 3 },
+            muscular: { primary: 6, build: 5, height: 5, weight: 3 },
             // Male Fantasy
-            elf_m: { primary: 2, build: 2, height: 5 },
-            hulk: { primary: 7, build: 7, height: 6 },
-            titan: { primary: 7, build: 7, height: 7 },
-            antman: { primary: 4, build: 4, height: 1 },
-            skeleton: { primary: 1, build: 1, height: 4 }
+            elf_m: { primary: 2, build: 2, height: 5, weight: 2 },
+            hulk: { primary: 7, build: 7, height: 6, weight: 4 },
+            titan: { primary: 7, build: 7, height: 7, weight: 4 },
+            antman: { primary: 4, build: 4, height: 1, weight: 3 },
+            skeleton: { primary: 1, build: 1, height: 4, weight: 1 },
+            // Male Overweight
+            dadbod: { primary: 4, build: 4, height: 4, weight: 4 },
+            bear: { primary: 5, build: 5, height: 5, weight: 5 },
+            sumo: { primary: 6, build: 6, height: 5, weight: 6 },
+            fat_m: { primary: 4, build: 4, height: 4, weight: 5 },
+            obese_m: { primary: 4, build: 5, height: 4, weight: 6 }
         }
     };
     return BODY_MAGIC_DATA;
