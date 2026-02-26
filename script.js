@@ -3084,7 +3084,7 @@
         const arSelection = state.selections && state.selections.aspectRatio;
         const arSource = state.aspectRatio || arSelection;
         if (arSource) {
-            const arData = OptionsData.ASPECT_RATIOS.find(ar => ar.label === arSource || ar.en === arSource || ar.value === arSource);
+            const arData = Data.ASPECT_RATIOS.find(ar => ar.label === arSource || ar.en === arSource || ar.value === arSource);
             if (arData) yaml += `aspect_ratio: ${arData.value}\n`;
             else yaml += `aspect_ratio: ${arSource}\n`;
         }
