@@ -834,10 +834,10 @@ html {
     text-shadow: 0 0 12px rgba(167, 139, 250, 0.3);
 }
 
-/* dimension-selector 容器 = 4 格固定等寬 */
+/* dimension-selector 容器 = 5 格（含輪盤）固定等寬 */
 .dimension-selector {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(5, 1fr);
     gap: 4px;
     padding: 6px;
     background: rgba(255, 255, 255, 0.06);
