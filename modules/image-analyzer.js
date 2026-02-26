@@ -10,6 +10,10 @@ window.PromptGen.ImageAnalyzer = (function () {
     // ── 常數 ──
     const STORAGE_KEY = 'promptgen_gemini_api_key';
     const API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent';
+    const IA_COLLECTION = 'imageAnalysis'; // Firestore: users/{uid}/imageAnalysis/{docId}
+    const ADMIN_EMAILS = ['tommylee@gmail.com'];
+    const HISTORY_LIMIT_MEMBER = 10;
+    const THUMB_SIZE = 150; // 縮圖最大邊 px
 
     // ── System Prompt：引導 Gemini 做 AI 繪圖 prompt 分析 ──
     const SYSTEM_PROMPT = `You are an expert AI image prompt engineer. Analyze the provided image and generate a detailed prompt suitable for AI image generation tools (Stable Diffusion, Midjourney, NovelAI).
@@ -344,6 +348,9 @@ IMPORTANT:
                     window.PromptGen._sfx.playSuccess();
                 }
 
+                // 自動存檔到 Firebase
+                saveAnalysis(resultText);
+
             } catch (err) {
                 showError(err.message);
             } finally {
@@ -364,6 +371,208 @@ IMPORTANT:
             if (window.PromptGen.ModalRegistry) {
                 window.PromptGen.ModalRegistry.unregister('image-analyzer-modal');
             }
+        }
+
+        // ── 會員等級判別 ──
+        function getUserRole() {
+            var user = window.PromptGen.currentUser;
+            if (!user || !user.email) return null;
+            return ADMIN_EMAILS.indexOf(user.email) !== -1 ? 'admin' : 'member';
+        }
+
+        function getHistoryLimit() {
+            return getUserRole() === 'admin' ? Infinity : HISTORY_LIMIT_MEMBER;
+        }
+
+        // ── 縮圖壓縮（Canvas）──
+        function createThumbnail(base64Data, mimeType) {
+            return new Promise(function (resolve) {
+                var img = new Image();
+                img.onload = function () {
+                    var canvas = document.createElement('canvas');
+                    var scale = Math.min(THUMB_SIZE / img.width, THUMB_SIZE / img.height, 1);
+                    canvas.width = Math.round(img.width * scale);
+                    canvas.height = Math.round(img.height * scale);
+                    var ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    // 取得壓縮後的 base64（JPEG 品質 60%）
+                    var thumbDataUrl = canvas.toDataURL('image/jpeg', 0.6);
+                    resolve(thumbDataUrl);
+                };
+                img.onerror = function () { resolve(''); };
+                img.src = 'data:' + mimeType + ';base64,' + base64Data;
+            });
+        }
+
+        // ── Firestore 參考 ──
+        function getHistoryRef() {
+            var user = window.PromptGen.currentUser;
+            if (!user) return null;
+            var db = window.PromptGen.FirebaseInit.getDb();
+            if (!db) return null;
+            return db.collection('users').doc(user.uid).collection(IA_COLLECTION);
+        }
+
+        // ── 儲存分析結果 ──
+        async function saveAnalysis(promptText) {
+            var ref = getHistoryRef();
+            if (!ref) return; // 未登入
+
+            try {
+                // 產生縮圖 
+                var thumbnail = '';
+                if (currentImageBase64 && currentImageMimeType) {
+                    thumbnail = await createThumbnail(currentImageBase64, currentImageMimeType);
+                }
+
+                // 寫入新紀錄
+                await ref.add({
+                    prompt: promptText,
+                    thumbnail: thumbnail,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+
+                // 檢查上限，FIFO 刪除最舊的
+                var limit = getHistoryLimit();
+                if (limit !== Infinity) {
+                    var snapshot = await ref.orderBy('createdAt', 'desc').get();
+                    if (snapshot.size > limit) {
+                        var docs = snapshot.docs;
+                        for (var i = limit; i < docs.length; i++) {
+                            await docs[i].ref.delete();
+                        }
+                    }
+                }
+
+                console.log('[ImageAnalyzer] ✅ 分析結果已存檔');
+                renderHistory(); // 更新 UI
+            } catch (err) {
+                console.warn('[ImageAnalyzer] 存檔失敗:', err.message);
+            }
+        }
+
+        // ── 讀取歷史 ──
+        async function loadHistory() {
+            var ref = getHistoryRef();
+            if (!ref) return [];
+            try {
+                var snapshot = await ref.orderBy('createdAt', 'desc').limit(50).get();
+                return snapshot.docs.map(function (doc) {
+                    var d = doc.data();
+                    d.id = doc.id;
+                    return d;
+                });
+            } catch (err) {
+                console.warn('[ImageAnalyzer] 讀取歷史失敗:', err.message);
+                return [];
+            }
+        }
+
+        // ── 刪除單筆 ──
+        async function deleteHistoryItem(docId) {
+            var ref = getHistoryRef();
+            if (!ref) return;
+            try {
+                await ref.doc(docId).delete();
+                console.log('[ImageAnalyzer] 🗑️ 已刪除歷史:', docId);
+                renderHistory();
+            } catch (err) {
+                console.warn('[ImageAnalyzer] 刪除失敗:', err.message);
+            }
+        }
+
+        // ── 渲染歷史列表 ──
+        async function renderHistory() {
+            var listEl = document.getElementById('ia-history-list');
+            var countEl = document.getElementById('ia-history-count');
+            if (!listEl) return;
+
+            var user = window.PromptGen.currentUser;
+            if (!user) {
+                listEl.innerHTML = '<div class="ia-history-empty"><i class="fa-solid fa-lock"></i>請先登入以查看歷史紀錄</div>';
+                if (countEl) countEl.textContent = '';
+                return;
+            }
+
+            listEl.innerHTML = '<div class="ia-history-empty"><i class="fa-solid fa-spinner fa-spin"></i>載入中...</div>';
+
+            var items = await loadHistory();
+            var role = getUserRole();
+
+            if (countEl) {
+                var countText = items.length.toString();
+                if (role !== 'admin') countText += '/' + HISTORY_LIMIT_MEMBER;
+                countEl.textContent = countText;
+            }
+
+            if (items.length === 0) {
+                listEl.innerHTML = '<div class="ia-history-empty"><i class="fa-solid fa-clock-rotate-left"></i>尚無分析紀錄<br>分析圖片後將自動儲存</div>';
+                return;
+            }
+
+            var html = '';
+            if (role === 'admin') {
+                html += '<div style="text-align:right;margin-bottom:0.3rem;"><span class="ia-admin-badge">👑 ADMIN</span></div>';
+            }
+
+            items.forEach(function (item) {
+                var timeStr = '';
+                if (item.createdAt && item.createdAt.toDate) {
+                    var d = item.createdAt.toDate();
+                    timeStr = d.toLocaleDateString('zh-TW') + ' ' + d.toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit' });
+                }
+                var promptPreview = (item.prompt || '').substring(0, 100);
+                var thumbSrc = item.thumbnail || '';
+
+                html += '<div class="ia-history-card" data-id="' + item.id + '">';
+                if (thumbSrc) {
+                    html += '<img class="ia-history-thumb" src="' + thumbSrc + '" alt="">';
+                }
+                html += '<div class="ia-history-info">';
+                html += '<div class="ia-history-prompt">' + promptPreview + '</div>';
+                html += '<div class="ia-history-time">' + timeStr + '</div>';
+                html += '</div>';
+                html += '<button class="ia-history-delete" data-id="' + item.id + '" title="刪除"><i class="fa-solid fa-xmark"></i></button>';
+                html += '</div>';
+            });
+
+            listEl.innerHTML = html;
+
+            // 事件委派：點擊卡片載入 prompt
+            listEl.querySelectorAll('.ia-history-card').forEach(function (card) {
+                card.addEventListener('click', function (e) {
+                    if (e.target.closest('.ia-history-delete')) return;
+                    var prompt = items.find(function (i) { return i.id === card.dataset.id; });
+                    if (prompt && prompt.prompt) {
+                        resultBox.textContent = prompt.prompt;
+                        resultArea.classList.add('active');
+                        if (window.PromptGen._sfx) window.PromptGen._sfx.playClick();
+                    }
+                });
+            });
+
+            // 事件委派：刪除按鈕
+            listEl.querySelectorAll('.ia-history-delete').forEach(function (btn) {
+                btn.addEventListener('click', function (e) {
+                    e.stopPropagation();
+                    if (confirm('確定要刪除這筆紀錄嗎？')) {
+                        deleteHistoryItem(btn.dataset.id);
+                    }
+                });
+            });
+        }
+
+        // ── 歷史展開/收合 ──
+        var historyToggle = document.getElementById('ia-history-toggle');
+        var historySection = modal.querySelector('.ia-history-section');
+        if (historyToggle && historySection) {
+            historyToggle.addEventListener('click', function () {
+                var wasExpanded = historySection.classList.contains('expanded');
+                historySection.classList.toggle('expanded');
+                if (!wasExpanded) {
+                    renderHistory();
+                }
+            });
         }
     }
 
