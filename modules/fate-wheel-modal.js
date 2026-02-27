@@ -391,7 +391,7 @@ window.PromptGen.FateWheelModal = (function () {
     }
 
 
-    function getOptionsPool(section) {
+    function getOptionsPool(section, gender) {
         const Data = window.PromptGen && window.PromptGen.Data;
         if (!Data) return section.options;
 
@@ -400,8 +400,11 @@ window.PromptGen.FateWheelModal = (function () {
 
         let items;
         if (Array.isArray(source)) {
-            // 合併多個陣列（如男女髮型）
-            items = source.reduce((acc, key) => acc.concat(Data[key] || []), []);
+            // 根據性別選擇對應的選項池（如 bodyType, hairstyle）
+            // gender: '1girl' → female (index 0), '1boy' → male (index 1)
+            const isFemale = gender === '1girl' || gender === 'female';
+            const idx = isFemale ? 0 : 1;
+            items = Data[source[idx]] || [];
         } else {
             items = Data[source];
         }
@@ -809,7 +812,7 @@ window.PromptGen.FateWheelModal = (function () {
                 if (lockedIndices.has(i)) {
                     return { ...ws.cells[i] };
                 }
-                const pool = getOptionsPool(sec);
+                const pool = getOptionsPool(sec, preGender);
                 const opt = pool[Math.floor(Math.random() * pool.length)];
                 return {
                     id: sec.id, title: sec.title, stateKey: sec.stateKey,
@@ -835,7 +838,7 @@ window.PromptGen.FateWheelModal = (function () {
                     if (!rerollKeys.has(results[i].stateKey)) continue;
 
                     const sec = allSections[i];
-                    const pool = getOptionsPool(sec);
+                    const pool = getOptionsPool(sec, preGender);
                     if (pool.length <= 1) continue; // 只有一個選項則跳過
 
                     // 嘗試選一個不同的選項
