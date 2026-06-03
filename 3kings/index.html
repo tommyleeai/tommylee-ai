@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>三國演義關係網路圖 - 互動式力導向關係圖</title>
+  <!-- 引入 Google Fonts 中文字型 Noto Sans TC 與英文型 Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+  <!-- 引入 FontAwesome 圖示 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- 引入自訂樣式表 -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- 主頁面容器 -->
+  <div class="app-container">
+    
+    <!-- 頂部標題列 -->
+    <header class="main-header">
+      <div class="logo">
+        <i class="fa-solid fa-network-wired logo-icon"></i>
+        <h1>三國演義<span>關係網路圖</span></h1>
+      </div>
+      <p class="subtitle">動態探索人物與經典事件的交織歷史</p>
+    </header>
+
+    <!-- 關係圖畫布區域 -->
+    <main class="canvas-area">
+      <!-- D3 畫布將渲染在此 -->
+      <div id="graph-canvas"></div>
+      
+      <!-- 縮放與重置浮動按鈕 -->
+      <div class="canvas-controls">
+        <button id="btn-zoom-in" title="放大"><i class="fa-solid fa-plus"></i></button>
+        <button id="btn-zoom-out" title="縮小"><i class="fa-solid fa-minus"></i></button>
+        <button id="btn-zoom-reset" title="重置視角"><i class="fa-solid fa-expand"></i></button>
+      </div>
+
+      <!-- 快速說明圖例 (Legend) -->
+      <div class="legend-panel">
+        <div class="legend-title">圖例說明</div>
+        <div class="legend-items">
+          <div class="legend-item">
+            <span class="legend-color shuhan"></span>
+            <span class="legend-text">蜀漢人物</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-color caowei"></span>
+            <span class="legend-text">曹魏人物</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-color dongwu"></span>
+            <span class="legend-text">東吳人物</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-color qunxiong"></span>
+            <span class="legend-text">群雄人物</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-color event-node"></span>
+            <span class="legend-text">歷史事件 (大小依關聯人數)</span>
+          </div>
+        </div>
+        <div class="legend-note">*人物顏色愈深(紫紅)代表參與事件愈多</div>
+      </div>
+    </main>
+
+    <!-- 左側/浮動控制面板 (毛玻璃效果) -->
+    <section class="control-panel glass">
+      <div class="panel-section">
+        <h3><i class="fa-solid fa-magnifying-glass"></i> 搜尋人物與事件</h3>
+        <div class="search-box">
+          <input type="text" id="search-input" placeholder="輸入名字或事件名稱...">
+          <button id="search-clear"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <h3><i class="fa-solid fa-filter"></i> 勢力過濾</h3>
+        <div class="filter-buttons">
+          <button class="filter-btn active" data-filter="all">全部</button>
+          <button class="filter-btn" data-filter="蜀">蜀漢</button>
+          <button class="filter-btn" data-filter="魏">曹魏</button>
+          <button class="filter-btn" data-filter="吳">東吳</button>
+          <button class="filter-btn" data-filter="群">群雄</button>
+          <button class="filter-btn" data-filter="event">歷史事件</button>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <h3><i class="fa-solid fa-sliders"></i> 力學模擬參數</h3>
+        <div class="slider-group">
+          <div class="slider-label">
+            <span>連線距離 (Link Distance)</span>
+            <span id="val-link-distance">140</span>
+          </div>
+          <input type="range" id="slider-link-distance" min="50" max="400" value="140">
+        </div>
+        <div class="slider-group">
+          <div class="slider-label">
+            <span>排斥引力 (Charge Strength)</span>
+            <span id="val-charge-strength">-600</span>
+          </div>
+          <input type="range" id="slider-charge-strength" min="-1200" max="-100" value="-600">
+        </div>
+        <div class="slider-group">
+          <div class="slider-label">
+            <span>碰撞半徑 (Collision)</span>
+            <span id="val-collide-strength">45</span>
+          </div>
+          <input type="range" id="slider-collide-strength" min="20" max="100" value="45">
+        </div>
+      </div>
+
+      <div class="panel-section toggles">
+        <label class="toggle-container">
+          <input type="checkbox" id="toggle-labels" checked>
+          <span class="checkmark"></span>
+          顯示節點名稱
+        </label>
+        <button id="btn-restart-sim" class="action-btn"><i class="fa-solid fa-rotate-right"></i> 重啟佈局計算</button>
+      </div>
+    </section>
+
+    <!-- 右側資訊詳情面板 (側邊欄) -->
+    <aside class="info-sidebar glass" id="info-sidebar">
+      <button class="close-sidebar-btn" id="close-sidebar" title="關閉詳情"><i class="fa-solid fa-chevron-right"></i></button>
+      
+      <!-- 預設提示 -->
+      <div class="sidebar-default-msg" id="sidebar-placeholder">
+        <div class="icon-pulse">
+          <i class="fa-solid fa-circle-info"></i>
+        </div>
+        <h3>探索歷史關聯</h3>
+        <p>點擊關係圖中的任意人物或事件節點，在此處查看詳細的生平事蹟與相關衍生遊戲設定。</p>
+      </div>
+
+      <!-- 詳細資訊展示 (動態填充) -->
+      <div class="sidebar-content hidden" id="sidebar-info">
+        <div class="badge-container">
+          <span class="group-badge" id="info-badge">蜀</span>
+          <span class="type-badge" id="info-type">人物</span>
+        </div>
+        <h2 id="info-title">劉備</h2>
+        <div class="info-meta" id="info-meta-container">
+          <!-- 例如事件的年份 -->
+          <span id="info-meta-label"><i class="fa-regular fa-calendar"></i> 年份：</span>
+          <span id="info-meta-val">公元 208 年</span>
+        </div>
+        
+        <div class="info-section">
+          <h4><i class="fa-solid fa-file-lines"></i> 簡介事蹟</h4>
+          <p id="info-desc">這是劉備的生平事蹟簡介...</p>
+        </div>
+
+        <div class="info-section">
+          <h4><i class="fa-solid fa-gamepad"></i> 衍生遊戲與文化</h4>
+          <p id="info-games">在三國志、真三國無雙與三國殺中的形象...</p>
+        </div>
+
+        <div class="info-section">
+          <h4><i class="fa-solid fa-link"></i> 關聯對象 (<span id="info-conn-count">0</span>)</h4>
+          <ul class="connection-list" id="info-connections">
+            <!-- 動態填入 -->
+            <li><span class="conn-node character">關羽</span> - 桃園三結義</li>
+          </ul>
+        </div>
+      </div>
+    </aside>
+
+    <!-- 懸停 Tooltip -->
+    <div class="tooltip" id="tooltip"></div>
+  </div>
+
+  <!-- 引入 D3.js v7 -->
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <!-- 引入數據 -->
+  <script src="data.js"></script>
+  <!-- 引入交互邏輯 -->
+  <script src="app.js"></script>
+</body>
+</html>
