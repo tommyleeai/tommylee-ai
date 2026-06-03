@@ -131,7 +131,7 @@ body, html {
 
 /* D3 節點與連線樣式 */
 .link {
-  stroke: rgba(255, 255, 255, 0.08);
+  stroke: rgba(255, 255, 255, 0);
   stroke-width: 1.5px;
   transition: stroke 0.3s, stroke-width 0.3s, stroke-opacity 0.3s;
 }

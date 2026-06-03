@@ -158,7 +158,7 @@ document.addEventListener("DOMContentLoaded", () => {
     .force("link", d3.forceLink(links).id(d => d.id).distance(parseFloat(sliderLinkDist.value)))
     .force("charge", d3.forceManyBody().strength(parseFloat(sliderCharge.value)))
     .force("center", d3.forceCenter(width / 2, height / 2))
-    .force("collide", d3.forceCollide().radius(d => d.radius + 6).iterations(2));
+    .force("collide", d3.forceCollide().radius(d => d.radius + 15).iterations(2)); // 加大碰撞間距，防止 410 個節點擠成一團
 
   // === 4. 繪製連線與節點 ===
   
@@ -229,6 +229,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     node
       .attr("transform", d => `translate(${d.x}, ${d.y})`);
+
+    // 當 alpha 低於 0.01 時自動停止模擬，釋放 CPU 負載
+    if (simulation.alpha() < 0.01) {
+      simulation.stop();
+      console.log("D3 Simulation auto-stopped for performance optimization.");
+    }
   });
 
   // === 6. 互動效果：Hover 高亮、點擊詳情 ===
