@@ -1,3 +1,3 @@
 User-agent: *
 Allow: /
-Sitemap: https://tommylee.ai/sitemap.xml
+Sitemap: https://draw.tommylee.ai/sitemap.xml
